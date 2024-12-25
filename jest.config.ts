@@ -28,7 +28,12 @@ const config: Config = {
   collectCoverage: true,
 
   // An array of glob patterns indicating a set of files for which coverage information should be collected
-  // collectCoverageFrom: undefined,
+  collectCoverageFrom: [
+    "src/**/*.{ts,tsx,js,jsx}", // Include all files in `src` directory
+    "!src/**/*.d.ts", // Exclude TypeScript declaration files
+    "!src/lib/**", // Exclude all files in the `lib` directory
+    "!src/components/ui/**", // Exclude all UI components
+  ],
 
   // The directory where Jest should output its coverage files
   coverageDirectory: "coverage",
@@ -38,6 +43,8 @@ const config: Config = {
     "/node_modules/",
     "src/lib/utils.ts",
     "src/components/ui",
+    "src/app/page.tsx",
+    "src/app/layout.tsx",
   ],
 
   // Indicates which provider should be used to instrument code for coverage
