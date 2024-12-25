@@ -1,0 +1,36 @@
+name: Jest Test
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Cache Bun Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.bun
+          key: ${{ runner.os }}-bun-${{ hashFiles('**/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Run Jest Tests
+        run: bun run jest --coverage
+        env:
+          NODE_ENV: test
