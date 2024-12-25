@@ -45,6 +45,9 @@ const config: Config = {
     "src/components/ui",
     "src/app/page.tsx",
     "src/app/layout.tsx",
+    "src/app/dashboard",
+    "src/hooks",
+    "src/components/dashboard/sidebar/NavUser.tsx",
   ],
 
   // Indicates which provider should be used to instrument code for coverage
