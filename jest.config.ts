@@ -48,6 +48,19 @@ const config: Config = {
     "src/app/dashboard",
     "src/hooks",
     "src/components/dashboard/sidebar/NavUser.tsx",
+
+    // api
+    "src/handler.ts",
+    "src/app/api/graphql/route.ts",
+    "src/app/api/graphql/index.ts",
+    "src/app/api/graphql/models",
+    "src/app/api/graphql/resolvers/index.ts",
+    "src/app/api/graphql/schemas/index.ts",
+    "src/app/api/graphql/resolvers/mutations/index.ts",
+    "src/app/api/graphql/resolvers/mutations/test/index.ts",
+    "src/app/api/graphql/resolvers/queries/index.ts",
+    "src/app/api/graphql/resolvers/queries/test/index.ts",
+    "src/app/api/graphql/schemas",
   ],
 
   // Indicates which provider should be used to instrument code for coverage
