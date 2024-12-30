@@ -61,6 +61,11 @@ const config: Config = {
     "src/app/api/graphql/resolvers/queries/index.ts",
     "src/app/api/graphql/resolvers/queries/test/index.ts",
     "src/app/api/graphql/schemas",
+
+    // graphQL
+    "src/app/api/graphql/apollo-client.ts",
+    "src/app/api/graphql/ApolloWrappre.tsx",
+    "src/generated",
   ],
 
   // Indicates which provider should be used to instrument code for coverage
