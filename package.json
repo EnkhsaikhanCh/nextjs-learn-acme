@@ -10,7 +10,7 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "codegen": "graphql-codegen",
-    "postinstall": "bun run codegen"
+    "postinstall": "next build && bun run codegen"
   },
   "dependencies": {
     "@apollo/client": "^3.12.4",
