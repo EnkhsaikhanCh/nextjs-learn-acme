@@ -63,6 +63,13 @@ export type CreateTestMutationVariables = Exact<{
 
 export type CreateTestMutation = { __typename?: 'Mutation', createTest: { __typename?: 'Test', _id: string, name: string } };
 
+export type DeleteTestMutationVariables = Exact<{
+  deleteTestId: Scalars['ID']['input'];
+}>;
+
+
+export type DeleteTestMutation = { __typename?: 'Mutation', deleteTest: { __typename?: 'Test', _id: string, name: string } };
+
 
 export const GetAllTestDocument = gql`
     query GetAllTest {
@@ -138,3 +145,37 @@ export function useCreateTestMutation(baseOptions?: Apollo.MutationHookOptions<C
 export type CreateTestMutationHookResult = ReturnType<typeof useCreateTestMutation>;
 export type CreateTestMutationResult = Apollo.MutationResult<CreateTestMutation>;
 export type CreateTestMutationOptions = Apollo.BaseMutationOptions<CreateTestMutation, CreateTestMutationVariables>;
+export const DeleteTestDocument = gql`
+    mutation DeleteTest($deleteTestId: ID!) {
+  deleteTest(id: $deleteTestId) {
+    _id
+    name
+  }
+}
+    `;
+export type DeleteTestMutationFn = Apollo.MutationFunction<DeleteTestMutation, DeleteTestMutationVariables>;
+
+/**
+ * __useDeleteTestMutation__
+ *
+ * To run a mutation, you first call `useDeleteTestMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteTestMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteTestMutation, { data, loading, error }] = useDeleteTestMutation({
+ *   variables: {
+ *      deleteTestId: // value for 'deleteTestId'
+ *   },
+ * });
+ */
+export function useDeleteTestMutation(baseOptions?: Apollo.MutationHookOptions<DeleteTestMutation, DeleteTestMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteTestMutation, DeleteTestMutationVariables>(DeleteTestDocument, options);
+      }
+export type DeleteTestMutationHookResult = ReturnType<typeof useDeleteTestMutation>;
+export type DeleteTestMutationResult = Apollo.MutationResult<DeleteTestMutation>;
+export type DeleteTestMutationOptions = Apollo.BaseMutationOptions<DeleteTestMutation, DeleteTestMutationVariables>;

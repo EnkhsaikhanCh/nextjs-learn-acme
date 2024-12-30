@@ -13,3 +13,10 @@ mutation CreateTest($name: String!) {
     name
   }
 }
+
+mutation DeleteTest($deleteTestId: ID!) {
+  deleteTest(id: $deleteTestId) {
+    _id
+    name
+  }
+}
