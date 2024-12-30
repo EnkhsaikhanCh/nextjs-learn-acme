@@ -8,6 +8,15 @@ interface ActionButtonProps {
   href?: string;
   onClick?: () => void;
   disabled?: boolean;
+  variant?:
+    | "secondary"
+    | "destructive"
+    | "outline"
+    | "ghost"
+    | "link"
+    | "default"
+    | null
+    | undefined;
 }
 
 export const ActionButton = ({
@@ -17,6 +26,7 @@ export const ActionButton = ({
   href,
   onClick,
   disabled,
+  variant,
 }: ActionButtonProps) => {
   const content = (
     <>
@@ -36,7 +46,12 @@ export const ActionButton = ({
   }
 
   return (
-    <Button className={className} onClick={onClick} disabled={disabled}>
+    <Button
+      variant={variant}
+      className={className}
+      onClick={onClick}
+      disabled={disabled}
+    >
       {content}
     </Button>
   );
