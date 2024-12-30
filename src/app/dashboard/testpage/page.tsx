@@ -2,21 +2,25 @@
 
 import { ActionButton } from "@/components/ActionButton";
 import { useCreateTestMutation, useGetAllTestQuery } from "@/generated/graphql";
-import { Plus } from "lucide-react";
+import { LoaderCircle, Plus } from "lucide-react";
 import { useState } from "react";
 
 export default function Page() {
   const { data, loading, error, refetch } = useGetAllTestQuery();
   const [createTest] = useCreateTestMutation();
   const [testName, setTestName] = useState("");
+  const [isCreating, setIsCreating] = useState(false);
 
   const handleCreateTest = async () => {
+    setIsCreating(true);
     try {
       await createTest({ variables: { name: testName } });
       setTestName("");
       refetch();
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsCreating(false);
     }
   };
 
@@ -34,9 +38,12 @@ export default function Page() {
           placeholder="Enter test name"
         />
         <ActionButton
-          label="Create test"
+          label={isCreating ? "Creating..." : "Create"}
           onClick={handleCreateTest}
-          icon={<Plus />}
+          icon={
+            isCreating ? <LoaderCircle className="animate-spin" /> : <Plus />
+          }
+          disabled={isCreating}
         />
         {data?.getAllTest.map((test) => (
           <div
