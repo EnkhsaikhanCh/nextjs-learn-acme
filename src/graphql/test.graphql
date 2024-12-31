@@ -20,3 +20,10 @@ mutation DeleteTest($deleteTestId: ID!) {
     name
   }
 }
+
+mutation updateTest($updateTestId: ID!, $name: String!) {
+  updateTest(id: $updateTestId, name: $name) {
+    _id
+    name
+  }
+}

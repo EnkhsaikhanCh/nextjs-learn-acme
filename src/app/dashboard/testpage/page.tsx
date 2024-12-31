@@ -5,8 +5,9 @@ import {
   useCreateTestMutation,
   useDeleteTestMutation,
   useGetAllTestQuery,
+  useUpdateTestMutation,
 } from "@/generated/graphql";
-import { Trash2, LoaderCircle, Plus } from "lucide-react";
+import { Trash2, LoaderCircle, Plus, Pen } from "lucide-react";
 import { useState } from "react";
 
 import {
@@ -19,14 +20,30 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 
 export default function Page() {
   const { data, loading, error, refetch } = useGetAllTestQuery();
   const [deleteTest] = useDeleteTestMutation();
   const [createTest] = useCreateTestMutation();
+  const [updateTest] = useUpdateTestMutation();
   const [testName, setTestName] = useState("");
   const [isCreating, setIsCreating] = useState(false);
   const [openDialogId, setOpenDialogId] = useState<string | null>(null);
+  const [updateTestText, setUpdateTestText] = useState("");
+
+  const handleUpdateTest = async (id: string) => {
+    try {
+      await updateTest({
+        variables: { updateTestId: id, name: updateTestText },
+      });
+      refetch();
+    } catch (error) {
+      console.error(error);
+    }
+    setOpenDialogId(null);
+  };
 
   const handleDeleteTest = async (id: string) => {
     try {
@@ -83,7 +100,58 @@ export default function Page() {
               <div>ID: {test._id}</div>
               <div>Name: {test.name}</div>
             </div>
-            <div className="flex w-full justify-end">
+            <div className="flex w-full justify-end gap-2">
+              {/* Update */}
+              <Dialog
+                open={openDialogId === `update-${test._id}`}
+                onOpenChange={(isOpen) => {
+                  setOpenDialogId(isOpen ? `update-${test._id}` : null);
+                  if (isOpen) {
+                    setUpdateTestText(test.name);
+                  }
+                }}
+              >
+                <DialogTrigger asChild>
+                  <Button variant="outline">
+                    <Pen />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Edit test</DialogTitle>
+                    <DialogDescription>
+                      Make changes to your test here. Click save when you're
+                      done.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label
+                        htmlFor={`name-${test._id}`}
+                        className="text-right"
+                      >
+                        Test name
+                      </Label>
+                      <Input
+                        id={`name-${test._id}`}
+                        value={updateTestText}
+                        onChange={(e) => setUpdateTestText(e.target.value)}
+                        className="col-span-3"
+                      />
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button
+                      type="submit"
+                      onClick={() => handleUpdateTest(test._id)}
+                    >
+                      Save changes
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+
+              {/* Delete */}
               <Dialog
                 open={openDialogId === test._id}
                 onOpenChange={(isOpen) =>
