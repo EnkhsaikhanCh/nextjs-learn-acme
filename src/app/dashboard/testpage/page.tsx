@@ -120,7 +120,7 @@ export default function Page() {
                   <DialogHeader>
                     <DialogTitle>Edit test</DialogTitle>
                     <DialogDescription>
-                      Make changes to your test here. Click save when you're
+                      Make changes to your test here. Click save when you are
                       done.
                     </DialogDescription>
                   </DialogHeader>
