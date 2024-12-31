@@ -18,24 +18,24 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 
 export default function Page() {
   const { data, loading, error, refetch } = useGetAllTestQuery();
-  const [useDelete] = useDeleteTestMutation();
+  const [deleteTest] = useDeleteTestMutation();
   const [createTest] = useCreateTestMutation();
   const [testName, setTestName] = useState("");
   const [isCreating, setIsCreating] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedTestId, setSelectedTestId] = useState<string | null>(null);
+  const [openDialogId, setOpenDialogId] = useState<string | null>(null);
 
   const handleDeleteTest = async (id: string) => {
     try {
-      await useDelete({ variables: { deleteTestId: id } });
+      await deleteTest({ variables: { deleteTestId: id } });
       refetch();
     } catch (error) {
       console.error(error);
     }
-    setIsOpen(false);
+    setOpenDialogId(null);
   };
 
   const handleCreateTest = async () => {
@@ -58,20 +58,22 @@ export default function Page() {
     <main>
       <h1>Test Page</h1>
       <div>
-        <input
-          type="text"
-          value={testName}
-          onChange={(e) => setTestName(e.target.value)}
-          placeholder="Enter test name"
-        />
-        <ActionButton
-          label={isCreating ? "Creating..." : "Create"}
-          onClick={handleCreateTest}
-          icon={
-            isCreating ? <LoaderCircle className="animate-spin" /> : <Plus />
-          }
-          disabled={isCreating}
-        />
+        <div className="mt-3 flex gap-2">
+          <Input
+            type="text"
+            value={testName}
+            onChange={(e) => setTestName(e.target.value)}
+            placeholder="Enter test name"
+          />
+          <ActionButton
+            label={isCreating ? "Creating..." : "Create"}
+            onClick={handleCreateTest}
+            icon={
+              isCreating ? <LoaderCircle className="animate-spin" /> : <Plus />
+            }
+            disabled={isCreating}
+          />
+        </div>
         {data?.getAllTest.map((test) => (
           <div
             key={test._id}
@@ -82,15 +84,17 @@ export default function Page() {
               <div>Name: {test.name}</div>
             </div>
             <div className="flex w-full justify-end">
-              <Dialog open={isOpen} onOpenChange={setIsOpen}>
+              <Dialog
+                open={openDialogId === test._id}
+                onOpenChange={(isOpen) =>
+                  setOpenDialogId(isOpen ? test._id : null)
+                }
+              >
                 <DialogTrigger asChild>
                   <ActionButton
                     label=""
                     icon={<Trash2 />}
-                    onClick={() => {
-                      setSelectedTestId(test._id);
-                      setIsOpen(true);
-                    }}
+                    onClick={() => setOpenDialogId(test._id)}
                   />
                 </DialogTrigger>
                 <DialogContent>
@@ -99,20 +103,29 @@ export default function Page() {
                       Are you absolutely sure delete this one?
                     </DialogTitle>
                     <DialogDescription>
-                      {test.name} will be permanently removed. This action
-                      cannot be undone.
-                      {test._id}
+                      will be permanently removed. This action cannot be undone.
                     </DialogDescription>
                   </DialogHeader>
+                  <div>
+                    <div className="flex gap-1">
+                      <div>Name:</div>
+                      <div>{test.name}</div>
+                    </div>
+                    <div className="flex gap-1">
+                      <div>ID:</div>
+                      <div>{test._id}</div>
+                    </div>
+                  </div>
                   <DialogFooter>
                     <ActionButton
                       label="Cancel"
-                      onClick={() => setIsOpen(false)}
+                      onClick={() => setOpenDialogId(null)}
                       variant="outline"
                     />
                     <ActionButton
                       label="Delete"
                       onClick={() => handleDeleteTest(test._id)}
+                      variant={"destructive"}
                     />
                   </DialogFooter>
                 </DialogContent>
