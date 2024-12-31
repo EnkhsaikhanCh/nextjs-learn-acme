@@ -7,7 +7,7 @@ import {
   useGetAllTestQuery,
   useUpdateTestMutation,
 } from "@/generated/graphql";
-import { Trash2, LoaderCircle, Plus, Pen } from "lucide-react";
+import { Trash2, LoaderCircle, Plus, Pen, TriangleAlert } from "lucide-react";
 import { useState } from "react";
 
 import {
@@ -22,6 +22,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Card } from "@/components/ui/card";
 
 export default function Page() {
   const { data, loading, error, refetch } = useGetAllTestQuery();
@@ -74,13 +75,14 @@ export default function Page() {
   return (
     <main>
       <h1>Test Page</h1>
-      <div>
+      <div className="mt-4 flex w-full flex-col gap-2 md:w-[540px]">
         <div className="mt-3 flex gap-2">
           <Input
             type="text"
             value={testName}
             onChange={(e) => setTestName(e.target.value)}
             placeholder="Enter test name"
+            required
           />
           <ActionButton
             label={isCreating ? "Creating..." : "Create"}
@@ -92,12 +94,12 @@ export default function Page() {
           />
         </div>
         {data?.getAllTest.map((test) => (
-          <div
+          <Card
             key={test._id}
-            className="my-4 grid grid-cols-3 gap-4 rounded-md border bg-gray-100 p-4"
+            className="grid grid-cols-3 gap-4 rounded-md border bg-gray-50 p-4"
           >
             <div className="col-span-2">
-              <div>ID: {test._id}</div>
+              <div className="text-[10px] md:text-base">ID: {test._id}</div>
               <div>Name: {test.name}</div>
             </div>
             <div className="flex w-full justify-end gap-2">
@@ -118,7 +120,7 @@ export default function Page() {
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">
                   <DialogHeader>
-                    <DialogTitle>Edit test</DialogTitle>
+                    <DialogTitle>Edit test - {test._id}</DialogTitle>
                     <DialogDescription>
                       Make changes to your test here. Click save when you are
                       done.
@@ -199,8 +201,14 @@ export default function Page() {
                 </DialogContent>
               </Dialog>
             </div>
-          </div>
+          </Card>
         ))}
+        {data?.getAllTest.length === 0 && (
+          <div className="mt-5 flex items-center justify-center gap-2 font-semibold text-gray-500">
+            <TriangleAlert className="h-5 w-5" />
+            <div>No test found</div>
+          </div>
+        )}
       </div>
     </main>
   );
