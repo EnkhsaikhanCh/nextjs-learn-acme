@@ -1,4 +1,4 @@
-import { model, Schema } from "mongoose";
+import { model, models, Schema } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 
 export type User = {
@@ -30,4 +30,4 @@ const UserSchema = new Schema(
   { timestamps: true },
 );
 
-export const UserModel = model<User>("User", UserSchema);
+export const UserModel = models["User"] || model<User>("User", UserSchema);
