@@ -24,12 +24,32 @@ export const typeDefs = gql`
     email: String
   }
 
+  input ChangePasswordInput {
+    currentPassword: String!
+    newPassword: String!
+  }
+
+  type ChangePasswordResponse {
+    message: String!
+  }
+
   type Mutation {
     createUser(input: RegisterInput!): User!
     updateUser(input: UpdateInput!, _id: ID!): User!
     deleteUser(id: ID!): User!
+    changePassword(
+      input: ChangePasswordInput
+      _id: ID!
+    ): ChangePasswordResponse!
   }
 `;
+
+export type User = {
+  _id: string;
+  name: string;
+  email: string;
+  password: string;
+};
 
 export type RegisterInput = {
   name: string;
@@ -40,4 +60,9 @@ export type RegisterInput = {
 export type UpdateInput = {
   name: string;
   email: string;
+};
+
+export type ChangePasswordInput = {
+  currentPassword: string;
+  newPassword: string;
 };
