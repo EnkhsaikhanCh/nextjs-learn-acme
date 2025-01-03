@@ -13,7 +13,7 @@ export default async function Layout({
   return (
     <SidebarProvider defaultChecked={defaultOpen}>
       <SideNav />
-      <main className="p-6">
+      <main className="p-3 md:p-6">
         <SidebarTrigger />
         {children}
       </main>

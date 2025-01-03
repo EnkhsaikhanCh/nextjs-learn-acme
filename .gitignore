@@ -17,6 +17,13 @@
 /.next/
 /out/
 
+# Code Coverage
+**/coverage/
+**/.nyc_output/
+.vercel
+.env
+.env.preview
+
 # production
 /build
 
