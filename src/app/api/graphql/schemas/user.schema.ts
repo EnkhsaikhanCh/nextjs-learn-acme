@@ -5,6 +5,7 @@ export const typeDefs = gql`
     _id: ID!
     name: String!
     email: String!
+    studentId: String!
     password: String!
   }
 
@@ -37,6 +38,12 @@ export const typeDefs = gql`
     message: String!
   }
 
+  type EncryptedResponse {
+    encryptedData: String!
+    iv: String!
+    authTag: String!
+  }
+
   type Mutation {
     createUser(input: RegisterInput!): RegisterResponse!
     updateUser(input: UpdateInput!, _id: ID!): User!
@@ -45,6 +52,8 @@ export const typeDefs = gql`
       input: ChangePasswordInput
       _id: ID!
     ): ChangePasswordResponse!
+    encryptData(data: String!): EncryptedResponse!
+    decryptData(encryptedData: String!, iv: String!, authTag: String!): String!
   }
 `;
 
@@ -52,6 +61,7 @@ export type User = {
   _id: string;
   name: string;
   email: string;
+  studentId: string;
   password: string;
 };
 
