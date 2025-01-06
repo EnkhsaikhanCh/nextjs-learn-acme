@@ -1,6 +1,7 @@
 import argon2 from "argon2";
 import { UserModel } from "../app/api/graphql/models/user.model";
 import { connectToDatabase } from "../lib/mongodb";
+import { GraphQLError } from "graphql";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -10,15 +11,26 @@ const seedAdmin = async () => {
   const { ADMIN_EMAIL, ADMIN_PASSWORD, STUDENT_ID } = process.env;
 
   if (!ADMIN_EMAIL || !ADMIN_PASSWORD || !STUDENT_ID) {
-    console.log("Missing admin credentials in environment variables");
-    process.exit(1);
+    throw new GraphQLError(
+      "Missing admin credentials in environment variables",
+      {
+        extensions: {
+          code: "BAD_USER_INPUT",
+          http: { status: 400 },
+        },
+      },
+    );
   }
 
   try {
     const existingAdmin = await UserModel.findOne({ email: ADMIN_EMAIL });
     if (existingAdmin) {
-      console.log("Admin already exists!");
-      process.exit(0);
+      throw new GraphQLError("Admin already exists!", {
+        extensions: {
+          code: "CONFLICT",
+          http: { status: 409 },
+        },
+      });
     }
 
     const hashedAdminPassword = await argon2.hash(ADMIN_PASSWORD, {
@@ -37,12 +49,34 @@ const seedAdmin = async () => {
     });
 
     await admin.save();
-    console.log("Admin user created successfully!");
-    process.exit(0);
+
+    return {
+      success: true,
+      message: "Admin user created successfully!",
+    };
   } catch (error) {
     console.error("Error creating admin:", error);
-    process.exit(1);
+
+    if (error instanceof GraphQLError) {
+      throw error;
+    }
+
+    const message = (error as Error).message;
+
+    throw new GraphQLError("Failed to create admin user", {
+      extensions: {
+        code: "INTERNAL_SERVER_ERROR",
+        http: { status: 500 },
+        originalError: message,
+      },
+    });
   }
 };
 
-seedAdmin();
+seedAdmin()
+  .then((result) => {
+    console.log("Result:", result);
+  })
+  .catch((err) => {
+    console.error("Unhandled error:", err);
+  });
