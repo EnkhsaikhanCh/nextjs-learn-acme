@@ -81,6 +81,7 @@ export const createUser = async (
     await UserModel.create({
       email: sanitizedEmail,
       studentId: studentId,
+      role: "student",
       password: hashedPassword,
     });
 
