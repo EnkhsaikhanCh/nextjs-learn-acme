@@ -16,7 +16,6 @@ const seedAdmin = async () => {
       {
         extensions: {
           code: "BAD_USER_INPUT",
-          http: { status: 400 },
         },
       },
     );
@@ -28,7 +27,6 @@ const seedAdmin = async () => {
       throw new GraphQLError("Admin already exists!", {
         extensions: {
           code: "CONFLICT",
-          http: { status: 409 },
         },
       });
     }
@@ -66,7 +64,6 @@ const seedAdmin = async () => {
     throw new GraphQLError("Failed to create admin user", {
       extensions: {
         code: "INTERNAL_SERVER_ERROR",
-        http: { status: 500 },
         originalError: message,
       },
     });
