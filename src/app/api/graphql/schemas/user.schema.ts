@@ -3,7 +3,6 @@ import gql from "graphql-tag";
 export const typeDefs = gql`
   type User {
     _id: ID!
-    name: String!
     email: String!
     studentId: String!
     password: String!
@@ -15,7 +14,6 @@ export const typeDefs = gql`
   }
 
   input RegisterInput {
-    name: String!
     email: String!
     password: String!
   }
@@ -25,7 +23,6 @@ export const typeDefs = gql`
   }
 
   input UpdateInput {
-    name: String
     email: String
   }
 
@@ -59,20 +56,17 @@ export const typeDefs = gql`
 
 export type User = {
   _id: string;
-  name: string;
   email: string;
   studentId: string;
   password: string;
 };
 
 export type RegisterInput = {
-  name: string;
   email: string;
   password: string;
 };
 
 export type UpdateInput = {
-  name: string;
   email: string;
 };
 
