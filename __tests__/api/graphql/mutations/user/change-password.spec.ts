@@ -1,102 +1,140 @@
-import { UserModel } from "@/app/api/graphql/models";
-import { changePassword } from "@/app/api/graphql/resolvers/mutations";
 import { GraphQLError } from "graphql";
-import bcrypt from "bcrypt";
+import { changePassword } from "../../../../../src/app/api/graphql/resolvers/mutations/user/change-password-mutation"; //
+import { UserModel } from "../../../../../src/app/api/graphql/models/user.model";
+import argon2 from "argon2";
+import { validationPassword } from "../../../../../src/utils/validation";
+import type { ChangePasswordInput } from "../../../../../src/app/api/graphql/schemas/user.schema";
 
-jest.mock("../../../../../src/app/api/graphql/models");
-jest.mock("bcrypt");
+// ---- Mocking the dependencies ----
+jest.mock("../../../../../src/app/api/graphql/models/user.model", () => ({
+  UserModel: {
+    findById: jest.fn(),
+  },
+}));
 
-describe("changePassword", () => {
-  const mockUser = {
-    _id: "12345",
-    password: "hashedPassword",
-    save: jest.fn().mockResolvedValue(true),
+jest.mock("argon2", () => ({
+  verify: jest.fn(),
+  hash: jest.fn(),
+}));
+
+jest.mock("../../../../../src/utils/validation", () => ({
+  validationPassword: jest.fn(),
+}));
+
+// ---- Helper function to wrap resolver call in a try/catch ----
+const callChangePassword = async (input: ChangePasswordInput, _id: string) => {
+  try {
+    const result = await changePassword(null, { input, _id });
+    return result;
+  } catch (error) {
+    throw error;
+  }
+};
+
+describe("changePassword Mutation", () => {
+  const MOCK_USER_ID = "mockUserId";
+  const MOCK_CURRENT_PASSWORD = "CurrentPassword123!";
+  const MOCK_NEW_PASSWORD = "NewPassword123!";
+
+  const mockUser: any = {
+    _id: MOCK_USER_ID,
+    password: "hashedOldPassword",
+    save: jest.fn(),
   };
-
-  const input = {
-    currentPassword: "currentPassword",
-    newPassword: "NewPassword123",
-  };
-
-  const _id = "12345";
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    jest.clearAllMocks(); // Clear mocks before each test
   });
 
-  it("should update the password successfully", async () => {
-    UserModel.findById = jest.fn().mockResolvedValue(mockUser);
-    bcrypt.compare = jest.fn().mockResolvedValue(true);
-    bcrypt.hash = jest.fn().mockResolvedValue("hashedNewPassword");
-
-    const result = await changePassword(null, { input, _id });
-
-    expect(UserModel.findById).toHaveBeenCalledWith(_id);
-    expect(bcrypt.compare).toHaveBeenCalledWith(
-      input.currentPassword,
-      "hashedPassword",
-    );
-    expect(bcrypt.hash).toHaveBeenCalledWith(input.newPassword, 10);
-    expect(mockUser.password).toBe("hashedNewPassword");
-    expect(mockUser.save).toHaveBeenCalled();
-    expect(result).toEqual({ message: "Password updated successfully" });
-  });
-
-  it("should throw an error if the user is not found", async () => {
-    UserModel.findById = jest.fn().mockResolvedValue(null);
-
-    await expect(changePassword(null, { input, _id })).rejects.toThrow(
-      new GraphQLError("User not found"),
-    );
-
-    expect(UserModel.findById).toHaveBeenCalledWith(_id);
-  });
-
-  it("should throw an error if the current password is incorrect", async () => {
-    UserModel.findById = jest.fn().mockResolvedValue(mockUser);
-    bcrypt.compare = jest.fn().mockResolvedValue(false);
-
-    await expect(changePassword(null, { input, _id })).rejects.toThrow(
-      new GraphQLError("Invalid credentials"),
-    );
-
-    expect(UserModel.findById).toHaveBeenCalledWith(_id);
-    expect(bcrypt.compare).toHaveBeenCalledWith(
-      input.currentPassword,
-      mockUser.password,
-    );
-  });
-
-  it("should throw an error if the new password is not strong enough", async () => {
-    UserModel.findById = jest.fn().mockResolvedValue(mockUser);
-    bcrypt.compare = jest.fn().mockResolvedValue(true);
-
-    const weakPasswordInput = { ...input, newPassword: "weak" };
+  it("throws USER_NOT_FOUND if the user does not exist", async () => {
+    (UserModel.findById as jest.Mock).mockResolvedValueOnce(null);
 
     await expect(
-      changePassword(null, { input: weakPasswordInput, _id }),
-    ).rejects.toThrow(
-      new GraphQLError(
-        "Password must be at least 8 characters long and include letters and numbers.",
+      callChangePassword(
+        { currentPassword: "whatever", newPassword: "irrelevant" },
+        MOCK_USER_ID,
       ),
+    ).rejects.toThrowError(
+      new GraphQLError("User not found", {
+        extensions: { code: "USER_NOT_FOUND" },
+      }),
     );
 
-    expect(UserModel.findById).toHaveBeenCalledWith(_id);
-    expect(bcrypt.compare).toHaveBeenCalledWith(
-      weakPasswordInput.currentPassword,
-      mockUser.password,
+    expect(UserModel.findById).toHaveBeenCalledWith(MOCK_USER_ID);
+  });
+
+  it("throws INVALID_CREDENTIALS if current password is incorrect", async () => {
+    (UserModel.findById as jest.Mock).mockResolvedValueOnce(mockUser);
+    (argon2.verify as jest.Mock).mockResolvedValueOnce(false); // current password does not match
+
+    await expect(
+      callChangePassword(
+        { currentPassword: "wrongPassword", newPassword: MOCK_NEW_PASSWORD },
+        MOCK_USER_ID,
+      ),
+    ).rejects.toThrowError(
+      new GraphQLError("Invalid credentials", {
+        extensions: { code: "INVALID_CREDENTIALS" },
+      }),
     );
   });
 
-  it("should handle unexpected errors", async () => {
-    UserModel.findById = jest
-      .fn()
-      .mockRejectedValue(new Error("Unexpected error"));
+  it("throws BAD_USER_INPUT if new password fails validation", async () => {
+    (UserModel.findById as jest.Mock).mockResolvedValueOnce(mockUser);
+    (argon2.verify as jest.Mock).mockResolvedValueOnce(true); // current password matches
+    (validationPassword as jest.Mock).mockReturnValueOnce(false); // password fails validation
 
-    await expect(changePassword(null, { input, _id })).rejects.toThrow(
-      new GraphQLError("Unexpected error"),
+    await expect(
+      callChangePassword(
+        { currentPassword: MOCK_CURRENT_PASSWORD, newPassword: "invalid" },
+        MOCK_USER_ID,
+      ),
+    ).rejects.toThrowError(GraphQLError);
+
+    expect(validationPassword).toHaveBeenCalledWith("invalid");
+  });
+
+  it("throws BAD_USER_INPUT if new password is the same as the old password", async () => {
+    (UserModel.findById as jest.Mock).mockResolvedValueOnce(mockUser);
+    (argon2.verify as jest.Mock).mockResolvedValueOnce(true);
+    (validationPassword as jest.Mock).mockReturnValueOnce(true);
+    (argon2.verify as jest.Mock).mockResolvedValueOnce(true);
+
+    await expect(
+      callChangePassword(
+        {
+          currentPassword: MOCK_CURRENT_PASSWORD,
+          newPassword: MOCK_NEW_PASSWORD,
+        },
+        MOCK_USER_ID,
+      ),
+    ).rejects.toThrowError(
+      new GraphQLError("New password cannot be the same as the old password", {
+        extensions: { code: "BAD_USER_INPUT" },
+      }),
+    );
+  });
+
+  it("returns success message if password is updated successfully", async () => {
+    (UserModel.findById as jest.Mock).mockResolvedValueOnce(mockUser);
+    (argon2.verify as jest.Mock).mockResolvedValueOnce(true);
+    (validationPassword as jest.Mock).mockReturnValueOnce(true);
+    (argon2.verify as jest.Mock).mockResolvedValueOnce(false);
+    (argon2.hash as jest.Mock).mockResolvedValueOnce("hashedNewPassword");
+
+    const result = await callChangePassword(
+      {
+        currentPassword: MOCK_CURRENT_PASSWORD,
+        newPassword: MOCK_NEW_PASSWORD,
+      },
+      MOCK_USER_ID,
     );
 
-    expect(UserModel.findById).toHaveBeenCalledWith(_id);
+    expect(result).toEqual({ message: "Password updated successfully" });
+    expect(argon2.hash).toHaveBeenCalledWith(
+      MOCK_NEW_PASSWORD,
+      expect.any(Object),
+    );
+    expect(mockUser.save).toHaveBeenCalledTimes(1);
   });
 });

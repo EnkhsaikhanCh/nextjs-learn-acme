@@ -73,6 +73,8 @@ export const changePassword = async (
     };
   } catch (error) {
     const message = (error as Error).message;
-    throw new GraphQLError(message);
+    throw new GraphQLError(message, {
+      extensions: { code: "INTERNAL_SERVER_ERROR" },
+    });
   }
 };
