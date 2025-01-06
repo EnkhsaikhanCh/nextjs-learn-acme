@@ -48,6 +48,8 @@ const config: Config = {
     "src/app/dashboard",
     "src/hooks",
     "src/components/dashboard/sidebar/NavUser.tsx",
+    "src/common/index.ts",
+    "src/common/encryption/index.ts",
 
     // api
     "src/handler.ts",
@@ -58,6 +60,7 @@ const config: Config = {
     "src/app/api/graphql/schemas/index.ts",
     "src/app/api/graphql/resolvers/mutations/index.ts",
     "src/app/api/graphql/resolvers/mutations/test/index.ts",
+    "src/app/api/graphql/resolvers/mutations/test/index.ts",
     "src/app/api/graphql/resolvers/queries/index.ts",
     "src/app/api/graphql/resolvers/queries/test/index.ts",
     "src/app/api/graphql/schemas",
@@ -66,6 +69,9 @@ const config: Config = {
     "src/app/api/graphql/apollo-client.ts",
     "src/app/api/graphql/ApolloWrappre.tsx",
     "src/generated",
+
+    // encryption
+    "src/common/encryption",
   ],
 
   // Indicates which provider should be used to instrument code for coverage

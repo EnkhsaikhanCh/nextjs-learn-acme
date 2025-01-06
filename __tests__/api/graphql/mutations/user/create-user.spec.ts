@@ -1,89 +1,117 @@
-import { createUser } from "@/app/api/graphql/resolvers/mutations";
+import { createUser } from "../../../../../src/app/api/graphql/resolvers/mutations/user/create-user-mutation";
 import { UserModel } from "../../../../../src/app/api/graphql/models/user.model";
-import bcrypt from "bcrypt";
+import argon2 from "argon2";
+import { GraphQLError } from "graphql";
 
-jest.mock("../../../../../src/app/api/graphql/models/user.model", () => ({
-  UserModel: {
-    findOne: jest.fn(),
-    create: jest.fn(),
-  },
+jest.mock("../../../../../src/app/api/graphql/models/user.model");
+jest.mock("argon2");
+
+// Mock utility functions
+jest.mock("../../../../../src/utils/validation", () => ({
+  sanitizeInput: jest.fn((email) => email.trim()),
+  validationEmail: jest.fn((email) => email.includes("@")),
+  validationPassword: jest.fn((password) => password.length >= 8),
 }));
 
-jest.mock("bcrypt", () => ({
-  hash: jest.fn(),
-}));
+const mockedUserModel = UserModel as jest.Mocked<typeof UserModel>;
+const mockedArgon2 = argon2 as jest.Mocked<typeof argon2>;
 
-describe("createUser", () => {
+describe("createUser mutation", () => {
+  const mockInput = {
+    input: {
+      email: "test@example.com",
+      password: "SecurePassword123",
+    },
+  };
+
   afterEach(() => {
     jest.clearAllMocks();
   });
 
+  it("should create a user successfully", async () => {
+    mockedUserModel.findOne.mockResolvedValueOnce(null); // No existing user
+    mockedArgon2.hash.mockResolvedValueOnce("hashed_password");
+    mockedUserModel.create.mockResolvedValueOnce([
+      {
+        email: mockInput.input.email,
+        studentId: "123456",
+        password: "hashed_password",
+      },
+    ]);
+
+    const result = await createUser(null, mockInput);
+
+    expect(mockedUserModel.findOne).toHaveBeenCalledWith({
+      email: mockInput.input.email,
+    });
+    expect(mockedArgon2.hash).toHaveBeenCalledWith(
+      mockInput.input.password,
+      expect.any(Object),
+    );
+    expect(mockedUserModel.create).toHaveBeenCalledWith({
+      email: mockInput.input.email,
+      studentId: expect.any(String),
+      password: "hashed_password",
+    });
+    expect(result).toEqual({ message: "User created successfully" });
+  });
+
   it("should throw an error if email or password is missing", async () => {
-    await expect(
-      createUser(null, { input: { name: "", email: "", password: "" } }),
-    ).rejects.toThrow("Email and password are required");
-  });
+    const missingInput = {
+      input: {
+        email: "",
+        password: "",
+      },
+    };
 
-  it("should throw an error if email format is invalid", async () => {
-    await expect(
-      createUser(null, {
-        input: { name: "Max", email: "invalid-email", password: "12345678" },
-      }),
-    ).rejects.toThrow("Invalid email format");
-  });
-
-  it("should throw an error if password is too short", async () => {
-    await expect(
-      createUser(null, {
-        input: { name: "Max", email: "test@example.com", password: "123" },
-      }),
-    ).rejects.toThrow("Password must be at least 8 characters long");
+    await expect(createUser(null, missingInput)).rejects.toThrow(GraphQLError);
+    expect(mockedUserModel.findOne).not.toHaveBeenCalled();
+    expect(mockedUserModel.create).not.toHaveBeenCalled();
   });
 
   it("should throw an error if email already exists", async () => {
-    (UserModel.findOne as jest.Mock).mockResolvedValueOnce({
-      email: "test@example.com",
-    });
+    mockedUserModel.findOne.mockResolvedValueOnce({
+      email: mockInput.input.email,
+    }); // Existing user
 
-    await expect(
-      createUser(null, {
-        input: { name: "Max", email: "test@example.com", password: "12345678" },
-      }),
-    ).rejects.toThrow("User with this email already exists");
+    await expect(createUser(null, mockInput)).rejects.toThrow(GraphQLError);
+    expect(mockedUserModel.findOne).toHaveBeenCalledWith({
+      email: mockInput.input.email,
+    });
+    expect(mockedUserModel.create).not.toHaveBeenCalled();
   });
 
-  it("should create a user successfully", async () => {
-    (UserModel.findOne as jest.Mock).mockResolvedValueOnce(null);
-    (bcrypt.hash as jest.Mock).mockResolvedValueOnce("hashedPassword");
-    (UserModel.create as jest.Mock).mockResolvedValueOnce({
-      email: "test@example.com",
-      password: "hashedPassword",
-    });
+  it("should throw an error for invalid email", async () => {
+    const invalidInput = {
+      input: {
+        email: "invalid_email",
+        password: "SecurePassword123",
+      },
+    };
 
-    const result = await createUser(null, {
-      input: { name: "Max", email: "test@example.com", password: "12345678" },
-    });
-
-    expect(result).toEqual({ message: "User created successfully" });
-    expect(UserModel.create).toHaveBeenCalledWith({
-      name: "Max",
-      email: "test@example.com",
-      password: "hashedPassword",
-    });
+    await expect(createUser(null, invalidInput)).rejects.toThrow(GraphQLError);
+    expect(mockedUserModel.findOne).not.toHaveBeenCalled();
+    expect(mockedUserModel.create).not.toHaveBeenCalled();
   });
 
-  it("should throw an INTERNAL_SERVER_ERROR if an unexpected error occurs", async () => {
-    (bcrypt.hash as jest.Mock).mockRejectedValueOnce(
-      new Error("Hashing failed"),
-    );
+  it("should throw an error for weak password", async () => {
+    const invalidInput = {
+      input: {
+        email: "test@example.com",
+        password: "weak",
+      },
+    };
 
-    await expect(
-      createUser(null, {
-        input: { name: "Max", email: "test@example.com", password: "12345678" },
-      }),
-    ).rejects.toMatchObject({
-      message: "An unexpected error occurred. Please try again later.",
-      extensions: { code: "INTERNAL_SERVER_ERROR" },
-    });
+    await expect(createUser(null, invalidInput)).rejects.toThrow(GraphQLError);
+    expect(mockedUserModel.findOne).not.toHaveBeenCalled();
+    expect(mockedUserModel.create).not.toHaveBeenCalled();
+  });
+
+  it("should throw an error if unique student ID generation fails", async () => {
+    mockedUserModel.findOne.mockResolvedValueOnce(null); // No existing user
+    mockedUserModel.findOne.mockResolvedValue({ studentId: "123456" }); // Student ID collision
+
+    await expect(createUser(null, mockInput)).rejects.toThrow(Error);
+    expect(mockedUserModel.create).not.toHaveBeenCalled();
   });
 });

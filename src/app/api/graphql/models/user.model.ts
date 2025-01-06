@@ -3,29 +3,17 @@ import { v4 as uuidv4 } from "uuid";
 
 export type User = {
   _id: string;
-  name: string;
   email: string;
+  studentId: string;
   password: string;
 };
 
 const UserSchema = new Schema(
   {
-    _id: {
-      type: String,
-      default: () => uuidv4(),
-    },
-    name: {
-      type: String,
-      required: true,
-    },
-    email: {
-      type: String,
-      required: true,
-    },
-    password: {
-      type: String,
-      required: true,
-    },
+    _id: { type: String, default: () => uuidv4() },
+    email: { type: String, required: true, unique: true },
+    studentId: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
   },
   { timestamps: true },
 );

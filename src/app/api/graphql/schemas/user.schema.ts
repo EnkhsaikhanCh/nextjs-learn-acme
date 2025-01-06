@@ -3,8 +3,8 @@ import gql from "graphql-tag";
 export const typeDefs = gql`
   type User {
     _id: ID!
-    name: String!
     email: String!
+    studentId: String!
     password: String!
   }
 
@@ -14,7 +14,6 @@ export const typeDefs = gql`
   }
 
   input RegisterInput {
-    name: String!
     email: String!
     password: String!
   }
@@ -24,7 +23,6 @@ export const typeDefs = gql`
   }
 
   input UpdateInput {
-    name: String
     email: String
   }
 
@@ -37,6 +35,12 @@ export const typeDefs = gql`
     message: String!
   }
 
+  type EncryptedResponse {
+    encryptedData: String!
+    iv: String!
+    authTag: String!
+  }
+
   type Mutation {
     createUser(input: RegisterInput!): RegisterResponse!
     updateUser(input: UpdateInput!, _id: ID!): User!
@@ -45,24 +49,24 @@ export const typeDefs = gql`
       input: ChangePasswordInput
       _id: ID!
     ): ChangePasswordResponse!
+    encryptData(data: String!): EncryptedResponse!
+    decryptData(encryptedData: String!, iv: String!, authTag: String!): String!
   }
 `;
 
 export type User = {
   _id: string;
-  name: string;
   email: string;
+  studentId: string;
   password: string;
 };
 
 export type RegisterInput = {
-  name: string;
   email: string;
   password: string;
 };
 
 export type UpdateInput = {
-  name: string;
   email: string;
 };
 
