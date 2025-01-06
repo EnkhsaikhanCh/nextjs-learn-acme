@@ -8,9 +8,9 @@ dotenv.config();
 const seedAdmin = async () => {
   await connectToDatabase();
 
-  const { ADMIN_EMAIL, ADMIN_PASSWORD, STUDENT_ID } = process.env;
+  const { ADMIN_EMAIL, ADMIN_PASSWORD, ADMIN_STUDENT_ID } = process.env;
 
-  if (!ADMIN_EMAIL || !ADMIN_PASSWORD || !STUDENT_ID) {
+  if (!ADMIN_EMAIL || !ADMIN_PASSWORD || !ADMIN_STUDENT_ID) {
     throw new GraphQLError(
       "Missing admin credentials in environment variables",
       {
@@ -41,7 +41,7 @@ const seedAdmin = async () => {
 
     const admin = new UserModel({
       email: ADMIN_EMAIL,
-      studentId: STUDENT_ID,
+      studentId: ADMIN_STUDENT_ID,
       role: "admin",
       password: hashedAdminPassword,
     });
