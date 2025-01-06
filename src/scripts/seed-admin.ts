@@ -11,24 +11,13 @@ const seedAdmin = async () => {
   const { ADMIN_EMAIL, ADMIN_PASSWORD, ADMIN_STUDENT_ID } = process.env;
 
   if (!ADMIN_EMAIL || !ADMIN_PASSWORD || !ADMIN_STUDENT_ID) {
-    throw new GraphQLError(
-      "Missing admin credentials in environment variables",
-      {
-        extensions: {
-          code: "BAD_USER_INPUT",
-        },
-      },
-    );
+    return "Missing admin credentials in environment variables";
   }
 
   try {
     const existingAdmin = await UserModel.findOne({ email: ADMIN_EMAIL });
     if (existingAdmin) {
-      throw new GraphQLError("Admin already exists!", {
-        extensions: {
-          code: "CONFLICT",
-        },
-      });
+      return "Admin already exists!";
     }
 
     const hashedAdminPassword = await argon2.hash(ADMIN_PASSWORD, {
