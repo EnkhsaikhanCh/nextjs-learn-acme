@@ -71,9 +71,11 @@ const seedAdmin = async () => {
 };
 
 seedAdmin()
-  .then((result) => {
-    console.log("Result:", result);
+  .then(() => {
+    console.log("Admin user created successfully!");
+    process.exit(0); // Амжилттай дуусна
   })
   .catch((err) => {
-    console.error("Unhandled error:", err);
+    console.error("Error creating admin user:", err);
+    process.exit(1); // Алдаатай дуусна
   });
