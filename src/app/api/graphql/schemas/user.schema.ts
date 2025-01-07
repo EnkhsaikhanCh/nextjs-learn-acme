@@ -5,6 +5,7 @@ export const typeDefs = gql`
     _id: ID!
     email: String!
     studentId: String!
+    role: String!
     password: String!
   }
 
@@ -58,6 +59,7 @@ export type User = {
   _id: string;
   email: string;
   studentId: string;
+  role: string;
   password: string;
 };
 

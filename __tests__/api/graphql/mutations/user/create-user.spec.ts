@@ -51,6 +51,7 @@ describe("createUser mutation", () => {
     expect(mockedUserModel.create).toHaveBeenCalledWith({
       email: mockInput.input.email,
       studentId: expect.any(String),
+      role: "student",
       password: "hashed_password",
     });
     expect(result).toEqual({ message: "User created successfully" });
