@@ -5,7 +5,7 @@ import { GraphQLError } from "graphql";
 import dotenv from "dotenv";
 dotenv.config();
 
-const seedAdmin = async () => {
+export const seedAdmin = async () => {
   await connectToDatabase();
 
   const { ADMIN_EMAIL, ADMIN_PASSWORD, ADMIN_STUDENT_ID } = process.env;

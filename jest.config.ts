@@ -72,6 +72,9 @@ const config: Config = {
 
     // encryption
     "src/common/encryption",
+
+    // seed-admin
+    "src/scripts/seed-admin.ts",
   ],
 
   // Indicates which provider should be used to instrument code for coverage
