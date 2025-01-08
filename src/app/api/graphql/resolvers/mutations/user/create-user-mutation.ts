@@ -7,6 +7,9 @@ import {
   validationEmail,
   validationPassword,
 } from "@/utils/validation";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+dotenv.config();
 
 const generateUniqueStudentId = async (): Promise<string> => {
   let retries = 0;
@@ -78,14 +81,35 @@ export const createUser = async (
       hashLength: 32,
     });
 
-    await UserModel.create({
+    const newUser = await UserModel.create({
       email: sanitizedEmail,
       studentId: studentId,
       role: "student",
       password: hashedPassword,
     });
 
-    return { message: "User created successfully" };
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      throw new Error("JWT_SECRET is not defined in environment variables");
+    }
+
+    // 2. Token үүсгэх
+    const token = jwt.sign(
+      {
+        userId: newUser._id,
+        email: newUser.email,
+        role: newUser.role,
+      },
+      secret,
+      {
+        expiresIn: process.env.JWT_EXPIRES_IN,
+      },
+    );
+
+    return {
+      message: "User created successfully",
+      token,
+    };
   } catch (error) {
     // Handle known GraphQL errors
     if (error instanceof GraphQLError) {
