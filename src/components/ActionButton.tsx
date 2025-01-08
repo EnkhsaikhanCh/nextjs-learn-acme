@@ -17,6 +17,7 @@ interface ActionButtonProps {
     | "default"
     | null
     | undefined;
+  type?: "submit" | "reset" | "button" | undefined;
 }
 
 export const ActionButton = ({
@@ -27,6 +28,7 @@ export const ActionButton = ({
   onClick,
   disabled,
   variant,
+  type,
 }: ActionButtonProps) => {
   const content = (
     <>
@@ -51,6 +53,7 @@ export const ActionButton = ({
       className={className}
       onClick={onClick}
       disabled={disabled}
+      type={type}
     >
       {content}
     </Button>
