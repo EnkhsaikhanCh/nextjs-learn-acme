@@ -21,6 +21,7 @@ export const typeDefs = gql`
 
   type RegisterResponse {
     message: String!
+    token: String
   }
 
   input UpdateInput {
