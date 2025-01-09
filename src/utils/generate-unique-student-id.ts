@@ -1,5 +1,4 @@
-import { UserModel } from "../app/api/graphql/models/user.model"; // models файлын замаа зохицуулна
-// илиимпорт { UserModel } from "../../../models"; // Төслийн бүтэцээс шалтгаалан засаж болно
+import { UserModel } from "../app/api/graphql/models/user.model";
 
 /**
  * Бүртгэлтэй байгаа эсэхийг давхар шалгаж, давтагдашгүй 6 оронтой оюутны ID үүсгэх функц
