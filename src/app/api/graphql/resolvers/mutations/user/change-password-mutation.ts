@@ -3,12 +3,16 @@ import { UserModel } from "../../../models";
 import { ChangePasswordInput } from "../../../schemas/user.schema";
 import argon2 from "argon2";
 import { validationPassword } from "@/utils/validation";
+import { requireUser } from "../../../auth";
 
 export const changePassword = async (
   _: unknown,
   { input, _id }: { input: ChangePasswordInput; _id: string },
+  context: any,
 ) => {
   try {
+    requireUser(context);
+
     // Step 1: Check if user exists
     const user = await UserModel.findById(_id);
     if (!user) {
