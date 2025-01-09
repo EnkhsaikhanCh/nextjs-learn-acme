@@ -64,6 +64,10 @@ export type User = {
   password: string;
 };
 
+export interface Context {
+  user?: User;
+}
+
 export type RegisterInput = {
   email: string;
   password: string;

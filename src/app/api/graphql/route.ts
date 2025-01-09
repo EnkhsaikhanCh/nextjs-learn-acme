@@ -4,7 +4,6 @@ import { typeDefs } from "./schemas";
 import { NextRequest, NextResponse } from "next/server";
 import { resolvers } from "./resolvers";
 import { connectToDatabase } from "@/lib/mongodb";
-import { GraphQLError } from "graphql";
 import jwt from "jsonwebtoken";
 
 connectToDatabase();
@@ -26,6 +25,7 @@ const handler = startServerAndCreateNextHandler<NextRequest>(server, {
         const decoded = jwt.verify(token, process.env.JWT_SECRET!);
         return { user: decoded }; // user-г context дотор оруулах
       } catch (error) {
+        console.error("Token verification failed:", error); // Алдааг хэвлэх
         // Токен буруу/хугацаа дууссан
         return {}; // context.user байхгүй
       }
@@ -45,7 +45,7 @@ const corsHeaders = {
   "Access-Control-Allow-Credentials": "true",
 };
 
-export async function OPTIONS(req: NextRequest) {
+export async function OPTIONS() {
   return new NextResponse(null, {
     status: 204,
     headers: {

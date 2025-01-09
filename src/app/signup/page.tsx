@@ -25,6 +25,21 @@ export default function SignUp() {
     e.preventDefault();
     setIsSubmitting(true);
 
+    // Form validation
+    const newErrors: { email?: string; password?: string } = {};
+    if (!email) {
+      newErrors.email = "Email is required.";
+    }
+    if (!password) {
+      newErrors.password = "Password is required.";
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       const { data } = await createUser({
         variables: {
