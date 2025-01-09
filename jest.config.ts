@@ -52,6 +52,9 @@ const config: Config = {
     "src/common/encryption/index.ts",
     "src/app/signup/page.tsx",
 
+    // generate-id
+    "src/utils/generate-unique-student-id",
+
     // api
     "src/handler.ts",
     "src/app/api/graphql/route.ts",
