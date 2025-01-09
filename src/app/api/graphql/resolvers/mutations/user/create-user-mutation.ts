@@ -11,7 +11,7 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config();
 
-const generateUniqueStudentId = async (): Promise<string> => {
+export const generateUniqueStudentId = async (): Promise<string> => {
   let retries = 0;
   const maxRetries = 10;
 
@@ -61,6 +61,11 @@ export const createUser = async (
   _: unknown,
   { input }: { input: RegisterInput },
 ) => {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error("JWT_SECRET is not defined in environment variables");
+  }
+
   try {
     const { sanitizedEmail } = validationInputs(input.email, input.password);
 
@@ -87,11 +92,6 @@ export const createUser = async (
       role: "student",
       password: hashedPassword,
     });
-
-    const secret = process.env.JWT_SECRET;
-    if (!secret) {
-      throw new Error("JWT_SECRET is not defined in environment variables");
-    }
 
     // 2. Token үүсгэх
     const token = jwt.sign(
