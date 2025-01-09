@@ -8,29 +8,9 @@ import {
   validationPassword,
 } from "@/utils/validation";
 import jwt from "jsonwebtoken";
+import { generateUniqueStudentId } from "../../../../../../utils/generate-unique-student-id";
 import dotenv from "dotenv";
 dotenv.config();
-
-export const generateUniqueStudentId = async (): Promise<string> => {
-  let retries = 0;
-  const maxRetries = 10;
-
-  try {
-    while (retries < maxRetries) {
-      const studentId = Math.floor(100000 + Math.random() * 900000).toString();
-      const existingUser = await UserModel.findOne({ studentId });
-
-      if (!existingUser) return studentId;
-
-      retries++;
-    }
-
-    throw new Error("Exceeded maximum retries to generate unique studentId");
-  } catch (error) {
-    console.error("Error in generateUniqueStudentId:", error);
-    throw new Error("Failed to generate unique studentId");
-  }
-};
 
 const validationInputs = (email: string, password: string) => {
   const sanitizedEmail = sanitizeInput(email);
