@@ -4,3 +4,10 @@ mutation CreateUser($input: RegisterInput!) {
     token
   }
 }
+
+mutation LoginUser($input: LoginInput!) {
+  loginUser(input: $input) {
+    message
+    token
+  }
+}
