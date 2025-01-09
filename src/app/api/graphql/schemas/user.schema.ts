@@ -35,6 +35,7 @@ export const typeDefs = gql`
 
   type ChangePasswordResponse {
     message: String!
+    token: String
   }
 
   type EncryptedResponse {
