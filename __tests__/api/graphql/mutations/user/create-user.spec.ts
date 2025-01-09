@@ -20,6 +20,8 @@ describe("createUser mutation", () => {
   let mockInput: { input: { email: string; password: string } };
 
   beforeEach(() => {
+    process.env.JWT_SECRET = "test-secret";
+
     // Энд mock-уудын default утгуудыг тохируулж өгнө
     mockInput = {
       input: {
