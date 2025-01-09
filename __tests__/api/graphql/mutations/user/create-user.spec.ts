@@ -8,7 +8,6 @@ import {
   validationEmail,
   validationPassword,
 } from "../../../../../src/utils/validation";
-// import { generateUniqueStudentId } from "../../../../../src/app/api/graphql/resolvers/mutations/user/create-user-mutation";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -173,31 +172,4 @@ describe("createUser mutation", () => {
       token: "mockToken",
     });
   });
-
-  // it("should throw an error if it cannot find a unique studentId after 10 retries", async () => {
-  //   // 1) Эхний дуудлага: имэйл шалгах -> хэрэглэгч байхгүй
-  //   // 2+) Дараагийн 10 дуудлага: studentId шалгах -> бүгд давхардаж байна
-  //   (UserModel.findOne as jest.Mock)
-  //     .mockResolvedValueOnce(null) // 1) email-д зориулсан дуудлага
-  //     .mockResolvedValue({ studentId: "xxxxxx" }); // дараагийн бүх (10) дуудлага
-
-  //   await expect(createUser(null, mockInput)).rejects.toThrow(
-  //     "Exceeded maximum retries to generate unique studentId",
-  //   );
-
-  //   // Нийт 1 (имэйл шалгах) + 10 (studentId шалгах) = 11 удаа дуудагдана
-  //   expect(UserModel.findOne).toHaveBeenCalledTimes(11);
-  // });
-
-  // it("should throw a database error if DB query fails while generating studentId", async () => {
-  //   (UserModel.findOne as jest.Mock).mockRejectedValueOnce(
-  //     new Error("Some DB error"),
-  //   );
-
-  //   await expect(createUser(null, mockInput)).rejects.toThrow(
-  //     "Database error occurred while generating student ID",
-  //   );
-  //   // Нэг удаа дуудагдаад л алдаа гарна
-  //   expect(UserModel.findOne).toHaveBeenCalledTimes(1);
-  // });
 });
