@@ -2,117 +2,176 @@ import { createUser } from "../../../../../src/app/api/graphql/resolvers/mutatio
 import { UserModel } from "../../../../../src/app/api/graphql/models/user.model";
 import argon2 from "argon2";
 import { GraphQLError } from "graphql";
+import jwt from "jsonwebtoken";
+import {
+  sanitizeInput,
+  validationEmail,
+  validationPassword,
+} from "../../../../../src/utils/validation";
+import dotenv from "dotenv";
+dotenv.config();
 
 jest.mock("../../../../../src/app/api/graphql/models/user.model");
 jest.mock("argon2");
-
-// Mock utility functions
-jest.mock("../../../../../src/utils/validation", () => ({
-  sanitizeInput: jest.fn((email) => email.trim()),
-  validationEmail: jest.fn((email) => email.includes("@")),
-  validationPassword: jest.fn((password) => password.length >= 8),
-}));
-
-const mockedUserModel = UserModel as jest.Mocked<typeof UserModel>;
-const mockedArgon2 = argon2 as jest.Mocked<typeof argon2>;
+jest.mock("../../../../../src/utils/validation");
+jest.mock("jsonwebtoken");
 
 describe("createUser mutation", () => {
-  const mockInput = {
-    input: {
-      email: "test@example.com",
-      password: "SecurePassword123",
-    },
-  };
+  let mockInput: { input: { email: string; password: string } };
 
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
+  beforeEach(() => {
+    process.env.JWT_SECRET = "test-secret";
 
-  it("should create a user successfully", async () => {
-    mockedUserModel.findOne.mockResolvedValueOnce(null); // No existing user
-    mockedArgon2.hash.mockResolvedValueOnce("hashed_password");
-    mockedUserModel.create.mockResolvedValueOnce([
-      {
-        email: mockInput.input.email,
-        studentId: "123456",
-        password: "hashed_password",
-      },
-    ]);
-
-    const result = await createUser(null, mockInput);
-
-    expect(mockedUserModel.findOne).toHaveBeenCalledWith({
-      email: mockInput.input.email,
-    });
-    expect(mockedArgon2.hash).toHaveBeenCalledWith(
-      mockInput.input.password,
-      expect.any(Object),
-    );
-    expect(mockedUserModel.create).toHaveBeenCalledWith({
-      email: mockInput.input.email,
-      studentId: expect.any(String),
-      role: "student",
-      password: "hashed_password",
-    });
-    expect(result).toEqual({ message: "User created successfully" });
-  });
-
-  it("should throw an error if email or password is missing", async () => {
-    const missingInput = {
+    // Энд mock-уудын default утгуудыг тохируулж өгнө
+    mockInput = {
       input: {
-        email: "",
-        password: "",
-      },
-    };
-
-    await expect(createUser(null, missingInput)).rejects.toThrow(GraphQLError);
-    expect(mockedUserModel.findOne).not.toHaveBeenCalled();
-    expect(mockedUserModel.create).not.toHaveBeenCalled();
-  });
-
-  it("should throw an error if email already exists", async () => {
-    mockedUserModel.findOne.mockResolvedValueOnce({
-      email: mockInput.input.email,
-    }); // Existing user
-
-    await expect(createUser(null, mockInput)).rejects.toThrow(GraphQLError);
-    expect(mockedUserModel.findOne).toHaveBeenCalledWith({
-      email: mockInput.input.email,
-    });
-    expect(mockedUserModel.create).not.toHaveBeenCalled();
-  });
-
-  it("should throw an error for invalid email", async () => {
-    const invalidInput = {
-      input: {
-        email: "invalid_email",
+        email: "test@example.com",
         password: "SecurePassword123",
       },
     };
 
-    await expect(createUser(null, invalidInput)).rejects.toThrow(GraphQLError);
-    expect(mockedUserModel.findOne).not.toHaveBeenCalled();
-    expect(mockedUserModel.create).not.toHaveBeenCalled();
+    (UserModel.findOne as jest.Mock).mockReset();
+    (UserModel.create as jest.Mock).mockReset();
+    (argon2.hash as jest.Mock).mockReset();
+    (jwt.sign as jest.Mock).mockReset();
+
+    (sanitizeInput as jest.Mock).mockImplementation((email: string) =>
+      email.trim(),
+    );
+    (validationEmail as jest.Mock).mockImplementation((email: string) =>
+      email.includes("@"),
+    );
+    (validationPassword as jest.Mock).mockImplementation(
+      (password: string) => password.length >= 8,
+    );
+  });
+
+  it("should create a user successfully", async () => {
+    // Mock – хэрэглэгч байхгүй (findOne = null)
+    (UserModel.findOne as jest.Mock).mockResolvedValueOnce(null);
+    (argon2.hash as jest.Mock).mockResolvedValueOnce("hashed_password");
+    (UserModel.create as jest.Mock).mockResolvedValueOnce({
+      _id: "mockUserId",
+      email: mockInput.input.email,
+      studentId: "123456",
+      role: "student",
+      password: "hashed_password",
+    });
+    (jwt.sign as jest.Mock).mockReturnValueOnce("mockToken");
+
+    const result = await createUser(null, mockInput);
+
+    expect(UserModel.findOne).toHaveBeenCalledWith({
+      email: "test@example.com",
+    });
+    expect(argon2.hash).toHaveBeenCalledWith(
+      "SecurePassword123",
+      expect.any(Object),
+    );
+    expect(UserModel.create).toHaveBeenCalledWith({
+      email: "test@example.com",
+      studentId: expect.any(String),
+      role: "student",
+      password: "hashed_password",
+    });
+    expect(result).toEqual({
+      message: "User created successfully",
+      token: "mockToken",
+    });
+  });
+
+  it("should throw an error if email or password is missing", async () => {
+    mockInput.input.email = "";
+    mockInput.input.password = "";
+
+    await expect(createUser(null, mockInput)).rejects.toThrow(GraphQLError);
+    expect(UserModel.findOne).not.toHaveBeenCalled();
+    expect(UserModel.create).not.toHaveBeenCalled();
+  });
+
+  it("should throw an error if email already exists", async () => {
+    (UserModel.findOne as jest.Mock).mockResolvedValueOnce({
+      email: mockInput.input.email,
+    });
+
+    await expect(createUser(null, mockInput)).rejects.toThrow(GraphQLError);
+    expect(UserModel.findOne).toHaveBeenCalledWith({
+      email: "test@example.com",
+    });
+    expect(UserModel.create).not.toHaveBeenCalled();
+  });
+
+  it("should throw an error for invalid email", async () => {
+    (validationEmail as jest.Mock).mockReturnValueOnce(false);
+
+    await expect(createUser(null, mockInput)).rejects.toThrow(GraphQLError);
+    expect(UserModel.findOne).not.toHaveBeenCalled();
+    expect(UserModel.create).not.toHaveBeenCalled();
   });
 
   it("should throw an error for weak password", async () => {
-    const invalidInput = {
-      input: {
-        email: "test@example.com",
-        password: "weak",
-      },
-    };
+    (validationPassword as jest.Mock).mockReturnValueOnce(false);
 
-    await expect(createUser(null, invalidInput)).rejects.toThrow(GraphQLError);
-    expect(mockedUserModel.findOne).not.toHaveBeenCalled();
-    expect(mockedUserModel.create).not.toHaveBeenCalled();
+    await expect(createUser(null, mockInput)).rejects.toThrow(GraphQLError);
+    expect(UserModel.findOne).not.toHaveBeenCalled();
+    expect(UserModel.create).not.toHaveBeenCalled();
   });
 
-  it("should throw an error if unique student ID generation fails", async () => {
-    mockedUserModel.findOne.mockResolvedValueOnce(null); // No existing user
-    mockedUserModel.findOne.mockResolvedValue({ studentId: "123456" }); // Student ID collision
+  it("should throw 'Internal server error.' if an unknown error is thrown", async () => {
+    // existingUser байхгүй байхаар mock-лоод
+    (UserModel.findOne as jest.Mock).mockResolvedValueOnce(null);
 
-    await expect(createUser(null, mockInput)).rejects.toThrow(Error);
-    expect(mockedUserModel.create).not.toHaveBeenCalled();
+    // Генераци амжилттай
+    (UserModel.findOne as jest.Mock).mockResolvedValueOnce(null);
+    (argon2.hash as jest.Mock).mockResolvedValueOnce("hashed_password");
+
+    // `UserModel.create`-д алдаа гаргаж байна
+    (UserModel.create as jest.Mock).mockRejectedValue(
+      new Error("Some unknown DB error"),
+    );
+
+    await expect(createUser(null, mockInput)).rejects.toThrow(
+      "Internal server error.",
+    );
+  });
+
+  it("should throw error if JWT_SECRET is missing", async () => {
+    const originalSecret = process.env.JWT_SECRET;
+    delete process.env.JWT_SECRET; // Түр устгах
+
+    await expect(createUser(null, mockInput)).rejects.toThrow(
+      "JWT_SECRET is not defined in environment variables",
+    );
+
+    process.env.JWT_SECRET = originalSecret; // Сэргээх
+  });
+
+  it("should retry generating studentId if the first is already taken", async () => {
+    // 1) Эхний дуудлага (имэйл шалгах) -> null
+    //    => имэйл давхардаагүй тул цааш үргэлжилнэ.
+    // 2) Дараагийн дуудлага (studentId шалгах) -> 1-р оролдлогоор олдсон гэж үзье.
+    // 3) 3 дахь дуудлага (studentId шалгах) -> null (дальд оролдлогоор amжилттай)
+    (UserModel.findOne as jest.Mock)
+      .mockResolvedValueOnce(null) // Имэйл шалгах
+      .mockResolvedValueOnce({ studentId: "111111" }) // 1-р studentId давхардсан
+      .mockResolvedValueOnce(null); // 2-р studentId амжилттай
+
+    (argon2.hash as jest.Mock).mockResolvedValue("hashed_password");
+    (UserModel.create as jest.Mock).mockResolvedValue({
+      _id: "mockUserId",
+      email: mockInput.input.email,
+      studentId: "someUniqueID",
+      role: "student",
+      password: "hashed_password",
+    });
+    (jwt.sign as jest.Mock).mockReturnValue("mockToken");
+
+    const result = await createUser(null, mockInput);
+
+    expect(UserModel.findOne).toHaveBeenCalledTimes(3);
+    expect(result).toEqual({
+      message: "User created successfully",
+      token: "mockToken",
+    });
   });
 });

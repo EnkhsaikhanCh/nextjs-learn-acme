@@ -17,11 +17,40 @@ export type Scalars = {
   Float: { input: number; output: number; }
 };
 
+export type ChangePasswordInput = {
+  currentPassword: Scalars['String']['input'];
+  newPassword: Scalars['String']['input'];
+};
+
+export type ChangePasswordResponse = {
+  __typename?: 'ChangePasswordResponse';
+  message: Scalars['String']['output'];
+};
+
+export type EncryptedResponse = {
+  __typename?: 'EncryptedResponse';
+  authTag: Scalars['String']['output'];
+  encryptedData: Scalars['String']['output'];
+  iv: Scalars['String']['output'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
+  changePassword: ChangePasswordResponse;
   createTest: Test;
+  createUser: RegisterResponse;
+  decryptData: Scalars['String']['output'];
   deleteTest: Test;
+  deleteUser: User;
+  encryptData: EncryptedResponse;
   updateTest: Test;
+  updateUser: User;
+};
+
+
+export type MutationChangePasswordArgs = {
+  _id: Scalars['ID']['input'];
+  input?: InputMaybe<ChangePasswordInput>;
 };
 
 
@@ -30,8 +59,30 @@ export type MutationCreateTestArgs = {
 };
 
 
+export type MutationCreateUserArgs = {
+  input: RegisterInput;
+};
+
+
+export type MutationDecryptDataArgs = {
+  authTag: Scalars['String']['input'];
+  encryptedData: Scalars['String']['input'];
+  iv: Scalars['String']['input'];
+};
+
+
 export type MutationDeleteTestArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteUserArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationEncryptDataArgs = {
+  data: Scalars['String']['input'];
 };
 
 
@@ -40,15 +91,52 @@ export type MutationUpdateTestArgs = {
   name: Scalars['String']['input'];
 };
 
+
+export type MutationUpdateUserArgs = {
+  _id: Scalars['ID']['input'];
+  input: UpdateInput;
+};
+
 export type Query = {
   __typename?: 'Query';
   getAllTest: Array<Test>;
+  getAllUser: Array<User>;
+  getUserById: User;
+};
+
+
+export type QueryGetUserByIdArgs = {
+  id: Scalars['ID']['input'];
+};
+
+export type RegisterInput = {
+  email: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+};
+
+export type RegisterResponse = {
+  __typename?: 'RegisterResponse';
+  message: Scalars['String']['output'];
+  token?: Maybe<Scalars['String']['output']>;
 };
 
 export type Test = {
   __typename?: 'Test';
   _id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
+};
+
+export type UpdateInput = {
+  email?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type User = {
+  __typename?: 'User';
+  _id: Scalars['ID']['output'];
+  email: Scalars['String']['output'];
+  password: Scalars['String']['output'];
+  role: Scalars['String']['output'];
+  studentId: Scalars['String']['output'];
 };
 
 export type GetAllTestQueryVariables = Exact<{ [key: string]: never; }>;
@@ -77,6 +165,13 @@ export type UpdateTestMutationVariables = Exact<{
 
 
 export type UpdateTestMutation = { __typename?: 'Mutation', updateTest: { __typename?: 'Test', _id: string, name: string } };
+
+export type CreateUserMutationVariables = Exact<{
+  input: RegisterInput;
+}>;
+
+
+export type CreateUserMutation = { __typename?: 'Mutation', createUser: { __typename?: 'RegisterResponse', message: string, token?: string | null } };
 
 
 export const GetAllTestDocument = gql`
@@ -222,3 +317,37 @@ export function useUpdateTestMutation(baseOptions?: Apollo.MutationHookOptions<U
 export type UpdateTestMutationHookResult = ReturnType<typeof useUpdateTestMutation>;
 export type UpdateTestMutationResult = Apollo.MutationResult<UpdateTestMutation>;
 export type UpdateTestMutationOptions = Apollo.BaseMutationOptions<UpdateTestMutation, UpdateTestMutationVariables>;
+export const CreateUserDocument = gql`
+    mutation CreateUser($input: RegisterInput!) {
+  createUser(input: $input) {
+    message
+    token
+  }
+}
+    `;
+export type CreateUserMutationFn = Apollo.MutationFunction<CreateUserMutation, CreateUserMutationVariables>;
+
+/**
+ * __useCreateUserMutation__
+ *
+ * To run a mutation, you first call `useCreateUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createUserMutation, { data, loading, error }] = useCreateUserMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateUserMutation(baseOptions?: Apollo.MutationHookOptions<CreateUserMutation, CreateUserMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateUserMutation, CreateUserMutationVariables>(CreateUserDocument, options);
+      }
+export type CreateUserMutationHookResult = ReturnType<typeof useCreateUserMutation>;
+export type CreateUserMutationResult = Apollo.MutationResult<CreateUserMutation>;
+export type CreateUserMutationOptions = Apollo.BaseMutationOptions<CreateUserMutation, CreateUserMutationVariables>;

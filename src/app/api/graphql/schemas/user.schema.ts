@@ -21,6 +21,7 @@ export const typeDefs = gql`
 
   type RegisterResponse {
     message: String!
+    token: String
   }
 
   input UpdateInput {
@@ -34,6 +35,7 @@ export const typeDefs = gql`
 
   type ChangePasswordResponse {
     message: String!
+    token: String
   }
 
   type EncryptedResponse {
@@ -62,6 +64,10 @@ export type User = {
   role: string;
   password: string;
 };
+
+export interface Context {
+  user?: User;
+}
 
 export type RegisterInput = {
   email: string;

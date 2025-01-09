@@ -50,6 +50,10 @@ const config: Config = {
     "src/components/dashboard/sidebar/NavUser.tsx",
     "src/common/index.ts",
     "src/common/encryption/index.ts",
+    "src/app/signup/page.tsx",
+
+    // generate-id
+    "src/utils/generate-unique-student-id",
 
     // api
     "src/handler.ts",

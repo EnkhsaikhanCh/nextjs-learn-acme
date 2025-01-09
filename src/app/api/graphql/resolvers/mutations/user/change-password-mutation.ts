@@ -1,14 +1,19 @@
 import { GraphQLError } from "graphql";
 import { UserModel } from "../../../models";
-import { ChangePasswordInput } from "../../../schemas/user.schema";
+import { ChangePasswordInput, Context } from "../../../schemas/user.schema";
 import argon2 from "argon2";
 import { validationPassword } from "@/utils/validation";
+import { requireUser } from "../../../auth";
+import jwt from "jsonwebtoken";
 
 export const changePassword = async (
   _: unknown,
   { input, _id }: { input: ChangePasswordInput; _id: string },
+  context: Context,
 ) => {
   try {
+    requireUser(context);
+
     // Step 1: Check if user exists
     const user = await UserModel.findById(_id);
     if (!user) {
@@ -67,9 +72,29 @@ export const changePassword = async (
     // Step 6: Save user
     await user.save();
 
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      throw new GraphQLError(
+        "JWT_SECRET is not defined in environment variables",
+      );
+    }
+
+    const token = jwt.sign(
+      {
+        userId: user._id,
+        email: user.email,
+        role: user.role,
+      },
+      secret,
+      {
+        expiresIn: process.env.JWT_EXPIRES_IN, // Шаардлагатай хугацаа
+      },
+    );
+
     // Step 7: Return success message
     return {
       message: "Password updated successfully",
+      token,
     };
   } catch (error) {
     const message = (error as Error).message;
