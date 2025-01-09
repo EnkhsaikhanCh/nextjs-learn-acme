@@ -19,7 +19,17 @@ export const typeDefs = gql`
     password: String!
   }
 
+  input LoginInput {
+    email: String!
+    password: String!
+  }
+
   type RegisterResponse {
+    message: String!
+    token: String
+  }
+
+  type LoginResponse {
     message: String!
     token: String
   }
@@ -46,6 +56,7 @@ export const typeDefs = gql`
 
   type Mutation {
     createUser(input: RegisterInput!): RegisterResponse!
+    loginUser(input: LoginInput!): LoginResponse!
     updateUser(input: UpdateInput!, _id: ID!): User!
     deleteUser(id: ID!): User!
     changePassword(
@@ -70,6 +81,11 @@ export interface Context {
 }
 
 export type RegisterInput = {
+  email: string;
+  password: string;
+};
+
+export type LoginInput = {
   email: string;
   password: string;
 };
