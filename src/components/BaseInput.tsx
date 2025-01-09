@@ -1,5 +1,6 @@
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
+import { ReactNode } from "react";
 
 interface BaseInputProp {
   label: string;
@@ -11,6 +12,7 @@ interface BaseInputProp {
   placeholder?: string;
   autoComplete?: string;
   type?: string;
+  labelExtra?: ReactNode; // Шинээр нэмэгдсэн пропс
 }
 
 export const BaseInput = ({
@@ -23,16 +25,20 @@ export const BaseInput = ({
   placeholder,
   autoComplete,
   onChange,
+  labelExtra,
 }: BaseInputProp) => {
   const inputId =
     id || `base-input-${label.replace(/\s+/g, "-").toLowerCase()}`;
 
   return (
     <div className="grid gap-2">
-      {/* Input label */}
-      <Label htmlFor={inputId} className="text-gray-600">
-        {label} {required && <span className="text-red-500">*</span>}
-      </Label>
+      {/* Input label with optional extra content */}
+      <div className="flex items-center justify-between">
+        <Label htmlFor={inputId} className="text-gray-600">
+          {label} {required && <span className="text-red-500">*</span>}
+        </Label>
+        {labelExtra && <div className="text-sm">{labelExtra}</div>}
+      </div>
 
       {/* Input field */}
       <Input
