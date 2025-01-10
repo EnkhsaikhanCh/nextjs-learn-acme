@@ -10,8 +10,11 @@ import { useState } from "react";
 import { toast, Toaster } from "sonner";
 import { useCreateUserMutation } from "@/generated/graphql";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 export default function SignUp() {
+  const { signup, loading, user } = useAuth();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -41,21 +44,9 @@ export default function SignUp() {
     }
 
     try {
-      const { data } = await createUser({
-        variables: {
-          input: { email, password },
-        },
-      });
-
-      if (data?.createUser?.token) {
-        localStorage.setItem("token", data.createUser.token);
-        toast.success("Бүртгэл амжилттай үүсгэгдлээ!");
-        router.push("/dashboard");
-        return { success: true };
-      } else {
-        toast.error("Серверээс хүлээгдэж буй хариу ирээгүй.");
-        return { success: false };
-      }
+      await signup(email, password);
+      toast.success("Бүртгэл амжилттай үүсгэгдлээ!");
+      router.push("dashboard");
     } catch (error) {
       console.error("Бүртгэл үүсгэхэд алдаа гарлаа:", error);
       toast.error("Алдаа гарлаа. Дахин оролдоно уу.");
