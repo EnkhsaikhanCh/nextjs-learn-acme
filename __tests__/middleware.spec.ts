@@ -1,6 +1,9 @@
+// __tests__/middleware.test.ts
 import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 import { middleware } from "../src/middleware";
+import { RequestCookies } from "next/dist/compiled/@edge-runtime/cookies";
+import { NextURL } from "next/dist/server/web/next-url";
 
 jest.mock("jose", () => ({
   jwtVerify: jest.fn(),
@@ -14,70 +17,135 @@ jest.mock("next/server", () => ({
   },
 }));
 
-describe("Middleware", () => {
-  const MOCK_URL = "http://localhost/dashboard";
+interface MutableNextRequest extends NextRequest {
+  url: string;
+}
 
-  let req: any;
+describe("Middleware", () => {
+  let req: Partial<MutableNextRequest>;
 
   beforeEach(() => {
     req = {
       cookies: {
         get: jest.fn(),
-      },
-      url: MOCK_URL,
+      } as unknown as RequestCookies,
+      nextUrl: {
+        pathname: "",
+      } as unknown as NextURL,
+      // req.url утгыг pathname-д дүйцүүлж тохируулна
+      url: "http://localhost/",
     };
 
     jest.clearAllMocks();
   });
 
-  it("redirects to /login if no token is present", async () => {
-    req.cookies.get.mockReturnValueOnce(undefined);
+  it("Зөвхөн /login эсвэл /signup руу токенгүй үед нэвтрэхийг зөвшөөрөх, бусад тохиолдолд /login руу redirect хийх", async () => {
+    req.cookies!.get = jest.fn().mockReturnValueOnce(undefined);
 
-    const response = await middleware(req as unknown as NextRequest);
+    // 1) token байхгүй үед /dashboard руу ороход /login руу redirect хийх жишээ
+    req.nextUrl!.pathname = "/dashboard";
+    req.url = "http://localhost/dashboard";
+
+    await middleware(req as NextRequest);
 
     expect(NextResponse.redirect).toHaveBeenCalledWith(
-      new URL("/login", MOCK_URL),
+      new URL("/login", "http://localhost/dashboard"),
+    );
+    expect(NextResponse.next).not.toHaveBeenCalled();
+
+    jest.clearAllMocks();
+
+    // 2) token байхгүй үед /login руу ороход next() хийх жишээ
+    req.nextUrl!.pathname = "/login";
+    req.url = "http://localhost/login";
+
+    await middleware(req as NextRequest);
+
+    expect(NextResponse.next).toHaveBeenCalled();
+    expect(NextResponse.redirect).not.toHaveBeenCalled();
+
+    jest.clearAllMocks();
+
+    // 3) token байхгүй үед /signup руу ороход next() хийх жишээ
+    req.nextUrl!.pathname = "/signup";
+    req.url = "http://localhost/signup";
+
+    await middleware(req as NextRequest);
+
+    expect(NextResponse.next).toHaveBeenCalled();
+    expect(NextResponse.redirect).not.toHaveBeenCalled();
+  });
+
+  it("Токен хүчинтэй үед /login эсвэл /signup руу орохыг оролдохоор /dashboard руу redirect хийх", async () => {
+    const mockPayload = {
+      userId: "mockUserId",
+      email: "mock@example.com",
+    };
+
+    req.cookies!.get = jest.fn().mockReturnValueOnce({ value: "validToken" });
+    (jwtVerify as jest.Mock).mockResolvedValueOnce({ payload: mockPayload });
+
+    // /login руу орох үед
+    req.nextUrl!.pathname = "/login";
+    req.url = "http://localhost/login";
+
+    await middleware(req as NextRequest);
+
+    // Шинэ middleware нь new URL("/dashboard", req.url) гэж дуудна
+    expect(NextResponse.redirect).toHaveBeenCalledWith(
+      new URL("/dashboard", "http://localhost/login"),
+    );
+    expect(NextResponse.next).not.toHaveBeenCalled();
+
+    jest.clearAllMocks();
+
+    // /signup руу орох үед
+    req.cookies!.get = jest.fn().mockReturnValueOnce({ value: "validToken" });
+    (jwtVerify as jest.Mock).mockResolvedValueOnce({ payload: mockPayload });
+
+    req.nextUrl!.pathname = "/signup";
+    req.url = "http://localhost/signup";
+
+    await middleware(req as NextRequest);
+
+    expect(NextResponse.redirect).toHaveBeenCalledWith(
+      new URL("/dashboard", "http://localhost/signup"),
     );
     expect(NextResponse.next).not.toHaveBeenCalled();
   });
 
-  it("calls NextResponse.next() and sets headers if token is valid", async () => {
-    const MOCK_PAYLOAD = {
+  it("Токен хүчинтэй, хамгаалалттай route (/dashboard) руу орвол NextResponse.next() ажиллах", async () => {
+    const mockPayload = {
       userId: "mockUserId",
       email: "mock@example.com",
-      role: "user",
     };
 
-    req.cookies.get.mockReturnValueOnce({ value: "mockToken" });
+    req.cookies!.get = jest.fn().mockReturnValueOnce({ value: "validToken" });
+    (jwtVerify as jest.Mock).mockResolvedValueOnce({ payload: mockPayload });
 
-    (jwtVerify as jest.Mock).mockResolvedValueOnce({ payload: MOCK_PAYLOAD });
+    req.nextUrl!.pathname = "/dashboard";
+    req.url = "http://localhost/dashboard";
 
-    const response = await middleware(req as unknown as NextRequest);
+    const response = await middleware(req as NextRequest);
 
     expect(NextResponse.next).toHaveBeenCalled();
-    expect(response.headers.set).toHaveBeenCalledWith(
-      "X-User-Id",
-      MOCK_PAYLOAD.userId,
-    );
-    expect(response.headers.set).toHaveBeenCalledWith(
-      "X-User-Email",
-      MOCK_PAYLOAD.email,
-    );
-    expect(response.headers.set).toHaveBeenCalledWith(
-      "X-User-Role",
-      MOCK_PAYLOAD.role,
-    );
+    // redirect дуудахгүй
+    expect(NextResponse.redirect).not.toHaveBeenCalled();
+    // response дээрээ headers.set гэж дуудахгүй (жишээ тест)
+    expect(response.headers.set).not.toHaveBeenCalled();
   });
 
-  it("redirects to /login if token is invalid", async () => {
-    req.cookies.get.mockReturnValueOnce({ value: "invalidToken" });
-
+  it("Токен буруу/хугацаа дууссан үед /login руу redirect хийх", async () => {
+    req.cookies!.get = jest.fn().mockReturnValueOnce({ value: "invalidToken" });
     (jwtVerify as jest.Mock).mockRejectedValueOnce(new Error("Invalid token"));
 
-    const response = await middleware(req as unknown as NextRequest);
+    req.nextUrl!.pathname = "/dashboard";
+    req.url = "http://localhost/dashboard";
+
+    await middleware(req as NextRequest);
 
     expect(NextResponse.redirect).toHaveBeenCalledWith(
-      new URL("/login", MOCK_URL),
+      new URL("/login", "http://localhost/dashboard"),
     );
     expect(NextResponse.next).not.toHaveBeenCalled();
   });
