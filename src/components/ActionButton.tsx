@@ -33,14 +33,23 @@ export const ActionButton = ({
   const content = (
     <>
       {label}
-      {icon && <span data-testid="button-icon">{icon}</span>}
+      {icon && (
+        <span data-testid="button-icon" aria-hidden="true">
+          {icon}
+        </span>
+      )}
     </>
   );
 
   if (href) {
     return (
       <Link href={href}>
-        <Button className={className} disabled={disabled}>
+        <Button
+          className={className}
+          disabled={disabled}
+          role="button"
+          aria-label={label}
+        >
           {content}
         </Button>
       </Link>
@@ -54,6 +63,7 @@ export const ActionButton = ({
       onClick={onClick}
       disabled={disabled}
       type={type}
+      aria-label={label}
     >
       {content}
     </Button>
