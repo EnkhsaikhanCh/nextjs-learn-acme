@@ -28,10 +28,10 @@ export default function Login() {
     // Form validation
     const newErrors: { email?: string; password?: string } = {};
     if (!email) {
-      newErrors.email = "Email is required.";
+      newErrors.email = "Имэйл хаяг шаардлагатай.";
     }
     if (!password) {
-      newErrors.password = "Password is required.";
+      newErrors.password = "Нууц үг шаардлагатай.";
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -91,16 +91,19 @@ export default function Login() {
                     <BaseInput
                       id="email"
                       type="email"
+                      placeholder="hello@email.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       label="Email"
                       error={errors.email}
+                      autoComplete="email"
                     />
 
                     {/* Password Input */}
                     <BaseInput
                       id="password"
                       type="password"
+                      placeholder="Нууц үгээ оруулна уу"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       label="Password"
@@ -108,7 +111,7 @@ export default function Login() {
                       labelExtra={
                         <Link
                           href="/forgot-password"
-                          className="rounded-sm text-blue-500 hover:underline"
+                          className="cursor-pointer rounded-sm hover:underline"
                         >
                           Forgot Password?
                         </Link>

@@ -28,10 +28,10 @@ export default function SignUp() {
     // Form validation
     const newErrors: { email?: string; password?: string } = {};
     if (!email) {
-      newErrors.email = "Email is required.";
+      newErrors.email = "Имэйл оруулах шаардлагатай.";
     }
     if (!password) {
-      newErrors.password = "Password is required.";
+      newErrors.password = "Нууц үг оруулах шаардлагатай.";
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -49,16 +49,16 @@ export default function SignUp() {
 
       if (data?.createUser?.token) {
         localStorage.setItem("token", data.createUser.token);
-        toast.success("Account created successfully!");
+        toast.success("Бүртгэл амжилттай үүсгэгдлээ!");
         router.push("/dashboard");
         return { success: true };
       } else {
-        toast.error("Unexpected response from server.");
+        toast.error("Серверээс хүлээгдэж буй хариу ирээгүй.");
         return { success: false };
       }
     } catch (error) {
-      console.error("Error creating account:", error);
-      toast.error("An error occurred. Please try again.");
+      console.error("Бүртгэл үүсгэхэд алдаа гарлаа:", error);
+      toast.error("Алдаа гарлаа. Дахин оролдоно уу.");
       return { success: false };
     } finally {
       setIsSubmitting(false);
@@ -91,6 +91,7 @@ export default function SignUp() {
                     <BaseInput
                       id="email"
                       type="email"
+                      placeholder="hello@email.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       label="Email"
@@ -101,10 +102,12 @@ export default function SignUp() {
                     <BaseInput
                       id="password"
                       type="password"
+                      placeholder="Нууц үгээ оруулна уу"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      label="Email"
+                      label="Password"
                       error={errors.password}
+                      description="Нууц үг хамгийн багадаа 8 тэмдэгт байх ёстой"
                     />
 
                     {/* Sign up button */}
