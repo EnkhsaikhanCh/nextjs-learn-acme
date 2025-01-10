@@ -1,3 +1,4 @@
+// src/app/api/graphql/schemas/user.schema.ts
 import gql from "graphql-tag";
 
 export const typeDefs = gql`
@@ -10,7 +11,8 @@ export const typeDefs = gql`
   }
 
   type Query {
-    getUserById(id: ID!): User!
+    me: User
+    getUserById(_id: ID!): User!
     getAllUser: [User!]!
   }
 
