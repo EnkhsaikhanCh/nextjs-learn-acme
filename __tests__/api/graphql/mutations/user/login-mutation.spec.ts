@@ -71,7 +71,7 @@ describe("loginUser mutation", () => {
     );
     expect(jwt.sign).toHaveBeenCalledWith(
       {
-        userId: "mockUserId",
+        _id: "mockUserId",
         email: "test@example.com",
         role: "student",
       },

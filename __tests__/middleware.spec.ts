@@ -78,7 +78,7 @@ describe("Middleware", () => {
 
   it("Токен хүчинтэй үед /login эсвэл /signup руу орохыг оролдохоор /dashboard руу redirect хийх", async () => {
     const mockPayload = {
-      userId: "mockUserId",
+      _id: "mockUserId",
       email: "mock@example.com",
     };
 
@@ -116,7 +116,7 @@ describe("Middleware", () => {
 
   it("Токен хүчинтэй, хамгаалалттай route (/dashboard) руу орвол NextResponse.next() ажиллах", async () => {
     const mockPayload = {
-      userId: "mockUserId",
+      _id: "mockUserId",
       email: "mock@example.com",
     };
 
