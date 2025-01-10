@@ -1,3 +1,4 @@
+// src/app/api/graphql/resolver/mutation/user/update-user-mutation.ts
 import { UserModel } from "../../../models";
 import { UpdateInput } from "../../../schemas/user.schema";
 

@@ -1,3 +1,4 @@
+// src/app/api/graphql/resolver/mutation/user/login-mutation.ts
 import { GraphQLError } from "graphql";
 import { UserModel } from "../../../models";
 import { LoginInput } from "../../../schemas/user.schema";
@@ -55,7 +56,7 @@ export const loginUser = async (
     // Токен үүсгэх
     const token = jwt.sign(
       {
-        userId: user._id,
+        _id: user._id,
         email: user.email,
         role: user.role,
       },

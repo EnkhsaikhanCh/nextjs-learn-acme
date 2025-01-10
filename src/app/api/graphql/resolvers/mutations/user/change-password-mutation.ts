@@ -1,3 +1,4 @@
+// src/app/api/graphql/resolver/mutation/user/change-password-mutation.ts
 import { GraphQLError } from "graphql";
 import { UserModel } from "../../../models";
 import { ChangePasswordInput, Context } from "../../../schemas/user.schema";
@@ -81,7 +82,7 @@ export const changePassword = async (
 
     const token = jwt.sign(
       {
-        userId: user._id,
+        _id: user._id,
         email: user.email,
         role: user.role,
       },
