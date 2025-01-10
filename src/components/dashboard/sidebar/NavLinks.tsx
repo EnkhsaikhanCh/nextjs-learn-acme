@@ -31,15 +31,15 @@ export function NavLinks() {
                 key={link.label}
                 className={
                   pathname === link.href
-                    ? "bg-[#F4F4F5] font-semibold text-[#18181B]"
-                    : "hover:text-[#18181B]"
+                    ? "rounded-md border bg-[#F4F4F5] font-semibold"
+                    : "rounded-md border border-[#FAFAFA] font-semibold hover:border-[#E5E5E5]"
                 }
               >
                 <SidebarMenuButton
                   asChild
                   data-testid={`sidebar-menu-button ${link.label}`}
                 >
-                  <Link href={link.href}>
+                  <Link href={link.href} className="cursor-pointer">
                     <link.icon />
                     <span>{link.label}</span>
                   </Link>

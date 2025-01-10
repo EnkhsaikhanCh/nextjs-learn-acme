@@ -18,7 +18,7 @@ export function SideNav() {
   const { user } = useAuth();
 
   return (
-    <Sidebar>
+    <Sidebar collapsible="icon">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
