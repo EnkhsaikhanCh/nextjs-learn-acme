@@ -10,15 +10,19 @@ import { useState } from "react";
 import { toast, Toaster } from "sonner";
 import { useLoginUserMutation } from "@/generated/graphql";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Login() {
+  const { login, loading, user } = useAuth();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>(
     {},
   );
-  const [loginUser] = useLoginUserMutation();
+  // const [loginUser] = useLoginUserMutation();
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -41,21 +45,9 @@ export default function Login() {
     }
 
     try {
-      const { data } = await loginUser({
-        variables: {
-          input: { email, password },
-        },
-      });
-
-      if (data?.loginUser?.token) {
-        localStorage.setItem("token", data.loginUser.token);
-        toast.success("Амжилттай нэвтэрлээ!");
-        router.push("/dashboard");
-        return { success: true };
-      } else {
-        toast.error("Серверээс хүлээгдэж буй хариу ирээгүй.");
-        return { success: false };
-      }
+      await login(email, password);
+      toast.success("Амжилттай нэвтэрлээ!");
+      router.push("/dashboard");
     } catch (error) {
       console.error("Login алдаа:", error);
       toast.error("Алдаа гарлаа. Дахин оролдоно уу.");
