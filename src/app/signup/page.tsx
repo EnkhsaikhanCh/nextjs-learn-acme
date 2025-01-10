@@ -8,20 +8,17 @@ import { Globe, Loader } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { toast, Toaster } from "sonner";
-import { useCreateUserMutation } from "@/generated/graphql";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 
 export default function SignUp() {
-  const { signup, loading, user } = useAuth();
-
+  const { signup } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>(
     {},
   );
-  const [createUser] = useCreateUserMutation();
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -30,6 +27,7 @@ export default function SignUp() {
 
     // Form validation
     const newErrors: { email?: string; password?: string } = {};
+
     if (!email) {
       newErrors.email = "Имэйл оруулах шаардлагатай.";
     }

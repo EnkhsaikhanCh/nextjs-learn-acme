@@ -8,13 +8,11 @@ import { Globe, Loader } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { toast, Toaster } from "sonner";
-import { useLoginUserMutation } from "@/generated/graphql";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 
 export default function Login() {
-  const { login, loading, user } = useAuth();
-
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -22,7 +20,6 @@ export default function Login() {
   const [errors, setErrors] = useState<{ email?: string; password?: string }>(
     {},
   );
-  // const [loginUser] = useLoginUserMutation();
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -31,6 +28,7 @@ export default function Login() {
 
     // Form validation
     const newErrors: { email?: string; password?: string } = {};
+
     if (!email) {
       newErrors.email = "Имэйл хаяг шаардлагатай.";
     }
@@ -49,7 +47,6 @@ export default function Login() {
       toast.success("Амжилттай нэвтэрлээ!");
       router.push("/dashboard");
     } catch (error) {
-      console.error("Login алдаа:", error);
       toast.error("Алдаа гарлаа. Дахин оролдоно уу.");
       return { success: false };
     } finally {

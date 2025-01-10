@@ -25,7 +25,8 @@ interface AuthProviderProps {
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   // 1) me query
   const { refetch: refetchMeQuery } = useQuery(ME_QUERY, {
@@ -34,11 +35,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
     onCompleted: (data) => {
       if (data?.me) {
         setUser(data.me);
+        setError(error);
       } else {
         setUser(null);
       }
     },
-    onError: () => {
+    onError: (error) => {
+      setError(error.message);
       setUser(null);
     },
   });
@@ -49,9 +52,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // Анх AuthProvider ачаалахад cookie дээрх token хүчинтэй эсэхийг me query ашиглан шалгана
   const fetchMe = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       await refetchMeQuery();
     } catch (error) {
+      const message = (error as Error).message;
+      setError(message);
       setUser(null);
     } finally {
       setLoading(false);
@@ -64,11 +70,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   // refetchMe -ийг context-д зарлах
   const refetchMe = useCallback(async () => {
+    setError(null);
     await refetchMeQuery();
   }, [refetchMeQuery]);
 
   const signup = async (email: string, password: string) => {
     setLoading(true);
+    setError(null);
     try {
       const { data } = await createUser({
         variables: {
@@ -78,7 +86,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (data?.createUser?.token) {
         localStorage.setItem("authToken", data.createUser.token);
         await refetchMe();
+      } else {
+        throw new Error("Signup failed: Invalid server response.");
       }
+    } catch (err: any) {
+      setError(err.message || "Signup failed: Unknown error.");
     } finally {
       setLoading(false);
     }
@@ -87,6 +99,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // login
   const login = async (email: string, password: string) => {
     setLoading(true);
+    setError(null);
     try {
       const { data } = await loginMutation({
         variables: { input: { email, password } },
@@ -95,8 +108,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
         localStorage.setItem("authToken", data.loginUser.token);
         await refetchMe();
       } else {
-        throw new Error("Invalid login response.");
+        throw new Error("Login failed: Invalid server response.");
       }
+    } catch (err: any) {
+      setError(err.message || "Login failed: Unknown error.");
     } finally {
       setLoading(false);
     }
@@ -119,6 +134,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       value={{
         user,
         loading,
+        error,
         signup,
         login,
         // logout,
