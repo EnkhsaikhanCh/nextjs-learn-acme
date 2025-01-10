@@ -52,6 +52,7 @@ const config: Config = {
     "src/common/encryption/index.ts",
     "src/app/signup/page.tsx",
     "src/app/login/page.tsx",
+    "src/components/dashboard",
 
     // generate-id
     "src/utils/generate-unique-student-id",
@@ -80,6 +81,9 @@ const config: Config = {
 
     // seed-admin
     "src/scripts/seed-admin.ts",
+
+    // auth provider
+    "src/context",
   ],
 
   // Indicates which provider should be used to instrument code for coverage
