@@ -40,8 +40,13 @@ export const getUserById = async (
 
     return user;
   } catch (error) {
+    // Handle known GraphQL errors
+    if (error instanceof GraphQLError) {
+      throw error;
+    }
+
     const message = (error as Error).message;
-    throw new GraphQLError(message, {
+    throw new GraphQLError(`Failed to fetch user: ${message}`, {
       extensions: {
         code: "INTERNAL_SERVER_ERROR",
         http: { status: 500 },
