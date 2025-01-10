@@ -12,7 +12,8 @@ interface BaseInputProp {
   placeholder?: string;
   autoComplete?: string;
   type?: string;
-  labelExtra?: ReactNode; // Шинээр нэмэгдсэн пропс
+  labelExtra?: ReactNode;
+  description?: string;
 }
 
 export const BaseInput = ({
@@ -26,6 +27,7 @@ export const BaseInput = ({
   autoComplete,
   onChange,
   labelExtra,
+  description,
 }: BaseInputProp) => {
   const inputId =
     id || `base-input-${label.replace(/\s+/g, "-").toLowerCase()}`;
@@ -34,7 +36,7 @@ export const BaseInput = ({
     <div className="grid gap-2">
       {/* Input label with optional extra content */}
       <div className="flex items-center justify-between">
-        <Label htmlFor={inputId} className="text-gray-600">
+        <Label htmlFor={inputId} className="font-bold">
           {label} {required && <span className="text-red-500">*</span>}
         </Label>
         {labelExtra && <div className="text-sm">{labelExtra}</div>}
@@ -49,13 +51,25 @@ export const BaseInput = ({
         required={required}
         autoComplete={autoComplete}
         placeholder={placeholder}
-        className={`border ${
+        aria-required={required}
+        className={`border bg-gray-50 ${
           error ? "border-red-500" : "border-gray-300"
         } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
       />
+      {description && (
+        <p
+          className={`-mt-1 text-xs text-gray-500 ${error ? "text-red-500" : ""}`}
+        >
+          {description}
+        </p>
+      )}
 
       {/* Error message */}
-      {error && <span className="text-sm text-red-500">{error}</span>}
+      {error && (
+        <span className="text-sm text-red-500" role="alert">
+          {error}
+        </span>
+      )}
     </div>
   );
 };
