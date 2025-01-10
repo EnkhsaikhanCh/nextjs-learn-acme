@@ -24,6 +24,18 @@ const handler = startServerAndCreateNextHandler<NextRequest>(server, {
       try {
         // JWT шалгах
         const decoded = jwt.verify(token, process.env.JWT_SECRET!);
+
+        if (
+          typeof decoded === "object" &&
+          decoded !== null &&
+          "exp" in decoded
+        ) {
+          const currentTime = Math.floor(Date.now() / 1000);
+          if (decoded.exp! < currentTime) {
+            throw new Error("Token has expired");
+          }
+        }
+
         return { user: decoded }; // user-г context дотор оруулах
       } catch (error) {
         console.error("Token verification failed:", error); // Алдааг хэвлэх
