@@ -9,7 +9,7 @@ import {
   useLoginUserMutation,
 } from "@/generated/graphql";
 
-const ME_QUERY = gql`
+export const ME_QUERY = gql`
   query Me {
     me {
       _id
@@ -30,7 +30,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   // 1) me query
   const { refetch: refetchMeQuery } = useQuery(ME_QUERY, {
-    skip: true, // анх ачаалахад автоматаар дуудахгүй
+    // skip: true, // анх ачаалахад автоматаар дуудахгүй
     fetchPolicy: "no-cache",
     onCompleted: (data) => {
       if (data?.me) {
@@ -49,7 +49,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [loginMutation] = useLoginUserMutation();
   const [createUser] = useCreateUserMutation();
 
-  // Анх AuthProvider ачаалахад cookie дээрх token хүчинтэй эсэхийг me query ашиглан шалгана
+  // Cookie дээр байгаа токеныг ашиглан хэрэглэгчийн мэдээллийг сэргээж авна
   const fetchMe = useCallback(async () => {
     setLoading(true);
     setError(null);
