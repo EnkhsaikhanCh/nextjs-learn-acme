@@ -15,7 +15,7 @@ import { NavLinks } from "./NavLinks";
 import { useAuth } from "@/context/AuthContext";
 
 export function SideNav() {
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
 
   return (
     <Sidebar>

@@ -12,7 +12,8 @@ export const me = async (_: unknown, __: unknown, context: Context) => {
     const user = await UserModel.findById(context.user._id);
     return user;
   } catch (error) {
-    throw new GraphQLError("Failed to fetch user", {
+    const message = (error as Error).message;
+    throw new GraphQLError(`Failed to fetch user: ${message}`, {
       extensions: { code: "INTERNAL_SERVER_ERROR" },
     });
   }

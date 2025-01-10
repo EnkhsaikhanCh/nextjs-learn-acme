@@ -89,8 +89,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
       } else {
         throw new Error("Signup failed: Invalid server response.");
       }
-    } catch (err: any) {
-      setError(err.message || "Signup failed: Unknown error.");
+    } catch (error) {
+      const message = (error as Error).message;
+      setError(message || "Signup failed: Unknown error.");
     } finally {
       setLoading(false);
     }
@@ -110,8 +111,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
       } else {
         throw new Error("Login failed: Invalid server response.");
       }
-    } catch (err: any) {
-      setError(err.message || "Login failed: Unknown error.");
+    } catch (error) {
+      const message = (error as Error).message;
+      setError(message || "Login failed: Unknown error.");
     } finally {
       setLoading(false);
     }
