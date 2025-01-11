@@ -202,7 +202,7 @@ describe("changePassword Mutation", () => {
     expect(mockUser.save).toHaveBeenCalledTimes(1);
     expect(jwt.sign).toHaveBeenCalledWith(
       {
-        userId: MOCK_USER_ID,
+        _id: MOCK_USER_ID,
         email: mockUser.email,
         role: mockUser.role,
       },

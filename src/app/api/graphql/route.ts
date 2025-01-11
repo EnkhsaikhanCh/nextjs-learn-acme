@@ -1,3 +1,4 @@
+// src/app/api/graphql/route.ts
 import { ApolloServer } from "@apollo/server";
 import { startServerAndCreateNextHandler } from "@as-integrations/next";
 import { typeDefs } from "./schemas";
@@ -16,23 +17,36 @@ const server = new ApolloServer({
 
 const handler = startServerAndCreateNextHandler<NextRequest>(server, {
   context: async (req) => {
-    // JWT token унших
+    // Хүсэлтээс токеныг авах
     const token = req.cookies.get("authToken")?.value;
 
     if (token) {
       try {
-        // JWT шалгах
+        // Токеныг баталгаажуулж, тайлах
         const decoded = jwt.verify(token, process.env.JWT_SECRET!);
-        return { user: decoded }; // user-г context дотор оруулах
+
+        // Токены хугацаа дууссан эсэхийг шалгах
+        if (
+          typeof decoded === "object" &&
+          decoded !== null &&
+          "exp" in decoded
+        ) {
+          const currentTime = Math.floor(Date.now() / 1000);
+          if (decoded.exp! < currentTime) {
+            throw new Error("Token has expired");
+          }
+        }
+
+        // Токен хүчинтэй бол хэрэглэгчийн мэдээллийг context-д нэмэх
+        return { user: decoded };
       } catch (error) {
-        console.error("Token verification failed:", error); // Алдааг хэвлэх
-        // Токен буруу/хугацаа дууссан
-        return {}; // context.user байхгүй
+        console.error("Token verification failed:", error);
+        return {}; // Алдаа гарсан тохиолдолд context хоосон байна
       }
     }
 
-    // Токен алга
-    return {}; // context.user байхгүй
+    // Токен байхгүй бол context хоосон байна
+    return {};
   },
 });
 

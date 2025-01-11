@@ -1,3 +1,5 @@
+"use client";
+
 import { Globe } from "lucide-react";
 import {
   Sidebar,
@@ -10,24 +12,19 @@ import {
 } from "../../ui/sidebar";
 import { NavUser } from "./NavUser";
 import { NavLinks } from "./NavLinks";
+import { useAuth } from "@/context/AuthContext";
 
 export function SideNav() {
-  const data = {
-    user: {
-      name: "shadcn",
-      email: "m@example.com",
-      avatar: "/avatars/shadcn.jpg",
-    },
-  };
+  const { user } = useAuth();
 
   return (
-    <Sidebar>
+    <Sidebar collapsible="icon">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <a href="#">
-                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                   <Globe className="size-4" />
                 </div>
                 <div className="flex flex-col gap-0.5 leading-none">
@@ -43,7 +40,7 @@ export function SideNav() {
         <NavLinks />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser email={user?.email} />
       </SidebarFooter>
     </Sidebar>
   );

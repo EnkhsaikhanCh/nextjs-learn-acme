@@ -1,6 +1,32 @@
+# src/graphql/user.graphql
 mutation CreateUser($input: RegisterInput!) {
   createUser(input: $input) {
     message
     token
+  }
+}
+
+mutation LoginUser($input: LoginInput!) {
+  loginUser(input: $input) {
+    message
+    token
+  }
+}
+
+query GetUserById($id: ID!) {
+  getUserById(_id: $id) {
+    _id
+    email
+    studentId
+    role
+  }
+}
+
+query Me {
+  me {
+    _id
+    email
+    studentId
+    role
   }
 }

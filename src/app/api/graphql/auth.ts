@@ -1,4 +1,4 @@
-// auth.ts
+// src/app/api/graphql/auth.ts
 import { GraphQLError } from "graphql";
 import { Context } from "./schemas/user.schema";
 

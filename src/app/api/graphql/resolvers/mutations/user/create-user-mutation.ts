@@ -1,3 +1,4 @@
+// src/app/api/graphql/resolver/mutation/user/create-user-mutation.ts
 import { GraphQLError } from "graphql";
 import { UserModel } from "../../../models";
 import { RegisterInput } from "../../../schemas/user.schema";
@@ -76,7 +77,7 @@ export const createUser = async (
     // 2. Token үүсгэх
     const token = jwt.sign(
       {
-        userId: newUser._id,
+        _id: newUser._id,
         email: newUser.email,
         role: newUser.role,
       },

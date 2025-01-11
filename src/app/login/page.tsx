@@ -6,14 +6,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Globe, Loader } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { toast, Toaster } from "sonner";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { escape } from "validator";
 
-export default function SignUp() {
-  const { signup, error } = useAuth();
+export default function Login() {
+  const { login, error } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -34,9 +34,7 @@ export default function SignUp() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Form validation
     const newErrors: { email?: string; password?: string } = {};
-
     if (!sanitizedEmail) {
       newErrors.email = "Имэйл хаяг шаардлагатай.";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -56,10 +54,10 @@ export default function SignUp() {
     }
 
     try {
-      const isSuccess = await signup(email, password);
+      const isSuccess = await login(email, password);
       if (isSuccess) {
-        toast.success("Бүртгэл амжилттай үүсгэгдлээ!");
-        router.push("dashboard");
+        toast.success("Амжилттай нэвтэрлээ!");
+        router.push("/dashboard");
       }
     } catch (error) {
       toast.error(`Алдаа гарлаа. Дахин оролдоно уу: ${error}`);
@@ -91,63 +89,60 @@ export default function SignUp() {
         <div className={cn("flex flex-col gap-6")}>
           <Card className="rounded-none sm:rounded-lg">
             <CardHeader className="text-center">
-              <CardTitle className="text-xl">Бүртгэл үүсгэх</CardTitle>
+              <CardTitle className="text-xl">Нэвтрэх</CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit}>
                 <div className="grid gap-6">
-                  <div className="grid gap-6">
-                    {/* Email Input */}
-                    <BaseInput
-                      id="email"
-                      type="email"
-                      placeholder="hello@email.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      label="Email"
-                      error={errors.email}
-                      autoComplete="email"
-                    />
-
-                    {/* Password Input */}
-                    <BaseInput
-                      id="password"
-                      type="password"
-                      placeholder="Нууц үгээ оруулна уу"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      label="Password"
-                      error={errors.password}
-                      description="Нууц үг хамгийн багадаа 8 тэмдэгт байх ёстой"
-                    />
-
-                    {/* Sign up button */}
-                    <ActionButton
-                      type="submit"
-                      disabled={isSubmitting}
-                      label={
-                        isSubmitting
-                          ? "Бүртгэл үүсгэж байна..."
-                          : "Бүртгэл үүсгэх"
-                      }
-                      icon={
-                        isSubmitting ? (
-                          <Loader className="animate-spin font-semibold" />
-                        ) : null
-                      }
-                    />
-                  </div>
-
-                  {/* Signin */}
-                  <div className="text-center text-sm">
-                    Бүртгэлтэй хэрэглэгч үү?{" "}
-                    <Link
-                      href="/login"
-                      className="underline underline-offset-4"
-                    >
-                      Нэвтрэх
-                    </Link>
-                  </div>
+                  <BaseInput
+                    id="email"
+                    type="email"
+                    placeholder="hello@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    label="Email"
+                    error={errors.email}
+                    autoComplete="email"
+                    tabIndex={1}
+                  />
+                  <BaseInput
+                    id="password"
+                    type="password"
+                    placeholder="Нууц үгээ оруулна уу"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    label="Password"
+                    error={errors.password}
+                    tabIndex={2}
+                    labelExtra={
+                      <Link
+                        href="/forgot-password"
+                        className="cursor-pointer rounded-sm hover:underline"
+                      >
+                        Forgot Password?
+                      </Link>
+                    }
+                  />
+                  <ActionButton
+                    type="submit"
+                    disabled={isSubmitting}
+                    label={
+                      isSubmitting
+                        ? "Нэвтрэхийг баталгаажуулж байна..."
+                        : "Нэвтрэх"
+                    }
+                    icon={
+                      isSubmitting ? (
+                        <Loader className="animate-spin font-semibold" />
+                      ) : null
+                    }
+                  />
+                </div>
+                <div className="mt-4 text-center text-sm">
+                  Шинэ хэрэглэгч үү?{" "}
+                  <Link href="/signup" className="underline underline-offset-4">
+                    Бүртгүүлэх
+                  </Link>
                 </div>
               </form>
             </CardContent>
