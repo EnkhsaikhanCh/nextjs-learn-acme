@@ -64,10 +64,6 @@ export const BaseInput = ({
         aria-required={required}
         tabIndex={tabIndex}
         aria-invalid={!!error}
-        aria-describedby={`
-          ${error ? `${inputId}-error` : ""}
-          ${description ? `${inputId}-description` : ""}
-        `.trim()}
         ref={inputRef}
         className={`border bg-gray-50 ${
           error ? "border-red-500" : "border-gray-300"
