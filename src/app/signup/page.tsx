@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { toast, Toaster } from "sonner";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { escape } from "validator";
 
 export default function SignUp() {
   const { signup, error } = useAuth();
@@ -21,25 +22,13 @@ export default function SignUp() {
   );
   const router = useRouter();
 
-  function useSanitizeInput(input: string) {
-    const [sanitized, setSanitized] = useState("");
-
-    useEffect(() => {
-      if (typeof window !== "undefined") {
-        const div = document.createElement("div");
-        div.textContent = input;
-        setSanitized(div.innerHTML);
-      } else {
-        setSanitized(input);
-      }
-    }, [input]);
-
-    return sanitized;
-  }
+  const sanitizeInput = (input: string) => {
+    return escape(input);
+  };
 
   // Input-ыг ариутгах
-  const sanitizedEmail = useSanitizeInput(email);
-  const sanitizedPassword = useSanitizeInput(password);
+  const sanitizedEmail = sanitizeInput(email);
+  const sanitizedPassword = sanitizeInput(password);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
