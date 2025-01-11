@@ -56,6 +56,7 @@ export type Mutation = {
   deleteUser: User;
   encryptData: EncryptedResponse;
   loginUser: LoginResponse;
+  refreshToken: RefreshTokenResponse;
   updateTest: Test;
   updateUser: User;
 };
@@ -104,6 +105,11 @@ export type MutationLoginUserArgs = {
 };
 
 
+export type MutationRefreshTokenArgs = {
+  input: RefreshTokenInput;
+};
+
+
 export type MutationUpdateTestArgs = {
   id: Scalars['ID']['input'];
   name: Scalars['String']['input'];
@@ -128,6 +134,17 @@ export type QueryGetUserByIdArgs = {
   _id: Scalars['ID']['input'];
 };
 
+export type RefreshTokenInput = {
+  refreshToken: Scalars['String']['input'];
+};
+
+export type RefreshTokenResponse = {
+  __typename?: 'RefreshTokenResponse';
+  message: Scalars['String']['output'];
+  refreshToken?: Maybe<Scalars['String']['output']>;
+  token?: Maybe<Scalars['String']['output']>;
+};
+
 export type RegisterInput = {
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
@@ -136,6 +153,7 @@ export type RegisterInput = {
 export type RegisterResponse = {
   __typename?: 'RegisterResponse';
   message: Scalars['String']['output'];
+  refreshToken?: Maybe<Scalars['String']['output']>;
   token?: Maybe<Scalars['String']['output']>;
 };
 
@@ -190,7 +208,7 @@ export type CreateUserMutationVariables = Exact<{
 }>;
 
 
-export type CreateUserMutation = { __typename?: 'Mutation', createUser: { __typename?: 'RegisterResponse', message: string, token?: string | null } };
+export type CreateUserMutation = { __typename?: 'Mutation', createUser: { __typename?: 'RegisterResponse', message: string, token?: string | null, refreshToken?: string | null } };
 
 export type LoginUserMutationVariables = Exact<{
   input: LoginInput;
@@ -209,7 +227,14 @@ export type GetUserByIdQuery = { __typename?: 'Query', getUserById: { __typename
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MeQuery = { __typename?: 'Query', me?: { __typename?: 'User', _id: string, email: string, studentId: string, role: string, password: string } | null };
+export type MeQuery = { __typename?: 'Query', me?: { __typename?: 'User', _id: string, email: string, studentId: string, role: string } | null };
+
+export type RefreshTokenMutationVariables = Exact<{
+  input: RefreshTokenInput;
+}>;
+
+
+export type RefreshTokenMutation = { __typename?: 'Mutation', refreshToken: { __typename?: 'RefreshTokenResponse', message: string, token?: string | null, refreshToken?: string | null } };
 
 
 export const GetAllTestDocument = gql`
@@ -360,6 +385,7 @@ export const CreateUserDocument = gql`
   createUser(input: $input) {
     message
     token
+    refreshToken
   }
 }
     `;
@@ -473,7 +499,6 @@ export const MeDocument = gql`
     email
     studentId
     role
-    password
   }
 }
     `;
@@ -509,3 +534,38 @@ export type MeQueryHookResult = ReturnType<typeof useMeQuery>;
 export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>;
 export type MeSuspenseQueryHookResult = ReturnType<typeof useMeSuspenseQuery>;
 export type MeQueryResult = Apollo.QueryResult<MeQuery, MeQueryVariables>;
+export const RefreshTokenDocument = gql`
+    mutation RefreshToken($input: RefreshTokenInput!) {
+  refreshToken(input: $input) {
+    message
+    token
+    refreshToken
+  }
+}
+    `;
+export type RefreshTokenMutationFn = Apollo.MutationFunction<RefreshTokenMutation, RefreshTokenMutationVariables>;
+
+/**
+ * __useRefreshTokenMutation__
+ *
+ * To run a mutation, you first call `useRefreshTokenMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRefreshTokenMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [refreshTokenMutation, { data, loading, error }] = useRefreshTokenMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useRefreshTokenMutation(baseOptions?: Apollo.MutationHookOptions<RefreshTokenMutation, RefreshTokenMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RefreshTokenMutation, RefreshTokenMutationVariables>(RefreshTokenDocument, options);
+      }
+export type RefreshTokenMutationHookResult = ReturnType<typeof useRefreshTokenMutation>;
+export type RefreshTokenMutationResult = Apollo.MutationResult<RefreshTokenMutation>;
+export type RefreshTokenMutationOptions = Apollo.BaseMutationOptions<RefreshTokenMutation, RefreshTokenMutationVariables>;
