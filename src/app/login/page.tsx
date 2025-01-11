@@ -21,16 +21,31 @@ export default function Login() {
   );
   const router = useRouter();
 
+  const sanitizeInput = (input: string) => {
+    const div = document.createElement("div");
+    div.textContent = input;
+    return div.innerHTML;
+  };
+
+  // Input-ыг ариутгах
+  const sanitizedEmail = sanitizeInput(email);
+  const sanitizedPassword = sanitizeInput(password);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     const newErrors: { email?: string; password?: string } = {};
-    if (!email) {
+    if (!sanitizedEmail) {
       newErrors.email = "Имэйл хаяг шаардлагатай.";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      newErrors.email = "Имэйл хаяг буруу байна.";
     }
-    if (!password) {
+
+    if (!sanitizedPassword) {
       newErrors.password = "Нууц үг шаардлагатай.";
+    } else if (password.length < 8) {
+      newErrors.password = "Нууц үг хамгийн багадаа 8 тэмдэгттэй байх ёстой.";
     }
 
     if (Object.keys(newErrors).length > 0) {
