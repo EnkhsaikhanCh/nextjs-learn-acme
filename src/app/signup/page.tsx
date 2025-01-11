@@ -22,13 +22,12 @@ export default function SignUp() {
   const router = useRouter();
 
   const sanitizeInput = (input: string) => {
-    let sanitized = "";
-    useEffect(() => {
-      const div = document.createElement("div");
-      div.textContent = input;
-      sanitized = div.innerHTML;
-    }, [input]);
-    return sanitized;
+    if (typeof window === "undefined") {
+      return input; // Сервер талд ямар ч өөрчлөлт хийхгүй
+    }
+    const div = document.createElement("div");
+    div.textContent = input;
+    return div.innerHTML;
   };
 
   // Input-ыг ариутгах
