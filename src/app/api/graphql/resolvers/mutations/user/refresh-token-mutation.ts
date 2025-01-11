@@ -1,6 +1,5 @@
 // src/app/api/graphql/resolvers/mutations/user/refresh-token-mutation.ts
 import { GraphQLError } from "graphql";
-import { v4 as uuidv4 } from "uuid";
 import jwt from "jsonwebtoken";
 import { RefreshTokenModel, UserModel } from "../../../models";
 import crypto from "crypto";
@@ -14,7 +13,7 @@ const generateSecureRefreshToken = () => {
 };
 
 export async function refreshToken(
-  _: any,
+  _: unknown,
   { input }: { input: RefreshTokenInput },
 ) {
   try {
@@ -66,7 +65,8 @@ export async function refreshToken(
       token: newAccessToken, // Шинэ access token
       refreshToken: newRefreshToken, // Шинэ refresh token
     };
-  } catch (error: any) {
-    throw new GraphQLError(error.message);
+  } catch (error) {
+    const message = (error as Error).message;
+    throw new GraphQLError(message);
   }
 }

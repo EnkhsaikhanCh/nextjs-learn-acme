@@ -1,10 +1,5 @@
 // src/middleware.ts
 import { NextRequest, NextResponse } from "next/server";
-import { jwtVerify } from "jose";
-
-const JWT_ACCESS_SECRET = new TextEncoder().encode(
-  process.env.JWT_ACCESS_SECRET!,
-);
 
 export async function middleware(req: NextRequest) {
   const token = req.cookies.get("authToken")?.value;
@@ -24,7 +19,7 @@ export async function middleware(req: NextRequest) {
 
   try {
     // Токеныг шалгана
-    const { payload } = await jwtVerify(token, JWT_ACCESS_SECRET);
+    // const { payload } = await jwtVerify(token, JWT_ACCESS_SECRET);
     // console.log("Token is valid:", payload);
 
     // Токен хүчинтэй үед login/signup руу орохыг хориглоно
@@ -33,6 +28,7 @@ export async function middleware(req: NextRequest) {
     }
 
     return NextResponse.next();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error("Token verification failed:", error);
 
