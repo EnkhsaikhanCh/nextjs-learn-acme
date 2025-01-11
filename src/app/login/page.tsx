@@ -103,6 +103,7 @@ export default function Login() {
                     label="Email"
                     error={errors.email}
                     autoComplete="email"
+                    tabIndex={1}
                   />
                   <BaseInput
                     id="password"
@@ -112,6 +113,7 @@ export default function Login() {
                     onChange={(e) => setPassword(e.target.value)}
                     label="Password"
                     error={errors.password}
+                    tabIndex={2}
                     labelExtra={
                       <Link
                         href="/forgot-password"
