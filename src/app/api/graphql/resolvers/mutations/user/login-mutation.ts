@@ -1,12 +1,17 @@
 // src/app/api/graphql/resolver/mutation/user/login-mutation.ts
 import { GraphQLError } from "graphql";
-import { UserModel } from "../../../models";
+import { RefreshTokenModel, UserModel } from "../../../models";
 import { LoginInput } from "../../../schemas/user.schema";
 import argon2 from "argon2";
 import { sanitizeInput, validationEmail } from "@/utils/validation";
+import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config();
+
+const generateSecureRefreshToken = () => {
+  return crypto.randomBytes(64).toString("hex");
+};
 
 const validateLoginInputs = (email: string, password: string) => {
   const sanitizedEmail = sanitizeInput(email);
@@ -30,7 +35,7 @@ export const loginUser = async (
   _: unknown,
   { input }: { input: LoginInput },
 ) => {
-  const secret = process.env.JWT_SECRET;
+  const secret = process.env.JWT_ACCESS_SECRET;
   if (!secret) {
     throw new Error("JWT_SECRET is not defined in environment variables");
   }
@@ -53,7 +58,7 @@ export const loginUser = async (
       });
     }
 
-    // Токен үүсгэх
+    // 3. Access Token үүсгэх (богино хугацаатай)
     const token = jwt.sign(
       {
         _id: user._id,
@@ -62,13 +67,28 @@ export const loginUser = async (
       },
       secret,
       {
-        expiresIn: process.env.JWT_EXPIRES_IN,
+        expiresIn: process.env.JWT_ACCESS_EXPIRES_IN,
       },
     );
 
+    // 4. Refresh token үүсгэх
+    const refreshToken = generateSecureRefreshToken();
+    console.log(refreshToken);
+
+    const expiryDate = new Date();
+    expiryDate.setDate(expiryDate.getDate() + 7); // +7 хоног
+
+    // 5. RefreshTokenModel-д хадгалах
+    await RefreshTokenModel.create({
+      token: refreshToken,
+      user: user._id,
+      expiryDate,
+    });
+
     return {
       message: "Login successful",
-      token,
+      token, // access token
+      refreshToken, // refresh token
     };
   } catch (error) {
     if (error instanceof GraphQLError) {
