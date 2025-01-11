@@ -45,8 +45,9 @@ export default function Login() {
         toast.success("Амжилттай нэвтэрлээ!");
         router.push("/dashboard");
       }
-    } catch (err) {
-      toast.error("Алдаа гарлаа. Дахин оролдоно уу.");
+    } catch (error) {
+      toast.error(`Алдаа гарлаа. Дахин оролдоно уу: ${error}`);
+      return { success: false };
     } finally {
       setIsSubmitting(false);
     }

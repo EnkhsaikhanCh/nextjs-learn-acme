@@ -48,7 +48,7 @@ export default function SignUp() {
         router.push("dashboard");
       }
     } catch (error) {
-      toast.error("Алдаа гарлаа. Дахин оролдоно уу.");
+      toast.error(`Алдаа гарлаа. Дахин оролдоно уу: ${error}`);
       return { success: false };
     } finally {
       setIsSubmitting(false);
