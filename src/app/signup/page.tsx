@@ -21,18 +21,25 @@ export default function SignUp() {
   );
   const router = useRouter();
 
-  const sanitizeInput = (input: string) => {
-    if (typeof window === "undefined") {
-      return input; // Сервер талд ямар ч өөрчлөлт хийхгүй
-    }
-    const div = document.createElement("div");
-    div.textContent = input;
-    return div.innerHTML;
-  };
+  function useSanitizeInput(input: string) {
+    const [sanitized, setSanitized] = useState("");
+
+    useEffect(() => {
+      if (typeof window !== "undefined") {
+        const div = document.createElement("div");
+        div.textContent = input;
+        setSanitized(div.innerHTML);
+      } else {
+        setSanitized(input);
+      }
+    }, [input]);
+
+    return sanitized;
+  }
 
   // Input-ыг ариутгах
-  const sanitizedEmail = sanitizeInput(email);
-  const sanitizedPassword = sanitizeInput(password);
+  const sanitizedEmail = useSanitizeInput(email);
+  const sanitizedPassword = useSanitizeInput(password);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
