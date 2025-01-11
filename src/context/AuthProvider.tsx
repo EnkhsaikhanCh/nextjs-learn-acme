@@ -9,7 +9,7 @@ import {
   useLoginUserMutation,
 } from "@/generated/graphql";
 
-export const ME_QUERY = gql`
+const ME_QUERY = gql`
   query Me {
     me {
       _id
@@ -28,14 +28,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // 1) me query
   const { refetch: refetchMeQuery } = useQuery(ME_QUERY, {
-    // skip: true, // анх ачаалахад автоматаар дуудахгүй
     fetchPolicy: "no-cache",
     onCompleted: (data) => {
       if (data?.me) {
         setUser(data.me);
-        setError(error);
+        setError(null);
       } else {
         setUser(null);
       }
@@ -49,7 +47,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [loginMutation] = useLoginUserMutation();
   const [createUser] = useCreateUserMutation();
 
-  // Cookie дээр байгаа токеныг ашиглан хэрэглэгчийн мэдээллийг сэргээж авна
   const fetchMe = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -68,13 +65,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
     fetchMe();
   }, [fetchMe]);
 
-  // refetchMe -ийг context-д зарлах
   const refetchMe = useCallback(async () => {
     setError(null);
     await refetchMeQuery();
   }, [refetchMeQuery]);
 
-  const signup = async (email: string, password: string) => {
+  const signup = async (email: string, password: string): Promise<boolean> => {
     setLoading(true);
     setError(null);
     try {
@@ -86,19 +82,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (data?.createUser?.token) {
         localStorage.setItem("authToken", data.createUser.token);
         await refetchMe();
+        return true;
       } else {
         throw new Error("Signup failed: Invalid server response.");
       }
     } catch (error) {
       const message = (error as Error).message;
       setError(message || "Signup failed: Unknown error.");
+      return false;
     } finally {
       setLoading(false);
     }
   };
 
-  // login
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string): Promise<boolean> => {
     setLoading(true);
     setError(null);
     try {
@@ -108,28 +105,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (data?.loginUser?.token) {
         localStorage.setItem("authToken", data.loginUser.token);
         await refetchMe();
+        return true;
       } else {
         throw new Error("Login failed: Invalid server response.");
       }
     } catch (error) {
       const message = (error as Error).message;
       setError(message || "Login failed: Unknown error.");
+      return false;
     } finally {
       setLoading(false);
     }
   };
-
-  // const logout = async () => {
-  //   setLoading(true);
-  //   try {
-  //     // Хэрэв сервер талд logoutUser mutation байгаа бол дуудаж cookie-г устгуулна
-  //     // Эсвэл cookie-г force-оор устгах өөр route бэлдэж болно
-  //     await logoutMutation();
-  //     setUser(null);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
   return (
     <AuthContext.Provider
@@ -139,7 +126,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
         error,
         signup,
         login,
-        // logout,
         refetchMe,
       }}
     >

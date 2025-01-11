@@ -6,16 +6,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Globe, Loader } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast, Toaster } from "sonner";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 
 export default function Login() {
-  const { login } = useAuth();
+  const { login, error } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>(
     {},
@@ -26,9 +25,7 @@ export default function Login() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Form validation
     const newErrors: { email?: string; password?: string } = {};
-
     if (!email) {
       newErrors.email = "Имэйл хаяг шаардлагатай.";
     }
@@ -43,16 +40,23 @@ export default function Login() {
     }
 
     try {
-      await login(email, password);
-      toast.success("Амжилттай нэвтэрлээ!");
-      router.push("/dashboard");
-    } catch (error) {
-      toast.error(`Алдаа гарлаа. Дахин оролдоно уу. ${error}`);
-      return { success: false };
+      const isSuccess = await login(email, password);
+      if (isSuccess) {
+        toast.success("Амжилттай нэвтэрлээ!");
+        router.push("/dashboard");
+      }
+    } catch (err) {
+      toast.error("Алдаа гарлаа. Дахин оролдоно уу.");
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+  }, [error]);
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted md:p-10">
@@ -75,65 +79,53 @@ export default function Login() {
             <CardContent>
               <form onSubmit={handleSubmit}>
                 <div className="grid gap-6">
-                  <div className="grid gap-6">
-                    {/* Email Input */}
-                    <BaseInput
-                      id="email"
-                      type="email"
-                      placeholder="hello@email.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      label="Email"
-                      error={errors.email}
-                      autoComplete="email"
-                    />
-
-                    {/* Password Input */}
-                    <BaseInput
-                      id="password"
-                      type="password"
-                      placeholder="Нууц үгээ оруулна уу"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      label="Password"
-                      error={errors.password}
-                      labelExtra={
-                        <Link
-                          href="/forgot-password"
-                          className="cursor-pointer rounded-sm hover:underline"
-                        >
-                          Forgot Password?
-                        </Link>
-                      }
-                    />
-
-                    {/* Login button */}
-                    <ActionButton
-                      type="submit"
-                      disabled={isSubmitting}
-                      label={
-                        isSubmitting
-                          ? "Нэвтрэхийг баталгаажуулж байна..."
-                          : "Нэвтрэх"
-                      }
-                      icon={
-                        isSubmitting ? (
-                          <Loader className="animate-spin font-semibold" />
-                        ) : null
-                      }
-                    />
-                  </div>
-
-                  {/* Signup */}
-                  <div className="text-center text-sm">
-                    Шинэ хэрэглэгч үү?{" "}
-                    <Link
-                      href="/signup"
-                      className="underline underline-offset-4"
-                    >
-                      Бүртгүүлэх
-                    </Link>
-                  </div>
+                  <BaseInput
+                    id="email"
+                    type="email"
+                    placeholder="hello@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    label="Email"
+                    error={errors.email}
+                    autoComplete="email"
+                  />
+                  <BaseInput
+                    id="password"
+                    type="password"
+                    placeholder="Нууц үгээ оруулна уу"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    label="Password"
+                    error={errors.password}
+                    labelExtra={
+                      <Link
+                        href="/forgot-password"
+                        className="cursor-pointer rounded-sm hover:underline"
+                      >
+                        Forgot Password?
+                      </Link>
+                    }
+                  />
+                  <ActionButton
+                    type="submit"
+                    disabled={isSubmitting}
+                    label={
+                      isSubmitting
+                        ? "Нэвтрэхийг баталгаажуулж байна..."
+                        : "Нэвтрэх"
+                    }
+                    icon={
+                      isSubmitting ? (
+                        <Loader className="animate-spin font-semibold" />
+                      ) : null
+                    }
+                  />
+                </div>
+                <div className="mt-4 text-center text-sm">
+                  Шинэ хэрэглэгч үү?{" "}
+                  <Link href="/signup" className="underline underline-offset-4">
+                    Бүртгүүлэх
+                  </Link>
                 </div>
               </form>
             </CardContent>

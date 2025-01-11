@@ -6,13 +6,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Globe, Loader } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast, Toaster } from "sonner";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 
 export default function SignUp() {
-  const { signup } = useAuth();
+  const { signup, error } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -42,17 +42,24 @@ export default function SignUp() {
     }
 
     try {
-      await signup(email, password);
-      toast.success("Бүртгэл амжилттай үүсгэгдлээ!");
-      router.push("dashboard");
+      const isSuccess = await signup(email, password);
+      if (isSuccess) {
+        toast.success("Бүртгэл амжилттай үүсгэгдлээ!");
+        router.push("dashboard");
+      }
     } catch (error) {
-      console.error("Бүртгэл үүсгэхэд алдаа гарлаа:", error);
       toast.error("Алдаа гарлаа. Дахин оролдоно уу.");
       return { success: false };
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+  }, [error]);
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted md:p-10">
@@ -85,6 +92,7 @@ export default function SignUp() {
                       onChange={(e) => setEmail(e.target.value)}
                       label="Email"
                       error={errors.email}
+                      autoComplete="email"
                     />
 
                     {/* Password Input */}
