@@ -86,6 +86,9 @@ const config: Config = {
 
     // auth provider
     "src/context",
+
+    // түр зуур
+    "src/middleware.ts",
   ],
 
   // Indicates which provider should be used to instrument code for coverage
