@@ -12,18 +12,30 @@ export async function refreshToken(
   _: unknown,
   { input }: { input: RefreshTokenInput },
 ) {
+  if (!process.env.JWT_ACCESS_SECRET) {
+    throw new Error("JWT_ACCESS_SECRET environment variable is not defined.");
+  }
+
+  if (!process.env.JWT_ACCESS_EXPIRES_IN) {
+    throw new Error("JWT_ACCESS_EXPIRES_IN variable is not defined");
+  }
+
   try {
+    console.log("Refreshing token with input:", input);
+
     // 1. Орж ирсэн refreshToken-ийг хайх
     const existingToken = await RefreshTokenModel.findOne({
       token: input.refreshToken,
     });
 
     if (!existingToken) {
+      console.error("Refresh token not found.");
       throw new GraphQLError("refresh token буруу эсвэл олдсонгүй.");
     }
 
     // 2. Дууссан эсэхийг шалгах
     if (existingToken.expiryDate < new Date()) {
+      console.error("Refresh token expired:", existingToken.expiryDate);
       // MongoDB автоматаар устгах хэдий ч энд шалгах нь зүйтэй
       throw new GraphQLError("refresh token-ийн хугацаа дууссан байна.");
     }
@@ -31,6 +43,7 @@ export async function refreshToken(
     // 3. Холбогдох хэрэглэгчийг олох
     const user = await UserModel.findById(existingToken.user);
     if (!user) {
+      console.error("User not found for token:", existingToken.user);
       throw new GraphQLError("Холбогдох хэрэглэгч олдсонгүй.");
     }
 
@@ -42,8 +55,8 @@ export async function refreshToken(
         studentId: user.studentId,
         role: user.role,
       },
-      process.env.JWT_SECRET!,
-      { expiresIn: "15m" },
+      process.env.JWT_ACCESS_SECRET,
+      { expiresIn: process.env.JWT_ACCESS_EXPIRES_IN },
     );
 
     // 5. (Сонголтоор) Refresh Token-ээ шинэчлэх үү эсвэл хуучин хэвээр нь үлдээх үү?
@@ -56,12 +69,14 @@ export async function refreshToken(
     existingToken.expiryDate = newExpiryDate;
     await existingToken.save();
 
+    console.log("New tokens generated successfully.");
     return {
       message: "Шинэ token амжилттай үүслээ",
       token: newAccessToken, // Шинэ access token
       refreshToken: newRefreshToken, // Шинэ refresh token
     };
   } catch (error) {
+    console.error("Error in refreshToken:", error);
     const message = (error as Error).message;
     throw new GraphQLError(message);
   }
