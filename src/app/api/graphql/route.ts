@@ -5,7 +5,7 @@ import { typeDefs } from "./schemas";
 import { NextRequest, NextResponse } from "next/server";
 import { resolvers } from "./resolvers";
 import { connectToDatabase } from "@/lib/mongodb";
-import jwt from "jsonwebtoken";
+import jwt, { TokenExpiredError } from "jsonwebtoken";
 
 connectToDatabase();
 
@@ -17,38 +17,65 @@ const server = new ApolloServer({
 
 const handler = startServerAndCreateNextHandler<NextRequest>(server, {
   context: async (req) => {
-    // 1. Access token авах
     const token = req.cookies.get("authToken")?.value;
-    // (Хэрэв refreshToken-ийг хэрэглэх гэж байгаа бол энд мөн
-    // refreshToken-ийг req.cookies.get("refreshToken")?.value гэх зэргээр уншиж болно)
 
     if (token) {
       try {
-        // Токеныг баталгаажуулж, тайлах
+        // Токеныг баталгаажуулах
         const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET!);
-
-        // Токены хугацаа дууссан эсэхийг шалгах
-        if (
-          typeof decoded === "object" &&
-          decoded !== null &&
-          "exp" in decoded
-        ) {
-          const currentTime = Math.floor(Date.now() / 1000);
-          if (decoded.exp! < currentTime) {
-            throw new Error("Token has expired");
-          }
-        }
 
         // Токен хүчинтэй бол хэрэглэгчийн мэдээллийг context-д нэмэх
         return { user: decoded };
       } catch (error) {
-        console.error("Token verification failed:", error);
+        if (error instanceof TokenExpiredError) {
+          console.error("Access token expired. Attempting to refresh...");
+          // Refresh Token ашиглаж шинэ Access Token авах логик
+          const refreshToken = req.cookies.get("refreshToken")?.value;
+
+          if (refreshToken) {
+            // Refresh Token-ийг ашиглаж шинэ Access Token авах (refresh API эсвэл Mutation дуудах)
+            const refreshResponse = await fetch(
+              new URL("/api/graphql", req.url),
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({
+                  query: `
+                  mutation RefreshToken($input: RefreshTokenInput!) {
+                    refreshToken(input: $input) {
+                      token
+                      refreshToken
+                    }
+                  }
+                `,
+                  variables: { input: { refreshToken } },
+                }),
+              },
+            );
+
+            if (refreshResponse.ok) {
+              const data = await refreshResponse.json();
+              const newAccessToken = data?.data?.refreshToken?.token;
+
+              if (newAccessToken) {
+                console.log("Access Token refreshed successfully.");
+                return { user: jwt.decode(newAccessToken) }; // Шинэ токены мэдээллийг context-д нэмнэ
+              }
+            }
+          }
+
+          console.error(
+            "Failed to refresh Access Token. Redirecting to login...",
+          );
+        } else {
+          console.error("Token verification failed:", error);
+        }
         return {}; // Алдаа гарсан тохиолдолд context хоосон байна
       }
     }
 
-    // Токен байхгүй бол context хоосон байна
-    return {};
+    return {}; // Токен байхгүй тохиолдолд context хоосон байна
   },
 });
 
