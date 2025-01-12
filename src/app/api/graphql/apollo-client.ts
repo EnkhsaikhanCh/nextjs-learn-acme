@@ -12,7 +12,6 @@ const errorLink = onError(({ graphQLErrors, operation, forward }) => {
   if (graphQLErrors) {
     for (const err of graphQLErrors) {
       if (err.extensions?.code === "UNAUTHENTICATED") {
-        // Refresh Token-г ашиглан шинэ Access Token авах
         return new Observable((observer) => {
           fetch("/api/graphql", {
             method: "POST",
@@ -20,8 +19,8 @@ const errorLink = onError(({ graphQLErrors, operation, forward }) => {
             credentials: "include",
             body: JSON.stringify({
               query: `
-                mutation RefreshToken {
-                  refreshToken {
+                mutation RefreshToken($input: RefreshTokenInput!) {
+                  refreshToken(input: $input) {
                     token
                     refreshToken
                   }
@@ -34,7 +33,7 @@ const errorLink = onError(({ graphQLErrors, operation, forward }) => {
               const newAccessToken = data.data?.refreshToken?.token;
 
               if (newAccessToken) {
-                // Шинэ Access Token-ийг хүсэлт дээр нэмнэ
+                // Шинэ access токенг Apollo-ийн context-д нэмнэ
                 operation.setContext(({ headers = {} }) => ({
                   headers: {
                     ...headers,
@@ -49,7 +48,9 @@ const errorLink = onError(({ graphQLErrors, operation, forward }) => {
                   complete: observer.complete.bind(observer),
                 });
               } else {
-                console.error("Refresh failed. Redirecting to login...");
+                console.error(
+                  "Failed to refresh token. Redirecting to login...",
+                );
                 window.location.href = "/login";
                 observer.complete();
               }
