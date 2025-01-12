@@ -1,61 +1,58 @@
-// src/middleware.ts
 import { NextRequest, NextResponse } from "next/server";
-import { jwtVerify } from "jose";
+import { jwtVerify, JWTPayload } from "jose";
 
 const JWT_ACCESS_SECRET = new TextEncoder().encode(
   process.env.JWT_ACCESS_SECRET!,
 );
 
-export async function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest): Promise<NextResponse> {
   const token = req.cookies.get("authToken")?.value;
 
-  // login болон signup хуудсыг шалгах
+  // Define the current path and authentication page check
+  const currentPath = req.nextUrl.pathname;
   const isAuthPage =
-    req.nextUrl.pathname.startsWith("/login") ||
-    req.nextUrl.pathname.startsWith("/signup");
+    currentPath.startsWith("/login") || currentPath.startsWith("/signup");
 
-  // Token байхгүй бол:
+  // If the token is missing
   if (!token) {
     if (isAuthPage) {
-      // login/signup хуудсанд явуулах
-      return NextResponse.next();
+      return NextResponse.next(); // Allow access to login/signup pages
     }
-    // хамгаалсан хуудсанд token байхгүй бол login руу redirect
-    return NextResponse.redirect(new URL("/login", req.url));
+    return NextResponse.redirect(new URL("/login", req.url)); // Redirect to login for protected pages
   }
 
   try {
-    // Токеныг шалгана (jwtVerify нь хугацаа дууссан бол TokenExpiredError-ыг шиднэ)
-    const { payload } = await jwtVerify(token, JWT_ACCESS_SECRET);
+    // Verify the token
+    const { payload }: { payload: JWTPayload } = await jwtVerify(
+      token,
+      JWT_ACCESS_SECRET,
+    );
     console.log("Token is valid:", payload);
 
-    // Хэрэв нэвтрэх (login/signup) хуудсанд орж байгаа бол
-    // хэрэглэгчдийг хамгаалсан хуудсуудад чиглүүлнэ
+    // If accessing an authentication page, redirect to the dashboard
     if (isAuthPage) {
       return NextResponse.redirect(new URL("/dashboard", req.url));
     }
     return NextResponse.next();
-  } catch (error: unknown) {
+  } catch (error) {
     console.error("Token verification failed:", error);
 
-    // Хэрэв алдааны төрлийг шалгаж, хугацаа дууссан гэдэгтэй холбоотой бол refresh хийгээрэй
+    // Handle expired token errors specifically
     if (
-      !isAuthPage && // Хэрэв бид login эсвэл signup хуудсанд байгаа бол refresh хийхгүй
       error instanceof Error &&
-      (error.message.includes("expired") ||
-        error.name === "JWTExpired" ||
-        (error as any).code === "ERR_JWT_EXPIRED")
+      (error.message.includes("expired") || error.name === "JWTExpired")
     ) {
-      console.log("Access Token expired. Attempting to refresh...");
+      console.log("Access token expired. Attempting to refresh...");
 
-      // refreshToken-ийг cookie-аас уншаарай
       const refreshTokenValue = req.cookies.get("refreshToken")?.value;
       if (!refreshTokenValue) {
-        // refreshToken байхгүй бол login руу чиглүүлнэ
-        return NextResponse.redirect(new URL("/login", req.url));
+        if (!isAuthPage) {
+          return NextResponse.redirect(new URL("/login", req.url));
+        }
+        return NextResponse.next();
       }
 
-      // GraphQL refreshToken mutation-г дуудаж шинэ access token авах
+      // Attempt to refresh the access token
       const refreshUrl = new URL("/api/graphql", req.url);
       const refreshResponse = await fetch(refreshUrl, {
         method: "POST",
@@ -79,14 +76,21 @@ export async function middleware(req: NextRequest) {
       });
 
       if (refreshResponse.ok) {
-        const data = await refreshResponse.json();
+        const data: {
+          data?: {
+            refreshToken?: {
+              token: string;
+              refreshToken: string;
+            };
+          };
+        } = await refreshResponse.json();
+
         const newAccessToken = data?.data?.refreshToken?.token;
         const newRefreshToken = data?.data?.refreshToken?.refreshToken;
 
         if (newAccessToken) {
-          console.log("Access Token refreshed successfully.");
+          console.log("Access token refreshed successfully.");
 
-          // Шинэ токеныг cookie-д тохируулж, тухайн хүсэлтийг үргэлжлүүлнэ
           const res = NextResponse.next();
           res.cookies.set("authToken", newAccessToken, {
             httpOnly: true,
@@ -103,23 +107,19 @@ export async function middleware(req: NextRequest) {
             });
           }
           return res;
-        } else {
-          console.error(
-            "No new access token returned. Redirecting to login...",
-          );
-          return NextResponse.redirect(new URL("/login", req.url));
         }
-      } else {
-        console.error("Refresh token request failed. Redirecting to login...");
-        return NextResponse.redirect(new URL("/login", req.url));
       }
+      console.error("Refresh token failed. Redirecting to login...");
     }
 
-    // Хэрэв токен буруу эсвэл refresh нь боломжгүй бол login руу чиглүүлнэ
-    return NextResponse.redirect(new URL("/login", req.url));
+    // For invalid tokens or refresh failures, redirect to login
+    if (!isAuthPage) {
+      return NextResponse.redirect(new URL("/login", req.url));
+    }
+    return NextResponse.next();
   }
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/login", "/signup"],
+  matcher: ["/dashboard/:path*"], // Only apply middleware to protected routes
 };
