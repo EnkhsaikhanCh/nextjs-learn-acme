@@ -86,15 +86,6 @@ const config: Config = {
 
     // auth provider
     "src/context",
-
-    // temporarily
-    "src/app/api/graphql/utils",
-    "src/app/api/graphql/resolvers/mutations/user/refresh-token-mutation.ts",
-    "src/app/api/graphql/hooks/useRefreshToken.ts",
-    "src/app/api/auth/refresh.ts",
-    "src/middleware.ts",
-    "src/app/api/graphql/resolvers/mutations/user",
-    "src/app/api/graphql/auth.ts",
   ],
 
   // Indicates which provider should be used to instrument code for coverage
