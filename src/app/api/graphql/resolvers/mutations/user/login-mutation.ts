@@ -9,7 +9,7 @@ import dotenv from "dotenv";
 import { generateSecureRefreshToken } from "../../../utils/token-utils";
 dotenv.config();
 
-const validateLoginInputs = (email: string, password: string) => {
+const validationInputs = (email: string, password: string) => {
   const sanitizedEmail = sanitizeInput(email);
 
   if (!sanitizedEmail || !password) {
@@ -37,7 +37,7 @@ export const loginUser = async (
   }
 
   try {
-    const { sanitizedEmail } = validateLoginInputs(input.email, input.password);
+    const { sanitizedEmail } = validationInputs(input.email, input.password);
 
     const user = await UserModel.findOne({ email: sanitizedEmail });
     if (!user) {
@@ -54,7 +54,7 @@ export const loginUser = async (
       });
     }
 
-    // 3. Access Token үүсгэх (богино хугацаатай)
+    // Access Token үүсгэх (богино хугацаатай)
     const token = jwt.sign(
       {
         _id: user._id,
@@ -67,14 +67,13 @@ export const loginUser = async (
       },
     );
 
-    // 4. Refresh token үүсгэх
+    // Refresh token үүсгэх
     const refreshToken = generateSecureRefreshToken();
-    console.log(refreshToken);
 
     const expiryDate = new Date();
     expiryDate.setDate(expiryDate.getDate() + 7); // +7 хоног
 
-    // 5. RefreshTokenModel-д хадгалах
+    // RefreshTokenModel-д хадгалах
     await RefreshTokenModel.create({
       token: refreshToken,
       user: user._id,
@@ -83,8 +82,8 @@ export const loginUser = async (
 
     return {
       message: "Login successful",
-      token, // access token
-      refreshToken, // refresh token
+      token,
+      refreshToken,
     };
   } catch (error) {
     if (error instanceof GraphQLError) {
