@@ -2,11 +2,7 @@
 import { GraphQLError } from "graphql";
 import jwt from "jsonwebtoken";
 import { RefreshTokenModel, UserModel } from "../../../models";
-import { generateSecureRefreshToken } from "../../../utils/token-utils";
-
-interface RefreshTokenInput {
-  refreshToken: string;
-}
+import { RefreshTokenInput } from "../../../schemas/user.schema";
 
 export async function refreshToken(
   _: unknown,
@@ -35,7 +31,7 @@ export async function refreshToken(
 
     // 2. Дууссан эсэхийг шалгах
     if (existingToken.expiryDate < new Date()) {
-      console.error("Refresh token expired:", existingToken.expiryDate);
+      console.log("Refresh token expired:", existingToken.expiryDate);
       // MongoDB автоматаар устгах хэдий ч энд шалгах нь зүйтэй
       throw new GraphQLError("refresh token-ийн хугацаа дууссан байна.");
     }
@@ -59,21 +55,11 @@ export async function refreshToken(
       { expiresIn: process.env.JWT_ACCESS_EXPIRES_IN },
     );
 
-    // 5. (Сонголтоор) Refresh Token-ээ шинэчлэх үү эсвэл хуучин хэвээр нь үлдээх үү?
-    //    Жишээ нь бүр шинэ болгоно гэвэл:
-    const newRefreshToken = generateSecureRefreshToken();
-    const newExpiryDate = new Date();
-    newExpiryDate.setDate(newExpiryDate.getDate() + 7); // дахин 7 хоног
-
-    existingToken.token = newRefreshToken;
-    existingToken.expiryDate = newExpiryDate;
-    await existingToken.save();
-
     console.log("New tokens generated successfully.");
     return {
       message: "Шинэ token амжилттай үүслээ",
       token: newAccessToken, // Шинэ access token
-      refreshToken: newRefreshToken, // Шинэ refresh token
+      refreshToken: input.refreshToken,
     };
   } catch (error) {
     console.error("Error in refreshToken:", error);

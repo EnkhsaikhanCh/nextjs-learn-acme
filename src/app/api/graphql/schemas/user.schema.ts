@@ -113,3 +113,7 @@ export type ChangePasswordInput = {
   currentPassword: string;
   newPassword: string;
 };
+
+export type RefreshTokenInput = {
+  refreshToken: string;
+};
