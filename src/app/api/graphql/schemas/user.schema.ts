@@ -39,6 +39,7 @@ export const typeDefs = gql`
   type LoginResponse {
     message: String!
     token: String
+    refreshToken: String
   }
 
   type RefreshTokenResponse {
