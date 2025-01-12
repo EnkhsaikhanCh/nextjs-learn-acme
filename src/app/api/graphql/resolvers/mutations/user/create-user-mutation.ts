@@ -10,13 +10,9 @@ import {
 } from "@/utils/validation";
 import jwt from "jsonwebtoken";
 import { generateUniqueStudentId } from "../../../../../../utils/generate-unique-student-id";
-import crypto from "crypto";
 import dotenv from "dotenv";
+import { generateSecureRefreshToken } from "../../../utils/token-utils";
 dotenv.config();
-
-const generateSecureRefreshToken = () => {
-  return crypto.randomBytes(64).toString("hex");
-};
 
 const validationInputs = (email: string, password: string) => {
   const sanitizedEmail = sanitizeInput(email);

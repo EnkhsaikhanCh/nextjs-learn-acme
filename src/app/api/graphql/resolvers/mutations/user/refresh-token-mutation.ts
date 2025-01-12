@@ -2,15 +2,11 @@
 import { GraphQLError } from "graphql";
 import jwt from "jsonwebtoken";
 import { RefreshTokenModel, UserModel } from "../../../models";
-import crypto from "crypto";
+import { generateSecureRefreshToken } from "../../../utils/token-utils";
 
 interface RefreshTokenInput {
   refreshToken: string;
 }
-
-const generateSecureRefreshToken = () => {
-  return crypto.randomBytes(64).toString("hex");
-};
 
 export async function refreshToken(
   _: unknown,

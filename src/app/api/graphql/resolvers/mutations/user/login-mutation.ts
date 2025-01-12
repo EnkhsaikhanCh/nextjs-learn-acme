@@ -4,14 +4,10 @@ import { RefreshTokenModel, UserModel } from "../../../models";
 import { LoginInput } from "../../../schemas/user.schema";
 import argon2 from "argon2";
 import { sanitizeInput, validationEmail } from "@/utils/validation";
-import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import { generateSecureRefreshToken } from "../../../utils/token-utils";
 dotenv.config();
-
-const generateSecureRefreshToken = () => {
-  return crypto.randomBytes(64).toString("hex");
-};
 
 const validateLoginInputs = (email: string, password: string) => {
   const sanitizedEmail = sanitizeInput(email);
