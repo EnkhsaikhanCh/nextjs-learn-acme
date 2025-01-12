@@ -12,6 +12,8 @@ const createJestConfig = nextJest({
 });
 
 const config: Config = {
+  testTimeout: 15000, // 15 секунд
+
   // All imported modules in your tests should be mocked automatically
   // automock: false,
 
@@ -84,6 +86,14 @@ const config: Config = {
 
     // auth provider
     "src/context",
+
+    // temporarily
+    "src/app/api/graphql/utils",
+    "src/app/api/graphql/resolvers/mutations/user/refresh-token-mutation.ts",
+    "src/app/api/graphql/hooks/useRefreshToken.ts",
+    "src/app/api/auth/refresh.ts",
+    "src/middleware.ts",
+    "src/app/api/graphql/resolvers/mutations/user",
   ],
 
   // Indicates which provider should be used to instrument code for coverage

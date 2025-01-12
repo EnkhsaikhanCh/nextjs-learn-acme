@@ -20,7 +20,7 @@ describe("createUser mutation", () => {
   let mockInput: { input: { email: string; password: string } };
 
   beforeEach(() => {
-    process.env.JWT_SECRET = "test-secret";
+    process.env.JWT_ACCESS_SECRET = "test-secret";
 
     // Энд mock-уудын default утгуудыг тохируулж өгнө
     mockInput = {
@@ -136,8 +136,8 @@ describe("createUser mutation", () => {
   });
 
   it("should throw error if JWT_SECRET is missing", async () => {
-    const originalSecret = process.env.JWT_SECRET;
-    delete process.env.JWT_SECRET; // Түр устгах
+    const originalSecret = process.env.JWT_ACCESS_SECRET;
+    delete process.env.JWT_ACCESS_SECRET; // Түр устгах
 
     await expect(createUser(null, mockInput)).rejects.toThrow(
       "JWT_SECRET is not defined in environment variables",
