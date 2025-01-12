@@ -43,6 +43,7 @@ export type LoginInput = {
 export type LoginResponse = {
   __typename?: 'LoginResponse';
   message: Scalars['String']['output'];
+  refreshToken?: Maybe<Scalars['String']['output']>;
   token?: Maybe<Scalars['String']['output']>;
 };
 
@@ -215,7 +216,7 @@ export type LoginUserMutationVariables = Exact<{
 }>;
 
 
-export type LoginUserMutation = { __typename?: 'Mutation', loginUser: { __typename?: 'LoginResponse', message: string, token?: string | null } };
+export type LoginUserMutation = { __typename?: 'Mutation', loginUser: { __typename?: 'LoginResponse', message: string, token?: string | null, refreshToken?: string | null } };
 
 export type GetUserByIdQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -420,6 +421,7 @@ export const LoginUserDocument = gql`
   loginUser(input: $input) {
     message
     token
+    refreshToken
   }
 }
     `;

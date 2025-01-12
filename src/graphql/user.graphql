@@ -11,6 +11,7 @@ mutation LoginUser($input: LoginInput!) {
   loginUser(input: $input) {
     message
     token
+    refreshToken
   }
 }
 
