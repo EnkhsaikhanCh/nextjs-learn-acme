@@ -26,14 +26,26 @@ export const typeDefs = gql`
     password: String!
   }
 
+  input RefreshTokenInput {
+    refreshToken: String!
+  }
+
   type RegisterResponse {
     message: String!
     token: String
+    refreshToken: String
   }
 
   type LoginResponse {
     message: String!
     token: String
+    refreshToken: String
+  }
+
+  type RefreshTokenResponse {
+    message: String!
+    token: String # Шинэ access token
+    refreshToken: String # Шинэчлэгдсэн эсвэл хуучин refresh token
   }
 
   input UpdateInput {
@@ -67,6 +79,7 @@ export const typeDefs = gql`
     ): ChangePasswordResponse!
     encryptData(data: String!): EncryptedResponse!
     decryptData(encryptedData: String!, iv: String!, authTag: String!): String!
+    refreshToken(input: RefreshTokenInput!): RefreshTokenResponse!
   }
 `;
 
@@ -99,4 +112,8 @@ export type UpdateInput = {
 export type ChangePasswordInput = {
   currentPassword: string;
   newPassword: string;
+};
+
+export type RefreshTokenInput = {
+  refreshToken: string;
 };

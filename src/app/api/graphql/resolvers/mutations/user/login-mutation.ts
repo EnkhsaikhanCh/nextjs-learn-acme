@@ -1,14 +1,15 @@
 // src/app/api/graphql/resolver/mutation/user/login-mutation.ts
 import { GraphQLError } from "graphql";
-import { UserModel } from "../../../models";
+import { RefreshTokenModel, UserModel } from "../../../models";
 import { LoginInput } from "../../../schemas/user.schema";
 import argon2 from "argon2";
 import { sanitizeInput, validationEmail } from "@/utils/validation";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import { generateSecureRefreshToken } from "../../../utils/token-utils";
 dotenv.config();
 
-const validateLoginInputs = (email: string, password: string) => {
+const validationInputs = (email: string, password: string) => {
   const sanitizedEmail = sanitizeInput(email);
 
   if (!sanitizedEmail || !password) {
@@ -30,13 +31,13 @@ export const loginUser = async (
   _: unknown,
   { input }: { input: LoginInput },
 ) => {
-  const secret = process.env.JWT_SECRET;
+  const secret = process.env.JWT_ACCESS_SECRET;
   if (!secret) {
     throw new Error("JWT_SECRET is not defined in environment variables");
   }
 
   try {
-    const { sanitizedEmail } = validateLoginInputs(input.email, input.password);
+    const { sanitizedEmail } = validationInputs(input.email, input.password);
 
     const user = await UserModel.findOne({ email: sanitizedEmail });
     if (!user) {
@@ -53,7 +54,7 @@ export const loginUser = async (
       });
     }
 
-    // Токен үүсгэх
+    // Access Token үүсгэх (богино хугацаатай)
     const token = jwt.sign(
       {
         _id: user._id,
@@ -62,13 +63,27 @@ export const loginUser = async (
       },
       secret,
       {
-        expiresIn: process.env.JWT_EXPIRES_IN,
+        expiresIn: process.env.JWT_ACCESS_EXPIRES_IN,
       },
     );
+
+    // Refresh token үүсгэх
+    const refreshToken = generateSecureRefreshToken();
+
+    const expiryDate = new Date();
+    expiryDate.setDate(expiryDate.getDate() + 7); // +7 хоног
+
+    // RefreshTokenModel-д хадгалах
+    await RefreshTokenModel.create({
+      token: refreshToken,
+      user: user._id,
+      expiryDate,
+    });
 
     return {
       message: "Login successful",
       token,
+      refreshToken,
     };
   } catch (error) {
     if (error instanceof GraphQLError) {

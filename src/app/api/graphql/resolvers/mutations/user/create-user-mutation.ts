@@ -1,6 +1,6 @@
 // src/app/api/graphql/resolver/mutation/user/create-user-mutation.ts
 import { GraphQLError } from "graphql";
-import { UserModel } from "../../../models";
+import { RefreshTokenModel, UserModel } from "../../../models";
 import { RegisterInput } from "../../../schemas/user.schema";
 import argon2 from "argon2";
 import {
@@ -11,6 +11,7 @@ import {
 import jwt from "jsonwebtoken";
 import { generateUniqueStudentId } from "../../../../../../utils/generate-unique-student-id";
 import dotenv from "dotenv";
+import { generateSecureRefreshToken } from "../../../utils/token-utils";
 dotenv.config();
 
 const validationInputs = (email: string, password: string) => {
@@ -42,7 +43,7 @@ export const createUser = async (
   _: unknown,
   { input }: { input: RegisterInput },
 ) => {
-  const secret = process.env.JWT_SECRET;
+  const secret = process.env.JWT_ACCESS_SECRET;
   if (!secret) {
     throw new Error("JWT_SECRET is not defined in environment variables");
   }
@@ -83,13 +84,31 @@ export const createUser = async (
       },
       secret,
       {
-        expiresIn: process.env.JWT_EXPIRES_IN,
+        expiresIn: process.env.JWT_ACCESS_EXPIRES_IN,
       },
     );
 
+    const refreshToken = generateSecureRefreshToken();
+    const refreshExpiryDays = parseInt(
+      process.env.JWT_REFRESH_EXPIRES_IN || "7",
+      10,
+    );
+
+    const expiryDate = new Date();
+    expiryDate.setDate(expiryDate.getDate() + refreshExpiryDays);
+
+    // 3. Refresh Token-ийг DB-д хадгалах
+    await RefreshTokenModel.create({
+      token: refreshToken,
+      user: newUser._id,
+      expiryDate,
+    });
+
+    // 4. Хариу буцаах
     return {
       message: "User created successfully",
-      token,
+      token, // access token
+      refreshToken, // шинээр үүсгэсэн refresh token
     };
   } catch (error) {
     // Handle known GraphQL errors

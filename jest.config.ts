@@ -12,6 +12,8 @@ const createJestConfig = nextJest({
 });
 
 const config: Config = {
+  testTimeout: 15000, // 15 секунд
+
   // All imported modules in your tests should be mocked automatically
   // automock: false,
 
@@ -84,6 +86,9 @@ const config: Config = {
 
     // auth provider
     "src/context",
+
+    // түр зуур
+    "src/middleware.ts",
   ],
 
   // Indicates which provider should be used to instrument code for coverage

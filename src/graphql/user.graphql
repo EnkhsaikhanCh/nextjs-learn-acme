@@ -3,6 +3,7 @@ mutation CreateUser($input: RegisterInput!) {
   createUser(input: $input) {
     message
     token
+    refreshToken
   }
 }
 
@@ -10,6 +11,7 @@ mutation LoginUser($input: LoginInput!) {
   loginUser(input: $input) {
     message
     token
+    refreshToken
   }
 }
 
@@ -28,5 +30,13 @@ query Me {
     email
     studentId
     role
+  }
+}
+
+mutation RefreshToken($input: RefreshTokenInput!) {
+  refreshToken(input: $input) {
+    message
+    token
+    refreshToken
   }
 }

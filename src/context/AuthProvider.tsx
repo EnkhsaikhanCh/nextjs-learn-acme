@@ -79,8 +79,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           input: { email, password },
         },
       });
-      if (data?.createUser?.token) {
-        localStorage.setItem("authToken", data.createUser.token);
+      if (data?.createUser?.token && data?.createUser?.refreshToken) {
         await refetchMe();
         return true;
       } else {
@@ -103,7 +102,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
         variables: { input: { email, password } },
       });
       if (data?.loginUser?.token) {
-        localStorage.setItem("authToken", data.loginUser.token);
         await refetchMe();
         return true;
       } else {
