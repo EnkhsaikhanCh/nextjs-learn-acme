@@ -12,6 +12,8 @@ import { NavUser } from "./NavUser";
 import { NavLinks } from "./NavLinks";
 
 export function SideNav({ email }: { email?: string }) {
+  const version = process.env.NEXT_PUBLIC_APP_VERSION || "v0.0.0";
+
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
@@ -24,7 +26,7 @@ export function SideNav({ email }: { email?: string }) {
                 </div>
                 <div className="flex flex-col gap-0.5 leading-none">
                   <span className="font-semibold">Dashboard</span>
-                  <span className="">v0.0.0</span>
+                  <span className="">v{version}</span>
                 </div>
               </a>
             </SidebarMenuButton>
