@@ -1,25 +1,28 @@
 // src/middleware.ts
-import { withAuth } from "next-auth/middleware";
+import { getToken } from "next-auth/jwt";
+import { NextResponse, NextRequest } from "next/server";
 
-export default withAuth({
-  pages: {
-    signIn: "/login", // Нэвтэрч амжаагүй үед чиглүүлэх зам
-  },
-  callbacks: {
-    authorized: ({ token }) => {
-      // Зөвхөн нэвтэрсэн хэрэглэгчийг зөвшөөрөх
-      if (!token) return false;
+export async function middleware(request: NextRequest) {
+  const token = await getToken({
+    req: request,
+    secret: process.env.AUTH_SECRET,
+  });
 
-      // Нэмэлт шалгуур: Зөвхөн admin эсвэл student role-тай хэрэглэгчдийг зөвшөөрөх
-      if (token.role === "admin" || token.role === "student") {
-        return true;
-      }
+  const { pathname } = request.nextUrl;
 
-      return false;
-    },
-  },
-});
+  // Нэвтэрсэн хэрэглэгч `/login` болон `/signup` руу оролдохыг оролдох үед `/dashboard` руу чиглүүлэх
+  if (token && (pathname === "/login" || pathname === "/signup")) {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
+  }
+
+  // Нэвтрээгүй хэрэглэгч `/dashboard` руу оролдох үед `/login` руу чиглүүлэх
+  if (!token && pathname.startsWith("/dashboard")) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  return NextResponse.next(); // Үргэлжлүүлэх
+}
 
 export const config = {
-  matcher: ["/dashboard/:path*"], // Зөвхөн `dashboard` болон түүний дэд замуудыг хамгаална
+  matcher: ["/dashboard/:path*", "/login", "/signup"], // Middleware ажиллах замууд
 };
