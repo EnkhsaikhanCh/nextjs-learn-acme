@@ -1,77 +1,47 @@
 "use client";
 
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ActionButton } from "@/components/ActionButton";
 import { BaseInput } from "@/components/BaseInput";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Globe, Loader } from "lucide-react";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { toast, Toaster } from "sonner";
+import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/context/AuthContext";
-import { escape } from "validator";
 
 export default function Login() {
-  const { login, error } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>(
-    {},
-  );
   const router = useRouter();
 
-  const sanitizeInput = (input: string) => {
-    return escape(input);
-  };
-
-  // Input-ыг ариутгах
-  const sanitizedEmail = sanitizeInput(email);
-  const sanitizedPassword = sanitizeInput(password);
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    const newErrors: { email?: string; password?: string } = {};
-    if (!sanitizedEmail) {
-      newErrors.email = "Имэйл хаяг шаардлагатай.";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      newErrors.email = "Имэйл хаяг буруу байна.";
-    }
-
-    if (!sanitizedPassword) {
-      newErrors.password = "Нууц үг шаардлагатай.";
-    } else if (password.length < 8) {
-      newErrors.password = "Нууц үг хамгийн багадаа 8 тэмдэгттэй байх ёстой.";
-    }
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      setIsSubmitting(false);
-      return;
-    }
-
     try {
-      const isSuccess = await login(email, password);
-      if (isSuccess) {
-        toast.success("Амжилттай нэвтэрлээ!");
+      const result = await signIn("credentials", {
+        email: email,
+        password: password,
+        redirect: false, // Redirect хийхгүй
+      });
+
+      if (result?.error) {
+        console.error("Failed to log in:", result?.error);
+        toast.error("Failed to log in");
+      } else {
+        console.log("Logged in successfully");
+        toast.success("Logged in successfully");
         router.push("/dashboard");
       }
     } catch (error) {
-      toast.error(`Алдаа гарлаа. Дахин оролдоно уу: ${error}`);
-      return { success: false };
+      toast.error("Нэвтрэхэд алдаа гарлаа. Дахин оролдоно уу.");
     } finally {
       setIsSubmitting(false);
     }
   };
-
-  useEffect(() => {
-    if (error) {
-      toast.error(error);
-    }
-  }, [error]);
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted md:p-10">
@@ -92,7 +62,7 @@ export default function Login() {
               <CardTitle className="text-xl">Нэвтрэх</CardTitle>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSubmit}>
+              <form onSubmit={handleLogin}>
                 <div className="grid gap-6">
                   <BaseInput
                     id="email"
@@ -101,7 +71,7 @@ export default function Login() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     label="Email"
-                    error={errors.email}
+                    // error={errors.email}
                     autoComplete="email"
                     tabIndex={1}
                   />
@@ -112,7 +82,7 @@ export default function Login() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     label="Password"
-                    error={errors.password}
+                    // error={errors.password}
                     tabIndex={2}
                     labelExtra={
                       <Link
