@@ -16,6 +16,7 @@
     "@apollo/client": "^3.12.4",
     "@apollo/server": "^4.11.2",
     "@as-integrations/next": "^3.2.0",
+    "@auth/mongodb-adapter": "^3.7.4",
     "@graphql-codegen/cli": "^5.0.3",
     "@graphql-codegen/typescript": "^4.1.2",
     "@graphql-codegen/typescript-operations": "^4.4.0",
@@ -52,6 +53,7 @@
     "mongodb-memory-server": "^10.1.2",
     "mongoose": "^8.9.2",
     "next": "^15.1.2",
+    "next-auth": "^4.24.11",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.54.2",
@@ -83,6 +85,6 @@
     "tailwindcss": "^3.4.17",
     "ts-node": "^10.9.2",
     "tsx": "^4.19.2",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.3"
   }
 }
