@@ -1,19 +1,18 @@
 "use client";
 
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ActionButton } from "@/components/ActionButton";
 import { BaseInput } from "@/components/BaseInput";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Globe, Loader } from "lucide-react";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { toast, Toaster } from "sonner";
+import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/context/AuthContext";
 import { escape } from "validator";
 
 export default function Login() {
-  const { login, error } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -30,11 +29,13 @@ export default function Login() {
   const sanitizedEmail = sanitizeInput(email);
   const sanitizedPassword = sanitizeInput(password);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
 
+    // Form validation
     const newErrors: { email?: string; password?: string } = {};
+
     if (!sanitizedEmail) {
       newErrors.email = "Имэйл хаяг шаардлагатай.";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -54,24 +55,25 @@ export default function Login() {
     }
 
     try {
-      const isSuccess = await login(email, password);
-      if (isSuccess) {
-        toast.success("Амжилттай нэвтэрлээ!");
+      const result = await signIn("credentials", {
+        email: email,
+        password: password,
+        redirect: false, // Redirect хийхгүй
+      });
+
+      if (result?.error) {
+        toast.error(`${result.error}`);
+      } else {
+        toast.success("Тавтай морил! Та амжилттай нэвтэрлээ 😊");
         router.push("/dashboard");
       }
     } catch (error) {
-      toast.error(`Алдаа гарлаа. Дахин оролдоно уу: ${error}`);
-      return { success: false };
+      console.log("Нэвтрэхэд алдаа гарлаа. Дахин оролдоно уу.", error);
+      toast.error("Нэвтрэхэд алдаа гарлаа. Дахин оролдоно уу.");
     } finally {
       setIsSubmitting(false);
     }
   };
-
-  useEffect(() => {
-    if (error) {
-      toast.error(error);
-    }
-  }, [error]);
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted md:p-10">
@@ -92,7 +94,7 @@ export default function Login() {
               <CardTitle className="text-xl">Нэвтрэх</CardTitle>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSubmit}>
+              <form onSubmit={handleLogin}>
                 <div className="grid gap-6">
                   <BaseInput
                     id="email"

@@ -24,8 +24,12 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { signOut } from "next-auth/react";
+import { useState } from "react";
 
 export function NavUser({ email }: { email?: string }) {
+  const [loading, setLoading] = useState(false);
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -84,9 +88,15 @@ export function NavUser({ email }: { email?: string }) {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={async () => {
+                setLoading(true);
+                await signOut({ callbackUrl: "/login" });
+                setLoading(false);
+              }}
+            >
               <LogOut />
-              Log out
+              {loading ? "Logging out..." : "Log out"}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

@@ -1,5 +1,3 @@
-"use client";
-
 import { Globe } from "lucide-react";
 import {
   Sidebar,
@@ -12,11 +10,8 @@ import {
 } from "../../ui/sidebar";
 import { NavUser } from "./NavUser";
 import { NavLinks } from "./NavLinks";
-import { useAuth } from "@/context/AuthContext";
 
-export function SideNav() {
-  const { user } = useAuth();
-
+export function SideNav({ email }: { email?: string }) {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
@@ -40,7 +35,7 @@ export function SideNav() {
         <NavLinks />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser email={user?.email} />
+        <NavUser email={email} />
       </SidebarFooter>
     </Sidebar>
   );

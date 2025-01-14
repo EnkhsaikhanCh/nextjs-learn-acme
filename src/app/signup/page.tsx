@@ -1,19 +1,19 @@
 "use client";
 
-import { ActionButton } from "@/components/ActionButton";
-import { BaseInput } from "@/components/BaseInput";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { BaseInput } from "@/components/BaseInput";
+import { ActionButton } from "@/components/ActionButton";
 import { cn } from "@/lib/utils";
 import { Globe, Loader } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast, Toaster } from "sonner";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/context/AuthContext";
 import { escape } from "validator";
+import { useCreateUserMutation } from "@/generated/graphql";
+import { signIn } from "next-auth/react";
 
 export default function SignUp() {
-  const { signup, error } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -29,6 +29,7 @@ export default function SignUp() {
   // Input-ыг ариутгах
   const sanitizedEmail = sanitizeInput(email);
   const sanitizedPassword = sanitizeInput(password);
+  const [createUser] = useCreateUserMutation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,24 +57,39 @@ export default function SignUp() {
     }
 
     try {
-      const isSuccess = await signup(email, password);
-      if (isSuccess) {
-        toast.success("Бүртгэл амжилттай үүсгэгдлээ!");
-        router.push("dashboard");
+      const { data } = await createUser({
+        variables: {
+          input: { email: sanitizedEmail, password: sanitizedPassword },
+        },
+      });
+
+      if (data?.createUser?.user) {
+        toast.success("Account created successfully!");
+
+        // Нэвтрэх функц
+        const result = await signIn("credentials", {
+          email: sanitizedEmail,
+          password: sanitizedPassword,
+          redirect: false,
+        });
+
+        if (result?.error) {
+          toast.error("Login failed after sign up. Please try logging in.");
+        } else {
+          router.push("/dashboard");
+        }
+      } else {
+        toast.error(
+          data?.createUser?.message || "Unexpected response from server.",
+        );
       }
     } catch (error) {
-      toast.error(`Алдаа гарлаа. Дахин оролдоно уу: ${error}`);
-      return { success: false };
+      console.error("Error creating account:", error);
+      toast.error("An error occurred. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
   };
-
-  useEffect(() => {
-    if (error) {
-      toast.error(error);
-    }
-  }, [error]);
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted md:p-10">
@@ -98,6 +114,7 @@ export default function SignUp() {
                 <div className="grid gap-6">
                   <div className="grid gap-6">
                     {/* Email Input */}
+
                     <BaseInput
                       id="email"
                       type="email"

@@ -1,247 +1,185 @@
-import { createUser } from "../../../../../src/app/api/graphql/resolvers/mutations/user/create-user-mutation";
-import {
-  UserModel,
-  RefreshTokenModel,
-} from "../../../../../src/app/api/graphql/models";
-import argon2 from "argon2";
+// Jest test for createUser
+import { createUser } from "../../../../../src/app/api/graphql/resolvers/mutations/user";
+import { UserModel } from "../../../../../src/app/api/graphql/models";
 import { GraphQLError } from "graphql";
-import jwt from "jsonwebtoken";
-import {
-  sanitizeInput,
-  validationEmail,
-  validationPassword,
-} from "../../../../../src/utils/validation";
-import { generateSecureRefreshToken } from "../../../../../src/app/api/graphql/utils/token-utils";
-import dotenv from "dotenv";
+import * as validationUtils from "../../../../../src/utils/validation";
+import * as studentIdUtils from "../../../../../src/utils/generate-unique-student-id";
+import argon2 from "argon2";
 
-dotenv.config();
+jest.mock("../../../../../src/app/api/graphql/models", () => ({
+  UserModel: {
+    findOne: jest.fn(),
+    create: jest.fn(),
+  },
+}));
 
-jest.mock("../../../../../src/app/api/graphql/models/user.model");
-jest.mock("../../../../../src/app/api/graphql/models/refresh-token.model");
-jest.mock("argon2");
-jest.mock("../../../../../src/utils/validation");
-jest.mock("jsonwebtoken");
-jest.mock("../../../../../src/app/api/graphql/utils/token-utils");
+jest.mock("argon2", () => ({
+  hash: jest.fn(),
+}));
 
-describe("createUser mutation with refresh token", () => {
-  let mockInput: { input: { email: string; password: string } };
+jest.mock("../../../../../src/utils/validation", () => ({
+  sanitizeInput: jest.fn(),
+  validationEmail: jest.fn(),
+  validationPassword: jest.fn(),
+}));
 
-  beforeEach(() => {
-    process.env.JWT_ACCESS_SECRET = "test-access-secret";
-    process.env.JWT_REFRESH_EXPIRES_IN = "7";
+jest.mock("../../../../../src/utils/generate-unique-student-id", () => ({
+  generateUniqueStudentId: jest.fn(),
+}));
 
-    mockInput = {
-      input: {
-        email: "test@example.com",
-        password: "SecurePassword123",
-      },
-    };
-
+describe("createUser", () => {
+  afterEach(() => {
     jest.clearAllMocks();
-
-    (sanitizeInput as jest.Mock).mockImplementation((email: string) =>
-      email.trim(),
-    );
-    (validationEmail as jest.Mock).mockImplementation((email: string) =>
-      email.includes("@"),
-    );
-    (validationPassword as jest.Mock).mockImplementation(
-      (password: string) => password.length >= 8,
-    );
-    (generateSecureRefreshToken as jest.Mock).mockReturnValue(
-      "mockRefreshToken",
-    );
+    jest.restoreAllMocks();
   });
 
-  it("should create a user successfully and return tokens", async () => {
-    (UserModel.findOne as jest.Mock).mockResolvedValueOnce(null);
-    (argon2.hash as jest.Mock).mockResolvedValueOnce("hashed_password");
-    (UserModel.create as jest.Mock).mockResolvedValueOnce({
-      _id: "mockUserId",
-      email: mockInput.input.email,
-      studentId: "123456",
+  it("should create a user successfully", async () => {
+    const input = { email: "test@example.com", password: "StrongPass123!" };
+    const mockUser = {
+      _id: "123",
+      email: "test@example.com",
+      studentId: "S123456",
       role: "student",
-      password: "hashed_password",
-    });
-    (jwt.sign as jest.Mock).mockReturnValueOnce("mockToken");
-    (RefreshTokenModel.create as jest.Mock).mockResolvedValueOnce({});
+    };
 
-    const result = await createUser(null, mockInput);
+    (validationUtils.sanitizeInput as jest.Mock).mockReturnValue(
+      "test@example.com",
+    );
+    (validationUtils.validationEmail as jest.Mock).mockReturnValue(true);
+    (validationUtils.validationPassword as jest.Mock).mockReturnValue(true);
+    (studentIdUtils.generateUniqueStudentId as jest.Mock).mockResolvedValue(
+      "S123456",
+    );
+    (argon2.hash as jest.Mock).mockResolvedValue("hashed_password");
+    (UserModel.findOne as jest.Mock).mockResolvedValue(null);
+    (UserModel.create as jest.Mock).mockResolvedValue(mockUser);
 
+    const result = await createUser({}, { input });
+
+    expect(validationUtils.sanitizeInput).toHaveBeenCalledWith(
+      "test@example.com",
+    );
+    expect(validationUtils.validationEmail).toHaveBeenCalledWith(
+      "test@example.com",
+    );
+    expect(validationUtils.validationPassword).toHaveBeenCalledWith(
+      "StrongPass123!",
+    );
     expect(UserModel.findOne).toHaveBeenCalledWith({
       email: "test@example.com",
     });
     expect(argon2.hash).toHaveBeenCalledWith(
-      "SecurePassword123",
+      "StrongPass123!",
       expect.any(Object),
     );
     expect(UserModel.create).toHaveBeenCalledWith({
       email: "test@example.com",
-      studentId: expect.any(String),
+      studentId: "S123456",
       role: "student",
       password: "hashed_password",
-    });
-    expect(RefreshTokenModel.create).toHaveBeenCalledWith({
-      token: "mockRefreshToken",
-      user: "mockUserId",
-      expiryDate: expect.any(Date),
     });
     expect(result).toEqual({
       message: "User created successfully",
-      token: "mockToken",
-      refreshToken: "mockRefreshToken",
+      user: mockUser,
     });
   });
 
-  it("should throw an error if refresh token creation fails", async () => {
-    (UserModel.findOne as jest.Mock).mockResolvedValueOnce(null);
-    (argon2.hash as jest.Mock).mockResolvedValueOnce("hashed_password");
-    (UserModel.create as jest.Mock).mockResolvedValueOnce({
-      _id: "mockUserId",
-      email: mockInput.input.email,
-      studentId: "123456",
-      role: "student",
-      password: "hashed_password",
-    });
-    (jwt.sign as jest.Mock).mockReturnValueOnce("mockToken");
-    (RefreshTokenModel.create as jest.Mock).mockRejectedValueOnce(
-      new Error("DB error"),
-    );
+  it("should throw a BAD_USER_INPUT error for an invalid email format", async () => {
+    jest
+      .spyOn(validationUtils, "sanitizeInput")
+      .mockReturnValue("invalidemail");
+    jest.spyOn(validationUtils, "validationEmail").mockReturnValue(false);
+    jest.spyOn(validationUtils, "validationPassword").mockReturnValue(true);
 
-    await expect(createUser(null, mockInput)).rejects.toThrow(
-      "Internal server error.",
-    );
+    const input = { email: "invalidemail", password: "StrongPass123!" };
 
-    expect(RefreshTokenModel.create).toHaveBeenCalledWith({
-      token: "mockRefreshToken",
-      user: "mockUserId",
-      expiryDate: expect.any(Date),
-    });
-  });
-
-  it("should use the default refresh expiry days if JWT_REFRESH_EXPIRES_IN is not set", async () => {
-    // JWT_REFRESH_EXPIRES_IN-ийг устгах
-    delete process.env.JWT_REFRESH_EXPIRES_IN;
-
-    (UserModel.findOne as jest.Mock).mockResolvedValue(null);
-    (argon2.hash as jest.Mock).mockResolvedValue("hashed_password");
-    (UserModel.create as jest.Mock).mockResolvedValue({
-      _id: "mockUserId",
-      email: mockInput.input.email,
-      studentId: "123456",
-      role: "student",
-      password: "hashed_password",
-    });
-    (jwt.sign as jest.Mock).mockReturnValue("mockToken");
-    (RefreshTokenModel.create as jest.Mock).mockResolvedValue({});
-
-    const result = await createUser(null, mockInput);
-
-    // refreshExpiryDays default утга нь "7" байх ёстой
-    expect(RefreshTokenModel.create).toHaveBeenCalledWith({
-      token: "mockRefreshToken",
-      user: "mockUserId",
-      expiryDate: expect.any(Date), // ExpiryDate тооцоолол mock-оос харагдана
-    });
-
-    // Default "7" өдөр үүсгэгдсэн эсэхийг баталгаажуулах
-    const expiryDate = new Date();
-    expiryDate.setDate(expiryDate.getDate() + 7); // Default 7 days
-    expect(RefreshTokenModel.create).toHaveBeenCalledWith(
-      expect.objectContaining({
-        expiryDate: expect.any(Date),
-      }),
-    );
-  });
-
-  it("should use the provided refresh expiry days if JWT_REFRESH_EXPIRES_IN is set", async () => {
-    // JWT_REFRESH_EXPIRES_IN-ийг тохируулах
-    process.env.JWT_REFRESH_EXPIRES_IN = "10";
-
-    (UserModel.findOne as jest.Mock).mockResolvedValue(null);
-    (argon2.hash as jest.Mock).mockResolvedValue("hashed_password");
-    (UserModel.create as jest.Mock).mockResolvedValue({
-      _id: "mockUserId",
-      email: mockInput.input.email,
-      studentId: "123456",
-      role: "student",
-      password: "hashed_password",
-    });
-    (jwt.sign as jest.Mock).mockReturnValue("mockToken");
-    (RefreshTokenModel.create as jest.Mock).mockResolvedValue({});
-
-    const result = await createUser(null, mockInput);
-
-    // refreshExpiryDays утга "10" байх ёстой
-    const expiryDate = new Date();
-    expiryDate.setDate(expiryDate.getDate() + 10); // 10 days as provided
-    expect(RefreshTokenModel.create).toHaveBeenCalledWith({
-      token: "mockRefreshToken",
-      user: "mockUserId",
-      expiryDate: expect.any(Date),
-    });
-  });
-
-  it("should throw an error if email is missing", async () => {
-    mockInput.input.email = "";
-
-    await expect(createUser(null, mockInput)).rejects.toThrow(
-      "Email and password are required.",
-    );
-  });
-
-  it("should throw an error if password is missing", async () => {
-    mockInput.input.password = "";
-
-    await expect(createUser(null, mockInput)).rejects.toThrow(
-      "Email and password are required.",
-    );
-  });
-
-  it("should throw an error if email format is invalid", async () => {
-    (validationEmail as jest.Mock).mockReturnValue(false);
-
-    await expect(createUser(null, mockInput)).rejects.toThrow(
+    await expect(createUser({}, { input })).rejects.toThrow(GraphQLError);
+    await expect(createUser({}, { input })).rejects.toThrow(
       "Invalid email format.",
     );
+
+    expect(validationUtils.sanitizeInput).toHaveBeenCalledWith("invalidemail");
+    expect(validationUtils.validationEmail).toHaveBeenCalledWith(
+      "invalidemail",
+    );
   });
 
-  it("should throw an error if password does not meet requirements", async () => {
-    (validationPassword as jest.Mock).mockReturnValue(false);
+  it("should throw a BAD_USER_INPUT error if the password does not meet complexity requirements", async () => {
+    jest
+      .spyOn(validationUtils, "sanitizeInput")
+      .mockReturnValue("test@example.com");
+    jest.spyOn(validationUtils, "validationEmail").mockReturnValue(true);
+    jest.spyOn(validationUtils, "validationPassword").mockReturnValue(false);
 
-    await expect(createUser(null, mockInput)).rejects.toThrow(
+    const input = { email: "test@example.com", password: "weak" };
+
+    await expect(createUser({}, { input })).rejects.toThrow(GraphQLError);
+    await expect(createUser({}, { input })).rejects.toThrow(
       "Password must meet complexity requirements.",
     );
-  });
 
-  it("should throw an error if JWT_SECRET is not defined", async () => {
-    delete process.env.JWT_ACCESS_SECRET;
-
-    await expect(createUser(null, mockInput)).rejects.toThrow(
-      "JWT_SECRET is not defined in environment variables",
+    expect(validationUtils.sanitizeInput).toHaveBeenCalledWith(
+      "test@example.com",
     );
-
-    process.env.JWT_ACCESS_SECRET = "test-access-secret"; // Restore secret
+    expect(validationUtils.validationEmail).toHaveBeenCalledWith(
+      "test@example.com",
+    );
+    expect(validationUtils.validationPassword).toHaveBeenCalledWith("weak");
   });
 
-  it("should throw an error if email already exists", async () => {
+  it("should throw a CONFLICT error if the user already exists", async () => {
+    const input = { email: "test@example.com", password: "StrongPass123!" };
+    jest
+      .spyOn(validationUtils, "sanitizeInput")
+      .mockReturnValue("test@example.com");
+    jest.spyOn(validationUtils, "validationEmail").mockReturnValue(true);
+    jest.spyOn(validationUtils, "validationPassword").mockReturnValue(true);
     (UserModel.findOne as jest.Mock).mockResolvedValue({
-      email: mockInput.input.email,
+      email: "test@example.com",
     });
 
-    await expect(createUser(null, mockInput)).rejects.toThrow(
+    await expect(createUser({}, { input })).rejects.toThrow(GraphQLError);
+    await expect(createUser({}, { input })).rejects.toThrow(
       "A user with this email already exists.",
     );
+
+    expect(UserModel.findOne).toHaveBeenCalledWith({
+      email: "test@example.com",
+    });
   });
 
-  it("should handle unknown internal errors", async () => {
-    (UserModel.findOne as jest.Mock).mockResolvedValue(null);
-    (argon2.hash as jest.Mock).mockRejectedValue(
-      new Error("Unexpected hashing error"),
+  it("should throw a BAD_USER_INPUT error for invalid email or password", async () => {
+    jest.spyOn(validationUtils, "sanitizeInput").mockReturnValue(""); // Use `undefined` instead of `null`
+
+    const input = { email: "", password: "" };
+
+    await expect(createUser({}, { input })).rejects.toThrow(GraphQLError);
+    await expect(createUser({}, { input })).rejects.toThrow(
+      "Email and password are required.",
     );
 
-    await expect(createUser(null, mockInput)).rejects.toThrow(
-      "Internal server error.",
+    expect(validationUtils.sanitizeInput).toHaveBeenCalledWith("");
+  });
+
+  it("should throw an INTERNAL_SERVER_ERROR for unexpected errors", async () => {
+    const input = { email: "test@example.com", password: "StrongPass123!" };
+
+    jest
+      .spyOn(validationUtils, "sanitizeInput")
+      .mockReturnValue("test@example.com");
+    jest.spyOn(validationUtils, "validationEmail").mockReturnValue(true);
+    jest.spyOn(validationUtils, "validationPassword").mockReturnValue(true);
+    (UserModel.findOne as jest.Mock).mockRejectedValue(
+      new Error("Database error"),
     );
+
+    await expect(createUser({}, { input })).rejects.toThrow(GraphQLError);
+    await expect(createUser({}, { input })).rejects.toThrow(
+      "Internal server error: Database error",
+    );
+
+    expect(UserModel.findOne).toHaveBeenCalledWith({
+      email: "test@example.com",
+    });
   });
 });
