@@ -1,17 +1,16 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BaseInput } from "@/components/BaseInput";
-import { ActionButton } from "@/components/ActionButton";
-import { cn } from "@/lib/utils";
 import { Globe, Loader } from "lucide-react";
-import Link from "next/link";
 import { useState } from "react";
 import { toast, Toaster } from "sonner";
 import { useRouter } from "next/navigation";
 import { escape } from "validator";
 import { useCreateUserMutation } from "@/generated/graphql";
 import { signIn } from "next-auth/react";
+import { BaseInput } from "@/components/BaseInput";
+import { ActionButton } from "@/components/ActionButton";
+import Link from "next/link";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function SignUp() {
   const [email, setEmail] = useState("");
@@ -35,7 +34,6 @@ export default function SignUp() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Form validation
     const newErrors: { email?: string; password?: string } = {};
 
     if (!sanitizedEmail) {
@@ -64,9 +62,8 @@ export default function SignUp() {
       });
 
       if (data?.createUser?.user) {
-        toast.success("Account created successfully!");
+        toast.success("Бүртгэл амжилттай үүсгэлээ!");
 
-        // Нэвтрэх функц
         const result = await signIn("credentials", {
           email: sanitizedEmail,
           password: sanitizedPassword,
@@ -74,103 +71,116 @@ export default function SignUp() {
         });
 
         if (result?.error) {
-          toast.error("Login failed after sign up. Please try logging in.");
+          toast.error("Нэвтрэхэд алдаа гарлаа. Дахин оролдоно уу.");
         } else {
           router.push("/dashboard");
         }
       } else {
         toast.error(
-          data?.createUser?.message || "Unexpected response from server.",
+          data?.createUser?.message || "Серверээс буруу хариу ирлээ.",
         );
       }
     } catch (error) {
-      console.error("Error creating account:", error);
-      toast.error("An error occurred. Please try again.");
+      console.error("Бүртгэл үүсгэхэд алдаа гарлаа:", error);
+      toast.error("Алдаа гарлаа. Дахин оролдоно уу.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted md:p-10">
-      <Toaster position="top-center" expand={false} richColors />
-      <div className="flex w-full max-w-sm flex-col gap-6">
-        <Link
-          href="/"
-          className="flex items-center gap-2 self-center font-medium"
-        >
-          <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
-            <Globe className="h-4 w-4" />
-          </div>
-          Nomad Tech Inc.
-        </Link>
-        <div className={cn("flex flex-col gap-6")}>
-          <Card className="rounded-none sm:rounded-lg">
-            <CardHeader className="text-center">
-              <CardTitle className="text-xl">Бүртгэл үүсгэх</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit}>
-                <div className="grid gap-6">
-                  <div className="grid gap-6">
-                    {/* Email Input */}
-
-                    <BaseInput
-                      id="email"
-                      type="email"
-                      placeholder="hello@email.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      label="Email"
-                      error={errors.email}
-                      autoComplete="email"
-                    />
-
-                    {/* Password Input */}
-                    <BaseInput
-                      id="password"
-                      type="password"
-                      placeholder="Нууц үгээ оруулна уу"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      label="Password"
-                      error={errors.password}
-                      description="Нууц үг хамгийн багадаа 8 тэмдэгт байх ёстой"
-                    />
-
-                    {/* Sign up button */}
-                    <ActionButton
-                      type="submit"
-                      disabled={isSubmitting}
-                      label={
-                        isSubmitting
-                          ? "Бүртгэл үүсгэж байна..."
-                          : "Бүртгэл үүсгэх"
-                      }
-                      icon={
-                        isSubmitting ? (
-                          <Loader className="animate-spin font-semibold" />
-                        ) : null
-                      }
-                    />
-                  </div>
-
-                  {/* Signin */}
-                  <div className="text-center text-sm">
-                    Бүртгэлтэй хэрэглэгч үү?{" "}
-                    <Link
-                      href="/login"
-                      className="underline underline-offset-4"
-                    >
-                      Нэвтрэх
-                    </Link>
-                  </div>
-                </div>
-              </form>
-            </CardContent>
-          </Card>
+    <main className="grid h-screen grid-cols-1 md:grid-cols-2">
+      <div className="relative m-4 hidden rounded-2xl bg-zinc-900 p-6 text-white sm:m-6 sm:p-8 md:block">
+        <div className="absolute inset-0 z-10 rounded-2xl bg-zinc-900" />
+        <div className="relative z-20 items-center text-lg font-medium">
+          <Link href={"/"} className="flex items-center gap-3">
+            <Globe />
+            Nomad Tech Inc.
+          </Link>
         </div>
       </div>
-    </div>
+
+      <div className="flex items-center justify-center p-4 sm:p-8">
+        <Toaster position="top-right" richColors expand={false} />
+        <div className="lg:p-8">
+          <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
+            <div className="flex flex-col space-y-2 text-center">
+              <h1 className="text-2xl font-semibold tracking-tight">
+                Шинэ бүртгэл үүсгэх
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                Доорх мэдээллийг бөглөж бүртгэлээ үүсгэнэ үү
+              </p>
+            </div>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+              <BaseInput
+                id="email"
+                type="email"
+                placeholder="welcome@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                label="Имэйл"
+                error={errors.email}
+                autoComplete="email"
+              />
+
+              <BaseInput
+                id="password"
+                type="password"
+                placeholder="Нууц үгээ оруулна уу"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                label="Нууц үг"
+                error={errors.password}
+                description="Нууц үг хамгийн багадаа 8 тэмдэгт байх ёстой"
+              />
+
+              <div className="flex items-center space-x-2">
+                <Checkbox id="terms" />
+                <label
+                  htmlFor="terms"
+                  className="text-xs font-medium text-muted-foreground peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Би{" "}
+                  <Link href="/terms" className="underline hover:text-primary">
+                    Үйлчилгээний нөхцөл
+                  </Link>{" "}
+                  болон{" "}
+                  <Link
+                    href="/privacy"
+                    className="underline hover:text-primary"
+                  >
+                    Нууцлалын бодлого
+                  </Link>
+                  -г зөвшөөрч байна.
+                </label>
+              </div>
+
+              <ActionButton
+                type="submit"
+                disabled={isSubmitting}
+                label={
+                  isSubmitting ? "Бүртгэл үүсгэж байна..." : "Бүртгэл үүсгэх"
+                }
+                icon={
+                  isSubmitting ? (
+                    <Loader className="animate-spin font-semibold" />
+                  ) : null
+                }
+              />
+            </form>
+            <div className="text-center text-sm">
+              Бүртгэлтэй хэрэглэгч үү?{" "}
+              <Link
+                href="/login"
+                className="text-blue-600 underline underline-offset-4 hover:text-blue-700"
+              >
+                Нэвтрэх
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
   );
 }
