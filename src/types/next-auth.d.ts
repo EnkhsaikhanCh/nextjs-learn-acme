@@ -18,3 +18,5 @@ declare module "next-auth" {
     studentId: string;
   }
 }
+
+export default NextAuth;

@@ -6,7 +6,6 @@ import { useSession } from "next-auth/react";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -16,6 +15,13 @@ import {
 export default function Page() {
   const { data: session, status } = useSession();
 
+  const userId = session?.user?.id;
+
+  const { data, loading, error } = useGetUserByIdQuery({
+    variables: { id: userId || "" },
+    skip: !userId, // userId байхгүй үед хүсэлтийг алгасах
+  });
+
   if (status === "loading") {
     return <p>Loading...</p>; // Session өгөгдөл ачаалж байна
   }
@@ -23,12 +29,6 @@ export default function Page() {
   if (!session) {
     return <p>You are not logged in</p>; // Session байхгүй үед
   }
-
-  const userId = session.user?.id;
-
-  const { data, loading, error } = useGetUserByIdQuery({
-    variables: { id: userId },
-  });
 
   if (loading) {
     return <p>Loading user details...</p>;
