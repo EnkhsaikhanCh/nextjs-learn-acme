@@ -43,10 +43,6 @@ export type User = {
   role: string;
 };
 
-export interface Context {
-  user?: User;
-}
-
 export type RegisterInput = {
   email: string;
   password: string;
