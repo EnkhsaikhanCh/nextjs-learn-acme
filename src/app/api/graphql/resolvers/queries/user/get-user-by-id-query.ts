@@ -18,11 +18,7 @@ export const me = async (_: unknown, __: unknown, context: Context) => {
   }
 };
 
-export const getUserById = async (
-  _: unknown,
-  { _id }: { _id: string },
-  context: Context,
-) => {
+export const getUserById = async (_: unknown, { _id }: { _id: string }) => {
   try {
     const user = await UserModel.findById(_id);
 

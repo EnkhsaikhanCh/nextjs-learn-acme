@@ -10,16 +10,49 @@ import { useState } from "react";
 import { toast, Toaster } from "sonner";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { escape } from "validator";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>(
+    {},
+  );
   const router = useRouter();
+
+  const sanitizeInput = (input: string) => {
+    return escape(input);
+  };
+
+  // Input-ыг ариутгах
+  const sanitizedEmail = sanitizeInput(email);
+  const sanitizedPassword = sanitizeInput(password);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
+
+    // Form validation
+    const newErrors: { email?: string; password?: string } = {};
+
+    if (!sanitizedEmail) {
+      newErrors.email = "Имэйл хаяг шаардлагатай.";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      newErrors.email = "Имэйл хаяг буруу байна.";
+    }
+
+    if (!sanitizedPassword) {
+      newErrors.password = "Нууц үг шаардлагатай.";
+    } else if (password.length < 8) {
+      newErrors.password = "Нууц үг хамгийн багадаа 8 тэмдэгттэй байх ёстой.";
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      setIsSubmitting(false);
+      return;
+    }
 
     try {
       const result = await signIn("credentials", {
@@ -37,6 +70,7 @@ export default function Login() {
         router.push("/dashboard");
       }
     } catch (error) {
+      console.log("Нэвтрэхэд алдаа гарлаа. Дахин оролдоно уу.", error);
       toast.error("Нэвтрэхэд алдаа гарлаа. Дахин оролдоно уу.");
     } finally {
       setIsSubmitting(false);
@@ -71,7 +105,7 @@ export default function Login() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     label="Email"
-                    // error={errors.email}
+                    error={errors.email}
                     autoComplete="email"
                     tabIndex={1}
                   />
@@ -82,7 +116,7 @@ export default function Login() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     label="Password"
-                    // error={errors.password}
+                    error={errors.password}
                     tabIndex={2}
                     labelExtra={
                       <Link
