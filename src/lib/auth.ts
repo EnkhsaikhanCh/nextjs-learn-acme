@@ -13,6 +13,11 @@ interface ExtendedJWT extends JWT {
 
 export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
+  session: {
+    strategy: "jwt", // JWT стратегийг ашиглах
+    maxAge: 7 * 24 * 60 * 60, // Токены хүчинтэй хугацаа: 7 хоног
+    updateAge: 24 * 60 * 60, // Токен шинэчлэгдэх давтамж: 24 цаг
+  },
   providers: [
     Credentials({
       credentials: {
@@ -20,18 +25,16 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       authorize: async (credentials) => {
-        if (!credentials) {
+        if (!credentials?.email || !credentials.password) {
           throw new Error("Missing credentials");
         }
 
         const user = await UserModel.findOne({
           email: credentials.email,
-        });
-
-        console.log("User found:", user);
+        }).exec();
 
         if (!user) {
-          throw new Error("Invalid credentials.");
+          throw new Error("Authentication failed.");
         }
 
         const isPasswordValid = await argon2.verify(
@@ -40,7 +43,7 @@ export const authOptions: NextAuthOptions = {
         );
 
         if (!isPasswordValid) {
-          throw new Error("Invalid email or password.");
+          throw new Error("Authentication failed.");
         }
 
         return {
@@ -66,6 +69,16 @@ export const authOptions: NextAuthOptions = {
           token.studentId = user.studentId;
         }
       }
+
+      // Токены хугацаа дууссан эсэхийг шалгах
+      if (typeof token.exp === "number" && Date.now() > token.exp * 1000) {
+        console.log("Token expired");
+        return {
+          ...token,
+          exp: 0, // Хугацаа дууссан гэж тэмдэглэх
+        };
+      }
+
       return token;
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -83,6 +96,6 @@ export const authOptions: NextAuthOptions = {
   },
 };
 
-const { handlers, signIn, signOut, auth } = NextAuth(authOptions);
+const { handlers, signIn, signOut } = NextAuth(authOptions);
 
-export { handlers, signIn, signOut, auth };
+export { handlers, signIn, signOut };
