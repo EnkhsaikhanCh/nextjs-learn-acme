@@ -1,22 +1,23 @@
 // src/app/dashboard/page.tsx
 "use client";
-
-import { useAuth } from "@/context/AuthContext";
+import { useSession } from "next-auth/react";
 
 export default function Page() {
-  const { user, loading } = useAuth();
+  const { data: session, status } = useSession();
 
-  if (loading) return <p>Loading...</p>;
-  if (!user) return null;
+  if (status === "loading") {
+    return <p>Loading...</p>; // Session өгөгдөл ачаалж байна
+  }
+
+  if (!session) {
+    return <p>You are not logged in</p>; // Session байхгүй үед
+  }
 
   return (
     <main>
       <h1>
-        Welcome, <span className="font-bold">{user.email}</span>!
+        Welcome, <span className="font-bold">{session.user?.email}</span>!
       </h1>
-      <p>
-        Your role is: <span className="font-bold">{user.role}</span> .
-      </p>
     </main>
   );
 }
