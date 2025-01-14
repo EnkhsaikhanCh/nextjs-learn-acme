@@ -1,6 +1,6 @@
 // src/app/api/graphql/resolver/mutation/user/create-user-mutation.ts
 import { GraphQLError } from "graphql";
-import { RefreshTokenModel, UserModel } from "../../../models";
+import { UserModel } from "../../../models";
 import { RegisterInput } from "../../../schemas/user.schema";
 import argon2 from "argon2";
 import {
@@ -8,11 +8,7 @@ import {
   validationEmail,
   validationPassword,
 } from "@/utils/validation";
-import jwt from "jsonwebtoken";
 import { generateUniqueStudentId } from "../../../../../../utils/generate-unique-student-id";
-import dotenv from "dotenv";
-import { generateSecureRefreshToken } from "../../../utils/token-utils";
-dotenv.config();
 
 const validationInputs = (email: string, password: string) => {
   const sanitizedEmail = sanitizeInput(email);
@@ -38,16 +34,10 @@ const validationInputs = (email: string, password: string) => {
   return { sanitizedEmail };
 };
 
-// The main function to create a new user
 export const createUser = async (
   _: unknown,
   { input }: { input: RegisterInput },
 ) => {
-  const secret = process.env.JWT_ACCESS_SECRET;
-  if (!secret) {
-    throw new Error("JWT_SECRET is not defined in environment variables");
-  }
-
   try {
     const { sanitizedEmail } = validationInputs(input.email, input.password);
 
@@ -75,49 +65,23 @@ export const createUser = async (
       password: hashedPassword,
     });
 
-    // 2. Token үүсгэх
-    const token = jwt.sign(
-      {
-        _id: newUser._id,
-        email: newUser.email,
-        role: newUser.role,
-      },
-      secret,
-      {
-        expiresIn: process.env.JWT_ACCESS_EXPIRES_IN,
-      },
-    );
-
-    const refreshToken = generateSecureRefreshToken();
-    const refreshExpiryDays = parseInt(
-      process.env.JWT_REFRESH_EXPIRES_IN || "7",
-      10,
-    );
-
-    const expiryDate = new Date();
-    expiryDate.setDate(expiryDate.getDate() + refreshExpiryDays);
-
-    // 3. Refresh Token-ийг DB-д хадгалах
-    await RefreshTokenModel.create({
-      token: refreshToken,
-      user: newUser._id,
-      expiryDate,
-    });
-
-    // 4. Хариу буцаах
     return {
       message: "User created successfully",
-      token, // access token
-      refreshToken, // шинээр үүсгэсэн refresh token
+      user: {
+        _id: newUser._id,
+        email: newUser.email,
+        studentId: newUser.studentId,
+        role: newUser.role,
+      },
     };
   } catch (error) {
-    // Handle known GraphQL errors
     if (error instanceof GraphQLError) {
       throw error;
     }
 
-    // Handle unexpected errors
-    throw new GraphQLError("Internal server error.", {
+    const message = (error as Error).message;
+
+    throw new GraphQLError(`Internal server error: ${message}`, {
       extensions: { code: "INTERNAL_SERVER_ERROR" },
     });
   }

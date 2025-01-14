@@ -1,6 +1,5 @@
 // src/app/api/graphql/resolver/queries/user/get-user-by-id.ts
 import { GraphQLError } from "graphql";
-import { requireUser } from "../../../auth";
 import { UserModel } from "../../../models";
 import { Context } from "../../../schemas/user.schema";
 
@@ -25,8 +24,6 @@ export const getUserById = async (
   context: Context,
 ) => {
   try {
-    requireUser(context);
-
     const user = await UserModel.findById(_id);
 
     if (!user) {

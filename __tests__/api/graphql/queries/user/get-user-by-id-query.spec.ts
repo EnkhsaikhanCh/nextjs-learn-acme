@@ -2,7 +2,6 @@ import {
   me,
   getUserById,
 } from "../../../../../src/app/api/graphql/resolvers/queries/user/get-user-by-id-query";
-import { requireUser } from "../../../../../src/app/api/graphql/auth";
 import { UserModel } from "../../../../../src/app/api/graphql/models";
 import { Context } from "../../../../../src/app/api/graphql/schemas/user.schema";
 import { GraphQLError } from "graphql";

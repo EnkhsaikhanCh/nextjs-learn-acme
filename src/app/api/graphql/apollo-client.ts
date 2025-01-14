@@ -1,73 +1,8 @@
 // src/app/api/graphql/apollo-client.ts
-import { ApolloClient, InMemoryCache, HttpLink, from } from "@apollo/client";
-import { onError } from "@apollo/client/link/error";
-import { Observable } from "@apollo/client";
-
-const httpLink = new HttpLink({
-  uri: "/api/graphql",
-  credentials: "include",
-});
-
-const errorLink = onError(({ graphQLErrors, operation, forward }) => {
-  if (graphQLErrors) {
-    for (const err of graphQLErrors) {
-      if (err.extensions?.code === "UNAUTHENTICATED") {
-        return new Observable((observer) => {
-          fetch("/api/graphql", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-            body: JSON.stringify({
-              query: `
-                mutation RefreshToken($input: RefreshTokenInput!) {
-                  refreshToken(input: $input) {
-                    token
-                    refreshToken
-                  }
-                }
-              `,
-            }),
-          })
-            .then((res) => res.json())
-            .then((data) => {
-              const newAccessToken = data.data?.refreshToken?.token;
-
-              if (newAccessToken) {
-                // Шинэ access токенг Apollo-ийн context-д нэмнэ
-                operation.setContext(({ headers = {} }) => ({
-                  headers: {
-                    ...headers,
-                    Authorization: `Bearer ${newAccessToken}`,
-                  },
-                }));
-
-                // Шинэ токентой хүсэлтийг үргэлжлүүлнэ
-                forward(operation).subscribe({
-                  next: observer.next.bind(observer),
-                  error: observer.error.bind(observer),
-                  complete: observer.complete.bind(observer),
-                });
-              } else {
-                console.error(
-                  "Failed to refresh token. Redirecting to login...",
-                );
-                window.location.href = "/login";
-                observer.complete();
-              }
-            })
-            .catch((error) => {
-              console.error("Failed to refresh token:", error);
-              window.location.href = "/login";
-              observer.error(error);
-            });
-        });
-      }
-    }
-  }
-});
+import { ApolloClient, InMemoryCache } from "@apollo/client";
 
 const client = new ApolloClient({
-  link: from([errorLink, httpLink]),
+  uri: "/api/graphql",
   cache: new InMemoryCache(),
 });
 
