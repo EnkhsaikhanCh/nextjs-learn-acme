@@ -4,6 +4,7 @@ import Credentials from "next-auth/providers/credentials";
 import { UserModel } from "@/app/api/graphql/models";
 import argon2 from "argon2";
 import { JWT } from "next-auth/jwt";
+import { connectToDatabase } from "./mongodb";
 
 interface ExtendedJWT extends JWT {
   id?: string;
@@ -25,8 +26,10 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       authorize: async (credentials) => {
+        await connectToDatabase();
+
         if (!credentials?.email || !credentials.password) {
-          throw new Error("Missing credentials");
+          throw new Error("И-мэйл эсвэл нууц үгийг оруулна уу.");
         }
 
         const user = await UserModel.findOne({
@@ -34,7 +37,9 @@ export const authOptions: NextAuthOptions = {
         }).exec();
 
         if (!user) {
-          throw new Error("Authentication failed.");
+          throw new Error(
+            "Хэрэглэгч олдсонгүй. И-мэйл болон нууц үгээ шалгана уу.",
+          );
         }
 
         const isPasswordValid = await argon2.verify(
@@ -43,7 +48,9 @@ export const authOptions: NextAuthOptions = {
         );
 
         if (!isPasswordValid) {
-          throw new Error("Authentication failed.");
+          throw new Error(
+            "И-Майл эсвэл нууц үг буруу байна. Дахин оролдоно уу.",
+          );
         }
 
         return {
@@ -72,7 +79,6 @@ export const authOptions: NextAuthOptions = {
 
       // Токены хугацаа дууссан эсэхийг шалгах
       if (typeof token.exp === "number" && Date.now() > token.exp * 1000) {
-        console.log("Token expired");
         return {
           ...token,
           exp: 0, // Хугацаа дууссан гэж тэмдэглэх

@@ -62,11 +62,9 @@ export default function Login() {
       });
 
       if (result?.error) {
-        console.error("Failed to log in:", result?.error);
-        toast.error("Failed to log in");
+        toast.error(`${result.error}`);
       } else {
-        console.log("Logged in successfully");
-        toast.success("Logged in successfully");
+        toast.success("Тавтай морил! Та амжилттай нэвтэрлээ 😊");
         router.push("/dashboard");
       }
     } catch (error) {
