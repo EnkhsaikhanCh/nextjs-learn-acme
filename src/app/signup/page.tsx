@@ -27,7 +27,6 @@ export default function SignUp() {
 
   // Input-ыг ариутгах
   const sanitizedEmail = sanitizeInput(email);
-  const sanitizedPassword = sanitizeInput(password);
   const [createUser] = useCreateUserMutation();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -42,7 +41,7 @@ export default function SignUp() {
       newErrors.email = "Имэйл хаяг буруу байна.";
     }
 
-    if (!sanitizedPassword) {
+    if (!password) {
       newErrors.password = "Нууц үг шаардлагатай.";
     } else if (password.length < 8) {
       newErrors.password = "Нууц үг хамгийн багадаа 8 тэмдэгттэй байх ёстой.";
@@ -57,7 +56,7 @@ export default function SignUp() {
     try {
       const { data } = await createUser({
         variables: {
-          input: { email: sanitizedEmail, password: sanitizedPassword },
+          input: { email: sanitizedEmail, password: password },
         },
       });
 
@@ -66,7 +65,7 @@ export default function SignUp() {
 
         const result = await signIn("credentials", {
           email: sanitizedEmail,
-          password: sanitizedPassword,
+          password: password,
           redirect: false,
         });
 

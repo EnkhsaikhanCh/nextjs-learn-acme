@@ -20,7 +20,7 @@ export function ResetPasswordForm() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [formError, setFormError] = useState<string | null>(null);
   const router = useRouter();
   const [success, setSuccess] = useState(false);
 
@@ -34,10 +34,16 @@ export function ResetPasswordForm() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    setError("");
+    setFormError(null);
+
+    if (!password) {
+      setFormError("Нууц үг шаардлагатай.");
+    } else if (password.length < 8) {
+      setFormError("Нууц үг хамгийн багадаа 8 тэмдэгттэй байх ёстой.");
+    }
 
     if (password !== confirmPassword) {
-      setError("Нууц үгүүд хоорондоо тохирохгүй байна.");
+      setFormError("Нууц үгүүд хоорондоо тохирохгүй байна.");
       setIsLoading(false);
       return;
     }
@@ -61,7 +67,7 @@ export function ResetPasswordForm() {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error || "Алдаа гарлаа. Дахин оролдоно уу.");
+        setFormError(data.error || "Алдаа гарлаа. Дахин оролдоно уу.");
         toast.error(data.error || "Алдаа гарлаа. Дахин оролдоно уу.");
       } else {
         setSuccess(true);
@@ -74,7 +80,7 @@ export function ResetPasswordForm() {
       }
     } catch (err) {
       console.error("Сүлжээний алдаа гарлаа:", err);
-      setError("Сүлжээний алдаа гарлаа. Дахин оролдоно уу.");
+      setFormError("Сүлжээний алдаа гарлаа. Дахин оролдоно уу.");
       toast.error("Сүлжээний алдаа гарлаа. Дахин оролдоно уу.");
     } finally {
       setIsLoading(false);
@@ -172,14 +178,14 @@ export function ResetPasswordForm() {
                     />
                   </div>
                 </div>
-                {error && (
+                {formError && (
                   <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="mt-4 flex items-center gap-2 text-red-500"
                   >
                     <AlertCircle size={16} />
-                    <span className="text-sm">{error}</span>
+                    <span className="text-sm">{formError}</span>
                   </motion.div>
                 )}
               </CardContent>

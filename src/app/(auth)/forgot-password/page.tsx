@@ -17,17 +17,30 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast, Toaster } from "sonner";
 import Link from "next/link";
+import { sanitizeInput } from "@/utils/sanitize";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>("");
+  const [formError, setFormError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    setError("");
+    setFormError(null);
+
+    // Sanitize and validate email
+    const sanitizedEmail = sanitizeInput(email);
+    if (!sanitizedEmail) {
+      setFormError("Имэйл хаяг шаардлагатай.");
+      setIsLoading(false);
+      return;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(sanitizedEmail)) {
+      setFormError("Имэйл хаяг буруу байна.");
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const response = await fetch("/api/auth/forgot-password", {
@@ -39,13 +52,14 @@ export default function ForgotPassword() {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error || "Алдаа гарлаа. Дахин оролдоно уу.");
+        setFormError(data.error || "Алдаа гарлаа. Дахин оролдоно уу.");
       } else {
         setSuccess(true);
+        toast.success("Таны и-мэйл хаяг руу холбоос амжилттай илгээгдлээ.");
       }
     } catch (error) {
-      toast.error(`Алдаа гарлаа. Дахин оролдоно уу: ${error}`);
-      setError("Алдаа гарлаа. Дахин оролдоно уу.");
+      toast.error(`Сүлжээний алдаа гарлаа: ${error}`);
+      setFormError("Сүлжээний алдаа гарлаа. Дахин оролдоно уу.");
     } finally {
       setIsLoading(false);
     }
@@ -93,14 +107,14 @@ export default function ForgotPassword() {
                     />
                   </div>
                 </div>
-                {error && (
+                {formError && (
                   <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="mt-4 flex items-center gap-2 font-semibold text-red-500"
                   >
                     <AlertCircle size={16} />
-                    <span className="text-sm">{error}</span>
+                    <span className="text-sm">{formError}</span>
                   </motion.div>
                 )}
               </CardContent>
