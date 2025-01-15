@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { OTPInput } from "@/components/otp-input";
@@ -17,14 +17,18 @@ import {
 } from "@/components/ui/card";
 
 export function VerifyOtpForm() {
-  const searchParams = useSearchParams();
-  const email = searchParams.get("email");
+  const [email, setEmail] = useState<string | null>(null);
   const [otp, setOtp] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [isVerifying, setIsVerifying] = useState<boolean>(false);
   const [isResending, setIsResending] = useState<boolean>(false);
   const [success, setSuccess] = useState<boolean>(false);
   const router = useRouter();
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search); // Access the query parameters
+    setEmail(params.get("email")); // Get the 'email' parameter and set it in state
+  }, []);
 
   // Resend OTP
   const handleResendOTP = async () => {
