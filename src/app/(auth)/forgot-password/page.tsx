@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { AlertCircle, ArrowLeft, Loader2, Mail } from "lucide-react";
+import { AlertCircle, ArrowLeft, Loader, Mail } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -113,8 +113,8 @@ export default function ForgotPassword() {
                 >
                   {isLoading ? (
                     <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Холбоос илгээж байна...
+                      <Loader className="mr-2 h-4 w-4 animate-spin" />
                     </>
                   ) : (
                     "Холбоос илгээх"

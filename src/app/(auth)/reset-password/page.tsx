@@ -1,7 +1,7 @@
 // src/app/reset-password/page.tsx
 "use client";
 
-"use client";
+export const dynamic = "force-dynamic";
 
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -14,7 +14,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { AlertCircle, ArrowLeft, Loader2, Lock } from "lucide-react";
+import { AlertCircle, ArrowLeft, Loader, Lock } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -139,8 +139,8 @@ function ResetPasswordForm({
         >
           {isLoading ? (
             <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Нууц үг шинэчилж байна...
+              <Loader className="mr-2 h-4 w-4 animate-spin" />
             </>
           ) : (
             "Нууц үг шинэчлэх"
