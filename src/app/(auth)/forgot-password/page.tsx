@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { toast, Toaster } from "sonner";
+import Link from "next/link";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState<string>("");
@@ -62,7 +63,7 @@ export default function ForgotPassword() {
           exit={{ opacity: 0, y: 20 }}
           transition={{ duration: 0.3 }}
         >
-          <Card className="w-full max-w-md">
+          <Card className="max-w-mds w-full">
             <CardHeader>
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
                 <Mail className="h-6 w-6 text-blue-600" />
@@ -121,12 +122,17 @@ export default function ForgotPassword() {
                   )}
                 </Button>
                 <Button
+                  type="button"
                   variant="outline"
-                  className="w-full"
-                  onClick={() => router.push("/login")}
+                  className="flex w-full flex-col"
                 >
-                  <ArrowLeft className="mr-2 h-4 w-4" />
-                  Нэвтрэх хуудас руу буцах
+                  <Link
+                    href={"/login"}
+                    className="flex flex-row items-center justify-center"
+                  >
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    Нэвтрэх хуудас руу буцах
+                  </Link>
                 </Button>
               </CardFooter>
             </form>
