@@ -6,16 +6,7 @@ import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { OTPInput } from "@/components/otp-input";
 import { Button } from "@/components/ui/button";
-import {
-  ArrowLeft,
-  CircleDotDashed,
-  Loader,
-  Loader2,
-  Lock,
-  Mail,
-  RectangleEllipsis,
-  SquareAsterisk,
-} from "lucide-react";
+import { ArrowLeft, Loader, RectangleEllipsis } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -28,12 +19,11 @@ import {
 export function VerifyOtpForm() {
   const searchParams = useSearchParams();
   const email = searchParams.get("email");
-  const [otp, setOtp] = useState("");
-  const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [isVerifying, setIsVerifying] = useState(false);
-  const [isResending, setIsResending] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const [otp, setOtp] = useState<string>("");
+  const [error, setError] = useState<string>("");
+  const [isVerifying, setIsVerifying] = useState<boolean>(false);
+  const [isResending, setIsResending] = useState<boolean>(false);
+  const [success, setSuccess] = useState<boolean>(false);
   const router = useRouter();
 
   // Resend OTP
@@ -61,7 +51,7 @@ export function VerifyOtpForm() {
 
   const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();
-    setIsLoading(true);
+    setIsVerifying(true);
     setError("");
 
     if (!/^\d{6}$/.test(otp)) {
@@ -92,7 +82,7 @@ export function VerifyOtpForm() {
       setError("An error occurred while verifying OTP. Please try again.");
       toast.error("Verification failed. Please try again.");
     } finally {
-      setIsLoading(false);
+      setIsVerifying(false);
     }
   };
 
@@ -114,7 +104,7 @@ export function VerifyOtpForm() {
                 Verify Your OTP
               </CardTitle>
               <CardDescription className="mt-2 text-center text-sm text-gray-600">
-                We've sent a 6-digit code to your email
+                We have sent a 6-digit code to your email
               </CardDescription>
             </CardHeader>
             <div className="mx-5 mb-5 rounded-md border-2 border-dashed border-yellow-300 bg-yellow-100 px-3 py-2 text-center font-semibold text-yellow-600">
@@ -160,8 +150,8 @@ export function VerifyOtpForm() {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <OTPInput length={6} onComplete={(value) => setOtp(value)} />
                 {error && <p className="text-sm text-red-600">{error}</p>}
-                <Button type="submit" disabled={isLoading} className="w-full">
-                  {isLoading ? (
+                <Button type="submit" disabled={isVerifying} className="w-full">
+                  {isVerifying ? (
                     <>
                       Verifying...
                       <Loader className="mr-2 h-4 w-4 animate-spin" />
@@ -172,7 +162,7 @@ export function VerifyOtpForm() {
                 </Button>
               </form>
               <div className="mt-3 text-center text-sm">
-                Didn't receive the code?{" "}
+                Did not receive the code?{" "}
                 <Button
                   variant="link"
                   type="button"
