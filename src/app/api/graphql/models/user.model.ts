@@ -8,6 +8,8 @@ export type User = {
   studentId: string;
   role: "student" | "admin";
   password: string;
+  resetToken?: string;
+  resetTokenExpiry?: Date;
 };
 
 const UserSchema = new Schema(
@@ -17,6 +19,8 @@ const UserSchema = new Schema(
     studentId: { type: String, required: true, unique: true },
     role: { type: String, enum: ["student", "admin"], required: true },
     password: { type: String, required: true },
+    resetToken: { type: String },
+    resetTokenExpiry: { type: Date },
   },
   { timestamps: true },
 );
