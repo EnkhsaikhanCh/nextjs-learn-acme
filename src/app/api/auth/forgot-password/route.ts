@@ -27,7 +27,7 @@ export async function POST(request: Request) {
     }
 
     const resetToken = crypto.randomBytes(32).toString("hex");
-    const resetTokenExpiry = Date.now() + 3600 * 1000; // 1 цаг хүчинтэй хугацаа
+    const resetTokenExpiry = Date.now() + 5 * 60 * 1000; // 5 минутын хүчинтэй хугацаа
 
     user.resetToken = resetToken;
     user.resetTokenExpiry = resetTokenExpiry;
