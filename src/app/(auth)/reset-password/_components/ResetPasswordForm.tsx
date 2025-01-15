@@ -38,8 +38,12 @@ export function ResetPasswordForm() {
 
     if (!password) {
       setFormError("Нууц үг шаардлагатай.");
+      setIsLoading(false);
+      return;
     } else if (password.length < 8) {
       setFormError("Нууц үг хамгийн багадаа 8 тэмдэгттэй байх ёстой.");
+      setIsLoading(false);
+      return;
     }
 
     if (password !== confirmPassword) {
