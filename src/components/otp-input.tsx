@@ -71,7 +71,9 @@ export function OTPInput({ length, onComplete }: OTPInputProps) {
             onChange={(e) => handleChange(e, index)}
             onKeyDown={(e) => handleKeyDown(e, index)}
             onPaste={handlePaste}
-            ref={(input) => (inputRefs.current[index] = input)}
+            ref={(input) => {
+              inputRefs.current[index] = input;
+            }}
             className="h-14 w-14 text-center text-2xl font-bold"
             aria-label={`Digit ${index + 1}`}
           />
