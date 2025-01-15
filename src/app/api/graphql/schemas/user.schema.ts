@@ -7,10 +7,10 @@ export const typeDefs = gql`
     email: String!
     studentId: String!
     role: String!
+    isVerified: String!
   }
 
   type Query {
-    me: User
     getUserById(_id: ID!): User!
     getAllUser: [User!]!
   }
@@ -41,6 +41,7 @@ export type User = {
   email: string;
   studentId: string;
   role: string;
+  isVerified: string;
 };
 
 export type RegisterInput = {
