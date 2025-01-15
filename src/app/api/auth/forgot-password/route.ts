@@ -33,7 +33,11 @@ export async function POST(request: Request) {
     user.resetTokenExpiry = resetTokenExpiry;
     await user.save();
 
-    const resetUrl = `${process.env.NEXTAUTH_URL}/reset-password?token=${resetToken}`;
+    const baseUrl = process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : "http://localhost:3000";
+
+    const resetUrl = `${baseUrl}/reset-password?token=${resetToken}`;
 
     await sendEmail({
       to: email,
