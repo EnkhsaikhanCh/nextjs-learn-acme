@@ -35,6 +35,7 @@ export default function SignUp() {
 
     const newErrors: { email?: string; password?: string } = {};
 
+    // Имэйл болон нууц үг шалгах
     if (!sanitizedEmail) {
       newErrors.email = "Имэйл хаяг шаардлагатай.";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -54,26 +55,44 @@ export default function SignUp() {
     }
 
     try {
+      // Бүртгэл үүсгэх
       const { data } = await createUser({
         variables: {
-          input: { email: sanitizedEmail, password: password },
+          input: { email: sanitizedEmail, password },
         },
       });
 
       if (data?.createUser?.user) {
         toast.success("Бүртгэл амжилттай үүсгэлээ!");
 
+        // OTP илгээх
+        const otpResponse = await fetch("/api/auth/send-otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: sanitizedEmail }),
+        });
+
+        if (!otpResponse.ok) {
+          throw new Error("OTP илгээхэд алдаа гарлаа.");
+        }
+
+        toast.success("OTP код амжилттай илгээгдлээ!");
+
+        // Auth.js ашиглан Sign In хийх
         const result = await signIn("credentials", {
           email: sanitizedEmail,
           password: password,
-          redirect: false,
+          redirect: false, // OTP баталгаажуулах хуудас руу дамжуулах тул redirect-г false болгоно
         });
 
         if (result?.error) {
           toast.error("Нэвтрэхэд алдаа гарлаа. Дахин оролдоно уу.");
-        } else {
-          router.push("/dashboard");
+          setIsSubmitting(false);
+          return;
         }
+
+        // OTP баталгаажуулах хуудас руу дамжуулах
+        router.push(`/verify-otp?email=${encodeURIComponent(sanitizedEmail)}`);
       } else {
         toast.error(
           data?.createUser?.message || "Серверээс буруу хариу ирлээ.",
