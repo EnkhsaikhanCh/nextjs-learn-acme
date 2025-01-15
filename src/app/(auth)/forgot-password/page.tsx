@@ -132,9 +132,9 @@ export default function ForgotPassword() {
             </form>
             {success && (
               <motion.div>
-                <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+                <div className="-mt-5 p-6 sm:mx-auto sm:w-full sm:max-w-md">
                   <div
-                    className="relative rounded border border-green-400 bg-green-100 px-4 py-3 text-green-700"
+                    className="relative rounded border-2 border-dashed border-green-400 bg-green-100 px-4 py-3 text-center text-green-700"
                     role="alert"
                   >
                     <strong className="font-bold">Амжилттай!</strong>

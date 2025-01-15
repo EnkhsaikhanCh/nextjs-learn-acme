@@ -94,6 +94,7 @@ const config: Config = {
     "src/app/\\(auth\\)/forgot-password/page\\.tsx",
     "src/app/\\(auth\\)/reset-password/page\\.tsx",
     "src/components/email-template.tsx",
+    "src/app/\\(auth\\)/reset-password",
   ],
 
   // Indicates which provider should be used to instrument code for coverage
