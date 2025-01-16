@@ -30,7 +30,7 @@ export function VerifyOtpForm() {
     setEmail(params.get("email")); // Get the 'email' parameter and set it in state
   }, []);
 
-  // Resend OTP
+  // OTP дахин илгээх
   const handleResendOTP = async () => {
     setIsResending(true);
     try {
@@ -41,13 +41,17 @@ export function VerifyOtpForm() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to resend OTP. Please try again.");
+        throw new Error(
+          "И-мэйл баталгаажуулах кодыг дахин илгээж чадсангүй. Дахин оролдоно уу.",
+        );
       }
 
-      toast.success("OTP code has been resent to your email.");
+      toast.success(
+        "И-мэйл баталгаажуулах код таны имэйл рүү дахин илгээгдлээ.",
+      );
     } catch (error) {
       console.error(error);
-      toast.error("Error resending OTP.");
+      toast.error("И-мэйл баталгаажуулах код дахин илгээхэд алдаа гарлаа.");
     } finally {
       setIsResending(false);
     }
@@ -59,7 +63,7 @@ export function VerifyOtpForm() {
     setError("");
 
     if (!/^\d{6}$/.test(otp)) {
-      setError("OTP must be a 6-digit numeric code.");
+      setError("И-мэйл баталгаажуулах 6 оронтой тоо байх ёстой.");
       setIsVerifying(false);
       return;
     }
@@ -74,17 +78,21 @@ export function VerifyOtpForm() {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error || "Invalid OTP or verification failed.");
-        toast.error(data.error || "Verification failed. Please try again.");
+        setError(
+          data.error || "Код буруу эсвэл баталгаажуулалт амжилтгүй боллоо.",
+        );
+        toast.error(
+          data.error || "Баталгаажуулалт амжилтгүй боллоо. Дахин оролдоно уу.",
+        );
       } else {
         setSuccess(true);
-        toast.success("Email verified successfully!");
+        toast.success("Имэйл амжилттай баталгаажлаа!");
         setTimeout(() => router.push("/dashboard"), 2000);
       }
     } catch (error) {
       console.error(error);
-      setError("An error occurred while verifying OTP. Please try again.");
-      toast.error("Verification failed. Please try again.");
+      setError("Баталгаажуулалт явцад алдаа гарлаа. Дахин оролдоно уу.");
+      toast.error("Баталгаажуулалт амжилтгүй боллоо. Дахин оролдоно уу.");
     } finally {
       setIsVerifying(false);
     }
@@ -105,14 +113,14 @@ export function VerifyOtpForm() {
                 <RectangleEllipsis className="h-6 w-6 text-blue-600" />
               </div>
               <CardTitle className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                Verify Your OTP
+                Имэйл баталгаажуулалт
               </CardTitle>
               <CardDescription className="mt-2 text-center text-sm text-gray-600">
-                We have sent a 6-digit code to your email
+                Таны и-мэйл рүү баталгаажуулах код илгээгдсэн.
               </CardDescription>
             </CardHeader>
             <div className="mx-5 mb-5 rounded-md border-2 border-dashed border-yellow-300 bg-yellow-100 px-3 py-2 text-center font-semibold text-yellow-600">
-              <p>Email not provided. Please try again.</p>
+              <p>И-мэйл хаяг оруулаагүй байна. Дахин оролдоно уу.</p>
             </div>
             <CardFooter>
               <Button
@@ -121,7 +129,7 @@ export function VerifyOtpForm() {
                 onClick={() => router.push("/login")}
               >
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Login
+                Нэвтрэх хуудас руу буцах
               </Button>
             </CardFooter>
           </Card>
@@ -142,10 +150,10 @@ export function VerifyOtpForm() {
             <RectangleEllipsis className="h-6 w-6 text-blue-600" />
           </div>
           <CardTitle className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Verify Your OTP
+            Имэйл баталгаажуулалт
           </CardTitle>
           <CardDescription className="mt-2 text-center text-sm text-gray-600">
-            Enter the OTP sent to your email address.
+            Баталгаажуулах кодыг оруулна уу.
           </CardDescription>
         </CardHeader>
         {!success ? (
@@ -157,16 +165,16 @@ export function VerifyOtpForm() {
                 <Button type="submit" disabled={isVerifying} className="w-full">
                   {isVerifying ? (
                     <>
-                      Verifying...
+                      Баталгаажуулж байна...
                       <Loader className="mr-2 h-4 w-4 animate-spin" />
                     </>
                   ) : (
-                    <>Verify OTP</>
+                    <>Имэйл баталгаажуулах</>
                   )}
                 </Button>
               </form>
               <div className="mt-3 text-center text-sm">
-                Did not receive the code?{" "}
+                Баталгаажуулах код хүлээн аваагүй байна уу?{" "}
                 <Button
                   variant="link"
                   type="button"
@@ -176,11 +184,11 @@ export function VerifyOtpForm() {
                 >
                   {isResending ? (
                     <>
-                      Resending...
+                      Дахин илгээж байна...
                       <Loader className="mr-2 h-4 w-4 animate-spin" />
                     </>
                   ) : (
-                    <>Resend OTP</>
+                    <>Дахин илгээх</>
                   )}
                 </Button>
               </div>
