@@ -1,5 +1,4 @@
-import { SideNav } from "@/components/dashboard/sidebar/SideNav";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import ClientLayout from "@/providers/ClientLayout";
 import { cookies } from "next/headers";
 
 export default async function Layout({
@@ -10,13 +9,5 @@ export default async function Layout({
   const cookieStore = await cookies();
   const defaultOpen = cookieStore.get("sidebar:state")?.value === "true";
 
-  return (
-    <SidebarProvider defaultChecked={defaultOpen}>
-      <SideNav />
-      <main className="p-6">
-        <SidebarTrigger />
-        {children}
-      </main>
-    </SidebarProvider>
-  );
+  return <ClientLayout defaultOpen={defaultOpen}>{children}</ClientLayout>;
 }

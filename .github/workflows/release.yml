@@ -1,0 +1,39 @@
+name: Release Workflow
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Code-ийг checkout хийх
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 2. Bun runtime суулгах
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      # 3. Dependencies суулгах болон build хийх
+      - name: Build and deploy
+        run: |
+          bun install
+          bun run build
+
+      # 4. Release үүсгэх
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: Release ${{ github.ref_name }}
+          body: |
+            Release notes for ${{ github.ref_name }}
+          draft: false
+          prerelease: false

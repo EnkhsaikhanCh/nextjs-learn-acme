@@ -8,6 +8,16 @@ interface ActionButtonProps {
   href?: string;
   onClick?: () => void;
   disabled?: boolean;
+  variant?:
+    | "secondary"
+    | "destructive"
+    | "outline"
+    | "ghost"
+    | "link"
+    | "default"
+    | null
+    | undefined;
+  type?: "submit" | "reset" | "button" | undefined;
 }
 
 export const ActionButton = ({
@@ -17,18 +27,29 @@ export const ActionButton = ({
   href,
   onClick,
   disabled,
+  variant,
+  type,
 }: ActionButtonProps) => {
   const content = (
     <>
       {label}
-      {icon && <span data-testid="button-icon">{icon}</span>}
+      {icon && (
+        <span data-testid="button-icon" aria-hidden="true">
+          {icon}
+        </span>
+      )}
     </>
   );
 
   if (href) {
     return (
       <Link href={href}>
-        <Button className={className} disabled={disabled}>
+        <Button
+          className={className}
+          disabled={disabled}
+          role="button"
+          aria-label={label}
+        >
           {content}
         </Button>
       </Link>
@@ -36,7 +57,14 @@ export const ActionButton = ({
   }
 
   return (
-    <Button className={className} onClick={onClick} disabled={disabled}>
+    <Button
+      variant={variant}
+      className={className}
+      onClick={onClick}
+      disabled={disabled}
+      type={type}
+      aria-label={label}
+    >
       {content}
     </Button>
   );

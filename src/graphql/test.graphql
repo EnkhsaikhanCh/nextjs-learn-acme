@@ -1,0 +1,29 @@
+# Queries
+query GetAllTest {
+  getAllTest {
+    _id
+    name
+  }
+}
+
+# Mutations
+mutation CreateTest($name: String!) {
+  createTest(name: $name) {
+    _id
+    name
+  }
+}
+
+mutation DeleteTest($deleteTestId: ID!) {
+  deleteTest(id: $deleteTestId) {
+    _id
+    name
+  }
+}
+
+mutation updateTest($updateTestId: ID!, $name: String!) {
+  updateTest(id: $updateTestId, name: $name) {
+    _id
+    name
+  }
+}

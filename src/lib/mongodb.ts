@@ -1,4 +1,7 @@
+// src/lib/mongodb.ts
 import mongoose from "mongoose";
+import dotenv from "dotenv";
+dotenv.config();
 
 const uri = process.env.MONGODB_URI;
 
@@ -15,7 +18,9 @@ export const connectToDatabase = async () => {
   }
 
   try {
-    await mongoose.connect(uri);
+    await mongoose.connect(uri, {
+      serverSelectionTimeoutMS: 15000,
+    });
     isConnected = true;
     console.log("connected to database");
   } catch (error) {

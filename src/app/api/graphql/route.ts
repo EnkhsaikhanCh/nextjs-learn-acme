@@ -5,7 +5,7 @@ import { NextRequest } from "next/server";
 import { resolvers } from "./resolvers";
 import { connectToDatabase } from "@/lib/mongodb";
 
-connectToDatabase();
+await connectToDatabase();
 
 const server = new ApolloServer({
   resolvers,

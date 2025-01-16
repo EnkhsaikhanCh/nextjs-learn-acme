@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import ApolloWrapper from "./api/graphql/ApolloWrappre";
+import SessionProviderWrapper from "@/providers/SessionProviderWrapper";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -13,7 +15,11 @@ interface RootLayoutProps {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
-      <body className={`antialiased`}>{children}</body>
+      <body className={`antialiased`}>
+        <SessionProviderWrapper>
+          <ApolloWrapper>{children}</ApolloWrapper>
+        </SessionProviderWrapper>
+      </body>
     </html>
   );
 }

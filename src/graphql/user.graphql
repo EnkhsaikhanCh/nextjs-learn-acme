@@ -1,0 +1,23 @@
+# src/graphql/user.graphql
+mutation CreateUser($input: RegisterInput!) {
+  createUser(input: $input) {
+    message
+    user {
+      _id
+      email
+      studentId
+      role
+      isVerified
+    }
+  }
+}
+
+query GetUserById($id: ID!) {
+  getUserById(_id: $id) {
+    _id
+    email
+    studentId
+    role
+    isVerified
+  }
+}

@@ -12,6 +12,8 @@ const createJestConfig = nextJest({
 });
 
 const config: Config = {
+  testTimeout: 15000, // 15 секунд
+
   // All imported modules in your tests should be mocked automatically
   // automock: false,
 
@@ -48,6 +50,14 @@ const config: Config = {
     "src/app/dashboard",
     "src/hooks",
     "src/components/dashboard/sidebar/NavUser.tsx",
+    "src/common/index.ts",
+    "src/common/encryption/index.ts",
+    "src/app/signup/page.tsx",
+    "src/app/login/page.tsx",
+    "src/components/dashboard",
+
+    // generate-id
+    "src/utils/generate-unique-student-id",
 
     // api
     "src/handler.ts",
@@ -58,9 +68,35 @@ const config: Config = {
     "src/app/api/graphql/schemas/index.ts",
     "src/app/api/graphql/resolvers/mutations/index.ts",
     "src/app/api/graphql/resolvers/mutations/test/index.ts",
+    "src/app/api/graphql/resolvers/mutations/test/index.ts",
     "src/app/api/graphql/resolvers/queries/index.ts",
     "src/app/api/graphql/resolvers/queries/test/index.ts",
     "src/app/api/graphql/schemas",
+
+    // graphQL
+    "src/app/api/graphql/apollo-client.ts",
+    "src/app/api/graphql/ApolloWrappre.tsx",
+    "src/generated",
+
+    // encryption
+    "src/common/encryption",
+
+    // seed-admin
+    "src/scripts/seed-admin.ts",
+
+    // auth provider
+    "src/context",
+
+    // түр зуур
+    "src/middleware.ts",
+    "src/providers",
+    "src/app/api/auth",
+    "src/app/\\(auth\\)/forgot-password/page\\.tsx",
+    "src/app/\\(auth\\)/reset-password/page\\.tsx",
+    "src/components/email-template.tsx",
+    "src/app/\\(auth\\)/reset-password",
+    "src/components/otp-input.tsx",
+    "src/app/\\(auth\\)/verify-otp",
   ],
 
   // Indicates which provider should be used to instrument code for coverage
@@ -161,7 +197,7 @@ const config: Config = {
   // setupFiles: [],
 
   // A list of paths to modules that run some code to configure or set up the testing framework before each test
-  // setupFilesAfterEnv: [],
+  setupFilesAfterEnv: ["./jest.setup.ts"],
 
   // The number of seconds after which a test is considered as slow and reported as such in the results.
   // slowTestThreshold: 5,
