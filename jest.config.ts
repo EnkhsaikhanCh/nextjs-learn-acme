@@ -95,6 +95,8 @@ const config: Config = {
     "src/app/\\(auth\\)/reset-password/page\\.tsx",
     "src/components/email-template.tsx",
     "src/app/\\(auth\\)/reset-password",
+    "src/components/otp-input.tsx",
+    "src/app/\\(auth\\)/verify-otp",
   ],
 
   // Indicates which provider should be used to instrument code for coverage

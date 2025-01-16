@@ -8,6 +8,9 @@ export type User = {
   studentId: string;
   role: "student" | "admin";
   password: string;
+  otp?: string;
+  otpExpiry?: Date;
+  isVerified: boolean;
   resetToken?: string;
   resetTokenExpiry?: Date;
 };
@@ -19,6 +22,9 @@ const UserSchema = new Schema(
     studentId: { type: String, required: true, unique: true },
     role: { type: String, enum: ["student", "admin"], required: true },
     password: { type: String, required: true },
+    otp: { type: String },
+    otpExpiry: { type: Date },
+    isVerified: { type: Boolean, default: false },
     resetToken: { type: String },
     resetTokenExpiry: { type: Date },
   },

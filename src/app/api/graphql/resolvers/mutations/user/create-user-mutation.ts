@@ -72,6 +72,7 @@ export const createUser = async (
         email: newUser.email,
         studentId: newUser.studentId,
         role: newUser.role,
+        isVerified: newUser.isVerified,
       },
     };
   } catch (error) {

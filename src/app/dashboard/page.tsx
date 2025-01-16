@@ -51,6 +51,7 @@ export default function Page() {
             <TableHead>Email</TableHead>
             <TableHead>Student ID</TableHead>
             <TableHead>Role</TableHead>
+            <TableHead>Verify Status</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -58,6 +59,7 @@ export default function Page() {
             <TableCell className="font-medium">{user?.email}</TableCell>
             <TableCell>{user?.studentId}</TableCell>
             <TableCell>{user?.role}</TableCell>
+            <TableCell>{data?.getUserById.isVerified}</TableCell>
           </TableRow>
         </TableBody>
       </Table>
