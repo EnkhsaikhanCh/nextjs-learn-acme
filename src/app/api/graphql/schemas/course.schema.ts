@@ -12,7 +12,7 @@ export const typeDefs = gql`
     categories: [String]
     tags: [String]
     status: CourseStatus
-    # enrollments: [Enrollments]
+    enrollmentId: [Enrollment]
     thumbnail: String
   }
 
@@ -35,7 +35,7 @@ export const typeDefs = gql`
     categories: [String]
     tags: [String]
     status: CourseStatus
-    # enrollments: [Enrollments]
+    enrollmentId: [ID]
     thumbnail: String
   }
 
@@ -49,7 +49,7 @@ export const typeDefs = gql`
     categories: [String]
     tags: [String]
     status: CourseStatus
-    # enrollments: [Enrollments]
+    enrollmentId: [ID]
     thumbnail: String
   }
 
@@ -61,7 +61,6 @@ export const typeDefs = gql`
 `;
 
 export type CreateCourseInput = {
-  _id: string;
   title: string;
   description: string;
   price: number;
@@ -70,5 +69,6 @@ export type CreateCourseInput = {
   categories?: string[];
   tags?: string[];
   status?: "active" | "archived";
+  enrollmentId?: string[];
   thumbnail?: string;
 };
