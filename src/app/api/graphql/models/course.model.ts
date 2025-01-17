@@ -1,6 +1,7 @@
 // src/app/api/graphql/models/users.models.ts
 import { model, models, Schema } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
+import { string } from "zod";
 
 export type Course = {
   _id: string;
@@ -12,11 +13,11 @@ export type Course = {
   categories?: string[];
   tags?: string[];
   status?: "active" | "archived";
-  // enrollments?: string[];
+  enrollmentId?: string[];
   thumbnail?: string;
 };
 
-const CourseSchema = new Schema(
+const CourseSchema = new Schema<Course>(
   {
     _id: { type: String, default: () => uuidv4() },
     title: { type: String, required: true },
@@ -27,13 +28,13 @@ const CourseSchema = new Schema(
     categories: { type: [String], default: [] },
     tags: { type: [String], default: [] },
     status: { type: String, enum: ["active", "archived"], default: "archived" },
-    // enrollments: [
-    //   {
-    //     type: Schema.Types.ObjectId,
-    //     ref: "Enrollments",
-    //     default: [],
-    //   },
-    // ],
+    enrollmentId: [
+      {
+        type: Schema.Types.String,
+        ref: "Enrollment",
+        default: [],
+      },
+    ],
     thumbnail: { type: String },
   },
   { timestamps: true },

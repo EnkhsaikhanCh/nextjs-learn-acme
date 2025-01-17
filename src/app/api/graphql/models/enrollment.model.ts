@@ -9,6 +9,8 @@ export type Enrollment = {
   progress: number;
   status: "ACTIVE" | "COMPLETED" | "CANCELLED" | "PENDING";
   isDeleted: boolean;
+  lastAccessedAt: Date;
+  history: string;
 };
 
 const EnrollmentSchema = new Schema<Enrollment>(
@@ -39,6 +41,14 @@ const EnrollmentSchema = new Schema<Enrollment>(
       default: "ACTIVE",
     },
     isDeleted: { type: Boolean, default: false },
+    lastAccessedAt: { type: Date, default: null }, // Add this
+    history: [
+      {
+        status: { type: Schema.Types.String, required: true },
+        progress: { type: Number, required: true },
+        updatedAt: { type: Date, required: true },
+      },
+    ],
   },
   { timestamps: true },
 );

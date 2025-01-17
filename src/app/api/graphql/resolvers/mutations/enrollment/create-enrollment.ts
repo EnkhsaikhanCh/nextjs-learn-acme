@@ -61,6 +61,10 @@ export const createEnrollment = async (
 
     const savedEnrollment = await enrollment.save();
 
+    await CourseModel.findByIdAndUpdate(courseId, {
+      $push: { enrollmentId: savedEnrollment._id },
+    });
+
     // Populate references before returning
     const populatedEnrollment = await EnrollmentModel.findById(
       savedEnrollment._id,
