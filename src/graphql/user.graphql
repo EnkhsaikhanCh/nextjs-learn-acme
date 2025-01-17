@@ -12,6 +12,16 @@ mutation CreateUser($input: RegisterInput!) {
   }
 }
 
+query GetAllUser {
+  getAllUser {
+    _id
+    email
+    studentId
+    role
+    isVerified
+  }
+}
+
 query GetUserById($id: ID!) {
   getUserById(_id: $id) {
     _id

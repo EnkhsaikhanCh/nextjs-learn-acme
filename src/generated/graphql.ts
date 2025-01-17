@@ -17,14 +17,96 @@ export type Scalars = {
   Float: { input: number; output: number; }
 };
 
+export type Course = {
+  __typename?: 'Course';
+  _id: Scalars['ID']['output'];
+  categories?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  createdBy?: Maybe<Scalars['String']['output']>;
+  description: Scalars['String']['output'];
+  duration?: Maybe<Scalars['Int']['output']>;
+  enrollmentId?: Maybe<Array<Maybe<Enrollment>>>;
+  price: Scalars['Float']['output'];
+  status?: Maybe<CourseStatus>;
+  tags?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  thumbnail?: Maybe<Scalars['String']['output']>;
+  title: Scalars['String']['output'];
+};
+
+export enum CourseStatus {
+  Active = 'active',
+  Archived = 'archived'
+}
+
+export type CreateCourseInput = {
+  categories?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  createdBy?: InputMaybe<Scalars['String']['input']>;
+  description: Scalars['String']['input'];
+  duration?: InputMaybe<Scalars['Int']['input']>;
+  enrollmentId?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
+  price: Scalars['Float']['input'];
+  status?: InputMaybe<CourseStatus>;
+  tags?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  thumbnail?: InputMaybe<Scalars['String']['input']>;
+  title: Scalars['String']['input'];
+};
+
+export type CreateEnrollmentInput = {
+  courseId: Scalars['ID']['input'];
+  userId: Scalars['ID']['input'];
+};
+
+export type Enrollment = {
+  __typename?: 'Enrollment';
+  _id: Scalars['ID']['output'];
+  courseId: Course;
+  createdAt: Scalars['String']['output'];
+  history?: Maybe<Array<EnrollmentHistory>>;
+  isCompleted: Scalars['Boolean']['output'];
+  isDeleted: Scalars['Boolean']['output'];
+  lastAccessedAt?: Maybe<Scalars['String']['output']>;
+  progress: Scalars['Float']['output'];
+  status: EnrollmentStatus;
+  updatedAt: Scalars['String']['output'];
+  userId: User;
+};
+
+export type EnrollmentHistory = {
+  __typename?: 'EnrollmentHistory';
+  progress: Scalars['Float']['output'];
+  status: EnrollmentStatus;
+  updatedAt: Scalars['String']['output'];
+};
+
+export enum EnrollmentStatus {
+  Active = 'ACTIVE',
+  Cancelled = 'CANCELLED',
+  Completed = 'COMPLETED',
+  Pending = 'PENDING'
+}
+
 export type Mutation = {
   __typename?: 'Mutation';
+  createCourse: Course;
+  createEnrollment?: Maybe<Enrollment>;
   createTest: Test;
   createUser: RegisterResponse;
+  deleteCourse: Scalars['Boolean']['output'];
   deleteTest: Test;
   deleteUser: User;
+  updateCourse: Course;
+  updateEnrollment?: Maybe<Enrollment>;
   updateTest: Test;
   updateUser: User;
+};
+
+
+export type MutationCreateCourseArgs = {
+  input: CreateCourseInput;
+};
+
+
+export type MutationCreateEnrollmentArgs = {
+  input?: InputMaybe<CreateEnrollmentInput>;
 };
 
 
@@ -38,6 +120,11 @@ export type MutationCreateUserArgs = {
 };
 
 
+export type MutationDeleteCourseArgs = {
+  _id: Scalars['ID']['input'];
+};
+
+
 export type MutationDeleteTestArgs = {
   id: Scalars['ID']['input'];
 };
@@ -45,6 +132,16 @@ export type MutationDeleteTestArgs = {
 
 export type MutationDeleteUserArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type MutationUpdateCourseArgs = {
+  input: UpdateCourseInput;
+};
+
+
+export type MutationUpdateEnrollmentArgs = {
+  input?: InputMaybe<UpdateEnrollmentInput>;
 };
 
 
@@ -63,7 +160,26 @@ export type Query = {
   __typename?: 'Query';
   getAllTest: Array<Test>;
   getAllUser: Array<User>;
+  getCourse?: Maybe<Course>;
+  getCourses: Array<Course>;
+  getEnrollmentsByCourse: Array<Enrollment>;
+  getEnrollmentsByUser: Array<Enrollment>;
   getUserById: User;
+};
+
+
+export type QueryGetCourseArgs = {
+  _id: Scalars['ID']['input'];
+};
+
+
+export type QueryGetEnrollmentsByCourseArgs = {
+  courseId: Scalars['ID']['input'];
+};
+
+
+export type QueryGetEnrollmentsByUserArgs = {
+  userId: Scalars['ID']['input'];
 };
 
 
@@ -86,6 +202,26 @@ export type Test = {
   __typename?: 'Test';
   _id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
+};
+
+export type UpdateCourseInput = {
+  _id: Scalars['ID']['input'];
+  categories?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  createdBy?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  duration?: InputMaybe<Scalars['Int']['input']>;
+  enrollmentId?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
+  price?: InputMaybe<Scalars['Float']['input']>;
+  status?: InputMaybe<CourseStatus>;
+  tags?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  thumbnail?: InputMaybe<Scalars['String']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateEnrollmentInput = {
+  _id: Scalars['ID']['input'];
+  progress?: InputMaybe<Scalars['Float']['input']>;
+  status?: InputMaybe<EnrollmentStatus>;
 };
 
 export type UpdateInput = {
@@ -134,6 +270,11 @@ export type CreateUserMutationVariables = Exact<{
 
 
 export type CreateUserMutation = { __typename?: 'Mutation', createUser: { __typename?: 'RegisterResponse', message: string, user: { __typename?: 'User', _id: string, email: string, studentId: string, role: string, isVerified: string } } };
+
+export type GetAllUserQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllUserQuery = { __typename?: 'Query', getAllUser: Array<{ __typename?: 'User', _id: string, email: string, studentId: string, role: string, isVerified: string }> };
 
 export type GetUserByIdQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -326,6 +467,49 @@ export function useCreateUserMutation(baseOptions?: Apollo.MutationHookOptions<C
 export type CreateUserMutationHookResult = ReturnType<typeof useCreateUserMutation>;
 export type CreateUserMutationResult = Apollo.MutationResult<CreateUserMutation>;
 export type CreateUserMutationOptions = Apollo.BaseMutationOptions<CreateUserMutation, CreateUserMutationVariables>;
+export const GetAllUserDocument = gql`
+    query GetAllUser {
+  getAllUser {
+    _id
+    email
+    studentId
+    role
+    isVerified
+  }
+}
+    `;
+
+/**
+ * __useGetAllUserQuery__
+ *
+ * To run a query within a React component, call `useGetAllUserQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAllUserQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAllUserQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetAllUserQuery(baseOptions?: Apollo.QueryHookOptions<GetAllUserQuery, GetAllUserQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetAllUserQuery, GetAllUserQueryVariables>(GetAllUserDocument, options);
+      }
+export function useGetAllUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAllUserQuery, GetAllUserQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetAllUserQuery, GetAllUserQueryVariables>(GetAllUserDocument, options);
+        }
+export function useGetAllUserSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetAllUserQuery, GetAllUserQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetAllUserQuery, GetAllUserQueryVariables>(GetAllUserDocument, options);
+        }
+export type GetAllUserQueryHookResult = ReturnType<typeof useGetAllUserQuery>;
+export type GetAllUserLazyQueryHookResult = ReturnType<typeof useGetAllUserLazyQuery>;
+export type GetAllUserSuspenseQueryHookResult = ReturnType<typeof useGetAllUserSuspenseQuery>;
+export type GetAllUserQueryResult = Apollo.QueryResult<GetAllUserQuery, GetAllUserQueryVariables>;
 export const GetUserByIdDocument = gql`
     query GetUserById($id: ID!) {
   getUserById(_id: $id) {
