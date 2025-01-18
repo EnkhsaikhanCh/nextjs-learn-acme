@@ -1,10 +1,6 @@
-// src/lib/email.ts
-// import { Resend } from "resend";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 dotenv.config();
-
-// const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function sendEmail({
   to,
@@ -15,12 +11,18 @@ export async function sendEmail({
   subject: string;
   html: string;
 }) {
+  const isProduction =
+    process.env.NODE_ENV === "production" &&
+    !process.env.VERCEL_ENV?.includes("preview"); // preview орчныг production-оос ялгах
+
   const transport = nodemailer.createTransport({
-    host: process.env.MAILTRAP_HOST,
-    port: Number(process.env.MAILTRAP_PORT),
+    host: isProduction ? process.env.SMTP_HOST : process.env.MAILTRAP_HOST,
+    port: isProduction
+      ? Number(process.env.SMTP_PORT)
+      : Number(process.env.MAILTRAP_PORT),
     auth: {
-      user: process.env.MAILTRAP_USER,
-      pass: process.env.MAILTRAP_PASS,
+      user: isProduction ? process.env.SMTP_USER : process.env.MAILTRAP_USER,
+      pass: isProduction ? process.env.SMTP_PASS : process.env.MAILTRAP_PASS,
     },
   });
 
@@ -33,15 +35,7 @@ export async function sendEmail({
 
   try {
     const info = await transport.sendMail(mailOptions);
-    // const info = await resend.emails.send({
-    //   from: "YourApp <no-reply@yourapp.com>",
-    //   to,
-    //   subject,
-    //   html,
-    // });
-
     console.log(`И-мэйл илгээгдсэн: ${info.messageId}`);
-    // console.log(`И-мэйл илгээгдсэн: ${info}`);
     return info;
   } catch (error) {
     console.error("И-мэйл илгээхэд алдаа гарлаа:", error);
