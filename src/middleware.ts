@@ -10,19 +10,35 @@ export async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
-  // Нэвтэрсэн хэрэглэгч `/login` болон `/signup` руу оролдохыг оролдох үед `/dashboard` руу чиглүүлэх
-  if (token && (pathname === "/login" || pathname === "/signup")) {
+  // Нэвтрээгүй хэрэглэгчдийг `/login` руу чиглүүлэх
+  if (!token) {
+    if (pathname.startsWith("/admin") || pathname.startsWith("/dashboard")) {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
+    return NextResponse.next(); // Үргэлжлүүлэх
+  }
+
+  // Token-оос хэрэглэгчийн role авна
+  const role = token?.role; // Ensure your token includes the `role` field
+
+  // `/admin` замд зөвхөн admin role-тэй хэрэглэгч нэвтрэх боломжтой
+  if (pathname.startsWith("/admin/dashboard") && role !== "admin") {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
-  // Нэвтрээгүй хэрэглэгч `/dashboard` руу оролдох үед `/login` руу чиглүүлэх
-  if (!token && pathname.startsWith("/dashboard")) {
-    return NextResponse.redirect(new URL("/login", request.url));
+  // `/dashboard` замд зөвхөн student role-тэй хэрэглэгч нэвтрэх боломжтой
+  if (pathname.startsWith("/dashboard") && role !== "student") {
+    return NextResponse.redirect(new URL("/admin", request.url));
+  }
+
+  // Хэрэглэгч `/login` эсвэл `/signup` руу орох үед `/dashboard` руу чиглүүлэх
+  if (token && (pathname === "/login" || pathname === "/signup")) {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
   return NextResponse.next(); // Үргэлжлүүлэх
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/login", "/signup"], // Middleware ажиллах замууд
+  matcher: ["/admin/:path*", "/dashboard/:path*", "/login", "/signup"], // Middleware ажиллах замууд
 };

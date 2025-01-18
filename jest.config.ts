@@ -98,6 +98,7 @@ const config: Config = {
     "src/components/otp-input.tsx",
     "src/app/\\(auth\\)/verify-otp",
     "src/app/api/graphql/resolvers/mutations/enrollment/create-enrollment.ts",
+    "src/app/admin",
   ],
 
   // Indicates which provider should be used to instrument code for coverage

@@ -22,8 +22,8 @@ export const typeDefs = gql`
   }
 
   type Query {
-    getCourse(_id: ID!): Course
-    getCourses: [Course!]!
+    getCourseById(_id: ID!): Course
+    getAllCourse: [Course!]!
   }
 
   input CreateCourseInput {
