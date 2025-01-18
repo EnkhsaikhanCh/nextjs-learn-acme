@@ -35,6 +35,7 @@ export default function Page() {
   const [search, setSearch] = useState("");
 
   // Define your table columns
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const columns = useMemo<ColumnDef<any>[]>(
     () => [
       {
