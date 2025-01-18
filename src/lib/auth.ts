@@ -5,6 +5,8 @@ import { UserModel } from "@/app/api/graphql/models";
 import argon2 from "argon2";
 import { JWT } from "next-auth/jwt";
 import { connectToDatabase } from "./mongodb";
+import dotenv from "dotenv";
+dotenv.config();
 
 interface ExtendedJWT extends JWT {
   id?: string;
