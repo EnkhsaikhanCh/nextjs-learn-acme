@@ -63,7 +63,7 @@ export default function SignUp() {
       });
 
       if (data?.createUser?.user) {
-        toast.success("Бүртгэл амжилттай үүсгэлээ!");
+        // toast.success("Бүртгэл амжилттай үүсгэлээ!");
 
         // OTP илгээх
         const otpResponse = await fetch("/api/auth/send-otp", {

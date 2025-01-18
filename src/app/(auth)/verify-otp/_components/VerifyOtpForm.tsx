@@ -149,19 +149,29 @@ export function VerifyOtpForm() {
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
             <RectangleEllipsis className="h-6 w-6 text-blue-600" />
           </div>
-          <CardTitle className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          <CardTitle className="mt-6 text-center text-2xl font-extrabold text-gray-900 md:text-3xl">
             Имэйл баталгаажуулалт
           </CardTitle>
           <CardDescription className="mt-2 text-center text-sm text-gray-600">
-            Баталгаажуулах кодыг оруулна уу.
+            Таны и-мэйл хаяг руу баталгаажуулах код илгээгдсэн байна.
           </CardDescription>
         </CardHeader>
         {!success ? (
           <>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
-                <OTPInput length={6} onComplete={(value) => setOtp(value)} />
-                {error && <p className="text-sm text-red-600">{error}</p>}
+                <div className="flex items-center justify-center text-center">
+                  <OTPInput
+                    length={6}
+                    onComplete={(value) => setOtp(value)}
+                    disabled={isVerifying}
+                  />
+                </div>
+                {error && (
+                  <p className="flex items-center justify-center rounded-md border border-yellow-500 bg-yellow-200 px-2 py-2 text-center text-sm font-semibold text-yellow-600">
+                    {error}
+                  </p>
+                )}
                 <Button type="submit" disabled={isVerifying} className="w-full">
                   {isVerifying ? (
                     <>
@@ -174,23 +184,25 @@ export function VerifyOtpForm() {
                 </Button>
               </form>
               <div className="mt-3 text-center text-sm">
-                Баталгаажуулах код хүлээн аваагүй байна уу?{" "}
-                <Button
-                  variant="link"
-                  type="button"
-                  className="text-blue-600 hover:underline"
-                  onClick={handleResendOTP}
-                  disabled={isResending}
-                >
-                  {isResending ? (
-                    <>
-                      Дахин илгээж байна...
-                      <Loader className="mr-2 h-4 w-4 animate-spin" />
-                    </>
-                  ) : (
-                    <>Дахин илгээх</>
-                  )}
-                </Button>
+                Баталгаажуулах код хүлээн аваагүй байна уу?
+                <div>
+                  <Button
+                    variant="link"
+                    type="button"
+                    className="text-blue-600 hover:underline"
+                    onClick={handleResendOTP}
+                    disabled={isResending}
+                  >
+                    {isResending ? (
+                      <>
+                        Дахин илгээж байна...
+                        <Loader className="mr-2 h-4 w-4 animate-spin" />
+                      </>
+                    ) : (
+                      <>Дахин илгээх</>
+                    )}
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </>
