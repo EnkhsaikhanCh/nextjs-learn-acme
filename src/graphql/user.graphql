@@ -31,3 +31,44 @@ query GetUserById($id: ID!) {
     isVerified
   }
 }
+
+query GetAllCourse {
+  getAllCourse {
+    _id
+    title
+    description
+    price
+    duration
+    categories
+    tags
+    status
+    enrollmentId {
+      _id
+    }
+    thumbnail
+  }
+}
+
+mutation CreateCourse($input: CreateCourseInput!) {
+  createCourse(input: $input) {
+    _id
+  }
+}
+
+query GetCourseById($id: ID!) {
+  getCourseById(_id: $id) {
+    _id
+    title
+    description
+    price
+    duration
+    createdBy
+    categories
+    tags
+    status
+    enrollmentId {
+      _id
+    }
+    thumbnail
+  }
+}
