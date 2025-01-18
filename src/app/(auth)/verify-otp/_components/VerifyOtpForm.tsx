@@ -6,12 +6,7 @@ import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { OTPInput } from "@/components/otp-input";
 import { Button } from "@/components/ui/button";
-import {
-  ArrowLeft,
-  Loader,
-  RectangleEllipsis,
-  TriangleAlert,
-} from "lucide-react";
+import { ArrowLeft, Loader, RectangleEllipsis } from "lucide-react";
 import {
   Card,
   CardContent,
