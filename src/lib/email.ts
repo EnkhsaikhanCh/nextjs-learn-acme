@@ -11,7 +11,9 @@ export async function sendEmail({
   subject: string;
   html: string;
 }) {
-  const isProduction = process.env.NODE_ENV === "production";
+  const isProduction =
+    process.env.NODE_ENV === "production" &&
+    !process.env.VERCEL_ENV?.includes("preview"); // preview орчныг production-оос ялгах
 
   const transport = nodemailer.createTransport({
     host: isProduction ? process.env.SMTP_HOST : process.env.MAILTRAP_HOST,
