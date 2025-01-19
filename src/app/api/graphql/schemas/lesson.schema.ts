@@ -5,7 +5,7 @@ export const typeDefs = gql`
     _id: ID!
     sectionId: Section!
     title: String!
-    content: String!
+    content: String
     videoUrl: String
     order: Int!
     isPublished: Boolean!
@@ -27,9 +27,9 @@ export const typeDefs = gql`
   input CreateLessonInput {
     sectionId: ID!
     title: String!
-    content: String!
+    content: String
     videoUrl: String
-    order: Int!
+    order: Int
   }
 
   input UpdateLessonInput {

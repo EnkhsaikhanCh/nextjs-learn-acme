@@ -5,7 +5,7 @@ export type ILesson = {
   _id: string;
   sectionId: string;
   title: string;
-  content: string;
+  content?: string;
   videoUrl?: string;
   order: number;
   isPublished: boolean;
@@ -22,7 +22,7 @@ const LessonSchema = new Schema<ILesson>(
       required: [true, "Section ID is required"],
     },
     title: { type: String, required: [true, "Title is required"] },
-    content: { type: String, required: [true, "Content is required"] },
+    content: { type: String },
     videoUrl: {
       type: String,
       validate: {
