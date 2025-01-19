@@ -7,7 +7,7 @@ export const typeDefs = gql`
     title: String!
     description: String!
     price: Float!
-    sectionId: [String]
+    sectionId: [Section]
     duration: Int
     createdBy: String
     categories: [String]
@@ -45,7 +45,6 @@ export const typeDefs = gql`
     title: String
     description: String
     price: Float
-    sectionId: [String]
     duration: Int
     createdBy: String
     categories: [String]

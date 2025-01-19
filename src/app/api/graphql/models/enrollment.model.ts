@@ -17,12 +17,12 @@ const EnrollmentSchema = new Schema<Enrollment>(
   {
     _id: { type: String, default: () => uuidv4() },
     userId: {
-      type: String,
+      type: Schema.Types.String,
       ref: "User",
       required: [true, "User ID is required"],
     },
     courseId: {
-      type: String,
+      type: Schema.Types.String,
       ref: "Course",
       required: [true, "Course ID is required"],
     },
