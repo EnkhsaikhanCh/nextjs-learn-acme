@@ -26,6 +26,7 @@ export type Course = {
   duration?: Maybe<Scalars['Int']['output']>;
   enrollmentId?: Maybe<Array<Maybe<Enrollment>>>;
   price: Scalars['Float']['output'];
+  sectionId?: Maybe<Array<Maybe<Section>>>;
   status?: Maybe<CourseStatus>;
   tags?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   thumbnail?: Maybe<Scalars['String']['output']>;
@@ -53,6 +54,21 @@ export type CreateCourseInput = {
 export type CreateEnrollmentInput = {
   courseId: Scalars['ID']['input'];
   userId: Scalars['ID']['input'];
+};
+
+export type CreateLessonInput = {
+  content?: InputMaybe<Scalars['String']['input']>;
+  order?: InputMaybe<Scalars['Int']['input']>;
+  sectionId: Scalars['ID']['input'];
+  title: Scalars['String']['input'];
+  videoUrl?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type CreateSectionInput = {
+  courseId: Scalars['ID']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  order: Scalars['Int']['input'];
+  title: Scalars['String']['input'];
 };
 
 export type Enrollment = {
@@ -84,17 +100,36 @@ export enum EnrollmentStatus {
   Pending = 'PENDING'
 }
 
+export type Lesson = {
+  __typename?: 'Lesson';
+  _id: Scalars['ID']['output'];
+  content?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['String']['output'];
+  isPublished: Scalars['Boolean']['output'];
+  order: Scalars['Int']['output'];
+  sectionId: Section;
+  title: Scalars['String']['output'];
+  updatedAt: Scalars['String']['output'];
+  videoUrl?: Maybe<Scalars['String']['output']>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   createCourse: Course;
   createEnrollment?: Maybe<Enrollment>;
+  createLesson: Lesson;
+  createSection: Section;
   createTest: Test;
   createUser: RegisterResponse;
   deleteCourse: Scalars['Boolean']['output'];
+  deleteLesson: Scalars['Boolean']['output'];
+  deleteSection: Scalars['Boolean']['output'];
   deleteTest: Test;
   deleteUser: User;
   updateCourse: Course;
   updateEnrollment?: Maybe<Enrollment>;
+  updateLesson: Lesson;
+  updateSection: Section;
   updateTest: Test;
   updateUser: User;
 };
@@ -110,6 +145,16 @@ export type MutationCreateEnrollmentArgs = {
 };
 
 
+export type MutationCreateLessonArgs = {
+  input: CreateLessonInput;
+};
+
+
+export type MutationCreateSectionArgs = {
+  input: CreateSectionInput;
+};
+
+
 export type MutationCreateTestArgs = {
   name: Scalars['String']['input'];
 };
@@ -122,6 +167,16 @@ export type MutationCreateUserArgs = {
 
 export type MutationDeleteCourseArgs = {
   _id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteLessonArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteSectionArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -145,6 +200,18 @@ export type MutationUpdateEnrollmentArgs = {
 };
 
 
+export type MutationUpdateLessonArgs = {
+  id: Scalars['ID']['input'];
+  input: UpdateLessonInput;
+};
+
+
+export type MutationUpdateSectionArgs = {
+  id: Scalars['ID']['input'];
+  input: UpdateSectionInput;
+};
+
+
 export type MutationUpdateTestArgs = {
   id: Scalars['ID']['input'];
   name: Scalars['String']['input'];
@@ -164,6 +231,10 @@ export type Query = {
   getCourseById?: Maybe<Course>;
   getEnrollmentsByCourse: Array<Enrollment>;
   getEnrollmentsByUser: Array<Enrollment>;
+  getLessonById: Lesson;
+  getLessonsBySection: Array<Lesson>;
+  getSectionById: Section;
+  getSections: Array<Section>;
   getUserById: User;
 };
 
@@ -183,6 +254,26 @@ export type QueryGetEnrollmentsByUserArgs = {
 };
 
 
+export type QueryGetLessonByIdArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryGetLessonsBySectionArgs = {
+  sectionId: Scalars['ID']['input'];
+};
+
+
+export type QueryGetSectionByIdArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryGetSectionsArgs = {
+  courseId: Scalars['ID']['input'];
+};
+
+
 export type QueryGetUserByIdArgs = {
   _id: Scalars['ID']['input'];
 };
@@ -196,6 +287,18 @@ export type RegisterResponse = {
   __typename?: 'RegisterResponse';
   message: Scalars['String']['output'];
   user: User;
+};
+
+export type Section = {
+  __typename?: 'Section';
+  _id: Scalars['ID']['output'];
+  courseId: Course;
+  createdAt: Scalars['String']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  lessonId?: Maybe<Array<Maybe<Lesson>>>;
+  order: Scalars['Int']['output'];
+  title: Scalars['String']['output'];
+  updatedAt: Scalars['String']['output'];
 };
 
 export type Test = {
@@ -226,6 +329,20 @@ export type UpdateEnrollmentInput = {
 
 export type UpdateInput = {
   email?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateLessonInput = {
+  content?: InputMaybe<Scalars['String']['input']>;
+  isPublished?: InputMaybe<Scalars['Boolean']['input']>;
+  order?: InputMaybe<Scalars['Int']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
+  videoUrl?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateSectionInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  order?: InputMaybe<Scalars['Int']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type User = {
@@ -300,7 +417,7 @@ export type GetCourseByIdQueryVariables = Exact<{
 }>;
 
 
-export type GetCourseByIdQuery = { __typename?: 'Query', getCourseById?: { __typename?: 'Course', _id: string, title: string, description: string, price: number, duration?: number | null, createdBy?: string | null, categories?: Array<string | null> | null, tags?: Array<string | null> | null, status?: CourseStatus | null, thumbnail?: string | null, enrollmentId?: Array<{ __typename?: 'Enrollment', _id: string } | null> | null } | null };
+export type GetCourseByIdQuery = { __typename?: 'Query', getCourseById?: { __typename?: 'Course', _id: string, title: string, description: string, price: number, duration?: number | null, createdBy?: string | null, categories?: Array<string | null> | null, tags?: Array<string | null> | null, status?: CourseStatus | null, thumbnail?: string | null, sectionId?: Array<{ __typename?: 'Section', _id: string, title: string } | null> | null, enrollmentId?: Array<{ __typename?: 'Enrollment', _id: string, userId: { __typename?: 'User', _id: string, email: string } } | null> | null } | null };
 
 
 export const GetAllTestDocument = gql`
@@ -663,6 +780,10 @@ export const GetCourseByIdDocument = gql`
     title
     description
     price
+    sectionId {
+      _id
+      title
+    }
     duration
     createdBy
     categories
@@ -670,6 +791,10 @@ export const GetCourseByIdDocument = gql`
     status
     enrollmentId {
       _id
+      userId {
+        _id
+        email
+      }
     }
     thumbnail
   }

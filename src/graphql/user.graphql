@@ -61,6 +61,10 @@ query GetCourseById($id: ID!) {
     title
     description
     price
+    sectionId {
+      _id
+      title
+    }
     duration
     createdBy
     categories
@@ -68,6 +72,10 @@ query GetCourseById($id: ID!) {
     status
     enrollmentId {
       _id
+      userId {
+        _id
+        email
+      }
     }
     thumbnail
   }
