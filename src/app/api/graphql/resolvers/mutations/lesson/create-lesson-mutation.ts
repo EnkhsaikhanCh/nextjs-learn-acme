@@ -36,6 +36,10 @@ export const createLesson = async (
       order: maxOrder + 1,
     });
 
+    await SectionModel.findByIdAndUpdate(sectionId, {
+      $push: { lessonId: newLesson._id },
+    });
+
     const populatedLesson = await LessonModel.findById(newLesson._id).populate({
       path: "sectionId",
       model: "Section",

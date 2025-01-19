@@ -33,9 +33,9 @@ export const createSection = async (
       $push: { sectionId: newSection._id },
     });
 
-    const populatedSection = await SectionModel.findById(
-      newSection._id,
-    ).populate({ path: "courseId", model: "Course" });
+    const populatedSection = await SectionModel.findById(newSection._id)
+      .populate({ path: "courseId", model: "Course" })
+      .populate({ path: "lessonId", model: "Lesson" });
 
     if (!populatedSection) {
       throw new GraphQLError("Failed to retrieve the created section", {

@@ -7,7 +7,7 @@ export type Section = {
   title: string;
   description?: string;
   order: number;
-  //   lessonId: string[];
+  lessonId: string[];
   createdAt: Date;
   updatedAt: Date;
 };
@@ -23,13 +23,13 @@ const SectionSchema = new Schema<Section>(
     title: { type: String, required: true },
     description: { type: String },
     order: { type: Number, required: true, min: 1 },
-    // lessonId: [
-    //   {
-    //     type: String,
-    //     ref: "Lesson",
-    //     required: [],
-    //   },
-    // ],
+    lessonId: [
+      {
+        type: Schema.Types.String,
+        ref: "Lesson",
+        required: [],
+      },
+    ],
   },
   {
     timestamps: true,
