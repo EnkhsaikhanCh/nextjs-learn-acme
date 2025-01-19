@@ -38,6 +38,8 @@ export default function Page() {
     return <div>No data found</div>;
   }
 
+  const sectionCount = data?.getCourseById?.sectionId?.length ?? 0;
+
   return (
     <div className="flex w-[700px] flex-col gap-2">
       <h1 className="rounded-md border-2 border-yellow-600 bg-yellow-100 px-3 py-2 text-yellow-800">
@@ -54,6 +56,14 @@ export default function Page() {
       <p>
         <span className="font-bold">Price:</span> ₮{data?.getCourseById?.price}
       </p>
+      <div>
+        <span className="font-bold">Total Section:</span>{" "}
+        {sectionCount > 0 ? (
+          <>{sectionCount}</>
+        ) : (
+          <span className="italic text-gray-500">No section available</span>
+        )}
+      </div>
       <p>
         <span className="font-bold">Duration:</span>{" "}
         {data?.getCourseById?.duration}
@@ -66,9 +76,10 @@ export default function Page() {
         <span className="font-bold">Total Enrollments:</span>{" "}
         {data?.getCourseById?.enrollmentId?.length}
       </p>
-      <p>
-        <span className="font-bold">Status:</span> {data?.getCourseById?.status}
-      </p>
+      <div>
+        <span className="font-bold">Status:</span>{" "}
+        <Badge>{data?.getCourseById?.status}</Badge>
+      </div>
       <div className="flex gap-2">
         <span className="font-bold">Categories:</span>
         {data?.getCourseById?.categories?.length ? (
@@ -93,6 +104,38 @@ export default function Page() {
         ) : (
           <span className="italic text-gray-500">No tags available</span>
         )}
+      </div>
+
+      <p>
+        <span className="font-bold">Total Enrollments:</span>{" "}
+        {data?.getCourseById?.enrollmentId?.length ?? 0}
+      </p>
+
+      <div>
+        {data?.getCourseById?.enrollmentId?.map((enrollment, index) => (
+          <div key={index} className="mb-3 rounded-md border">
+            <div className="rounded-t-md bg-gray-200 p-1 text-gray-700">
+              <span className="font-bold">Enrollment ID:</span>{" "}
+              {enrollment?._id}
+            </div>
+            {enrollment?.userId ? (
+              <div className="p-2">
+                <p>
+                  <span className="font-bold">User ID:</span>{" "}
+                  {enrollment.userId._id}
+                </p>
+                <p>
+                  <span className="font-bold">Email:</span>{" "}
+                  {enrollment.userId.email}
+                </p>
+              </div>
+            ) : (
+              <p className="p-2 italic text-gray-500">
+                User information not available or user deleted
+              </p>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );
