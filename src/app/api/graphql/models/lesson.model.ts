@@ -1,4 +1,4 @@
-import { Schema, model, models, Document } from "mongoose";
+import { Schema, model, models } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 
 export type ILesson = {
