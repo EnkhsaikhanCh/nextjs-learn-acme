@@ -49,13 +49,11 @@ export const createLesson = async (
 
     return populatedLesson;
   } catch (error) {
-    console.error(error);
     if (error instanceof GraphQLError) {
       throw error;
     }
 
-    const message = (error as Error).message;
-    throw new GraphQLError(`Internal server error: ${message}`, {
+    throw new GraphQLError("Internal server error", {
       extensions: { code: "INTERNAL_SERVER_ERROR" },
     });
   }
