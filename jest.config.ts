@@ -100,6 +100,7 @@ const config: Config = {
     "src/app/api/graphql/resolvers/mutations/enrollment/create-enrollment.ts",
     "src/app/admin",
     "src/app/api/graphql/resolvers/mutations/section",
+    "src/app/api/graphql/resolvers/mutations/lesson",
   ],
 
   // Indicates which provider should be used to instrument code for coverage
