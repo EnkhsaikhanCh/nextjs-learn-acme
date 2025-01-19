@@ -1,4 +1,5 @@
 import { Schema, model, models } from "mongoose";
+import { v4 as uuidv4 } from "uuid";
 
 export type Section = {
   _id: string;
@@ -13,7 +14,7 @@ export type Section = {
 
 const SectionSchema = new Schema<Section>(
   {
-    _id: { type: String, default: () => require("uuid").v4() },
+    _id: { type: String, default: () => uuidv4() },
     courseId: {
       type: String,
       ref: "Course",
