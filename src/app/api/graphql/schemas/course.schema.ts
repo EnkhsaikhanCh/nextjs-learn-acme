@@ -7,6 +7,7 @@ export const typeDefs = gql`
     title: String!
     description: String!
     price: Float!
+    sectionId: [String]
     duration: Int
     createdBy: String
     categories: [String]
@@ -44,6 +45,7 @@ export const typeDefs = gql`
     title: String
     description: String
     price: Float
+    sectionId: [String]
     duration: Int
     createdBy: String
     categories: [String]
@@ -64,6 +66,7 @@ export type CreateCourseInput = {
   title: string;
   description: string;
   price: number;
+  sectionId?: string[];
   duration?: number;
   createdBy?: string;
   categories?: string[];

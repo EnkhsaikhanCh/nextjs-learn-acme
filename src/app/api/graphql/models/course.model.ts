@@ -7,6 +7,7 @@ export type Course = {
   title: string;
   description: string;
   price: number;
+  sectionId: string;
   duration?: number;
   createdBy?: string;
   categories?: string[];
@@ -22,6 +23,7 @@ const CourseSchema = new Schema<Course>(
     title: { type: String, required: true },
     description: { type: String, required: true },
     price: { type: Number, required: true, min: 0 },
+    sectionId: [{ type: Schema.Types.String, ref: "Section", default: [] }],
     duration: { type: Number, min: 0 },
     createdBy: { type: String },
     categories: { type: [String], default: [] },
