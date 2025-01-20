@@ -10,7 +10,7 @@ export const getCourseById = async (_: unknown, { _id }: { _id: string }) => {
         populate: [
           {
             path: "lessonId",
-            select: "_id title",
+            select: "_id title isPublished",
           },
         ],
       })
