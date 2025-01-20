@@ -67,7 +67,7 @@ export type CreateLessonInput = {
 export type CreateSectionInput = {
   courseId: Scalars['ID']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
-  order: Scalars['Int']['input'];
+  order?: InputMaybe<Scalars['Int']['input']>;
   title: Scalars['String']['input'];
 };
 
@@ -83,7 +83,7 @@ export type Enrollment = {
   progress: Scalars['Float']['output'];
   status: EnrollmentStatus;
   updatedAt: Scalars['String']['output'];
-  userId: User;
+  userId?: Maybe<User>;
 };
 
 export type EnrollmentHistory = {
@@ -118,7 +118,7 @@ export type Mutation = {
   createCourse: Course;
   createEnrollment?: Maybe<Enrollment>;
   createLesson: Lesson;
-  createSection: Section;
+  createSection?: Maybe<Section>;
   createTest: Test;
   createUser: RegisterResponse;
   deleteCourse: Scalars['Boolean']['output'];
@@ -151,7 +151,7 @@ export type MutationCreateLessonArgs = {
 
 
 export type MutationCreateSectionArgs = {
-  input: CreateSectionInput;
+  input?: InputMaybe<CreateSectionInput>;
 };
 
 
@@ -417,7 +417,14 @@ export type GetCourseByIdQueryVariables = Exact<{
 }>;
 
 
-export type GetCourseByIdQuery = { __typename?: 'Query', getCourseById?: { __typename?: 'Course', _id: string, title: string, description: string, price: number, duration?: number | null, createdBy?: string | null, categories?: Array<string | null> | null, tags?: Array<string | null> | null, status?: CourseStatus | null, thumbnail?: string | null, sectionId?: Array<{ __typename?: 'Section', _id: string, title: string } | null> | null, enrollmentId?: Array<{ __typename?: 'Enrollment', _id: string, userId: { __typename?: 'User', _id: string, email: string } } | null> | null } | null };
+export type GetCourseByIdQuery = { __typename?: 'Query', getCourseById?: { __typename?: 'Course', _id: string, title: string, description: string, price: number, duration?: number | null, createdBy?: string | null, categories?: Array<string | null> | null, tags?: Array<string | null> | null, status?: CourseStatus | null, thumbnail?: string | null, sectionId?: Array<{ __typename?: 'Section', _id: string, title: string, lessonId?: Array<{ __typename?: 'Lesson', _id: string, title: string } | null> | null } | null> | null, enrollmentId?: Array<{ __typename?: 'Enrollment', _id: string, userId?: { __typename?: 'User', _id: string, email: string } | null } | null> | null } | null };
+
+export type CreateSectionMutationVariables = Exact<{
+  input?: InputMaybe<CreateSectionInput>;
+}>;
+
+
+export type CreateSectionMutation = { __typename?: 'Mutation', createSection?: { __typename?: 'Section', _id: string } | null };
 
 
 export const GetAllTestDocument = gql`
@@ -783,6 +790,10 @@ export const GetCourseByIdDocument = gql`
     sectionId {
       _id
       title
+      lessonId {
+        _id
+        title
+      }
     }
     duration
     createdBy
@@ -833,3 +844,36 @@ export type GetCourseByIdQueryHookResult = ReturnType<typeof useGetCourseByIdQue
 export type GetCourseByIdLazyQueryHookResult = ReturnType<typeof useGetCourseByIdLazyQuery>;
 export type GetCourseByIdSuspenseQueryHookResult = ReturnType<typeof useGetCourseByIdSuspenseQuery>;
 export type GetCourseByIdQueryResult = Apollo.QueryResult<GetCourseByIdQuery, GetCourseByIdQueryVariables>;
+export const CreateSectionDocument = gql`
+    mutation CreateSection($input: CreateSectionInput) {
+  createSection(input: $input) {
+    _id
+  }
+}
+    `;
+export type CreateSectionMutationFn = Apollo.MutationFunction<CreateSectionMutation, CreateSectionMutationVariables>;
+
+/**
+ * __useCreateSectionMutation__
+ *
+ * To run a mutation, you first call `useCreateSectionMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateSectionMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createSectionMutation, { data, loading, error }] = useCreateSectionMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateSectionMutation(baseOptions?: Apollo.MutationHookOptions<CreateSectionMutation, CreateSectionMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateSectionMutation, CreateSectionMutationVariables>(CreateSectionDocument, options);
+      }
+export type CreateSectionMutationHookResult = ReturnType<typeof useCreateSectionMutation>;
+export type CreateSectionMutationResult = Apollo.MutationResult<CreateSectionMutation>;
+export type CreateSectionMutationOptions = Apollo.BaseMutationOptions<CreateSectionMutation, CreateSectionMutationVariables>;

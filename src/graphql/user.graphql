@@ -64,6 +64,10 @@ query GetCourseById($id: ID!) {
     sectionId {
       _id
       title
+      lessonId {
+        _id
+        title
+      }
     }
     duration
     createdBy
@@ -78,5 +82,22 @@ query GetCourseById($id: ID!) {
       }
     }
     thumbnail
+  }
+}
+
+mutation CreateSection($input: CreateSectionInput) {
+  createSection(input: $input) {
+    _id
+    # courseId {
+    #   _id
+    #   title
+    # }
+    # title
+    # description
+    # order
+    # lessonId {
+    #   _id
+    #   title
+    # }
   }
 }
