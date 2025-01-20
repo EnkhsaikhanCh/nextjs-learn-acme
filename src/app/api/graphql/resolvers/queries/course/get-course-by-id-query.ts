@@ -4,7 +4,16 @@ import { CourseModel } from "../../../models";
 export const getCourseById = async (_: unknown, { _id }: { _id: string }) => {
   try {
     const course = await CourseModel.findById(_id)
-      .populate({ path: "sectionId", model: "Section" })
+      .populate({
+        path: "sectionId",
+        model: "Section",
+        populate: [
+          {
+            path: "lessonId",
+            select: "_id title",
+          },
+        ],
+      })
       .populate({
         path: "enrollmentId",
         model: "Enrollment",
