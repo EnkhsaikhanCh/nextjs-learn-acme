@@ -354,6 +354,13 @@ export type User = {
   studentId: Scalars['String']['output'];
 };
 
+export type CreateLessonMutationVariables = Exact<{
+  input: CreateLessonInput;
+}>;
+
+
+export type CreateLessonMutation = { __typename?: 'Mutation', createLesson: { __typename?: 'Lesson', _id: string } };
+
 export type GetAllTestQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -417,7 +424,7 @@ export type GetCourseByIdQueryVariables = Exact<{
 }>;
 
 
-export type GetCourseByIdQuery = { __typename?: 'Query', getCourseById?: { __typename?: 'Course', _id: string, title: string, description: string, price: number, duration?: number | null, createdBy?: string | null, categories?: Array<string | null> | null, tags?: Array<string | null> | null, status?: CourseStatus | null, thumbnail?: string | null, sectionId?: Array<{ __typename?: 'Section', _id: string, title: string, lessonId?: Array<{ __typename?: 'Lesson', _id: string, title: string } | null> | null } | null> | null, enrollmentId?: Array<{ __typename?: 'Enrollment', _id: string, userId?: { __typename?: 'User', _id: string, email: string } | null } | null> | null } | null };
+export type GetCourseByIdQuery = { __typename?: 'Query', getCourseById?: { __typename?: 'Course', _id: string, title: string, description: string, price: number, duration?: number | null, createdBy?: string | null, categories?: Array<string | null> | null, tags?: Array<string | null> | null, status?: CourseStatus | null, thumbnail?: string | null, sectionId?: Array<{ __typename?: 'Section', _id: string, title: string, lessonId?: Array<{ __typename?: 'Lesson', _id: string, title: string, isPublished: boolean } | null> | null } | null> | null, enrollmentId?: Array<{ __typename?: 'Enrollment', _id: string, userId?: { __typename?: 'User', _id: string, email: string } | null } | null> | null } | null };
 
 export type CreateSectionMutationVariables = Exact<{
   input?: InputMaybe<CreateSectionInput>;
@@ -427,6 +434,39 @@ export type CreateSectionMutationVariables = Exact<{
 export type CreateSectionMutation = { __typename?: 'Mutation', createSection?: { __typename?: 'Section', _id: string } | null };
 
 
+export const CreateLessonDocument = gql`
+    mutation CreateLesson($input: CreateLessonInput!) {
+  createLesson(input: $input) {
+    _id
+  }
+}
+    `;
+export type CreateLessonMutationFn = Apollo.MutationFunction<CreateLessonMutation, CreateLessonMutationVariables>;
+
+/**
+ * __useCreateLessonMutation__
+ *
+ * To run a mutation, you first call `useCreateLessonMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateLessonMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createLessonMutation, { data, loading, error }] = useCreateLessonMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateLessonMutation(baseOptions?: Apollo.MutationHookOptions<CreateLessonMutation, CreateLessonMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateLessonMutation, CreateLessonMutationVariables>(CreateLessonDocument, options);
+      }
+export type CreateLessonMutationHookResult = ReturnType<typeof useCreateLessonMutation>;
+export type CreateLessonMutationResult = Apollo.MutationResult<CreateLessonMutation>;
+export type CreateLessonMutationOptions = Apollo.BaseMutationOptions<CreateLessonMutation, CreateLessonMutationVariables>;
 export const GetAllTestDocument = gql`
     query GetAllTest {
   getAllTest {
@@ -793,6 +833,7 @@ export const GetCourseByIdDocument = gql`
       lessonId {
         _id
         title
+        isPublished
       }
     }
     duration

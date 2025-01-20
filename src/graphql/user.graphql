@@ -67,6 +67,7 @@ query GetCourseById($id: ID!) {
       lessonId {
         _id
         title
+        isPublished
       }
     }
     duration
