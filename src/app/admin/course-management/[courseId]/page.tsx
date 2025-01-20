@@ -1,4 +1,8 @@
+// src/app/admin/course-management/[courseId]/page.tsx
+
 "use client";
+
+import { useState } from "react";
 import { useParams } from "next/navigation";
 import { useGetCourseByIdQuery } from "@/generated/graphql";
 import { Loader } from "lucide-react";
@@ -6,9 +10,15 @@ import { toast, Toaster } from "sonner";
 import { CourseInfo } from "./_components/CourseInfo";
 import { SectionList } from "./_components/SectionList";
 import { AddSectionForm } from "./_components/AddSectionForm";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
 
 export default function CourseDetailPage() {
   const { courseId } = useParams();
+  const [selectedLesson, setSelectedLesson] = useState<string | null>(null);
 
   const { data, loading, error, refetch } = useGetCourseByIdQuery({
     variables: { id: courseId as string },
@@ -19,7 +29,7 @@ export default function CourseDetailPage() {
     return <div>No ID provided in the URL</div>;
   }
 
-  if (!courseId || Array.isArray(courseId)) {
+  if (Array.isArray(courseId)) {
     return <div>Invalid Course ID</div>;
   }
 
@@ -33,8 +43,7 @@ export default function CourseDetailPage() {
 
   if (error) {
     toast.error(error.message || "Error Loading Course");
-    const message = (error as Error).message;
-    return <div>Error loading course data: {message}</div>;
+    return <div>Error loading course data: {error.message}</div>;
   }
 
   if (!data?.getCourseById) {
@@ -44,17 +53,57 @@ export default function CourseDetailPage() {
   const course = data.getCourseById;
 
   return (
-    <div className="p-4">
+    <div className="">
       <Toaster richColors position="top-center" />
+      <ResizablePanelGroup direction="horizontal" className="h-full">
+        {/* Зүүн талын панель */}
+        <ResizablePanel
+          defaultSize={30}
+          minSize={35}
+          maxSize={50}
+          className="mr-4 p-4 sm:w-full md:w-[30%] lg:w-[40%]"
+        >
+          <div className="">
+            {/* Курсын үндсэн мэдээлэл */}
+            <CourseInfo course={course} />
 
-      {/* Курсын үндсэн мэдээлэл, статистикууд */}
-      <CourseInfo course={course} />
+            {/* Section-ууд болон хичээлүүд */}
+            <SectionList
+              sections={course.sectionId || []}
+              refetchCourse={refetch}
+              // onLessonSelect={(lessonId) => setSelectedLesson(lessonId)} // Хичээл сонгох функц
+            />
 
-      {/* Section-ууд болон тэдгээрийн lesson-үүд */}
-      <SectionList sections={course.sectionId || []} refetchCourse={refetch} />
+            {/* Section нэмэх хэсэг */}
+            <AddSectionForm courseId={courseId} refetchCourse={refetch} />
+          </div>
+        </ResizablePanel>
 
-      {/* Section нэмэх хэсэг */}
-      <AddSectionForm courseId={courseId} refetchCourse={refetch} />
+        {/* Бариул */}
+        <ResizableHandle />
+
+        {/* Баруун талын панель */}
+        <ResizablePanel
+          defaultSize={70}
+          minSize={50}
+          className="bg-gray-50 sm:w-full md:w-[70%] lg:w-[60%]"
+        >
+          <div className="p-4">
+            {selectedLesson ? (
+              <div>
+                <h2 className="text-lg font-semibold">Сонгогдсон Хичээл</h2>
+                <p>Хичээлийн ID: {selectedLesson}</p>
+                {/* Энд тухайн хичээлийн дэлгэрэнгүй мэдээллийг нэмнэ */}
+              </div>
+            ) : (
+              <div>
+                <h2 className="text-lg font-semibold">Dynamic Lesson</h2>
+                <p>Хичээл сонгогдоогүй байна.</p>
+              </div>
+            )}
+          </div>
+        </ResizablePanel>
+      </ResizablePanelGroup>
     </div>
   );
 }
