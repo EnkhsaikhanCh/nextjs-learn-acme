@@ -46,7 +46,7 @@ export function AddSectionForm({
   };
 
   return (
-    <form onSubmit={handleCreateSection} className="mt-6 flex w-[500px] gap-2">
+    <form onSubmit={handleCreateSection} className="mt-6 flex w-full gap-2">
       <Input
         placeholder="Section title"
         value={title}

@@ -91,37 +91,8 @@ export function CourseInfo({ course }: { course: any }) {
         )}
       </div>
 
-      {/* Enrollments */}
-      <div>
-        <h2 className="mb-2 text-lg font-semibold text-gray-800">
-          Enrollments
-        </h2>
-        {enrollmentId?.length ? (
-          <div className="space-y-4">
-            {enrollmentId.map((enrollment: any, index: number) => (
-              <div key={index} className="p-3">
-                {enrollment?.userId ? (
-                  <div className="space-y-1 text-sm">
-                    <p>
-                      <span className="font-medium">Email: </span>
-                      {enrollment.userId.email}
-                    </p>
-                  </div>
-                ) : (
-                  <p className="italic text-gray-500">
-                    User information not available
-                  </p>
-                )}
-              </div>
-            ))}
-          </div>
-        ) : (
-          <span className="italic text-gray-500">No enrollments available</span>
-        )}
-      </div>
-
       {/* Cards: total section, lessons, enrollment */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2">
         {/* Total section */}
         <Card className="flex flex-col justify-between">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

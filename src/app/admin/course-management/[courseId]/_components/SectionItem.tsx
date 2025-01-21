@@ -9,13 +9,16 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { AddLessonForm } from "./AddLessonForm";
 import { Badge } from "@/components/ui/badge";
+import { CirclePlus, CircleX } from "lucide-react";
 
 export function SectionItem({
   section,
   refetchCourse,
+  onLessonSelect,
 }: {
   section: any;
   refetchCourse: () => void;
+  onLessonSelect: (lessonId: string) => void;
 }) {
   const [showAddLesson, setShowAddLesson] = useState(false);
   const lessonCount = section?.lessonId?.length || 0;
@@ -43,26 +46,15 @@ export function SectionItem({
             {section?.lessonId?.length ? (
               section.lessonId.map((lesson: any, index: number) => (
                 <div key={lesson?._id || index}>
-                  <Link
-                    href="#"
-                    className="flex cursor-pointer flex-row gap-2 py-1"
-                  >
+                  <Link href="#" className="cursor-pointer gap-2 py-1">
                     <Button
                       variant="link"
                       effect="hoverUnderline"
                       className="cursor-pointer text-base text-gray-700"
+                      onClick={() => onLessonSelect(lesson?._id)}
                     >
                       {lesson?.title}
                     </Button>
-                    <Badge
-                      className={`${
-                        lesson?.isPublished
-                          ? "bg-green-100 text-green-800 hover:bg-green-200"
-                          : "bg-yellow-100 text-yellow-800 hover:bg-yellow-200"
-                      }`}
-                    >
-                      {lesson?.isPublished ? "Published" : "Not Published"}
-                    </Badge>
                   </Link>
                 </div>
               ))
@@ -81,10 +73,20 @@ export function SectionItem({
             <Button
               variant="outline"
               size="sm"
-              className="mt-2"
+              className="mt-2 font-semibold"
               onClick={() => setShowAddLesson(!showAddLesson)}
             >
-              {showAddLesson ? "Cancel" : "Add Lesson"}
+              {showAddLesson ? (
+                <>
+                  Cancel
+                  <CircleX />
+                </>
+              ) : (
+                <>
+                  Add Lesson
+                  <CirclePlus />
+                </>
+              )}
             </Button>
           </div>
         </AccordionContent>

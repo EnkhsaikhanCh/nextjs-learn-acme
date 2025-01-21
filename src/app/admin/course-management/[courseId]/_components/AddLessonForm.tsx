@@ -1,7 +1,7 @@
 import { FormEvent, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader } from "lucide-react";
+import { CirclePlus, Loader } from "lucide-react";
 import { toast } from "sonner";
 import { useCreateLessonMutation } from "@/generated/graphql";
 
@@ -45,21 +45,24 @@ export function AddLessonForm({
   };
 
   return (
-    <form onSubmit={handleCreateLesson} className="mb-4 flex gap-2">
+    <form onSubmit={handleCreateLesson} className="my-4 ml-2 flex gap-2">
       <Input
         placeholder="Lesson title"
-        className="w-[300px]"
+        className="w-[350px]"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
       />
-      <Button type="submit" disabled={isCreating}>
+      <Button type="submit" disabled={isCreating} className="font-semibold">
         {isCreating ? (
           <>
             Creating lesson...
             <Loader className="ml-2 h-4 w-4 animate-spin" />
           </>
         ) : (
-          "Add Lesson"
+          <>
+            Add Lesson
+            <CirclePlus />
+          </>
         )}
       </Button>
     </form>
