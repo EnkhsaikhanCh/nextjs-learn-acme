@@ -1,4 +1,6 @@
 # src/graphql/user.graphql
+
+# Mutations
 mutation CreateUser($input: RegisterInput!) {
   createUser(input: $input) {
     message
@@ -12,6 +14,7 @@ mutation CreateUser($input: RegisterInput!) {
   }
 }
 
+# Queries
 query GetAllUser {
   getAllUser {
     _id
@@ -29,76 +32,5 @@ query GetUserById($id: ID!) {
     studentId
     role
     isVerified
-  }
-}
-
-query GetAllCourse {
-  getAllCourse {
-    _id
-    title
-    description
-    price
-    duration
-    categories
-    tags
-    status
-    enrollmentId {
-      _id
-    }
-    thumbnail
-  }
-}
-
-mutation CreateCourse($input: CreateCourseInput!) {
-  createCourse(input: $input) {
-    _id
-  }
-}
-
-query GetCourseById($id: ID!) {
-  getCourseById(_id: $id) {
-    _id
-    title
-    description
-    price
-    sectionId {
-      _id
-      title
-      lessonId {
-        _id
-        title
-        isPublished
-      }
-    }
-    duration
-    createdBy
-    categories
-    tags
-    status
-    enrollmentId {
-      _id
-      userId {
-        _id
-        email
-      }
-    }
-    thumbnail
-  }
-}
-
-mutation CreateSection($input: CreateSectionInput) {
-  createSection(input: $input) {
-    _id
-    # courseId {
-    #   _id
-    #   title
-    # }
-    # title
-    # description
-    # order
-    # lessonId {
-    #   _id
-    #   title
-    # }
   }
 }
