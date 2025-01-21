@@ -5,6 +5,7 @@ export function SectionList({
   refetchCourse,
   onLessonSelect,
 }: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   sections: any[];
   refetchCourse: () => void;
   onLessonSelect: (lessonId: string) => void;

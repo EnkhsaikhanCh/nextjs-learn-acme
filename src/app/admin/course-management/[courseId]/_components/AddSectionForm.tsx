@@ -38,8 +38,9 @@ export function AddSectionForm({
       setTitle("");
       toast.success("Section created successfully!");
       refetchCourse();
-    } catch (err: any) {
-      toast.error(err.message || "Error creating section");
+    } catch (error) {
+      const message = (error as Error).message;
+      toast.error(message || "Error creating section");
     } finally {
       setSectionIsCreating(false);
     }

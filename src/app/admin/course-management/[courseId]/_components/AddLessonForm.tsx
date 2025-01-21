@@ -37,8 +37,9 @@ export function AddLessonForm({
       setTitle("");
       toast.success("Lesson created successfully!");
       refetchCourse();
-    } catch (err: any) {
-      toast.error(err.message || "Error creating lesson");
+    } catch (error) {
+      const message = (error as Error).message;
+      toast.error(message || "Error creating lesson");
     } finally {
       setIsCreating(false);
     }

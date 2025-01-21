@@ -8,18 +8,30 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { AddLessonForm } from "./AddLessonForm";
-import { Badge } from "@/components/ui/badge";
 import { CirclePlus, CircleX } from "lucide-react";
+
+// Lesson төрлийн тодорхойлолт
+interface Lesson {
+  _id: string;
+  title: string;
+}
+
+// SectionItemProps-ийн тодорхойлолт
+interface SectionItemProps {
+  section: {
+    _id: string;
+    title: string;
+    lessonId: Lesson[];
+  };
+  refetchCourse: () => void;
+  onLessonSelect: (lessonId: string) => void;
+}
 
 export function SectionItem({
   section,
   refetchCourse,
   onLessonSelect,
-}: {
-  section: any;
-  refetchCourse: () => void;
-  onLessonSelect: (lessonId: string) => void;
-}) {
+}: SectionItemProps) {
   const [showAddLesson, setShowAddLesson] = useState(false);
   const lessonCount = section?.lessonId?.length || 0;
 
@@ -44,7 +56,7 @@ export function SectionItem({
         <AccordionContent>
           <div className="">
             {section?.lessonId?.length ? (
-              section.lessonId.map((lesson: any, index: number) => (
+              section.lessonId.map((lesson, index) => (
                 <div key={lesson?._id || index}>
                   <Link href="#" className="cursor-pointer gap-2 py-1">
                     <Button

@@ -12,17 +12,13 @@ import { toast, Toaster } from "sonner";
 import { CourseInfo } from "./_components/CourseInfo";
 import { SectionList } from "./_components/SectionList";
 import { AddSectionForm } from "./_components/AddSectionForm";
-
-// shadcn/ui компонентууд
 import {
   ResizablePanel,
   ResizablePanelGroup,
   ResizableHandle,
 } from "@/components/ui/resizable";
-
 import {
   Drawer,
-  DrawerTrigger,
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
