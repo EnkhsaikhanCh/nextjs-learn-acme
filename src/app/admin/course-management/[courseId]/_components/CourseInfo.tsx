@@ -28,28 +28,13 @@ export function CourseInfo({ course }: { course: any }) {
     <div className="space-y-6">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="space-y-2">
-          <div>
-            <span className="font-medium">Title: </span>
-            {title}
-          </div>
+          <h1 className="text-2xl font-bold">{title}</h1>
           <div>
             <span className="font-medium">Description: </span>
             {description}
           </div>
           <div>
-            <span className="font-medium">Course ID: </span>
-            {_id}
-          </div>
-          <div>
             <span className="font-medium">Price: </span>₮{price || "0"}
-          </div>
-          <div>
-            <span className="font-medium">Duration: </span>
-            {duration || "N/A"}
-          </div>
-          <div>
-            <span className="font-medium">Created By: </span>
-            {createdBy || "Unknown"}
           </div>
         </div>
       </div>
@@ -92,12 +77,12 @@ export function CourseInfo({ course }: { course: any }) {
       </div>
 
       {/* Cards: total section, lessons, enrollment */}
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-3">
         {/* Total section */}
         <Card className="flex flex-col justify-between">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-bold">Total Section</CardTitle>
-            <BookOpen className="h-4 w-4 text-muted-foreground" />
+            {/* <BookOpen className="h-4 w-4 text-muted-foreground" /> */}
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -112,7 +97,7 @@ export function CourseInfo({ course }: { course: any }) {
         <Card className="flex flex-col justify-between">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-bold">Total Lessons</CardTitle>
-            <BookOpen className="h-4 w-4 text-muted-foreground" />
+            {/* <BookOpen className="h-4 w-4 text-muted-foreground" /> */}
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalLessons}</div>
@@ -125,7 +110,7 @@ export function CourseInfo({ course }: { course: any }) {
             <CardTitle className="text-sm font-bold">
               Total Enrollments
             </CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            {/* <Users className="h-4 w-4 text-muted-foreground" /> */}
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalEnrollments}</div>
