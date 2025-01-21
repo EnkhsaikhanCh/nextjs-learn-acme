@@ -68,7 +68,7 @@ export default function Page() {
   };
 
   return (
-    <main className="space-y-6">
+    <main className="container mx-auto flex flex-col gap-6 p-4">
       <h1 className="text-3xl font-bold">Course Management</h1>
       {/* Create course dialog */}
       <Dialog
@@ -76,7 +76,11 @@ export default function Page() {
         onOpenChange={(open) => setIsDialogOpen(open)}
       >
         <DialogTrigger asChild>
-          <Button onClick={() => setIsDialogOpen(true)} variant="outline">
+          <Button
+            onClick={() => setIsDialogOpen(true)}
+            variant="outline"
+            className="md:w-[200px]"
+          >
             <CirclePlus /> Create Course
           </Button>
         </DialogTrigger>

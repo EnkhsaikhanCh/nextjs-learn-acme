@@ -41,7 +41,7 @@ export default function Page() {
   const user = data?.getUserById;
 
   return (
-    <main>
+    <main className="container mx-auto p-4">
       <h1>
         Welcome, <span className="font-bold">{session.user?.email}</span>
       </h1>
