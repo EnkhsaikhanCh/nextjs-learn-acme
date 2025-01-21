@@ -3,3 +3,16 @@ mutation CreateLesson($input: CreateLessonInput!) {
     _id
   }
 }
+
+query GetLessonById($getLessonByIdId: ID!) {
+  getLessonById(_id: $getLessonByIdId) {
+    _id
+    title
+    content
+    videoUrl
+    order
+    isPublished
+    createdAt
+    updatedAt
+  }
+}

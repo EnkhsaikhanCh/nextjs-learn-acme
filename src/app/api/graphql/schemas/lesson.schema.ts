@@ -14,7 +14,7 @@ export const typeDefs = gql`
   }
 
   type Query {
-    getLessonById(id: ID!): Lesson!
+    getLessonById(_id: ID!): Lesson!
     getLessonsBySection(sectionId: ID!): [Lesson!]!
   }
 

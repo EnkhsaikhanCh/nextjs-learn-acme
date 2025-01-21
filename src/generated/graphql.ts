@@ -255,7 +255,7 @@ export type QueryGetEnrollmentsByUserArgs = {
 
 
 export type QueryGetLessonByIdArgs = {
-  id: Scalars['ID']['input'];
+  _id: Scalars['ID']['input'];
 };
 
 
@@ -360,6 +360,13 @@ export type CreateLessonMutationVariables = Exact<{
 
 
 export type CreateLessonMutation = { __typename?: 'Mutation', createLesson: { __typename?: 'Lesson', _id: string } };
+
+export type GetLessonByIdQueryVariables = Exact<{
+  getLessonByIdId: Scalars['ID']['input'];
+}>;
+
+
+export type GetLessonByIdQuery = { __typename?: 'Query', getLessonById: { __typename?: 'Lesson', _id: string, title: string, content?: string | null, videoUrl?: string | null, order: number, isPublished: boolean, createdAt: string, updatedAt: string } };
 
 export type GetAllTestQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -467,6 +474,53 @@ export function useCreateLessonMutation(baseOptions?: Apollo.MutationHookOptions
 export type CreateLessonMutationHookResult = ReturnType<typeof useCreateLessonMutation>;
 export type CreateLessonMutationResult = Apollo.MutationResult<CreateLessonMutation>;
 export type CreateLessonMutationOptions = Apollo.BaseMutationOptions<CreateLessonMutation, CreateLessonMutationVariables>;
+export const GetLessonByIdDocument = gql`
+    query GetLessonById($getLessonByIdId: ID!) {
+  getLessonById(_id: $getLessonByIdId) {
+    _id
+    title
+    content
+    videoUrl
+    order
+    isPublished
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useGetLessonByIdQuery__
+ *
+ * To run a query within a React component, call `useGetLessonByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetLessonByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetLessonByIdQuery({
+ *   variables: {
+ *      getLessonByIdId: // value for 'getLessonByIdId'
+ *   },
+ * });
+ */
+export function useGetLessonByIdQuery(baseOptions: Apollo.QueryHookOptions<GetLessonByIdQuery, GetLessonByIdQueryVariables> & ({ variables: GetLessonByIdQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetLessonByIdQuery, GetLessonByIdQueryVariables>(GetLessonByIdDocument, options);
+      }
+export function useGetLessonByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetLessonByIdQuery, GetLessonByIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetLessonByIdQuery, GetLessonByIdQueryVariables>(GetLessonByIdDocument, options);
+        }
+export function useGetLessonByIdSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetLessonByIdQuery, GetLessonByIdQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetLessonByIdQuery, GetLessonByIdQueryVariables>(GetLessonByIdDocument, options);
+        }
+export type GetLessonByIdQueryHookResult = ReturnType<typeof useGetLessonByIdQuery>;
+export type GetLessonByIdLazyQueryHookResult = ReturnType<typeof useGetLessonByIdLazyQuery>;
+export type GetLessonByIdSuspenseQueryHookResult = ReturnType<typeof useGetLessonByIdSuspenseQuery>;
+export type GetLessonByIdQueryResult = Apollo.QueryResult<GetLessonByIdQuery, GetLessonByIdQueryVariables>;
 export const GetAllTestDocument = gql`
     query GetAllTest {
   getAllTest {
