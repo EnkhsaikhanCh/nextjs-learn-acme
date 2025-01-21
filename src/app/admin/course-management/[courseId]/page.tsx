@@ -163,7 +163,7 @@ export default function CourseDetailPage() {
           <ResizableHandle />
 
           {/* Баруун талын панель */}
-          <ResizablePanel defaultSize={70} minSize={50}>
+          <ResizablePanel defaultSize={70} minSize={50} className="bg-gray-50">
             <div className="p-4">
               {selectedLesson ? (
                 lessonLoading ? (
