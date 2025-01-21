@@ -3,7 +3,10 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import { useGetCourseByIdQuery } from "@/generated/graphql";
+import {
+  useGetCourseByIdQuery,
+  useGetLessonByIdQuery,
+} from "@/generated/graphql";
 import { Loader } from "lucide-react";
 import { toast, Toaster } from "sonner";
 import { CourseInfo } from "./_components/CourseInfo";
@@ -25,6 +28,7 @@ import {
   DrawerTitle,
   DrawerClose,
 } from "@/components/ui/drawer";
+import { LessonDetail } from "./_components/lesson/LessonDetail";
 
 export default function CourseDetailPage() {
   const { courseId } = useParams();
@@ -35,6 +39,15 @@ export default function CourseDetailPage() {
   const { data, loading, error, refetch } = useGetCourseByIdQuery({
     variables: { id: courseId as string },
     skip: !courseId,
+  });
+
+  const {
+    data: lessonData,
+    loading: lessonLoading,
+    error: lessonError,
+  } = useGetLessonByIdQuery({
+    variables: { getLessonByIdId: selectedLesson || "" },
+    skip: !selectedLesson, // selectedLesson байхгүй үед query хийхгүй
   });
 
   // Mobile эсэхийг шалгах (Tailwind breakpoints ашиглана)
@@ -153,12 +166,20 @@ export default function CourseDetailPage() {
           <ResizablePanel defaultSize={70} minSize={50}>
             <div className="p-4">
               {selectedLesson ? (
-                <div>
-                  <h2 className="text-lg font-semibold">
-                    Хичээлийн ID: {selectedLesson}
-                  </h2>
-                  <p>Энд хичээлийн дэлгэрэнгүй мэдээлэл байна.</p>
-                </div>
+                lessonLoading ? (
+                  <div className="flex items-center gap-2">
+                    <Loader className="h-4 w-4 animate-spin" />
+                    Loading lesson details...
+                  </div>
+                ) : lessonError ? (
+                  <p>Error loading lesson: {lessonError.message}</p>
+                ) : (
+                  <LessonDetail
+                    title={lessonData?.getLessonById?.title}
+                    videoUrl={lessonData?.getLessonById?.videoUrl || ""}
+                    content={lessonData?.getLessonById?.content || ""}
+                  />
+                )
               ) : (
                 <p>Ямар нэг хичээл сонгогдоогүй байна.</p>
               )}
