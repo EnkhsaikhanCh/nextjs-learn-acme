@@ -86,3 +86,9 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* Global CSS файлд */
+html,
+body {
+  overflow: hidden;
+}

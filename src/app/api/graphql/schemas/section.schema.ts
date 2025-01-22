@@ -7,7 +7,7 @@ export const typeDefs = gql`
     title: String!
     description: String
     order: Int!
-    # lessons: [Lesson]
+    lessonId: [Lesson]
     createdAt: String!
     updatedAt: String!
   }
@@ -18,7 +18,7 @@ export const typeDefs = gql`
   }
 
   type Mutation {
-    createSection(input: CreateSectionInput!): Section!
+    createSection(input: CreateSectionInput): Section
     updateSection(id: ID!, input: UpdateSectionInput!): Section!
     deleteSection(id: ID!): Boolean!
   }
@@ -26,8 +26,6 @@ export const typeDefs = gql`
   input CreateSectionInput {
     courseId: ID!
     title: String!
-    description: String
-    order: Int!
   }
 
   input UpdateSectionInput {

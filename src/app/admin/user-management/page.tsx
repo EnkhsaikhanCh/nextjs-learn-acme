@@ -118,7 +118,7 @@ export default function Page() {
   }, [currentPage, totalPages]);
 
   return (
-    <main className="p-4">
+    <main className="container mx-auto p-4">
       <h1 className="mb-4 text-xl font-bold">User List</h1>
 
       <p className="mb-4 text-gray-700">

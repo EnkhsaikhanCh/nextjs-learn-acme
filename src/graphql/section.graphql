@@ -1,0 +1,8 @@
+# src/graphql/section.graphql
+
+# Mutations
+mutation CreateSection($input: CreateSectionInput) {
+  createSection(input: $input) {
+    _id
+  }
+}

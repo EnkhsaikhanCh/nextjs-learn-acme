@@ -3,7 +3,7 @@ import gql from "graphql-tag";
 export const typeDefs = gql`
   type Enrollment {
     _id: ID!
-    userId: User!
+    userId: User
     courseId: Course!
     progress: Float!
     status: EnrollmentStatus!

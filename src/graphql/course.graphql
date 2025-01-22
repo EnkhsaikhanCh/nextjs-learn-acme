@@ -1,0 +1,57 @@
+# src/graphql/course.graphql
+
+# Mutations
+mutation CreateCourse($input: CreateCourseInput!) {
+  createCourse(input: $input) {
+    _id
+  }
+}
+
+# Queries
+query GetAllCourse {
+  getAllCourse {
+    _id
+    title
+    description
+    price
+    duration
+    categories
+    tags
+    status
+    enrollmentId {
+      _id
+    }
+    thumbnail
+  }
+}
+
+query GetCourseById($id: ID!) {
+  getCourseById(_id: $id) {
+    _id
+    title
+    description
+    price
+    sectionId {
+      _id
+      title
+      lessonId {
+        _id
+        title
+        isPublished
+      }
+    }
+    duration
+    createdBy
+    categories
+    tags
+    status
+    enrollmentId {
+      _id
+      userId {
+        _id
+        email
+      }
+    }
+    thumbnail
+  }
+}

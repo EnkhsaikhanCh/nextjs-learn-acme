@@ -32,13 +32,13 @@ export default function AdminClientLayout({
     <SidebarProvider defaultOpen={defaultOpen}>
       <AppSidebar username={session.user?.email} />
       <SidebarInset>
-        <header className="flex h-14 shrink-0 items-center gap-2 border-b">
+        <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center gap-2 border-b bg-white">
           <div className="flex items-center gap-2 p-2">
             <SidebarTrigger />
             <Separator orientation="vertical" className="mr-2 h-4" />
           </div>
         </header>
-        <main className="p-4">{children}</main>
+        <main>{children}</main>
       </SidebarInset>
     </SidebarProvider>
   );

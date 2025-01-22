@@ -101,6 +101,7 @@ const config: Config = {
     "src/app/admin",
     "src/app/api/graphql/resolvers/mutations/section",
     "src/app/api/graphql/resolvers/mutations/lesson",
+    "src/app/api/graphql/resolvers/queries/course",
   ],
 
   // Indicates which provider should be used to instrument code for coverage

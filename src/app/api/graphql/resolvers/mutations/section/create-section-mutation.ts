@@ -6,9 +6,9 @@ export const createSection = async (
   _: unknown,
   { input }: { input: CreateSectionInput },
 ) => {
-  const { courseId, title, description, order } = input;
+  const { courseId, title, description } = input;
 
-  if (!courseId || !title || !order) {
+  if (!courseId || !title) {
     throw new GraphQLError("Invalid input data", {
       extensions: { code: "BAD_USER_INPUT" },
     });
@@ -21,17 +21,30 @@ export const createSection = async (
     });
   }
 
+  let maxOrder = 0;
+  if (courseId) {
+    const lastSection = await SectionModel.findOne({ courseId })
+      .sort({ order: -1 })
+      .exec();
+
+    maxOrder = lastSection ? lastSection.order : 0;
+  }
+
   try {
     const newSection = await SectionModel.create({
       courseId,
       title,
       description,
-      order,
+      order: maxOrder + 1,
     });
 
-    const populatedSection = await SectionModel.findById(
-      newSection._id,
-    ).populate({ path: "courseId", model: "Course" });
+    await CourseModel.findByIdAndUpdate(courseId, {
+      $push: { sectionId: newSection._id },
+    });
+
+    const populatedSection = await SectionModel.findById(newSection._id)
+      .populate({ path: "courseId", model: "Course" })
+      .populate({ path: "lessonId", model: "Lesson" });
 
     if (!populatedSection) {
       throw new GraphQLError("Failed to retrieve the created section", {
