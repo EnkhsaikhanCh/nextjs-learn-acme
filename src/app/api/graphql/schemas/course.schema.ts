@@ -71,16 +71,23 @@ export type CreateCourseInput = {
   title: string;
   description: string;
   price: number;
-  sectionId?: string[]; // Optional
   duration?: number; // Optional
   createdBy?: string; // Optional
   categories?: string[]; // Optional
   tags?: string[]; // Optional
   status?: "active" | "archived"; // Optional
-  enrollmentId?: string[]; // Optional
   thumbnail?: string; // Optional
 };
 
-export type UpdateCourseInput = Partial<CreateCourseInput> & {
-  _id: string; // Mandatory field
+export type UpdateCourseInput = {
+  _id: string;
+  title?: string;
+  description?: string;
+  price?: number;
+  duration?: number; // Optional
+  createdBy?: string; // Optional
+  categories?: string[]; // Optional
+  tags?: string[]; // Optional
+  status?: "active" | "archived"; // Optional
+  thumbnail?: string; // Optional
 };
