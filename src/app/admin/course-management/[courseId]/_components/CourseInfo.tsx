@@ -1,4 +1,4 @@
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 interface Course {
   title?: string | null;
@@ -15,43 +15,37 @@ interface CourseInfoProps {
 
 export function CourseInfo({ course }: CourseInfoProps) {
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 gap-4">
-        <div className="space-y-2">
-          <h1 className="text-2xl font-bold">
-            {course.title || "Untitled Course"}
-          </h1>
-          <div>
-            <span className="font-medium">Description: </span>
+    <div className="flex flex-col gap-1">
+      <Card className="bg-zinc-800 text-white shadow-none">
+        <CardHeader className="text-2xl font-bold text-white">
+          {course.title || "Untitled Course"}
+        </CardHeader>
+        <CardContent className="-mt-3 flex flex-col gap-3">
+          <div className="text-sm font-semibold">
             {course.description || "No description available"}
           </div>
-          <div>
-            <span className="font-medium">Price: </span>₮{course.price || "0"}
-          </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
-      <div>
-        <span className="font-medium">Status: </span>
-        <Badge>{course.status || "Unknown"}</Badge>
-      </div>
-
-      {/* Categories */}
-      <div>
-        <h2 className="mb-2 text-lg font-semibold text-gray-800">Categories</h2>
-        {course.categories && course.categories.length ? (
-          <div className="flex flex-wrap gap-2">
-            {course.categories
-              .filter((category): category is string => category !== null)
-              .map((category, index) => (
-                <Badge key={index} variant="secondary">
-                  {category}
-                </Badge>
-              ))}
-          </div>
-        ) : (
-          <span className="italic text-gray-500">No categories available</span>
-        )}
+      <div className="grid grid-cols-2 gap-1">
+        <Card
+          className={`flex h-[45px] items-center justify-center border-2 font-semibold ${
+            course.status === "archived"
+              ? "border-yellow-500 bg-yellow-300"
+              : course.status === "active"
+                ? "bg-green-500"
+                : "bg-zinc-800"
+          }`}
+        >
+          <CardHeader className="text-center text-lg">
+            {course.status || "Unknown"}
+          </CardHeader>
+        </Card>
+        <Card className="flex h-[45px] items-center justify-center bg-zinc-800 font-semibold text-white shadow-none">
+          <CardHeader className="text-center text-lg">
+            ₮{course.price || "0"}
+          </CardHeader>
+        </Card>
       </div>
     </div>
   );

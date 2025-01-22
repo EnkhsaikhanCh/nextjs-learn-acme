@@ -106,7 +106,11 @@ export function AddSectionForm({
           </motion.div>
         )}
       </div>
-      <Button type="submit" disabled={sectionIsCreating}>
+      <Button
+        type="submit"
+        disabled={sectionIsCreating}
+        className="bg-zinc-800 font-semibold hover:bg-zinc-700"
+      >
         {sectionIsCreating ? (
           <>
             Creating section...

@@ -2,6 +2,7 @@
 import gql from "graphql-tag";
 
 export const typeDefs = gql`
+  # Course Type Definition
   type Course {
     _id: ID!
     title: String!
@@ -17,29 +18,29 @@ export const typeDefs = gql`
     thumbnail: String
   }
 
+  # Enum for Course Status
   enum CourseStatus {
     active
     archived
   }
 
+  # Queries
   type Query {
+    # Fetch a course by its ID
     getCourseById(_id: ID!): Course
-    getAllCourse: [Course!]!
+
+    # Fetch all available courses
+    getAllCourses: [Course!]!
   }
 
+  # Input for creating a course
   input CreateCourseInput {
     title: String!
     description: String!
     price: Float!
-    duration: Int
-    createdBy: String
-    categories: [String]
-    tags: [String]
-    status: CourseStatus
-    enrollmentId: [ID]
-    thumbnail: String
   }
 
+  # Input for updating a course
   input UpdateCourseInput {
     _id: ID!
     title: String
@@ -50,13 +51,18 @@ export const typeDefs = gql`
     categories: [String]
     tags: [String]
     status: CourseStatus
-    enrollmentId: [ID]
     thumbnail: String
   }
 
+  # Mutations
   type Mutation {
+    # Create a new course
     createCourse(input: CreateCourseInput!): Course!
+
+    # Update an existing course
     updateCourse(input: UpdateCourseInput!): Course!
+
+    # Delete a course by its ID
     deleteCourse(_id: ID!): Boolean!
   }
 `;
@@ -65,12 +71,16 @@ export type CreateCourseInput = {
   title: string;
   description: string;
   price: number;
-  sectionId?: string[];
-  duration?: number;
-  createdBy?: string;
-  categories?: string[];
-  tags?: string[];
-  status?: "active" | "archived";
-  enrollmentId?: string[];
-  thumbnail?: string;
+  sectionId?: string[]; // Optional
+  duration?: number; // Optional
+  createdBy?: string; // Optional
+  categories?: string[]; // Optional
+  tags?: string[]; // Optional
+  status?: "active" | "archived"; // Optional
+  enrollmentId?: string[]; // Optional
+  thumbnail?: string; // Optional
+};
+
+export type UpdateCourseInput = Partial<CreateCourseInput> & {
+  _id: string; // Mandatory field
 };

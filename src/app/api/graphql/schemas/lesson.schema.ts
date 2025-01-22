@@ -27,9 +27,6 @@ export const typeDefs = gql`
   input CreateLessonInput {
     sectionId: ID!
     title: String!
-    content: String
-    videoUrl: String
-    order: Int
   }
 
   input UpdateLessonInput {

@@ -26,8 +26,6 @@ export const typeDefs = gql`
   input CreateSectionInput {
     courseId: ID!
     title: String!
-    description: String
-    order: Int
   }
 
   input UpdateSectionInput {
