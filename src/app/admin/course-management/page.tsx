@@ -25,18 +25,19 @@ import {
   useCreateCourseMutation,
   useGetAllCourseQuery,
 } from "@/generated/graphql";
+import { sanitizeInput } from "@/utils/sanitize";
 import { CirclePlus, ExternalLink, Loader, TriangleAlert } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { toast } from "sonner";
+import { toast, Toaster } from "sonner";
 
 export default function Page() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [price, setPrice] = useState(0);
+  const [price, setPrice] = useState("");
 
   const { data, loading, error, refetch } = useGetAllCourseQuery();
   const [createCourse] = useCreateCourseMutation();
@@ -45,10 +46,23 @@ export default function Page() {
     e.preventDefault();
     setIsCreating(true);
 
+    if (!title || !description || !price) {
+      toast.error("Title, description and price are required");
+      setIsCreating(false);
+      return;
+    }
+
+    const sanitizedTitle = sanitizeInput(title);
+    const sanitizedDescription = sanitizeInput(description);
+
     try {
       await createCourse({
         variables: {
-          input: { title, description, price },
+          input: {
+            title: sanitizedTitle,
+            description: sanitizedDescription,
+            price: parseFloat(price),
+          },
         },
       });
 
@@ -56,7 +70,7 @@ export default function Page() {
       setIsDialogOpen(false);
       setTitle("");
       setDescription("");
-      setPrice(0);
+      setPrice("");
 
       refetch();
     } catch (error) {
@@ -69,6 +83,7 @@ export default function Page() {
 
   return (
     <main className="container mx-auto flex flex-col gap-6 p-4">
+      <Toaster richColors position="top-center" />
       <h1 className="text-3xl font-bold">Course Management</h1>
       {/* Create course dialog */}
       <Dialog
@@ -91,11 +106,11 @@ export default function Page() {
           <form onSubmit={handleCreateCourse}>
             <div className="grid gap-4 py-4">
               <div>
-                <Label htmlFor="name" className="font-semibold">
+                <Label htmlFor="title" className="font-semibold">
                   Title
                 </Label>
                 <Input
-                  id="name"
+                  id="title"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   required
@@ -122,7 +137,7 @@ export default function Page() {
                 <Input
                   id="price"
                   value={price}
-                  onChange={(e) => setPrice(Number(e.target.value))}
+                  onChange={(e) => setPrice(e.target.value)}
                   required
                   type="number"
                   placeholder="Enter price"

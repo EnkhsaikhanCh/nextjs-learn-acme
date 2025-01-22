@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import Image from "next/image";
 
 interface Course {
   title?: string | null;
@@ -7,6 +8,7 @@ interface Course {
   status?: string | null;
   categories?: (string | null)[] | null;
   tags?: (string | null)[] | null;
+  thumbnail?: string | null;
 }
 
 interface CourseInfoProps {
@@ -16,6 +18,13 @@ interface CourseInfoProps {
 export function CourseInfo({ course }: CourseInfoProps) {
   return (
     <div className="flex flex-col gap-1">
+      <Image
+        src={course.thumbnail || "/placeholder.svg?height=100&width=200"}
+        alt={course.title || "Course image"}
+        width={1000}
+        height={1000}
+        className="h-[300px] w-full rounded-lg object-cover"
+      />
       <Card className="bg-zinc-800 text-white shadow-none">
         <CardHeader className="text-2xl font-bold text-white">
           {course.title || "Untitled Course"}

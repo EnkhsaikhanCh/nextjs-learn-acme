@@ -4,6 +4,8 @@ import { Input } from "@/components/ui/input";
 import { CirclePlus, Loader } from "lucide-react";
 import { toast } from "sonner";
 import { useCreateLessonMutation } from "@/generated/graphql";
+import { sanitizeInput } from "@/utils/sanitize";
+import { motion } from "framer-motion";
 
 export function AddLessonForm({
   sectionId,
@@ -14,6 +16,8 @@ export function AddLessonForm({
 }) {
   const [title, setTitle] = useState("");
   const [isCreating, setIsCreating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [showAnimation, setShowAnimation] = useState(false);
 
   const [createLesson] = useCreateLessonMutation();
 
@@ -23,6 +27,22 @@ export function AddLessonForm({
       toast.error("Section ID is missing!");
       return;
     }
+
+    if (!title) {
+      setError("Lesson title is required!");
+      setShowAnimation(false);
+
+      setTimeout(() => {
+        setShowAnimation(true);
+        setTimeout(() => setError(""), 1000);
+      }, 3000);
+
+      setIsCreating(false);
+      return;
+    }
+
+    const sanitizeTitle = sanitizeInput(title);
+
     setIsCreating(true);
 
     try {
@@ -30,7 +50,7 @@ export function AddLessonForm({
         variables: {
           input: {
             sectionId,
-            title,
+            title: sanitizeTitle,
           },
         },
       });
@@ -47,12 +67,44 @@ export function AddLessonForm({
 
   return (
     <form onSubmit={handleCreateLesson} className="my-4 ml-2 flex gap-2">
-      <Input
-        placeholder="Lesson title"
-        className="w-[350px]"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-      />
+      <div className="flex-1">
+        <Input
+          placeholder="Lesson title"
+          className=""
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
+        {error && (
+          <motion.div
+            key="error-message"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={
+              showAnimation
+                ? { opacity: 0, scale: 0.8, rotate: -10 }
+                : { opacity: 0 }
+            }
+            transition={{
+              type: "spring",
+              stiffness: 300,
+              damping: 20,
+              duration: showAnimation ? 0.5 : 0.3,
+            }}
+            style={{
+              color: "red",
+              marginTop: "5px",
+              fontWeight: "bold",
+              background: "#ffe6e6",
+              padding: "5px",
+              borderRadius: "5px",
+              textAlign: "center",
+            }}
+          >
+            {error}
+          </motion.div>
+        )}
+      </div>
+
       <Button type="submit" disabled={isCreating} className="font-semibold">
         {isCreating ? (
           <>
