@@ -4,6 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Loader } from "lucide-react";
 import { toast } from "sonner";
 import { useCreateSectionMutation } from "@/generated/graphql";
+import { motion } from "framer-motion";
+import { sanitizeInput } from "@/utils/sanitize";
 
 export function AddSectionForm({
   courseId,
@@ -14,6 +16,8 @@ export function AddSectionForm({
 }) {
   const [title, setTitle] = useState("");
   const [sectionIsCreating, setSectionIsCreating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [showAnimation, setShowAnimation] = useState(false);
 
   const [createSection] = useCreateSectionMutation();
 
@@ -24,6 +28,21 @@ export function AddSectionForm({
       return;
     }
 
+    if (!title) {
+      setError("Section title is required!");
+      setShowAnimation(false); // Reset any previous animation
+
+      // Show the error and clear it after 3 seconds
+      setTimeout(() => {
+        setShowAnimation(true); // Trigger post-error animation
+        setTimeout(() => setError(""), 1000); // Fully remove the error after animation
+      }, 3000);
+
+      return;
+    }
+
+    const sanitizedTitle = sanitizeInput(title);
+
     setSectionIsCreating(true);
 
     try {
@@ -31,7 +50,7 @@ export function AddSectionForm({
         variables: {
           input: {
             courseId,
-            title,
+            title: sanitizedTitle,
           },
         },
       });
@@ -51,11 +70,42 @@ export function AddSectionForm({
       onSubmit={handleCreateSection}
       className="mb-12 mt-6 flex w-full gap-2"
     >
-      <Input
-        placeholder="Section title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-      />
+      <div className="flex-1">
+        <Input
+          placeholder="Section title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
+        {error && (
+          <motion.div
+            key="error-message"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={
+              showAnimation
+                ? { opacity: 0, scale: 0.8, rotate: -10 }
+                : { opacity: 0 }
+            }
+            transition={{
+              type: "spring",
+              stiffness: 300,
+              damping: 20,
+              duration: showAnimation ? 0.5 : 0.3,
+            }}
+            style={{
+              color: "red",
+              marginTop: "5px",
+              fontWeight: "bold",
+              background: "#ffe6e6",
+              padding: "5px",
+              borderRadius: "5px",
+              textAlign: "center",
+            }}
+          >
+            {error}
+          </motion.div>
+        )}
+      </div>
       <Button type="submit" disabled={sectionIsCreating}>
         {sectionIsCreating ? (
           <>

@@ -64,8 +64,9 @@ export default function CourseDetailPage() {
 
   if (loading) {
     return (
-      <div className="mt-2 flex items-center gap-2">
-        <Loader className="h-4 w-4 animate-spin" /> Loading...
+      <div className="mt-2 flex h-full items-center justify-center gap-2">
+        <Loader className="h-4 w-4 animate-spin" />
+        <div>Loading...</div>
       </div>
     );
   }
@@ -91,7 +92,6 @@ export default function CourseDetailPage() {
   return (
     <div className="h-screen">
       <Toaster richColors position="top-center" />
-
       {isMobile ? (
         // Mobile: Drawer ашиглана
         <div>
@@ -163,7 +163,7 @@ export default function CourseDetailPage() {
             <div className="p-4">
               {selectedLesson ? (
                 lessonLoading ? (
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-center gap-2">
                     <Loader className="h-4 w-4 animate-spin" />
                     Loading lesson details...
                   </div>
@@ -174,6 +174,9 @@ export default function CourseDetailPage() {
                     title={lessonData?.getLessonById?.title}
                     videoUrl={lessonData?.getLessonById?.videoUrl || ""}
                     content={lessonData?.getLessonById?.content || ""}
+                    isPublished={
+                      lessonData?.getLessonById?.isPublished || false
+                    }
                   />
                 )
               ) : (
