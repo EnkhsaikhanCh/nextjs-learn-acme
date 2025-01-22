@@ -1,142 +1,117 @@
-import { gql } from "@apollo/client";
-import * as Apollo from "@apollo/client";
+import { gql } from '@apollo/client';
+import * as Apollo from '@apollo/client';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
-export type Exact<T extends { [key: string]: unknown }> = {
-  [K in keyof T]: T[K];
-};
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]?: Maybe<T[SubKey]>;
-};
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]: Maybe<T[SubKey]>;
-};
-export type MakeEmpty<
-  T extends { [key: string]: unknown },
-  K extends keyof T,
-> = { [_ in K]?: never };
-export type Incremental<T> =
-  | T
-  | {
-      [P in keyof T]?: P extends " $fragmentName" | "__typename" ? T[P] : never;
-    };
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
+export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 const defaultOptions = {} as const;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: string; output: string };
-  String: { input: string; output: string };
-  Boolean: { input: boolean; output: boolean };
-  Int: { input: number; output: number };
-  Float: { input: number; output: number };
+  ID: { input: string; output: string; }
+  String: { input: string; output: string; }
+  Boolean: { input: boolean; output: boolean; }
+  Int: { input: number; output: number; }
+  Float: { input: number; output: number; }
 };
 
 export type Course = {
-  __typename?: "Course";
-  _id: Scalars["ID"]["output"];
-  categories?: Maybe<Array<Maybe<Scalars["String"]["output"]>>>;
-  createdBy?: Maybe<Scalars["String"]["output"]>;
-  description: Scalars["String"]["output"];
-  duration?: Maybe<Scalars["Int"]["output"]>;
+  __typename?: 'Course';
+  _id: Scalars['ID']['output'];
+  categories?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  createdBy?: Maybe<Scalars['String']['output']>;
+  description: Scalars['String']['output'];
+  duration?: Maybe<Scalars['Int']['output']>;
   enrollmentId?: Maybe<Array<Maybe<Enrollment>>>;
-  price: Scalars["Float"]["output"];
+  price: Scalars['Float']['output'];
   sectionId?: Maybe<Array<Maybe<Section>>>;
   status?: Maybe<CourseStatus>;
-  tags?: Maybe<Array<Maybe<Scalars["String"]["output"]>>>;
-  thumbnail?: Maybe<Scalars["String"]["output"]>;
-  title: Scalars["String"]["output"];
+  tags?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  thumbnail?: Maybe<Scalars['String']['output']>;
+  title: Scalars['String']['output'];
 };
 
 export enum CourseStatus {
-  Active = "active",
-  Archived = "archived",
+  Active = 'active',
+  Archived = 'archived'
 }
 
 export type CreateCourseInput = {
-  categories?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
-  createdBy?: InputMaybe<Scalars["String"]["input"]>;
-  description: Scalars["String"]["input"];
-  duration?: InputMaybe<Scalars["Int"]["input"]>;
-  enrollmentId?: InputMaybe<Array<InputMaybe<Scalars["ID"]["input"]>>>;
-  price: Scalars["Float"]["input"];
-  status?: InputMaybe<CourseStatus>;
-  tags?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
-  thumbnail?: InputMaybe<Scalars["String"]["input"]>;
-  title: Scalars["String"]["input"];
+  description: Scalars['String']['input'];
+  price: Scalars['Float']['input'];
+  title: Scalars['String']['input'];
 };
 
 export type CreateEnrollmentInput = {
-  courseId: Scalars["ID"]["input"];
-  userId: Scalars["ID"]["input"];
+  courseId: Scalars['ID']['input'];
+  userId: Scalars['ID']['input'];
 };
 
 export type CreateLessonInput = {
-  content?: InputMaybe<Scalars["String"]["input"]>;
-  order?: InputMaybe<Scalars["Int"]["input"]>;
-  sectionId: Scalars["ID"]["input"];
-  title: Scalars["String"]["input"];
-  videoUrl?: InputMaybe<Scalars["String"]["input"]>;
+  sectionId: Scalars['ID']['input'];
+  title: Scalars['String']['input'];
 };
 
 export type CreateSectionInput = {
-  courseId: Scalars["ID"]["input"];
-  description?: InputMaybe<Scalars["String"]["input"]>;
-  order?: InputMaybe<Scalars["Int"]["input"]>;
-  title: Scalars["String"]["input"];
+  courseId: Scalars['ID']['input'];
+  title: Scalars['String']['input'];
 };
 
 export type Enrollment = {
-  __typename?: "Enrollment";
-  _id: Scalars["ID"]["output"];
+  __typename?: 'Enrollment';
+  _id: Scalars['ID']['output'];
   courseId: Course;
-  createdAt: Scalars["String"]["output"];
+  createdAt: Scalars['String']['output'];
   history?: Maybe<Array<EnrollmentHistory>>;
-  isCompleted: Scalars["Boolean"]["output"];
-  isDeleted: Scalars["Boolean"]["output"];
-  lastAccessedAt?: Maybe<Scalars["String"]["output"]>;
-  progress: Scalars["Float"]["output"];
+  isCompleted: Scalars['Boolean']['output'];
+  isDeleted: Scalars['Boolean']['output'];
+  lastAccessedAt?: Maybe<Scalars['String']['output']>;
+  progress: Scalars['Float']['output'];
   status: EnrollmentStatus;
-  updatedAt: Scalars["String"]["output"];
+  updatedAt: Scalars['String']['output'];
   userId?: Maybe<User>;
 };
 
 export type EnrollmentHistory = {
-  __typename?: "EnrollmentHistory";
-  progress: Scalars["Float"]["output"];
+  __typename?: 'EnrollmentHistory';
+  progress: Scalars['Float']['output'];
   status: EnrollmentStatus;
-  updatedAt: Scalars["String"]["output"];
+  updatedAt: Scalars['String']['output'];
 };
 
 export enum EnrollmentStatus {
-  Active = "ACTIVE",
-  Cancelled = "CANCELLED",
-  Completed = "COMPLETED",
-  Pending = "PENDING",
+  Active = 'ACTIVE',
+  Cancelled = 'CANCELLED',
+  Completed = 'COMPLETED',
+  Pending = 'PENDING'
 }
 
 export type Lesson = {
-  __typename?: "Lesson";
-  _id: Scalars["ID"]["output"];
-  content?: Maybe<Scalars["String"]["output"]>;
-  createdAt: Scalars["String"]["output"];
-  isPublished: Scalars["Boolean"]["output"];
-  order: Scalars["Int"]["output"];
+  __typename?: 'Lesson';
+  _id: Scalars['ID']['output'];
+  content?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['String']['output'];
+  isPublished: Scalars['Boolean']['output'];
+  order: Scalars['Int']['output'];
   sectionId: Section;
-  title: Scalars["String"]["output"];
-  updatedAt: Scalars["String"]["output"];
-  videoUrl?: Maybe<Scalars["String"]["output"]>;
+  title: Scalars['String']['output'];
+  updatedAt: Scalars['String']['output'];
+  videoUrl?: Maybe<Scalars['String']['output']>;
 };
 
 export type Mutation = {
-  __typename?: "Mutation";
+  __typename?: 'Mutation';
   createCourse: Course;
   createEnrollment?: Maybe<Enrollment>;
   createLesson: Lesson;
   createSection?: Maybe<Section>;
   createTest: Test;
   createUser: RegisterResponse;
-  deleteCourse: Scalars["Boolean"]["output"];
-  deleteLesson: Scalars["Boolean"]["output"];
-  deleteSection: Scalars["Boolean"]["output"];
+  deleteCourse: Scalars['Boolean']['output'];
+  deleteLesson: Scalars['Boolean']['output'];
+  deleteSection: Scalars['Boolean']['output'];
   deleteTest: Test;
   deleteUser: User;
   updateCourse: Course;
@@ -147,80 +122,97 @@ export type Mutation = {
   updateUser: User;
 };
 
+
 export type MutationCreateCourseArgs = {
   input: CreateCourseInput;
 };
+
 
 export type MutationCreateEnrollmentArgs = {
   input?: InputMaybe<CreateEnrollmentInput>;
 };
 
+
 export type MutationCreateLessonArgs = {
   input: CreateLessonInput;
 };
+
 
 export type MutationCreateSectionArgs = {
   input?: InputMaybe<CreateSectionInput>;
 };
 
+
 export type MutationCreateTestArgs = {
-  name: Scalars["String"]["input"];
+  name: Scalars['String']['input'];
 };
+
 
 export type MutationCreateUserArgs = {
   input: RegisterInput;
 };
 
+
 export type MutationDeleteCourseArgs = {
-  _id: Scalars["ID"]["input"];
+  _id: Scalars['ID']['input'];
 };
+
 
 export type MutationDeleteLessonArgs = {
-  id: Scalars["ID"]["input"];
+  id: Scalars['ID']['input'];
 };
+
 
 export type MutationDeleteSectionArgs = {
-  id: Scalars["ID"]["input"];
+  id: Scalars['ID']['input'];
 };
+
 
 export type MutationDeleteTestArgs = {
-  id: Scalars["ID"]["input"];
+  id: Scalars['ID']['input'];
 };
 
+
 export type MutationDeleteUserArgs = {
-  id: Scalars["ID"]["input"];
+  id: Scalars['ID']['input'];
 };
+
 
 export type MutationUpdateCourseArgs = {
   input: UpdateCourseInput;
 };
 
+
 export type MutationUpdateEnrollmentArgs = {
   input?: InputMaybe<UpdateEnrollmentInput>;
 };
 
+
 export type MutationUpdateLessonArgs = {
-  id: Scalars["ID"]["input"];
+  id: Scalars['ID']['input'];
   input: UpdateLessonInput;
 };
 
+
 export type MutationUpdateSectionArgs = {
-  id: Scalars["ID"]["input"];
+  id: Scalars['ID']['input'];
   input: UpdateSectionInput;
 };
 
+
 export type MutationUpdateTestArgs = {
-  id: Scalars["ID"]["input"];
-  name: Scalars["String"]["input"];
+  id: Scalars['ID']['input'];
+  name: Scalars['String']['input'];
 };
 
+
 export type MutationUpdateUserArgs = {
-  _id: Scalars["ID"]["input"];
+  _id: Scalars['ID']['input'];
   input: UpdateInput;
 };
 
 export type Query = {
-  __typename?: "Query";
+  __typename?: 'Query';
   getAllCourse: Array<Course>;
   getAllTest: Array<Test>;
   getAllUser: Array<User>;
@@ -234,315 +226,223 @@ export type Query = {
   getUserById: User;
 };
 
+
 export type QueryGetCourseByIdArgs = {
-  _id: Scalars["ID"]["input"];
+  _id: Scalars['ID']['input'];
 };
+
 
 export type QueryGetEnrollmentsByCourseArgs = {
-  courseId: Scalars["ID"]["input"];
+  courseId: Scalars['ID']['input'];
 };
+
 
 export type QueryGetEnrollmentsByUserArgs = {
-  userId: Scalars["ID"]["input"];
+  userId: Scalars['ID']['input'];
 };
+
 
 export type QueryGetLessonByIdArgs = {
-  _id: Scalars["ID"]["input"];
+  _id: Scalars['ID']['input'];
 };
+
 
 export type QueryGetLessonsBySectionArgs = {
-  sectionId: Scalars["ID"]["input"];
+  sectionId: Scalars['ID']['input'];
 };
+
 
 export type QueryGetSectionByIdArgs = {
-  id: Scalars["ID"]["input"];
+  id: Scalars['ID']['input'];
 };
+
 
 export type QueryGetSectionsArgs = {
-  courseId: Scalars["ID"]["input"];
+  courseId: Scalars['ID']['input'];
 };
 
+
 export type QueryGetUserByIdArgs = {
-  _id: Scalars["ID"]["input"];
+  _id: Scalars['ID']['input'];
 };
 
 export type RegisterInput = {
-  email: Scalars["String"]["input"];
-  password: Scalars["String"]["input"];
+  email: Scalars['String']['input'];
+  password: Scalars['String']['input'];
 };
 
 export type RegisterResponse = {
-  __typename?: "RegisterResponse";
-  message: Scalars["String"]["output"];
+  __typename?: 'RegisterResponse';
+  message: Scalars['String']['output'];
   user: User;
 };
 
 export type Section = {
-  __typename?: "Section";
-  _id: Scalars["ID"]["output"];
+  __typename?: 'Section';
+  _id: Scalars['ID']['output'];
   courseId: Course;
-  createdAt: Scalars["String"]["output"];
-  description?: Maybe<Scalars["String"]["output"]>;
+  createdAt: Scalars['String']['output'];
+  description?: Maybe<Scalars['String']['output']>;
   lessonId?: Maybe<Array<Maybe<Lesson>>>;
-  order: Scalars["Int"]["output"];
-  title: Scalars["String"]["output"];
-  updatedAt: Scalars["String"]["output"];
+  order: Scalars['Int']['output'];
+  title: Scalars['String']['output'];
+  updatedAt: Scalars['String']['output'];
 };
 
 export type Test = {
-  __typename?: "Test";
-  _id: Scalars["ID"]["output"];
-  name: Scalars["String"]["output"];
+  __typename?: 'Test';
+  _id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
 };
 
 export type UpdateCourseInput = {
-  _id: Scalars["ID"]["input"];
-  categories?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
-  createdBy?: InputMaybe<Scalars["String"]["input"]>;
-  description?: InputMaybe<Scalars["String"]["input"]>;
-  duration?: InputMaybe<Scalars["Int"]["input"]>;
-  enrollmentId?: InputMaybe<Array<InputMaybe<Scalars["ID"]["input"]>>>;
-  price?: InputMaybe<Scalars["Float"]["input"]>;
+  _id: Scalars['ID']['input'];
+  categories?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  createdBy?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  duration?: InputMaybe<Scalars['Int']['input']>;
+  price?: InputMaybe<Scalars['Float']['input']>;
   status?: InputMaybe<CourseStatus>;
-  tags?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
-  thumbnail?: InputMaybe<Scalars["String"]["input"]>;
-  title?: InputMaybe<Scalars["String"]["input"]>;
+  tags?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  thumbnail?: InputMaybe<Scalars['String']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateEnrollmentInput = {
-  _id: Scalars["ID"]["input"];
-  progress?: InputMaybe<Scalars["Float"]["input"]>;
+  _id: Scalars['ID']['input'];
+  progress?: InputMaybe<Scalars['Float']['input']>;
   status?: InputMaybe<EnrollmentStatus>;
 };
 
 export type UpdateInput = {
-  email?: InputMaybe<Scalars["String"]["input"]>;
+  email?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateLessonInput = {
-  content?: InputMaybe<Scalars["String"]["input"]>;
-  isPublished?: InputMaybe<Scalars["Boolean"]["input"]>;
-  order?: InputMaybe<Scalars["Int"]["input"]>;
-  title?: InputMaybe<Scalars["String"]["input"]>;
-  videoUrl?: InputMaybe<Scalars["String"]["input"]>;
+  content?: InputMaybe<Scalars['String']['input']>;
+  isPublished?: InputMaybe<Scalars['Boolean']['input']>;
+  order?: InputMaybe<Scalars['Int']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
+  videoUrl?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateSectionInput = {
-  description?: InputMaybe<Scalars["String"]["input"]>;
-  order?: InputMaybe<Scalars["Int"]["input"]>;
-  title?: InputMaybe<Scalars["String"]["input"]>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  order?: InputMaybe<Scalars['Int']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type User = {
-  __typename?: "User";
-  _id: Scalars["ID"]["output"];
-  email: Scalars["String"]["output"];
-  isVerified: Scalars["String"]["output"];
-  role: Scalars["String"]["output"];
-  studentId: Scalars["String"]["output"];
+  __typename?: 'User';
+  _id: Scalars['ID']['output'];
+  email: Scalars['String']['output'];
+  isVerified: Scalars['String']['output'];
+  role: Scalars['String']['output'];
+  studentId: Scalars['String']['output'];
 };
 
 export type CreateCourseMutationVariables = Exact<{
   input: CreateCourseInput;
 }>;
 
-export type CreateCourseMutation = {
-  __typename?: "Mutation";
-  createCourse: { __typename?: "Course"; _id: string };
-};
 
-export type GetAllCourseQueryVariables = Exact<{ [key: string]: never }>;
+export type CreateCourseMutation = { __typename?: 'Mutation', createCourse: { __typename?: 'Course', _id: string } };
 
-export type GetAllCourseQuery = {
-  __typename?: "Query";
-  getAllCourse: Array<{
-    __typename?: "Course";
-    _id: string;
-    title: string;
-    description: string;
-    price: number;
-    duration?: number | null;
-    categories?: Array<string | null> | null;
-    tags?: Array<string | null> | null;
-    status?: CourseStatus | null;
-    thumbnail?: string | null;
-    enrollmentId?: Array<{
-      __typename?: "Enrollment";
-      _id: string;
-    } | null> | null;
-  }>;
-};
-
-export type GetCourseByIdQueryVariables = Exact<{
-  id: Scalars["ID"]["input"];
+export type UpdateCourseMutationVariables = Exact<{
+  input: UpdateCourseInput;
 }>;
 
-export type GetCourseByIdQuery = {
-  __typename?: "Query";
-  getCourseById?: {
-    __typename?: "Course";
-    _id: string;
-    title: string;
-    description: string;
-    price: number;
-    duration?: number | null;
-    createdBy?: string | null;
-    categories?: Array<string | null> | null;
-    tags?: Array<string | null> | null;
-    status?: CourseStatus | null;
-    thumbnail?: string | null;
-    sectionId?: Array<{
-      __typename?: "Section";
-      _id: string;
-      title: string;
-      lessonId?: Array<{
-        __typename?: "Lesson";
-        _id: string;
-        title: string;
-        isPublished: boolean;
-      } | null> | null;
-    } | null> | null;
-    enrollmentId?: Array<{
-      __typename?: "Enrollment";
-      _id: string;
-      userId?: { __typename?: "User"; _id: string; email: string } | null;
-    } | null> | null;
-  } | null;
-};
+
+export type UpdateCourseMutation = { __typename?: 'Mutation', updateCourse: { __typename?: 'Course', _id: string, title: string, description: string, price: number, status?: CourseStatus | null, thumbnail?: string | null } };
+
+export type GetAllCourseQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllCourseQuery = { __typename?: 'Query', getAllCourse: Array<{ __typename?: 'Course', _id: string, title: string, description: string, price: number, duration?: number | null, categories?: Array<string | null> | null, tags?: Array<string | null> | null, status?: CourseStatus | null, thumbnail?: string | null, enrollmentId?: Array<{ __typename?: 'Enrollment', _id: string } | null> | null }> };
+
+export type GetCourseByIdQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type GetCourseByIdQuery = { __typename?: 'Query', getCourseById?: { __typename?: 'Course', _id: string, title: string, description: string, price: number, duration?: number | null, createdBy?: string | null, categories?: Array<string | null> | null, tags?: Array<string | null> | null, status?: CourseStatus | null, thumbnail?: string | null, sectionId?: Array<{ __typename?: 'Section', _id: string, title: string, lessonId?: Array<{ __typename?: 'Lesson', _id: string, title: string, isPublished: boolean } | null> | null } | null> | null, enrollmentId?: Array<{ __typename?: 'Enrollment', _id: string, userId?: { __typename?: 'User', _id: string, email: string } | null } | null> | null } | null };
 
 export type CreateLessonMutationVariables = Exact<{
   input: CreateLessonInput;
 }>;
 
-export type CreateLessonMutation = {
-  __typename?: "Mutation";
-  createLesson: { __typename?: "Lesson"; _id: string };
-};
+
+export type CreateLessonMutation = { __typename?: 'Mutation', createLesson: { __typename?: 'Lesson', _id: string } };
 
 export type GetLessonByIdQueryVariables = Exact<{
-  getLessonByIdId: Scalars["ID"]["input"];
+  getLessonByIdId: Scalars['ID']['input'];
 }>;
 
-export type GetLessonByIdQuery = {
-  __typename?: "Query";
-  getLessonById: {
-    __typename?: "Lesson";
-    _id: string;
-    title: string;
-    content?: string | null;
-    videoUrl?: string | null;
-    order: number;
-    isPublished: boolean;
-    createdAt: string;
-    updatedAt: string;
-  };
-};
+
+export type GetLessonByIdQuery = { __typename?: 'Query', getLessonById: { __typename?: 'Lesson', _id: string, title: string, content?: string | null, videoUrl?: string | null, order: number, isPublished: boolean, createdAt: string, updatedAt: string } };
 
 export type CreateSectionMutationVariables = Exact<{
   input?: InputMaybe<CreateSectionInput>;
 }>;
 
-export type CreateSectionMutation = {
-  __typename?: "Mutation";
-  createSection?: { __typename?: "Section"; _id: string } | null;
-};
 
-export type GetAllTestQueryVariables = Exact<{ [key: string]: never }>;
+export type CreateSectionMutation = { __typename?: 'Mutation', createSection?: { __typename?: 'Section', _id: string } | null };
 
-export type GetAllTestQuery = {
-  __typename?: "Query";
-  getAllTest: Array<{ __typename?: "Test"; _id: string; name: string }>;
-};
+export type GetAllTestQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllTestQuery = { __typename?: 'Query', getAllTest: Array<{ __typename?: 'Test', _id: string, name: string }> };
 
 export type CreateTestMutationVariables = Exact<{
-  name: Scalars["String"]["input"];
+  name: Scalars['String']['input'];
 }>;
 
-export type CreateTestMutation = {
-  __typename?: "Mutation";
-  createTest: { __typename?: "Test"; _id: string; name: string };
-};
+
+export type CreateTestMutation = { __typename?: 'Mutation', createTest: { __typename?: 'Test', _id: string, name: string } };
 
 export type DeleteTestMutationVariables = Exact<{
-  deleteTestId: Scalars["ID"]["input"];
+  deleteTestId: Scalars['ID']['input'];
 }>;
 
-export type DeleteTestMutation = {
-  __typename?: "Mutation";
-  deleteTest: { __typename?: "Test"; _id: string; name: string };
-};
+
+export type DeleteTestMutation = { __typename?: 'Mutation', deleteTest: { __typename?: 'Test', _id: string, name: string } };
 
 export type UpdateTestMutationVariables = Exact<{
-  updateTestId: Scalars["ID"]["input"];
-  name: Scalars["String"]["input"];
+  updateTestId: Scalars['ID']['input'];
+  name: Scalars['String']['input'];
 }>;
 
-export type UpdateTestMutation = {
-  __typename?: "Mutation";
-  updateTest: { __typename?: "Test"; _id: string; name: string };
-};
+
+export type UpdateTestMutation = { __typename?: 'Mutation', updateTest: { __typename?: 'Test', _id: string, name: string } };
 
 export type CreateUserMutationVariables = Exact<{
   input: RegisterInput;
 }>;
 
-export type CreateUserMutation = {
-  __typename?: "Mutation";
-  createUser: {
-    __typename?: "RegisterResponse";
-    message: string;
-    user: {
-      __typename?: "User";
-      _id: string;
-      email: string;
-      studentId: string;
-      role: string;
-      isVerified: string;
-    };
-  };
-};
 
-export type GetAllUserQueryVariables = Exact<{ [key: string]: never }>;
+export type CreateUserMutation = { __typename?: 'Mutation', createUser: { __typename?: 'RegisterResponse', message: string, user: { __typename?: 'User', _id: string, email: string, studentId: string, role: string, isVerified: string } } };
 
-export type GetAllUserQuery = {
-  __typename?: "Query";
-  getAllUser: Array<{
-    __typename?: "User";
-    _id: string;
-    email: string;
-    studentId: string;
-    role: string;
-    isVerified: string;
-  }>;
-};
+export type GetAllUserQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllUserQuery = { __typename?: 'Query', getAllUser: Array<{ __typename?: 'User', _id: string, email: string, studentId: string, role: string, isVerified: string }> };
 
 export type GetUserByIdQueryVariables = Exact<{
-  id: Scalars["ID"]["input"];
+  id: Scalars['ID']['input'];
 }>;
 
-export type GetUserByIdQuery = {
-  __typename?: "Query";
-  getUserById: {
-    __typename?: "User";
-    _id: string;
-    email: string;
-    studentId: string;
-    role: string;
-    isVerified: string;
-  };
-};
+
+export type GetUserByIdQuery = { __typename?: 'Query', getUserById: { __typename?: 'User', _id: string, email: string, studentId: string, role: string, isVerified: string } };
+
 
 export const CreateCourseDocument = gql`
-  mutation CreateCourse($input: CreateCourseInput!) {
-    createCourse(input: $input) {
-      _id
-    }
+    mutation CreateCourse($input: CreateCourseInput!) {
+  createCourse(input: $input) {
+    _id
   }
-`;
-export type CreateCourseMutationFn = Apollo.MutationFunction<
-  CreateCourseMutation,
-  CreateCourseMutationVariables
->;
+}
+    `;
+export type CreateCourseMutationFn = Apollo.MutationFunction<CreateCourseMutation, CreateCourseMutationVariables>;
 
 /**
  * __useCreateCourseMutation__
@@ -561,45 +461,69 @@ export type CreateCourseMutationFn = Apollo.MutationFunction<
  *   },
  * });
  */
-export function useCreateCourseMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    CreateCourseMutation,
-    CreateCourseMutationVariables
-  >,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<
-    CreateCourseMutation,
-    CreateCourseMutationVariables
-  >(CreateCourseDocument, options);
-}
-export type CreateCourseMutationHookResult = ReturnType<
-  typeof useCreateCourseMutation
->;
-export type CreateCourseMutationResult =
-  Apollo.MutationResult<CreateCourseMutation>;
-export type CreateCourseMutationOptions = Apollo.BaseMutationOptions<
-  CreateCourseMutation,
-  CreateCourseMutationVariables
->;
-export const GetAllCourseDocument = gql`
-  query GetAllCourse {
-    getAllCourse {
-      _id
-      title
-      description
-      price
-      duration
-      categories
-      tags
-      status
-      enrollmentId {
-        _id
+export function useCreateCourseMutation(baseOptions?: Apollo.MutationHookOptions<CreateCourseMutation, CreateCourseMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateCourseMutation, CreateCourseMutationVariables>(CreateCourseDocument, options);
       }
-      thumbnail
-    }
+export type CreateCourseMutationHookResult = ReturnType<typeof useCreateCourseMutation>;
+export type CreateCourseMutationResult = Apollo.MutationResult<CreateCourseMutation>;
+export type CreateCourseMutationOptions = Apollo.BaseMutationOptions<CreateCourseMutation, CreateCourseMutationVariables>;
+export const UpdateCourseDocument = gql`
+    mutation UpdateCourse($input: UpdateCourseInput!) {
+  updateCourse(input: $input) {
+    _id
+    title
+    description
+    price
+    status
+    thumbnail
   }
-`;
+}
+    `;
+export type UpdateCourseMutationFn = Apollo.MutationFunction<UpdateCourseMutation, UpdateCourseMutationVariables>;
+
+/**
+ * __useUpdateCourseMutation__
+ *
+ * To run a mutation, you first call `useUpdateCourseMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateCourseMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateCourseMutation, { data, loading, error }] = useUpdateCourseMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateCourseMutation(baseOptions?: Apollo.MutationHookOptions<UpdateCourseMutation, UpdateCourseMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateCourseMutation, UpdateCourseMutationVariables>(UpdateCourseDocument, options);
+      }
+export type UpdateCourseMutationHookResult = ReturnType<typeof useUpdateCourseMutation>;
+export type UpdateCourseMutationResult = Apollo.MutationResult<UpdateCourseMutation>;
+export type UpdateCourseMutationOptions = Apollo.BaseMutationOptions<UpdateCourseMutation, UpdateCourseMutationVariables>;
+export const GetAllCourseDocument = gql`
+    query GetAllCourse {
+  getAllCourse {
+    _id
+    title
+    description
+    price
+    duration
+    categories
+    tags
+    status
+    enrollmentId {
+      _id
+    }
+    thumbnail
+  }
+}
+    `;
 
 /**
  * __useGetAllCourseQuery__
@@ -616,92 +540,54 @@ export const GetAllCourseDocument = gql`
  *   },
  * });
  */
-export function useGetAllCourseQuery(
-  baseOptions?: Apollo.QueryHookOptions<
-    GetAllCourseQuery,
-    GetAllCourseQueryVariables
-  >,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<GetAllCourseQuery, GetAllCourseQueryVariables>(
-    GetAllCourseDocument,
-    options,
-  );
-}
-export function useGetAllCourseLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetAllCourseQuery,
-    GetAllCourseQueryVariables
-  >,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<GetAllCourseQuery, GetAllCourseQueryVariables>(
-    GetAllCourseDocument,
-    options,
-  );
-}
-export function useGetAllCourseSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetAllCourseQuery,
-        GetAllCourseQueryVariables
-      >,
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<GetAllCourseQuery, GetAllCourseQueryVariables>(
-    GetAllCourseDocument,
-    options,
-  );
-}
-export type GetAllCourseQueryHookResult = ReturnType<
-  typeof useGetAllCourseQuery
->;
-export type GetAllCourseLazyQueryHookResult = ReturnType<
-  typeof useGetAllCourseLazyQuery
->;
-export type GetAllCourseSuspenseQueryHookResult = ReturnType<
-  typeof useGetAllCourseSuspenseQuery
->;
-export type GetAllCourseQueryResult = Apollo.QueryResult<
-  GetAllCourseQuery,
-  GetAllCourseQueryVariables
->;
+export function useGetAllCourseQuery(baseOptions?: Apollo.QueryHookOptions<GetAllCourseQuery, GetAllCourseQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetAllCourseQuery, GetAllCourseQueryVariables>(GetAllCourseDocument, options);
+      }
+export function useGetAllCourseLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAllCourseQuery, GetAllCourseQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetAllCourseQuery, GetAllCourseQueryVariables>(GetAllCourseDocument, options);
+        }
+export function useGetAllCourseSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetAllCourseQuery, GetAllCourseQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetAllCourseQuery, GetAllCourseQueryVariables>(GetAllCourseDocument, options);
+        }
+export type GetAllCourseQueryHookResult = ReturnType<typeof useGetAllCourseQuery>;
+export type GetAllCourseLazyQueryHookResult = ReturnType<typeof useGetAllCourseLazyQuery>;
+export type GetAllCourseSuspenseQueryHookResult = ReturnType<typeof useGetAllCourseSuspenseQuery>;
+export type GetAllCourseQueryResult = Apollo.QueryResult<GetAllCourseQuery, GetAllCourseQueryVariables>;
 export const GetCourseByIdDocument = gql`
-  query GetCourseById($id: ID!) {
-    getCourseById(_id: $id) {
+    query GetCourseById($id: ID!) {
+  getCourseById(_id: $id) {
+    _id
+    title
+    description
+    price
+    sectionId {
       _id
       title
-      description
-      price
-      sectionId {
+      lessonId {
         _id
         title
-        lessonId {
-          _id
-          title
-          isPublished
-        }
+        isPublished
       }
-      duration
-      createdBy
-      categories
-      tags
-      status
-      enrollmentId {
-        _id
-        userId {
-          _id
-          email
-        }
-      }
-      thumbnail
     }
+    duration
+    createdBy
+    categories
+    tags
+    status
+    enrollmentId {
+      _id
+      userId {
+        _id
+        email
+      }
+    }
+    thumbnail
   }
-`;
+}
+    `;
 
 /**
  * __useGetCourseByIdQuery__
@@ -719,75 +605,30 @@ export const GetCourseByIdDocument = gql`
  *   },
  * });
  */
-export function useGetCourseByIdQuery(
-  baseOptions: Apollo.QueryHookOptions<
-    GetCourseByIdQuery,
-    GetCourseByIdQueryVariables
-  > &
-    (
-      | { variables: GetCourseByIdQueryVariables; skip?: boolean }
-      | { skip: boolean }
-    ),
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<GetCourseByIdQuery, GetCourseByIdQueryVariables>(
-    GetCourseByIdDocument,
-    options,
-  );
-}
-export function useGetCourseByIdLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetCourseByIdQuery,
-    GetCourseByIdQueryVariables
-  >,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<GetCourseByIdQuery, GetCourseByIdQueryVariables>(
-    GetCourseByIdDocument,
-    options,
-  );
-}
-export function useGetCourseByIdSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetCourseByIdQuery,
-        GetCourseByIdQueryVariables
-      >,
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    GetCourseByIdQuery,
-    GetCourseByIdQueryVariables
-  >(GetCourseByIdDocument, options);
-}
-export type GetCourseByIdQueryHookResult = ReturnType<
-  typeof useGetCourseByIdQuery
->;
-export type GetCourseByIdLazyQueryHookResult = ReturnType<
-  typeof useGetCourseByIdLazyQuery
->;
-export type GetCourseByIdSuspenseQueryHookResult = ReturnType<
-  typeof useGetCourseByIdSuspenseQuery
->;
-export type GetCourseByIdQueryResult = Apollo.QueryResult<
-  GetCourseByIdQuery,
-  GetCourseByIdQueryVariables
->;
+export function useGetCourseByIdQuery(baseOptions: Apollo.QueryHookOptions<GetCourseByIdQuery, GetCourseByIdQueryVariables> & ({ variables: GetCourseByIdQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetCourseByIdQuery, GetCourseByIdQueryVariables>(GetCourseByIdDocument, options);
+      }
+export function useGetCourseByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCourseByIdQuery, GetCourseByIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetCourseByIdQuery, GetCourseByIdQueryVariables>(GetCourseByIdDocument, options);
+        }
+export function useGetCourseByIdSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetCourseByIdQuery, GetCourseByIdQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetCourseByIdQuery, GetCourseByIdQueryVariables>(GetCourseByIdDocument, options);
+        }
+export type GetCourseByIdQueryHookResult = ReturnType<typeof useGetCourseByIdQuery>;
+export type GetCourseByIdLazyQueryHookResult = ReturnType<typeof useGetCourseByIdLazyQuery>;
+export type GetCourseByIdSuspenseQueryHookResult = ReturnType<typeof useGetCourseByIdSuspenseQuery>;
+export type GetCourseByIdQueryResult = Apollo.QueryResult<GetCourseByIdQuery, GetCourseByIdQueryVariables>;
 export const CreateLessonDocument = gql`
-  mutation CreateLesson($input: CreateLessonInput!) {
-    createLesson(input: $input) {
-      _id
-    }
+    mutation CreateLesson($input: CreateLessonInput!) {
+  createLesson(input: $input) {
+    _id
   }
-`;
-export type CreateLessonMutationFn = Apollo.MutationFunction<
-  CreateLessonMutation,
-  CreateLessonMutationVariables
->;
+}
+    `;
+export type CreateLessonMutationFn = Apollo.MutationFunction<CreateLessonMutation, CreateLessonMutationVariables>;
 
 /**
  * __useCreateLessonMutation__
@@ -806,41 +647,27 @@ export type CreateLessonMutationFn = Apollo.MutationFunction<
  *   },
  * });
  */
-export function useCreateLessonMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    CreateLessonMutation,
-    CreateLessonMutationVariables
-  >,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<
-    CreateLessonMutation,
-    CreateLessonMutationVariables
-  >(CreateLessonDocument, options);
-}
-export type CreateLessonMutationHookResult = ReturnType<
-  typeof useCreateLessonMutation
->;
-export type CreateLessonMutationResult =
-  Apollo.MutationResult<CreateLessonMutation>;
-export type CreateLessonMutationOptions = Apollo.BaseMutationOptions<
-  CreateLessonMutation,
-  CreateLessonMutationVariables
->;
+export function useCreateLessonMutation(baseOptions?: Apollo.MutationHookOptions<CreateLessonMutation, CreateLessonMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateLessonMutation, CreateLessonMutationVariables>(CreateLessonDocument, options);
+      }
+export type CreateLessonMutationHookResult = ReturnType<typeof useCreateLessonMutation>;
+export type CreateLessonMutationResult = Apollo.MutationResult<CreateLessonMutation>;
+export type CreateLessonMutationOptions = Apollo.BaseMutationOptions<CreateLessonMutation, CreateLessonMutationVariables>;
 export const GetLessonByIdDocument = gql`
-  query GetLessonById($getLessonByIdId: ID!) {
-    getLessonById(_id: $getLessonByIdId) {
-      _id
-      title
-      content
-      videoUrl
-      order
-      isPublished
-      createdAt
-      updatedAt
-    }
+    query GetLessonById($getLessonByIdId: ID!) {
+  getLessonById(_id: $getLessonByIdId) {
+    _id
+    title
+    content
+    videoUrl
+    order
+    isPublished
+    createdAt
+    updatedAt
   }
-`;
+}
+    `;
 
 /**
  * __useGetLessonByIdQuery__
@@ -858,75 +685,30 @@ export const GetLessonByIdDocument = gql`
  *   },
  * });
  */
-export function useGetLessonByIdQuery(
-  baseOptions: Apollo.QueryHookOptions<
-    GetLessonByIdQuery,
-    GetLessonByIdQueryVariables
-  > &
-    (
-      | { variables: GetLessonByIdQueryVariables; skip?: boolean }
-      | { skip: boolean }
-    ),
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<GetLessonByIdQuery, GetLessonByIdQueryVariables>(
-    GetLessonByIdDocument,
-    options,
-  );
-}
-export function useGetLessonByIdLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetLessonByIdQuery,
-    GetLessonByIdQueryVariables
-  >,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<GetLessonByIdQuery, GetLessonByIdQueryVariables>(
-    GetLessonByIdDocument,
-    options,
-  );
-}
-export function useGetLessonByIdSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetLessonByIdQuery,
-        GetLessonByIdQueryVariables
-      >,
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    GetLessonByIdQuery,
-    GetLessonByIdQueryVariables
-  >(GetLessonByIdDocument, options);
-}
-export type GetLessonByIdQueryHookResult = ReturnType<
-  typeof useGetLessonByIdQuery
->;
-export type GetLessonByIdLazyQueryHookResult = ReturnType<
-  typeof useGetLessonByIdLazyQuery
->;
-export type GetLessonByIdSuspenseQueryHookResult = ReturnType<
-  typeof useGetLessonByIdSuspenseQuery
->;
-export type GetLessonByIdQueryResult = Apollo.QueryResult<
-  GetLessonByIdQuery,
-  GetLessonByIdQueryVariables
->;
+export function useGetLessonByIdQuery(baseOptions: Apollo.QueryHookOptions<GetLessonByIdQuery, GetLessonByIdQueryVariables> & ({ variables: GetLessonByIdQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetLessonByIdQuery, GetLessonByIdQueryVariables>(GetLessonByIdDocument, options);
+      }
+export function useGetLessonByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetLessonByIdQuery, GetLessonByIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetLessonByIdQuery, GetLessonByIdQueryVariables>(GetLessonByIdDocument, options);
+        }
+export function useGetLessonByIdSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetLessonByIdQuery, GetLessonByIdQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetLessonByIdQuery, GetLessonByIdQueryVariables>(GetLessonByIdDocument, options);
+        }
+export type GetLessonByIdQueryHookResult = ReturnType<typeof useGetLessonByIdQuery>;
+export type GetLessonByIdLazyQueryHookResult = ReturnType<typeof useGetLessonByIdLazyQuery>;
+export type GetLessonByIdSuspenseQueryHookResult = ReturnType<typeof useGetLessonByIdSuspenseQuery>;
+export type GetLessonByIdQueryResult = Apollo.QueryResult<GetLessonByIdQuery, GetLessonByIdQueryVariables>;
 export const CreateSectionDocument = gql`
-  mutation CreateSection($input: CreateSectionInput) {
-    createSection(input: $input) {
-      _id
-    }
+    mutation CreateSection($input: CreateSectionInput) {
+  createSection(input: $input) {
+    _id
   }
-`;
-export type CreateSectionMutationFn = Apollo.MutationFunction<
-  CreateSectionMutation,
-  CreateSectionMutationVariables
->;
+}
+    `;
+export type CreateSectionMutationFn = Apollo.MutationFunction<CreateSectionMutation, CreateSectionMutationVariables>;
 
 /**
  * __useCreateSectionMutation__
@@ -945,35 +727,21 @@ export type CreateSectionMutationFn = Apollo.MutationFunction<
  *   },
  * });
  */
-export function useCreateSectionMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    CreateSectionMutation,
-    CreateSectionMutationVariables
-  >,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<
-    CreateSectionMutation,
-    CreateSectionMutationVariables
-  >(CreateSectionDocument, options);
-}
-export type CreateSectionMutationHookResult = ReturnType<
-  typeof useCreateSectionMutation
->;
-export type CreateSectionMutationResult =
-  Apollo.MutationResult<CreateSectionMutation>;
-export type CreateSectionMutationOptions = Apollo.BaseMutationOptions<
-  CreateSectionMutation,
-  CreateSectionMutationVariables
->;
+export function useCreateSectionMutation(baseOptions?: Apollo.MutationHookOptions<CreateSectionMutation, CreateSectionMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateSectionMutation, CreateSectionMutationVariables>(CreateSectionDocument, options);
+      }
+export type CreateSectionMutationHookResult = ReturnType<typeof useCreateSectionMutation>;
+export type CreateSectionMutationResult = Apollo.MutationResult<CreateSectionMutation>;
+export type CreateSectionMutationOptions = Apollo.BaseMutationOptions<CreateSectionMutation, CreateSectionMutationVariables>;
 export const GetAllTestDocument = gql`
-  query GetAllTest {
-    getAllTest {
-      _id
-      name
-    }
+    query GetAllTest {
+  getAllTest {
+    _id
+    name
   }
-`;
+}
+    `;
 
 /**
  * __useGetAllTestQuery__
@@ -990,70 +758,31 @@ export const GetAllTestDocument = gql`
  *   },
  * });
  */
-export function useGetAllTestQuery(
-  baseOptions?: Apollo.QueryHookOptions<
-    GetAllTestQuery,
-    GetAllTestQueryVariables
-  >,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<GetAllTestQuery, GetAllTestQueryVariables>(
-    GetAllTestDocument,
-    options,
-  );
-}
-export function useGetAllTestLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetAllTestQuery,
-    GetAllTestQueryVariables
-  >,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<GetAllTestQuery, GetAllTestQueryVariables>(
-    GetAllTestDocument,
-    options,
-  );
-}
-export function useGetAllTestSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetAllTestQuery,
-        GetAllTestQueryVariables
-      >,
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<GetAllTestQuery, GetAllTestQueryVariables>(
-    GetAllTestDocument,
-    options,
-  );
-}
+export function useGetAllTestQuery(baseOptions?: Apollo.QueryHookOptions<GetAllTestQuery, GetAllTestQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetAllTestQuery, GetAllTestQueryVariables>(GetAllTestDocument, options);
+      }
+export function useGetAllTestLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAllTestQuery, GetAllTestQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetAllTestQuery, GetAllTestQueryVariables>(GetAllTestDocument, options);
+        }
+export function useGetAllTestSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetAllTestQuery, GetAllTestQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetAllTestQuery, GetAllTestQueryVariables>(GetAllTestDocument, options);
+        }
 export type GetAllTestQueryHookResult = ReturnType<typeof useGetAllTestQuery>;
-export type GetAllTestLazyQueryHookResult = ReturnType<
-  typeof useGetAllTestLazyQuery
->;
-export type GetAllTestSuspenseQueryHookResult = ReturnType<
-  typeof useGetAllTestSuspenseQuery
->;
-export type GetAllTestQueryResult = Apollo.QueryResult<
-  GetAllTestQuery,
-  GetAllTestQueryVariables
->;
+export type GetAllTestLazyQueryHookResult = ReturnType<typeof useGetAllTestLazyQuery>;
+export type GetAllTestSuspenseQueryHookResult = ReturnType<typeof useGetAllTestSuspenseQuery>;
+export type GetAllTestQueryResult = Apollo.QueryResult<GetAllTestQuery, GetAllTestQueryVariables>;
 export const CreateTestDocument = gql`
-  mutation CreateTest($name: String!) {
-    createTest(name: $name) {
-      _id
-      name
-    }
+    mutation CreateTest($name: String!) {
+  createTest(name: $name) {
+    _id
+    name
   }
-`;
-export type CreateTestMutationFn = Apollo.MutationFunction<
-  CreateTestMutation,
-  CreateTestMutationVariables
->;
+}
+    `;
+export type CreateTestMutationFn = Apollo.MutationFunction<CreateTestMutation, CreateTestMutationVariables>;
 
 /**
  * __useCreateTestMutation__
@@ -1072,39 +801,22 @@ export type CreateTestMutationFn = Apollo.MutationFunction<
  *   },
  * });
  */
-export function useCreateTestMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    CreateTestMutation,
-    CreateTestMutationVariables
-  >,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<CreateTestMutation, CreateTestMutationVariables>(
-    CreateTestDocument,
-    options,
-  );
-}
-export type CreateTestMutationHookResult = ReturnType<
-  typeof useCreateTestMutation
->;
-export type CreateTestMutationResult =
-  Apollo.MutationResult<CreateTestMutation>;
-export type CreateTestMutationOptions = Apollo.BaseMutationOptions<
-  CreateTestMutation,
-  CreateTestMutationVariables
->;
+export function useCreateTestMutation(baseOptions?: Apollo.MutationHookOptions<CreateTestMutation, CreateTestMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateTestMutation, CreateTestMutationVariables>(CreateTestDocument, options);
+      }
+export type CreateTestMutationHookResult = ReturnType<typeof useCreateTestMutation>;
+export type CreateTestMutationResult = Apollo.MutationResult<CreateTestMutation>;
+export type CreateTestMutationOptions = Apollo.BaseMutationOptions<CreateTestMutation, CreateTestMutationVariables>;
 export const DeleteTestDocument = gql`
-  mutation DeleteTest($deleteTestId: ID!) {
-    deleteTest(id: $deleteTestId) {
-      _id
-      name
-    }
+    mutation DeleteTest($deleteTestId: ID!) {
+  deleteTest(id: $deleteTestId) {
+    _id
+    name
   }
-`;
-export type DeleteTestMutationFn = Apollo.MutationFunction<
-  DeleteTestMutation,
-  DeleteTestMutationVariables
->;
+}
+    `;
+export type DeleteTestMutationFn = Apollo.MutationFunction<DeleteTestMutation, DeleteTestMutationVariables>;
 
 /**
  * __useDeleteTestMutation__
@@ -1123,39 +835,22 @@ export type DeleteTestMutationFn = Apollo.MutationFunction<
  *   },
  * });
  */
-export function useDeleteTestMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    DeleteTestMutation,
-    DeleteTestMutationVariables
-  >,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<DeleteTestMutation, DeleteTestMutationVariables>(
-    DeleteTestDocument,
-    options,
-  );
-}
-export type DeleteTestMutationHookResult = ReturnType<
-  typeof useDeleteTestMutation
->;
-export type DeleteTestMutationResult =
-  Apollo.MutationResult<DeleteTestMutation>;
-export type DeleteTestMutationOptions = Apollo.BaseMutationOptions<
-  DeleteTestMutation,
-  DeleteTestMutationVariables
->;
+export function useDeleteTestMutation(baseOptions?: Apollo.MutationHookOptions<DeleteTestMutation, DeleteTestMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteTestMutation, DeleteTestMutationVariables>(DeleteTestDocument, options);
+      }
+export type DeleteTestMutationHookResult = ReturnType<typeof useDeleteTestMutation>;
+export type DeleteTestMutationResult = Apollo.MutationResult<DeleteTestMutation>;
+export type DeleteTestMutationOptions = Apollo.BaseMutationOptions<DeleteTestMutation, DeleteTestMutationVariables>;
 export const UpdateTestDocument = gql`
-  mutation updateTest($updateTestId: ID!, $name: String!) {
-    updateTest(id: $updateTestId, name: $name) {
-      _id
-      name
-    }
+    mutation updateTest($updateTestId: ID!, $name: String!) {
+  updateTest(id: $updateTestId, name: $name) {
+    _id
+    name
   }
-`;
-export type UpdateTestMutationFn = Apollo.MutationFunction<
-  UpdateTestMutation,
-  UpdateTestMutationVariables
->;
+}
+    `;
+export type UpdateTestMutationFn = Apollo.MutationFunction<UpdateTestMutation, UpdateTestMutationVariables>;
 
 /**
  * __useUpdateTestMutation__
@@ -1175,45 +870,28 @@ export type UpdateTestMutationFn = Apollo.MutationFunction<
  *   },
  * });
  */
-export function useUpdateTestMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    UpdateTestMutation,
-    UpdateTestMutationVariables
-  >,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<UpdateTestMutation, UpdateTestMutationVariables>(
-    UpdateTestDocument,
-    options,
-  );
-}
-export type UpdateTestMutationHookResult = ReturnType<
-  typeof useUpdateTestMutation
->;
-export type UpdateTestMutationResult =
-  Apollo.MutationResult<UpdateTestMutation>;
-export type UpdateTestMutationOptions = Apollo.BaseMutationOptions<
-  UpdateTestMutation,
-  UpdateTestMutationVariables
->;
-export const CreateUserDocument = gql`
-  mutation CreateUser($input: RegisterInput!) {
-    createUser(input: $input) {
-      message
-      user {
-        _id
-        email
-        studentId
-        role
-        isVerified
+export function useUpdateTestMutation(baseOptions?: Apollo.MutationHookOptions<UpdateTestMutation, UpdateTestMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateTestMutation, UpdateTestMutationVariables>(UpdateTestDocument, options);
       }
+export type UpdateTestMutationHookResult = ReturnType<typeof useUpdateTestMutation>;
+export type UpdateTestMutationResult = Apollo.MutationResult<UpdateTestMutation>;
+export type UpdateTestMutationOptions = Apollo.BaseMutationOptions<UpdateTestMutation, UpdateTestMutationVariables>;
+export const CreateUserDocument = gql`
+    mutation CreateUser($input: RegisterInput!) {
+  createUser(input: $input) {
+    message
+    user {
+      _id
+      email
+      studentId
+      role
+      isVerified
     }
   }
-`;
-export type CreateUserMutationFn = Apollo.MutationFunction<
-  CreateUserMutation,
-  CreateUserMutationVariables
->;
+}
+    `;
+export type CreateUserMutationFn = Apollo.MutationFunction<CreateUserMutation, CreateUserMutationVariables>;
 
 /**
  * __useCreateUserMutation__
@@ -1232,38 +910,24 @@ export type CreateUserMutationFn = Apollo.MutationFunction<
  *   },
  * });
  */
-export function useCreateUserMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    CreateUserMutation,
-    CreateUserMutationVariables
-  >,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<CreateUserMutation, CreateUserMutationVariables>(
-    CreateUserDocument,
-    options,
-  );
-}
-export type CreateUserMutationHookResult = ReturnType<
-  typeof useCreateUserMutation
->;
-export type CreateUserMutationResult =
-  Apollo.MutationResult<CreateUserMutation>;
-export type CreateUserMutationOptions = Apollo.BaseMutationOptions<
-  CreateUserMutation,
-  CreateUserMutationVariables
->;
+export function useCreateUserMutation(baseOptions?: Apollo.MutationHookOptions<CreateUserMutation, CreateUserMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateUserMutation, CreateUserMutationVariables>(CreateUserDocument, options);
+      }
+export type CreateUserMutationHookResult = ReturnType<typeof useCreateUserMutation>;
+export type CreateUserMutationResult = Apollo.MutationResult<CreateUserMutation>;
+export type CreateUserMutationOptions = Apollo.BaseMutationOptions<CreateUserMutation, CreateUserMutationVariables>;
 export const GetAllUserDocument = gql`
-  query GetAllUser {
-    getAllUser {
-      _id
-      email
-      studentId
-      role
-      isVerified
-    }
+    query GetAllUser {
+  getAllUser {
+    _id
+    email
+    studentId
+    role
+    isVerified
   }
-`;
+}
+    `;
 
 /**
  * __useGetAllUserQuery__
@@ -1280,69 +944,33 @@ export const GetAllUserDocument = gql`
  *   },
  * });
  */
-export function useGetAllUserQuery(
-  baseOptions?: Apollo.QueryHookOptions<
-    GetAllUserQuery,
-    GetAllUserQueryVariables
-  >,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<GetAllUserQuery, GetAllUserQueryVariables>(
-    GetAllUserDocument,
-    options,
-  );
-}
-export function useGetAllUserLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetAllUserQuery,
-    GetAllUserQueryVariables
-  >,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<GetAllUserQuery, GetAllUserQueryVariables>(
-    GetAllUserDocument,
-    options,
-  );
-}
-export function useGetAllUserSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetAllUserQuery,
-        GetAllUserQueryVariables
-      >,
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<GetAllUserQuery, GetAllUserQueryVariables>(
-    GetAllUserDocument,
-    options,
-  );
-}
+export function useGetAllUserQuery(baseOptions?: Apollo.QueryHookOptions<GetAllUserQuery, GetAllUserQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetAllUserQuery, GetAllUserQueryVariables>(GetAllUserDocument, options);
+      }
+export function useGetAllUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAllUserQuery, GetAllUserQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetAllUserQuery, GetAllUserQueryVariables>(GetAllUserDocument, options);
+        }
+export function useGetAllUserSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetAllUserQuery, GetAllUserQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetAllUserQuery, GetAllUserQueryVariables>(GetAllUserDocument, options);
+        }
 export type GetAllUserQueryHookResult = ReturnType<typeof useGetAllUserQuery>;
-export type GetAllUserLazyQueryHookResult = ReturnType<
-  typeof useGetAllUserLazyQuery
->;
-export type GetAllUserSuspenseQueryHookResult = ReturnType<
-  typeof useGetAllUserSuspenseQuery
->;
-export type GetAllUserQueryResult = Apollo.QueryResult<
-  GetAllUserQuery,
-  GetAllUserQueryVariables
->;
+export type GetAllUserLazyQueryHookResult = ReturnType<typeof useGetAllUserLazyQuery>;
+export type GetAllUserSuspenseQueryHookResult = ReturnType<typeof useGetAllUserSuspenseQuery>;
+export type GetAllUserQueryResult = Apollo.QueryResult<GetAllUserQuery, GetAllUserQueryVariables>;
 export const GetUserByIdDocument = gql`
-  query GetUserById($id: ID!) {
-    getUserById(_id: $id) {
-      _id
-      email
-      studentId
-      role
-      isVerified
-    }
+    query GetUserById($id: ID!) {
+  getUserById(_id: $id) {
+    _id
+    email
+    studentId
+    role
+    isVerified
   }
-`;
+}
+    `;
 
 /**
  * __useGetUserByIdQuery__
@@ -1360,59 +988,19 @@ export const GetUserByIdDocument = gql`
  *   },
  * });
  */
-export function useGetUserByIdQuery(
-  baseOptions: Apollo.QueryHookOptions<
-    GetUserByIdQuery,
-    GetUserByIdQueryVariables
-  > &
-    (
-      | { variables: GetUserByIdQueryVariables; skip?: boolean }
-      | { skip: boolean }
-    ),
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<GetUserByIdQuery, GetUserByIdQueryVariables>(
-    GetUserByIdDocument,
-    options,
-  );
-}
-export function useGetUserByIdLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetUserByIdQuery,
-    GetUserByIdQueryVariables
-  >,
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<GetUserByIdQuery, GetUserByIdQueryVariables>(
-    GetUserByIdDocument,
-    options,
-  );
-}
-export function useGetUserByIdSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetUserByIdQuery,
-        GetUserByIdQueryVariables
-      >,
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<GetUserByIdQuery, GetUserByIdQueryVariables>(
-    GetUserByIdDocument,
-    options,
-  );
-}
+export function useGetUserByIdQuery(baseOptions: Apollo.QueryHookOptions<GetUserByIdQuery, GetUserByIdQueryVariables> & ({ variables: GetUserByIdQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetUserByIdQuery, GetUserByIdQueryVariables>(GetUserByIdDocument, options);
+      }
+export function useGetUserByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUserByIdQuery, GetUserByIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetUserByIdQuery, GetUserByIdQueryVariables>(GetUserByIdDocument, options);
+        }
+export function useGetUserByIdSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetUserByIdQuery, GetUserByIdQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetUserByIdQuery, GetUserByIdQueryVariables>(GetUserByIdDocument, options);
+        }
 export type GetUserByIdQueryHookResult = ReturnType<typeof useGetUserByIdQuery>;
-export type GetUserByIdLazyQueryHookResult = ReturnType<
-  typeof useGetUserByIdLazyQuery
->;
-export type GetUserByIdSuspenseQueryHookResult = ReturnType<
-  typeof useGetUserByIdSuspenseQuery
->;
-export type GetUserByIdQueryResult = Apollo.QueryResult<
-  GetUserByIdQuery,
-  GetUserByIdQueryVariables
->;
+export type GetUserByIdLazyQueryHookResult = ReturnType<typeof useGetUserByIdLazyQuery>;
+export type GetUserByIdSuspenseQueryHookResult = ReturnType<typeof useGetUserByIdSuspenseQuery>;
+export type GetUserByIdQueryResult = Apollo.QueryResult<GetUserByIdQuery, GetUserByIdQueryVariables>;

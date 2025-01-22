@@ -4,8 +4,10 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import {
+  UpdateCourseInput,
   useGetCourseByIdQuery,
   useGetLessonByIdQuery,
+  useUpdateCourseMutation,
 } from "@/generated/graphql";
 import { Loader } from "lucide-react";
 import { toast, Toaster } from "sonner";
@@ -45,6 +47,60 @@ export default function CourseDetailPage() {
     variables: { getLessonByIdId: selectedLesson || "" },
     skip: !selectedLesson, // selectedLesson байхгүй үед query хийхгүй
   });
+
+  const [updateCourse] = useUpdateCourseMutation();
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleEditCourse = async (updatedFields: any) => {
+    try {
+      const allowedFields = [
+        "_id",
+        "title",
+        "description",
+        "price",
+        "duration",
+        "createdBy",
+        "categories",
+        "tags",
+        "status",
+        "thumbnail",
+      ];
+
+      const filteredFields = Object.fromEntries(
+        Object.entries(updatedFields).filter(([key]) =>
+          allowedFields.includes(key),
+        ),
+      ) as UpdateCourseInput;
+
+      // Баталгаажуулах
+      if (!filteredFields._id) {
+        throw new Error("Course ID (_id) is required");
+      }
+
+      // Toast-д ашиглах амлалт
+      const promise = updateCourse({
+        variables: {
+          input: filteredFields,
+        },
+      }).then(() => ({ name: filteredFields.title || "Course" }));
+
+      // Toast ашиглах
+      await toast.promise(promise, {
+        loading: "Updating course...",
+        success: (data) => `${data.name} has been updated successfully!`,
+        error: (error) => {
+          const message =
+            error.response?.data?.message || "Error updating course.";
+          return message;
+        },
+      });
+
+      // Шинэчлэх
+      refetch();
+    } catch (error) {
+      toast.error(`Error updating course: ${(error as Error).message}`);
+    }
+  };
 
   // Mobile эсэхийг шалгах (Tailwind breakpoints ашиглана)
   useEffect(() => {
@@ -97,7 +153,7 @@ export default function CourseDetailPage() {
         <div>
           <div className="rounded-md p-4 shadow">
             {/* Курсын үндсэн мэдээлэл */}
-            <CourseInfo course={course} />
+            <CourseInfo course={course} onEdit={handleEditCourse} />
 
             {/* Section-ууд болон хичээлүүд */}
             <SectionList
@@ -141,7 +197,7 @@ export default function CourseDetailPage() {
           <ResizablePanel defaultSize={30} minSize={35} maxSize={45}>
             <div className="h-full overflow-y-auto p-4">
               {/* Курсын үндсэн мэдээлэл */}
-              <CourseInfo course={course} />
+              <CourseInfo course={course} onEdit={handleEditCourse} />
 
               {/* Section-ууд болон хичээлүүд */}
               <SectionList
