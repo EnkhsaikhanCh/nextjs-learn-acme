@@ -30,7 +30,7 @@ export const typeDefs = gql`
     getCourseById(_id: ID!): Course
 
     # Fetch all available courses
-    getAllCourses: [Course!]!
+    getAllCourse: [Course!]!
   }
 
   # Input for creating a course
