@@ -10,7 +10,7 @@ import {
   useUpdateCourseMutation,
 } from "@/generated/graphql";
 import { Loader } from "lucide-react";
-import { toast, Toaster } from "sonner";
+import { toast } from "sonner";
 import { CourseInfo } from "./_components/CourseInfo";
 import { SectionList } from "./_components/SectionList";
 import { AddSectionForm } from "./_components/AddSectionForm";

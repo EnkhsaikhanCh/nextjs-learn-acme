@@ -11,7 +11,7 @@ import { AddLessonForm } from "./AddLessonForm";
 import { CirclePlus, CircleX, FilePenLine } from "lucide-react";
 import { useUpdateSectionMutation } from "@/generated/graphql";
 import { Input } from "@/components/ui/input";
-import { toast, Toaster } from "sonner";
+import { toast } from "sonner";
 
 // Lesson төрлийн тодорхойлолт
 interface Lesson {
