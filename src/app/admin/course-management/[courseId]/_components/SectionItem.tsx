@@ -8,10 +8,28 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { AddLessonForm } from "./AddLessonForm";
-import { CirclePlus, CircleX, FilePenLine } from "lucide-react";
-import { useUpdateSectionMutation } from "@/generated/graphql";
+import {
+  AlertTriangle,
+  CirclePlus,
+  CircleX,
+  FilePenLine,
+  Trash2,
+} from "lucide-react";
+import {
+  useDeleteSectionMutation,
+  useUpdateSectionMutation,
+} from "@/generated/graphql";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { motion } from "framer-motion";
 
 // Lesson төрлийн тодорхойлолт
 interface Lesson {
@@ -38,12 +56,19 @@ export function SectionItem({
   const [isEditing, setIsEditing] = useState(false);
   const [showAddLesson, setShowAddLesson] = useState(false);
   const [newTitle, setNewTitle] = useState(section?.title || "");
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const lessonCount = section?.lessonId?.length || 0;
 
   const [updateSection] = useUpdateSectionMutation();
+  const [deleteSection] = useDeleteSectionMutation();
 
   const handleSaveTitle = async () => {
+    if (!newTitle.trim()) {
+      toast.error("Title cannot be empty");
+      return;
+    }
+
     try {
       await updateSection({
         variables: {
@@ -51,12 +76,29 @@ export function SectionItem({
           input: { title: newTitle },
         },
       });
-      refetchCourse(); // Update the UI
+      await refetchCourse(); // Update the UI
       setIsEditing(false); // Exit editing mode
       toast.success("Section title updated");
     } catch (error) {
       toast.error("Failed to update section title");
       console.error("Failed to update section title:", error);
+    }
+  };
+
+  const handleDeleteSection = async () => {
+    try {
+      await deleteSection({
+        variables: {
+          id: section?._id,
+        },
+      });
+      await refetchCourse(); // Update the UI
+      toast.success("Section deleted");
+    } catch (error) {
+      toast.error("Failed to delete section");
+      console.error("Failed to delete section:", error);
+    } finally {
+      setIsDeleteDialogOpen(false);
     }
   };
 
@@ -77,7 +119,7 @@ export function SectionItem({
               ) : (
                 <h2
                   className="text-lg font-semibold text-gray-800"
-                  onClick={(e) => e.stopPropagation()} // Optional, in case title click should not toggle
+                  onClick={(e) => e.stopPropagation()} // Prevents accordion toggle
                 >
                   {section?.title}
                 </h2>
@@ -91,7 +133,7 @@ export function SectionItem({
 
         {/* Section Content */}
         <AccordionContent>
-          <div className="">
+          <div>
             {section?.lessonId?.length ? (
               section.lessonId.map((lesson, index) => (
                 <div key={lesson?._id || index}>
@@ -168,6 +210,77 @@ export function SectionItem({
                 Save
               </Button>
             )}
+            {/* Delete Section */}
+            <Dialog
+              open={isDeleteDialogOpen}
+              onOpenChange={(isOpen) => setIsDeleteDialogOpen(isOpen)}
+            >
+              <DialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="ml-1 mt-2 font-semibold"
+                >
+                  Delete Section
+                  <Trash2 />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="p-0">
+                <DialogHeader className="rounded-t-md border-b border-gray-200 bg-[#FAFAFA] p-4">
+                  <DialogTitle className="flex items-center gap-2 text-lg font-semibold text-destructive">
+                    <AlertTriangle />
+                    Confirm Deletion
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="p-4">
+                  <div className="flex gap-1">
+                    <div>Title:</div>
+                    <div>{section?.title}</div>
+                  </div>
+                  <div className="flex gap-1">
+                    <div>ID:</div>
+                    <div>{section?._id}</div>
+                  </div>
+                </div>
+                {/*  */}
+                <div className="px-4">
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ duration: 0.2 }}
+                    className="mt-4 rounded-md bg-destructive/10 p-4 text-destructive"
+                  >
+                    <p className="text-sm font-semibold">
+                      This action cannot be undone.
+                    </p>
+                    <p className="mt-1 text-sm">
+                      All associated data will be permanently removed from our
+                      servers.
+                    </p>
+                  </motion.div>
+                </div>
+                <DialogFooter className="border-t border-gray-200 bg-[#FAFAFA] p-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsDeleteDialogOpen(false)}
+                    className="font-semibold"
+                    size={"sm"}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    onClick={handleDeleteSection}
+                    className="font-semibold"
+                    size={"sm"}
+                  >
+                    Delete Section
+                    <Trash2 />
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
         </AccordionContent>
       </AccordionItem>

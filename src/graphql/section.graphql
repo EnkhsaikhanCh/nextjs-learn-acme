@@ -12,3 +12,10 @@ mutation UpdateSection($id: ID!, $input: UpdateSectionInput!) {
     _id
   }
 }
+
+mutation DeleteSection($id: ID!) {
+  deleteSection(_id: $id) {
+    success
+    message
+  }
+}

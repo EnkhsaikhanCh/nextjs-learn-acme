@@ -1,5 +1,5 @@
 import { GraphQLError } from "graphql";
-import { SectionModel } from "../../../models";
+import { LessonModel, SectionModel } from "../../../models";
 
 export const deleteSection = async (_: unknown, { _id }: { _id: string }) => {
   if (!_id) {
@@ -16,6 +16,8 @@ export const deleteSection = async (_: unknown, { _id }: { _id: string }) => {
         extensions: { code: "NOT_FOUND" },
       });
     }
+
+    await LessonModel.deleteMany({ sectionId: _id });
 
     await SectionModel.deleteOne({ _id });
 
