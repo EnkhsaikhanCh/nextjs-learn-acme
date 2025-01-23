@@ -100,7 +100,7 @@ const config: Config = {
     "src/app/api/graphql/resolvers/mutations/enrollment/create-enrollment.ts",
     "src/app/admin",
     "src/app/api/graphql/resolvers/mutations/section",
-    "src/app/api/graphql/resolvers/mutations/lesson",
+    "src/app/api/graphql/resolvers/mutations/lesson/create-lesson-mutation.ts",
     "src/app/api/graphql/resolvers/queries/course",
   ],
 
