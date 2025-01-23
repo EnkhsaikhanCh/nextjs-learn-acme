@@ -20,7 +20,7 @@ export const typeDefs = gql`
 
   type Mutation {
     createLesson(input: CreateLessonInput!): Lesson!
-    updateLesson(id: ID!, input: UpdateLessonInput!): Lesson!
+    updateLesson(_id: ID!, input: UpdateLessonInput!): Lesson!
     deleteLesson(id: ID!): Boolean!
   }
 
@@ -44,4 +44,12 @@ export type CreateLessonInput = {
   content: string;
   videoUrl: string;
   order: number;
+};
+
+export type UpdateLessonInput = {
+  title?: string;
+  content?: string;
+  videoUrl?: string;
+  order?: number;
+  isPublished?: boolean;
 };
