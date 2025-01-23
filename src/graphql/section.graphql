@@ -6,3 +6,9 @@ mutation CreateSection($input: CreateSectionInput) {
     _id
   }
 }
+
+mutation UpdateSection($id: ID!, $input: UpdateSectionInput!) {
+  updateSection(_id: $id, input: $input) {
+    _id
+  }
+}

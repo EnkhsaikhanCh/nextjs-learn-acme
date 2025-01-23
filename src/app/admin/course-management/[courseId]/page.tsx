@@ -147,7 +147,6 @@ export default function CourseDetailPage() {
 
   return (
     <div className="h-screen">
-      <Toaster richColors position="top-center" />
       {isMobile ? (
         // Mobile: Drawer ашиглана
         <div>

@@ -83,7 +83,6 @@ export default function Page() {
 
   return (
     <main className="container mx-auto flex flex-col gap-6 p-4">
-      <Toaster richColors position="top-center" />
       <h1 className="text-3xl font-bold">Course Management</h1>
       {/* Create course dialog */}
       <Dialog
