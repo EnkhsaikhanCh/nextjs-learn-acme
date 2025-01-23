@@ -8,7 +8,10 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { AddLessonForm } from "./AddLessonForm";
-import { CirclePlus, CircleX } from "lucide-react";
+import { CirclePlus, CircleX, FilePenLine } from "lucide-react";
+import { useUpdateSectionMutation } from "@/generated/graphql";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 
 // Lesson төрлийн тодорхойлолт
 interface Lesson {
@@ -32,8 +35,30 @@ export function SectionItem({
   refetchCourse,
   onLessonSelect,
 }: SectionItemProps) {
+  const [isEditing, setIsEditing] = useState(false);
   const [showAddLesson, setShowAddLesson] = useState(false);
+  const [newTitle, setNewTitle] = useState(section?.title || "");
+
   const lessonCount = section?.lessonId?.length || 0;
+
+  const [updateSection] = useUpdateSectionMutation();
+
+  const handleSaveTitle = async () => {
+    try {
+      await updateSection({
+        variables: {
+          id: section?._id,
+          input: { title: newTitle },
+        },
+      });
+      refetchCourse(); // Update the UI
+      setIsEditing(false); // Exit editing mode
+      toast.success("Section title updated");
+    } catch (error) {
+      toast.error("Failed to update section title");
+      console.error("Failed to update section title:", error);
+    }
+  };
 
   return (
     <Accordion type="multiple" defaultValue={[section?._id]}>
@@ -42,9 +67,21 @@ export function SectionItem({
         <AccordionTrigger>
           <div className="flex items-center justify-between">
             <div className="flex gap-4">
-              <h2 className="text-lg font-semibold text-gray-800">
-                {section?.title}
-              </h2>
+              {isEditing ? (
+                <Input
+                  type="text"
+                  value={newTitle}
+                  onChange={(e) => setNewTitle(e.target.value)}
+                  onClick={(e) => e.stopPropagation()} // Prevents accordion toggle
+                />
+              ) : (
+                <h2
+                  className="text-lg font-semibold text-gray-800"
+                  onClick={(e) => e.stopPropagation()} // Optional, in case title click should not toggle
+                >
+                  {section?.title}
+                </h2>
+              )}
               <div className="flex h-7 w-7 items-center justify-center rounded-full border font-semibold text-gray-800">
                 {lessonCount}
               </div>
@@ -100,6 +137,37 @@ export function SectionItem({
                 </>
               )}
             </Button>
+            <Button
+              size={"sm"}
+              variant={isEditing ? "destructive" : "outline"}
+              className="ml-1 mt-2 font-semibold"
+              onClick={(e) => {
+                e.stopPropagation(); // Prevents accordion toggle
+                setIsEditing(!isEditing);
+              }}
+            >
+              {isEditing ? (
+                <>
+                  Cancel
+                  <CircleX />
+                </>
+              ) : (
+                <>
+                  Edit Section
+                  <FilePenLine />
+                </>
+              )}
+            </Button>
+            {isEditing && (
+              <Button
+                size={"sm"}
+                variant={"outline"}
+                className="ml-1 mt-2 border-green-500 bg-green-100 font-semibold text-green-500 hover:bg-green-200 hover:text-green-600"
+                onClick={handleSaveTitle}
+              >
+                Save
+              </Button>
+            )}
           </div>
         </AccordionContent>
       </AccordionItem>

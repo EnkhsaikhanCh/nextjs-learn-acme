@@ -30,7 +30,7 @@ import { CirclePlus, ExternalLink, Loader, TriangleAlert } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { toast, Toaster } from "sonner";
+import { toast } from "sonner";
 
 export default function Page() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -83,7 +83,6 @@ export default function Page() {
 
   return (
     <main className="container mx-auto flex flex-col gap-6 p-4">
-      <Toaster richColors position="top-center" />
       <h1 className="text-3xl font-bold">Course Management</h1>
       {/* Create course dialog */}
       <Dialog

@@ -1,6 +1,7 @@
 import React from "react";
 import { cookies } from "next/headers";
 import AdminClientLayout from "@/providers/admin/AdminClientLayout";
+import { Toaster } from "sonner";
 
 export const metadata = {
   title: "Admin Dashboard",
@@ -16,6 +17,9 @@ export default async function AdminDashboardLayout({
   const defaultOpen = cookieStore.get("sidebar:state")?.value === "true";
 
   return (
-    <AdminClientLayout defaultOpen={defaultOpen}>{children}</AdminClientLayout>
+    <AdminClientLayout defaultOpen={defaultOpen}>
+      <Toaster richColors position="top-center" />
+      {children}
+    </AdminClientLayout>
   );
 }

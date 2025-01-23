@@ -195,7 +195,7 @@ export type MutationUpdateLessonArgs = {
 
 
 export type MutationUpdateSectionArgs = {
-  id: Scalars['ID']['input'];
+  _id: Scalars['ID']['input'];
   input: UpdateSectionInput;
 };
 
@@ -387,6 +387,14 @@ export type CreateSectionMutationVariables = Exact<{
 
 
 export type CreateSectionMutation = { __typename?: 'Mutation', createSection?: { __typename?: 'Section', _id: string } | null };
+
+export type UpdateSectionMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+  input: UpdateSectionInput;
+}>;
+
+
+export type UpdateSectionMutation = { __typename?: 'Mutation', updateSection: { __typename?: 'Section', _id: string } };
 
 export type GetAllTestQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -734,6 +742,40 @@ export function useCreateSectionMutation(baseOptions?: Apollo.MutationHookOption
 export type CreateSectionMutationHookResult = ReturnType<typeof useCreateSectionMutation>;
 export type CreateSectionMutationResult = Apollo.MutationResult<CreateSectionMutation>;
 export type CreateSectionMutationOptions = Apollo.BaseMutationOptions<CreateSectionMutation, CreateSectionMutationVariables>;
+export const UpdateSectionDocument = gql`
+    mutation UpdateSection($id: ID!, $input: UpdateSectionInput!) {
+  updateSection(_id: $id, input: $input) {
+    _id
+  }
+}
+    `;
+export type UpdateSectionMutationFn = Apollo.MutationFunction<UpdateSectionMutation, UpdateSectionMutationVariables>;
+
+/**
+ * __useUpdateSectionMutation__
+ *
+ * To run a mutation, you first call `useUpdateSectionMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateSectionMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateSectionMutation, { data, loading, error }] = useUpdateSectionMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateSectionMutation(baseOptions?: Apollo.MutationHookOptions<UpdateSectionMutation, UpdateSectionMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateSectionMutation, UpdateSectionMutationVariables>(UpdateSectionDocument, options);
+      }
+export type UpdateSectionMutationHookResult = ReturnType<typeof useUpdateSectionMutation>;
+export type UpdateSectionMutationResult = Apollo.MutationResult<UpdateSectionMutation>;
+export type UpdateSectionMutationOptions = Apollo.BaseMutationOptions<UpdateSectionMutation, UpdateSectionMutationVariables>;
 export const GetAllTestDocument = gql`
     query GetAllTest {
   getAllTest {
