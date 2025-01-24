@@ -7,6 +7,12 @@ mutation CreateLesson($input: CreateLessonInput!) {
   }
 }
 
+mutation UpdateLesson($id: ID!, $input: UpdateLessonInput!) {
+  updateLesson(_id: $id, input: $input) {
+    _id
+  }
+}
+
 # Queries
 query GetLessonById($getLessonByIdId: ID!) {
   getLessonById(_id: $getLessonByIdId) {

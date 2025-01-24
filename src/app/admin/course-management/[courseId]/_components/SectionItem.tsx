@@ -10,6 +10,8 @@ import Link from "next/link";
 import { AddLessonForm } from "./AddLessonForm";
 import {
   AlertTriangle,
+  CircleCheck,
+  CircleDot,
   CirclePlus,
   CircleX,
   FilePenLine,
@@ -35,6 +37,7 @@ import { motion } from "framer-motion";
 interface Lesson {
   _id: string;
   title: string;
+  isPublished: boolean; // Add the isPublished property
 }
 
 // SectionItemProps-ийн тодорхойлолт
@@ -136,8 +139,17 @@ export function SectionItem({
           <div>
             {section?.lessonId?.length ? (
               section.lessonId.map((lesson, index) => (
-                <div key={lesson?._id || index}>
-                  <Link href="#" className="cursor-pointer gap-2 py-1">
+                <div key={lesson?._id || index} className="flex items-center">
+                  <div
+                    className={`flex h-5 w-5 items-center justify-center rounded-full ${lesson.isPublished ? "bg-green-200 text-green-500" : "bg-yellow-200 text-yellow-500"}`}
+                  >
+                    {lesson.isPublished ? (
+                      <CircleCheck className="h-3 w-3" />
+                    ) : (
+                      <CircleDot className="h-3 w-3" />
+                    )}
+                  </div>
+                  <Link href="#" className="cursor-pointer">
                     <Button
                       variant="link"
                       effect="hoverUnderline"

@@ -15,7 +15,6 @@ export const updateLesson = async (
 
   const sanitizedTitle = sanitizeInput(title || "");
   const sanitizedContent = sanitizeInput(content || "");
-  const sanitizedVideoUrl = sanitizeInput(videoUrl || "");
   const sanitizedOrder = order !== undefined ? order : 0; // Default to 0 or another value
   const sanitizedIsPublished = isPublished !== undefined ? isPublished : false; // Default to false or another value
 
@@ -37,14 +36,14 @@ export const updateLesson = async (
     }
 
     if (videoUrl) {
-      lesson.videoUrl = sanitizedVideoUrl;
+      lesson.videoUrl = videoUrl;
     }
 
-    if (order) {
+    if (order !== undefined) {
       lesson.order = sanitizedOrder;
     }
 
-    if (isPublished) {
+    if (isPublished !== undefined) {
       lesson.isPublished = sanitizedIsPublished;
     }
 

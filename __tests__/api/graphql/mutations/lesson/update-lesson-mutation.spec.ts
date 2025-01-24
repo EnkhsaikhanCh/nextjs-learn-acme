@@ -61,7 +61,6 @@ describe("updateLesson", () => {
     expect(LessonModel.findById).toHaveBeenCalledWith("123");
     expect(sanitizeInput).toHaveBeenCalledWith(input.title);
     expect(sanitizeInput).toHaveBeenCalledWith(input.content);
-    expect(sanitizeInput).toHaveBeenCalledWith(input.videoUrl);
     expect(mockLesson.save).toHaveBeenCalled();
     expect(result).toEqual({
       _id: "123",
