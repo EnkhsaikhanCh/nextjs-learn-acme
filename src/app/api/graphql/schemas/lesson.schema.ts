@@ -18,10 +18,15 @@ export const typeDefs = gql`
     getLessonsBySection(sectionId: ID!): [Lesson!]!
   }
 
+  type DeleteLessonReponse {
+    success: Boolean!
+    message: String
+  }
+
   type Mutation {
     createLesson(input: CreateLessonInput!): Lesson!
     updateLesson(_id: ID!, input: UpdateLessonInput!): Lesson!
-    deleteLesson(id: ID!): Boolean!
+    deleteLesson(_id: ID!): DeleteLessonReponse!
   }
 
   input CreateLessonInput {
