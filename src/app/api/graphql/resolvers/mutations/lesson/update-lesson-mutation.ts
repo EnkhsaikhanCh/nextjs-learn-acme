@@ -39,11 +39,11 @@ export const updateLesson = async (
       lesson.videoUrl = videoUrl;
     }
 
-    if (order) {
+    if (order !== undefined) {
       lesson.order = sanitizedOrder;
     }
 
-    if (isPublished) {
+    if (isPublished !== undefined) {
       lesson.isPublished = sanitizedIsPublished;
     }
 

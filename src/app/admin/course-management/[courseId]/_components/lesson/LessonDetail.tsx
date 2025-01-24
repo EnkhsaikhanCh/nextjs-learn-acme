@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useUpdateLessonMutation } from "@/generated/graphql";
-import { CircleX, FilePenLine } from "lucide-react";
+import { CircleCheck, CircleDot, CircleX, FilePenLine } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -26,7 +26,6 @@ export function LessonDetail({
   const [updateLesson, { loading }] = useUpdateLessonMutation();
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editedTitle, setEditedTitle] = useState<string>(title || "");
-  const [editedContent, setEditedContent] = useState<string>(content || "");
   const [editedVideoUrl, setEditedVideoUrl] = useState<string>(videoUrl || "");
   const [editedIsPublished, setEditedIsPublished] = useState<boolean>(
     isPublished || false,
@@ -36,7 +35,9 @@ export function LessonDetail({
     const match = url.match(
       /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
     );
-    return match ? `https://www.youtube.com/embed/${match[1]}` : url;
+    return match
+      ? `https://www.youtube.com/embed/${match[1]}?rel=0&modestbranding=1&showinfo=0`
+      : url;
   };
 
   const handleSave = async () => {
@@ -51,7 +52,6 @@ export function LessonDetail({
           id: lessonId,
           input: {
             title: editedTitle,
-            content: editedContent,
             videoUrl: editedVideoUrl,
             isPublished: editedIsPublished,
           },
@@ -69,20 +69,27 @@ export function LessonDetail({
   };
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-1">
       <Card className="shadow-none">
         <CardHeader>
           <CardTitle className="text-xl font-bold">{title}</CardTitle>
         </CardHeader>
         <CardContent>
           <Badge
-            className={`${
+            className={`gap-2 px-2 py-1 ${
               isPublished
                 ? "bg-green-200 text-green-800 hover:bg-green-300"
                 : "bg-yellow-200 text-yellow-800 hover:bg-yellow-300"
             }`}
           >
-            {isPublished ? "Published" : "Unpublished"}
+            {isPublished ? (
+              <CircleCheck className="h-4 w-4 text-green-700" />
+            ) : (
+              <CircleDot className="h-4 w-4 text-yellow-700" />
+            )}
+            <span className="font-semibold">
+              {isPublished ? "Published" : "Unpublished"}
+            </span>
           </Badge>
         </CardContent>
       </Card>
@@ -90,9 +97,10 @@ export function LessonDetail({
       {videoUrl && (
         <div className="">
           <iframe
-            src={getEmbedUrl(videoUrl)}
+            src={`${getEmbedUrl(videoUrl)}?rel=0&modestbranding=1&showinfo=0&controls=1`}
             className="mt-2 aspect-video w-full rounded-lg"
             allowFullScreen
+            allow="autoplay; encrypted-media"
           />
         </div>
       )}
@@ -132,25 +140,32 @@ export function LessonDetail({
               size={"sm"}
               variant={"outline"}
               onClick={() => setIsEditing(false)}
+              className="font-semibold"
             >
               Cancel
               <CircleX className="ml-2" />
             </Button>
-            <Button size={"sm"} onClick={handleSave} disabled={loading}>
+            <Button
+              size={"sm"}
+              onClick={handleSave}
+              disabled={loading}
+              className="font-semibold"
+            >
               Save
               {loading && <span className="loader ml-2" />}
             </Button>
           </div>
         </div>
       ) : (
-        <div>
+        <div className="mt-4">
           <Button
             size={"sm"}
             variant={"outline"}
             onClick={() => setIsEditing(true)}
+            className="font-semibold"
           >
             Edit Lesson
-            <FilePenLine className="ml-2" />
+            <FilePenLine />
           </Button>
         </div>
       )}
