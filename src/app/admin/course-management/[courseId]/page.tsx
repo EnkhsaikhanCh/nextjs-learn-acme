@@ -176,12 +176,15 @@ export default function CourseDetailPage() {
               </DrawerHeader>
               <div>
                 {selectedLesson ? (
-                  <div>
-                    <h2 className="text-lg font-semibold">
-                      Хичээлийн ID: {selectedLesson}
-                    </h2>
-                    <p>Энд хичээлийн дэлгэрэнгүй мэдээлэл гарч ирнэ.</p>
-                  </div>
+                  <LessonDetail
+                    lessonId={selectedLesson}
+                    title={lessonData?.getLessonById?.title}
+                    videoUrl={lessonData?.getLessonById?.videoUrl || ""}
+                    content={lessonData?.getLessonById?.content || ""}
+                    isPublished={
+                      lessonData?.getLessonById?.isPublished || false
+                    }
+                  />
                 ) : (
                   <p>Ямар нэг хичээл сонгогдоогүй байна.</p>
                 )}
@@ -226,6 +229,7 @@ export default function CourseDetailPage() {
                   <p>Error loading lesson: {lessonError.message}</p>
                 ) : (
                   <LessonDetail
+                    lessonId={selectedLesson}
                     title={lessonData?.getLessonById?.title}
                     videoUrl={lessonData?.getLessonById?.videoUrl || ""}
                     content={lessonData?.getLessonById?.content || ""}
