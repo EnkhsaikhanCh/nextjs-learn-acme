@@ -19,7 +19,6 @@ interface LessonDetailProps {
 export function LessonDetail({
   lessonId,
   title,
-  content,
   videoUrl,
   isPublished,
 }: LessonDetailProps) {
