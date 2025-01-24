@@ -13,6 +13,13 @@ mutation UpdateLesson($id: ID!, $input: UpdateLessonInput!) {
   }
 }
 
+mutation DeleteLesson($id: ID!) {
+  deleteLesson(_id: $id) {
+    success
+    message
+  }
+}
+
 # Queries
 query GetLessonById($getLessonByIdId: ID!) {
   getLessonById(_id: $getLessonByIdId) {

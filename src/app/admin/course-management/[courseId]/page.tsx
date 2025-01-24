@@ -177,6 +177,7 @@ export default function CourseDetailPage() {
               <div>
                 {selectedLesson ? (
                   <LessonDetail
+                    refetchCourse={refetch}
                     lessonId={selectedLesson}
                     title={lessonData?.getLessonById?.title}
                     videoUrl={lessonData?.getLessonById?.videoUrl || ""}
@@ -229,6 +230,7 @@ export default function CourseDetailPage() {
                   <p>Error loading lesson: {lessonError.message}</p>
                 ) : (
                   <LessonDetail
+                    refetchCourse={refetch}
                     lessonId={selectedLesson}
                     title={lessonData?.getLessonById?.title}
                     videoUrl={lessonData?.getLessonById?.videoUrl || ""}
