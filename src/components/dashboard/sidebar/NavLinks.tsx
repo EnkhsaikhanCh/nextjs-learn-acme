@@ -8,14 +8,14 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Home, ReceiptText, Users, TestTubes } from "lucide-react";
+import { ReceiptText, Users, TestTubes, BookOpen } from "lucide-react";
 import Link from "next/link";
 
 export function NavLinks() {
   const pathname = usePathname();
 
   const links = [
-    { href: "/dashboard", label: "Dashboard", icon: Home },
+    { href: "/dashboard/courses", label: "Бүх сургалт", icon: BookOpen },
     { href: "/dashboard/invoices", label: "Invoices", icon: ReceiptText },
     { href: "/dashboard/costumers", label: "Costumers", icon: Users },
     { href: "/dashboard/testpage", label: "test-page", icon: TestTubes },
