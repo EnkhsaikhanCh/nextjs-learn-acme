@@ -1,0 +1,35 @@
+# src/graphql/lesson.graphql
+
+# Mutations
+mutation CreateLesson($input: CreateLessonInput!) {
+  createLesson(input: $input) {
+    _id
+  }
+}
+
+mutation UpdateLesson($id: ID!, $input: UpdateLessonInput!) {
+  updateLesson(_id: $id, input: $input) {
+    _id
+  }
+}
+
+mutation DeleteLesson($id: ID!) {
+  deleteLesson(_id: $id) {
+    success
+    message
+  }
+}
+
+# Queries
+query GetLessonById($getLessonByIdId: ID!) {
+  getLessonById(_id: $getLessonByIdId) {
+    _id
+    title
+    content
+    videoUrl
+    order
+    isPublished
+    createdAt
+    updatedAt
+  }
+}

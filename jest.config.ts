@@ -97,6 +97,11 @@ const config: Config = {
     "src/app/\\(auth\\)/reset-password",
     "src/components/otp-input.tsx",
     "src/app/\\(auth\\)/verify-otp",
+    "src/app/api/graphql/resolvers/mutations/enrollment/create-enrollment.ts",
+    "src/app/admin",
+    "src/app/api/graphql/resolvers/mutations/section",
+    "src/app/api/graphql/resolvers/mutations/lesson/create-lesson-mutation.ts",
+    "src/app/api/graphql/resolvers/queries/course",
   ],
 
   // Indicates which provider should be used to instrument code for coverage

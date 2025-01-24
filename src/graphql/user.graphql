@@ -1,4 +1,6 @@
 # src/graphql/user.graphql
+
+# Mutations
 mutation CreateUser($input: RegisterInput!) {
   createUser(input: $input) {
     message
@@ -9,6 +11,17 @@ mutation CreateUser($input: RegisterInput!) {
       role
       isVerified
     }
+  }
+}
+
+# Queries
+query GetAllUser {
+  getAllUser {
+    _id
+    email
+    studentId
+    role
+    isVerified
   }
 }
 

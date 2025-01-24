@@ -1,0 +1,21 @@
+# src/graphql/section.graphql
+
+# Mutations
+mutation CreateSection($input: CreateSectionInput) {
+  createSection(input: $input) {
+    _id
+  }
+}
+
+mutation UpdateSection($id: ID!, $input: UpdateSectionInput!) {
+  updateSection(_id: $id, input: $input) {
+    _id
+  }
+}
+
+mutation DeleteSection($id: ID!) {
+  deleteSection(_id: $id) {
+    success
+    message
+  }
+}
