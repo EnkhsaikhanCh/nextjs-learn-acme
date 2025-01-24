@@ -14,7 +14,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default function Courses() {
-  const { data, loading, error, refetch } = useGetAllCourseQuery();
+  const { data, loading, error } = useGetAllCourseQuery();
 
   return (
     <div>
