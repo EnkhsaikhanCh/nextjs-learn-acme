@@ -36,6 +36,7 @@ export const typeDefs = gql`
   }
 
   type WhyChoose {
+    icon: String!
     title: String!
     description: String!
   }
@@ -83,6 +84,7 @@ export const typeDefs = gql`
 
   # Input for WhyChooseOurCourse
   input WhyChooseInput {
+    icon: String!
     title: String!
     description: String!
   }
@@ -117,7 +119,7 @@ export type CreateCourseInput = {
   status?: "active" | "archived";
   thumbnail?: string;
   whatYouWillLearn?: string[];
-  whyChooseOurCourse?: { title: string; description: string }[];
+  whyChooseOurCourse?: { icon: string; title: string; description: string }[];
 };
 
 export type UpdateCourseInput = {
@@ -138,5 +140,5 @@ export type UpdateCourseInput = {
   status?: "active" | "archived";
   thumbnail?: string;
   whatYouWillLearn?: string[];
-  whyChooseOurCourse?: { title: string; description: string }[];
+  whyChooseOurCourse?: { icon: string; title: string; description: string }[];
 };

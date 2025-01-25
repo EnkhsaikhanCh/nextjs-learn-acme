@@ -72,6 +72,7 @@ query GetCourseById($id: ID!) {
     thumbnail
     whatYouWillLearn
     whyChooseOurCourse {
+      icon
       title
       description
     }

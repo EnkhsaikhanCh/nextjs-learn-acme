@@ -23,6 +23,7 @@ export type Course = {
   thumbnail?: string;
   whatYouWillLearn?: string[];
   whyChooseOurCourse?: {
+    icon: string;
     title: string;
     description: string;
   }[];
@@ -62,6 +63,7 @@ const CourseSchema = new Schema<Course>(
     whyChooseOurCourse: {
       type: [
         {
+          icon: { type: String, required: false },
           title: { type: String, required: true },
           description: { type: String, required: true },
         },
