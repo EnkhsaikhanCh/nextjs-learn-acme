@@ -1,4 +1,4 @@
-// src/app/api/grpahql/schemas/course.schema.ts
+// src/app/api/graphql/schemas/course.schema.ts
 import gql from "graphql-tag";
 
 export const typeDefs = gql`
@@ -8,6 +8,7 @@ export const typeDefs = gql`
     title: String!
     description: String!
     price: Float!
+    pricingDetails: pricingDetails
     sectionId: [Section]
     duration: Int
     createdBy: String
@@ -16,12 +17,27 @@ export const typeDefs = gql`
     status: CourseStatus
     enrollmentId: [Enrollment]
     thumbnail: String
+    whatYouWillLearn: [String]
+    whyChooseOurCourse: [WhyChoose]
+  }
+
+  # Pricing Details Type
+  type pricingDetails {
+    planTitle: String
+    description: String
+    price: String
+    details: [String]
   }
 
   # Enum for Course Status
   enum CourseStatus {
     active
     archived
+  }
+
+  type WhyChoose {
+    title: String!
+    description: String!
   }
 
   # Queries
@@ -46,12 +62,29 @@ export const typeDefs = gql`
     title: String
     description: String
     price: Float
+    pricingDetails: PricingDetailsInput
     duration: Int
     createdBy: String
     categories: [String]
     tags: [String]
     status: CourseStatus
     thumbnail: String
+    whatYouWillLearn: [String]
+    whyChooseOurCourse: [WhyChooseInput]
+  }
+
+  # Input for Pricing Details
+  input PricingDetailsInput {
+    planTitle: String
+    description: String
+    price: String
+    details: [String]
+  }
+
+  # Input for WhyChooseOurCourse
+  input WhyChooseInput {
+    title: String!
+    description: String!
   }
 
   # Mutations
@@ -71,12 +104,20 @@ export type CreateCourseInput = {
   title: string;
   description: string;
   price: number;
-  duration?: number; // Optional
-  createdBy?: string; // Optional
-  categories?: string[]; // Optional
-  tags?: string[]; // Optional
-  status?: "active" | "archived"; // Optional
-  thumbnail?: string; // Optional
+  pricingDetails?: {
+    planTitle?: string;
+    description?: string;
+    price?: string;
+    details?: string[];
+  };
+  duration?: number;
+  createdBy?: string;
+  categories?: string[];
+  tags?: string[];
+  status?: "active" | "archived";
+  thumbnail?: string;
+  whatYouWillLearn?: string[];
+  whyChooseOurCourse?: { title: string; description: string }[];
 };
 
 export type UpdateCourseInput = {
@@ -84,10 +125,18 @@ export type UpdateCourseInput = {
   title?: string;
   description?: string;
   price?: number;
-  duration?: number; // Optional
-  createdBy?: string; // Optional
-  categories?: string[]; // Optional
-  tags?: string[]; // Optional
-  status?: "active" | "archived"; // Optional
-  thumbnail?: string; // Optional
+  pricingDetails?: {
+    planTitle?: string;
+    description?: string;
+    price?: string;
+    details?: string[];
+  };
+  duration?: number;
+  createdBy?: string;
+  categories?: string[];
+  tags?: string[];
+  status?: "active" | "archived";
+  thumbnail?: string;
+  whatYouWillLearn?: string[];
+  whyChooseOurCourse?: { title: string; description: string }[];
 };

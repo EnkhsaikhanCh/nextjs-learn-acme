@@ -39,11 +39,14 @@ export type Course = {
   duration?: Maybe<Scalars["Int"]["output"]>;
   enrollmentId?: Maybe<Array<Maybe<Enrollment>>>;
   price: Scalars["Float"]["output"];
+  pricingDetails?: Maybe<PricingDetails>;
   sectionId?: Maybe<Array<Maybe<Section>>>;
   status?: Maybe<CourseStatus>;
   tags?: Maybe<Array<Maybe<Scalars["String"]["output"]>>>;
   thumbnail?: Maybe<Scalars["String"]["output"]>;
   title: Scalars["String"]["output"];
+  whatYouWillLearn?: Maybe<Array<Maybe<Scalars["String"]["output"]>>>;
+  whyChooseOurCourse?: Maybe<Array<Maybe<WhyChoose>>>;
 };
 
 export enum CourseStatus {
@@ -219,6 +222,13 @@ export type MutationUpdateUserArgs = {
   input: UpdateInput;
 };
 
+export type PricingDetailsInput = {
+  description?: InputMaybe<Scalars["String"]["input"]>;
+  details?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
+  planTitle?: InputMaybe<Scalars["String"]["input"]>;
+  price?: InputMaybe<Scalars["String"]["input"]>;
+};
+
 export type Query = {
   __typename?: "Query";
   getAllCourse: Array<Course>;
@@ -302,10 +312,13 @@ export type UpdateCourseInput = {
   description?: InputMaybe<Scalars["String"]["input"]>;
   duration?: InputMaybe<Scalars["Int"]["input"]>;
   price?: InputMaybe<Scalars["Float"]["input"]>;
+  pricingDetails?: InputMaybe<PricingDetailsInput>;
   status?: InputMaybe<CourseStatus>;
   tags?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
   thumbnail?: InputMaybe<Scalars["String"]["input"]>;
   title?: InputMaybe<Scalars["String"]["input"]>;
+  whatYouWillLearn?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
+  whyChooseOurCourse?: InputMaybe<Array<InputMaybe<WhyChooseInput>>>;
 };
 
 export type UpdateEnrollmentInput = {
@@ -339,6 +352,25 @@ export type User = {
   isVerified: Scalars["String"]["output"];
   role: Scalars["String"]["output"];
   studentId: Scalars["String"]["output"];
+};
+
+export type WhyChoose = {
+  __typename?: "WhyChoose";
+  description: Scalars["String"]["output"];
+  title: Scalars["String"]["output"];
+};
+
+export type WhyChooseInput = {
+  description: Scalars["String"]["input"];
+  title: Scalars["String"]["input"];
+};
+
+export type PricingDetails = {
+  __typename?: "pricingDetails";
+  description?: Maybe<Scalars["String"]["output"]>;
+  details?: Maybe<Array<Maybe<Scalars["String"]["output"]>>>;
+  planTitle?: Maybe<Scalars["String"]["output"]>;
+  price?: Maybe<Scalars["String"]["output"]>;
 };
 
 export type CreateCourseMutationVariables = Exact<{
@@ -407,6 +439,14 @@ export type GetCourseByIdQuery = {
     tags?: Array<string | null> | null;
     status?: CourseStatus | null;
     thumbnail?: string | null;
+    whatYouWillLearn?: Array<string | null> | null;
+    pricingDetails?: {
+      __typename?: "pricingDetails";
+      planTitle?: string | null;
+      description?: string | null;
+      price?: string | null;
+      details?: Array<string | null> | null;
+    } | null;
     sectionId?: Array<{
       __typename?: "Section";
       _id: string;
@@ -422,6 +462,11 @@ export type GetCourseByIdQuery = {
       __typename?: "Enrollment";
       _id: string;
       userId?: { __typename?: "User"; _id: string; email: string } | null;
+    } | null> | null;
+    whyChooseOurCourse?: Array<{
+      __typename?: "WhyChoose";
+      title: string;
+      description: string;
     } | null> | null;
   } | null;
 };
@@ -794,6 +839,12 @@ export const GetCourseByIdDocument = gql`
       title
       description
       price
+      pricingDetails {
+        planTitle
+        description
+        price
+        details
+      }
       sectionId {
         _id
         title
@@ -816,6 +867,11 @@ export const GetCourseByIdDocument = gql`
         }
       }
       thumbnail
+      whatYouWillLearn
+      whyChooseOurCourse {
+        title
+        description
+      }
     }
   }
 `;

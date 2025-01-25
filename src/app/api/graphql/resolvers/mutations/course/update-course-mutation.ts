@@ -18,16 +18,20 @@ export const updateCourse = async (
     tags,
     status,
     thumbnail,
+    whatYouWillLearn,
+    whyChooseOurCourse,
+    pricingDetails,
   } = input;
 
   if (!_id) {
     throw new Error("Course ID is required");
   }
 
+  // Sanitize inputs
   const sanitizedTitle = sanitizeInput(title || "");
   const sanitizedDescription = sanitizeInput(description || "");
-  const sanitizedPrice = price !== undefined ? price : 0; // Default to 0 or another value
-  const sanitizedDuration = duration !== undefined ? duration : 0; // Default to 0 or another value
+  const sanitizedPrice = price !== undefined ? price : 0; // Default to 0
+  const sanitizedDuration = duration !== undefined ? duration : 0; // Default to 0
   const sanitizedCreatedBy = sanitizeInput(createdBy || "");
   const sanitizedCategories = categories
     ? categories.map((category) => sanitizeInput(category))
@@ -44,41 +48,30 @@ export const updateCourse = async (
       });
     }
 
-    if (title) {
-      course.title = sanitizedTitle;
+    // Update fields if provided
+    if (title) course.title = sanitizedTitle;
+    if (description) course.description = sanitizedDescription;
+    if (price !== undefined) course.price = sanitizedPrice;
+    if (duration !== undefined) course.duration = sanitizedDuration;
+    if (createdBy) course.createdBy = sanitizedCreatedBy;
+    if (categories) course.categories = sanitizedCategories;
+    if (tags) course.tags = sanitizedTags;
+    if (status) course.status = sanitizedStatus;
+    if (thumbnail) course.thumbnail = thumbnail;
+    if (whatYouWillLearn) course.whatYouWillLearn = whatYouWillLearn;
+    if (whyChooseOurCourse) course.whyChooseOurCourse = whyChooseOurCourse;
+
+    // Directly update pricingDetails without sanitization
+    if (pricingDetails) {
+      course.pricingDetails = {
+        planTitle: pricingDetails.planTitle || "",
+        description: pricingDetails.description || "",
+        price: pricingDetails.price || "",
+        details: pricingDetails.details || [],
+      };
     }
 
-    if (description) {
-      course.description = sanitizedDescription;
-    }
-
-    if (price) {
-      course.price = sanitizedPrice;
-    }
-
-    if (duration) {
-      course.duration = sanitizedDuration;
-    }
-
-    if (createdBy) {
-      course.createdBy = sanitizedCreatedBy;
-    }
-
-    if (categories) {
-      course.categories = sanitizedCategories;
-    }
-
-    if (tags) {
-      course.tags = sanitizedTags;
-    }
-
-    if (status) {
-      course.status = sanitizedStatus;
-    }
-
-    if (thumbnail) {
-      course.thumbnail = thumbnail;
-    }
+    console.log("UpdateCourse Input:", input);
 
     const updatedCourse = await course.save();
 
