@@ -11,8 +11,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useGetCourseByIdQuery } from "@/generated/graphql";
-import { CircleCheck, Loader } from "lucide-react";
+import { CircleCheck, Loader, Star } from "lucide-react";
 import { useSession } from "next-auth/react";
+import * as LucideIcons from "lucide-react"; // Бүх icon-уудыг импортлох
 import { useParams } from "next/navigation";
 
 export default function CourseDetailPage() {
@@ -44,22 +45,6 @@ export default function CourseDetailPage() {
       {/* If the user is enrolled in the course, do not show this course introduction page */}
       {/* If the user is not enrolled in the course, show course introduction page instead. */}
 
-      <section className="bg-gradient-to-b from-primary to-primary/80 py-20 text-primary-foreground">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="mb-4 text-4xl font-bold md:text-5xl">
-            {data?.getCourseById?.title}
-          </h1>
-          <p className="mb-8 text-xl">{data?.getCourseById?.description}</p>
-          <Button
-            size="lg"
-            onClick={handleScrollToPayment}
-            className="bg-white font-semibold text-primary hover:bg-white/90"
-          >
-            Сургалтанд бүртгүүлэх
-          </Button>
-        </div>
-      </section>
-
       {loading && (
         <p className="flex h-screen items-center justify-center gap-2 text-center">
           Уншиж байна... <Loader className="h-5 w-5 animate-spin" />
@@ -70,14 +55,30 @@ export default function CourseDetailPage() {
 
       {data && (
         <>
-          <section className="p-20">
+          <section className="m-4 rounded-xl bg-gradient-to-b from-zinc-900 to-zinc-900/90 py-20 text-primary-foreground">
+            <div className="container mx-auto px-4 text-center">
+              <h1 className="mb-4 text-4xl font-bold md:text-5xl">
+                {data?.getCourseById?.title}
+              </h1>
+              <p className="mb-8 text-xl">{data?.getCourseById?.description}</p>
+              <Button
+                size="lg"
+                onClick={handleScrollToPayment}
+                className="rounded-full bg-yellow-400 font-bold text-primary hover:bg-yellow-300"
+              >
+                Сургалтанд бүртгүүлэх
+              </Button>
+            </div>
+          </section>
+
+          <section className="p-5 lg:p-20">
             <div className="container mx-auto px-4">
               <h2 className="mb-12 text-center text-3xl font-bold">
                 Course Overview
               </h2>
 
               <div className="grid gap-8 md:grid-cols-2">
-                <Card>
+                <Card className="rounded-xl">
                   <CardHeader>
                     <CardTitle>What You'll Learn</CardTitle>
                   </CardHeader>
@@ -96,7 +97,7 @@ export default function CourseDetailPage() {
                 </Card>
 
                 {/* Course Details */}
-                <Card>
+                <Card className="rounded-xl">
                   <CardHeader>
                     <CardTitle>Course Details</CardTitle>
                   </CardHeader>
@@ -139,7 +140,7 @@ export default function CourseDetailPage() {
                           <strong>Tags:</strong>
                           {data?.getCourseById?.tags?.length ? (
                             data.getCourseById.tags.map((tag, index) => (
-                              <Badge key={index} className="">
+                              <Badge variant="secondary" key={index}>
                                 {tag}
                               </Badge>
                             ))
@@ -162,21 +163,42 @@ export default function CourseDetailPage() {
                 Why Choose Our Course
               </h2>
               <div className="grid gap-8 md:grid-cols-3">
-                {data?.getCourseById?.whyChooseOurCourse?.map((item, index) => (
-                  <Card key={index}>
-                    <CardHeader>
-                      <CardTitle>{item?.title}</CardTitle>
-                    </CardHeader>
-                    <CardContent>{item?.description}</CardContent>
-                  </Card>
-                ))}
+                {data?.getCourseById?.whyChooseOurCourse?.map((item, index) => {
+                  // `item.icon`-г зөв индексжүүлэх
+                  const Icon =
+                    item?.icon &&
+                    (LucideIcons as Record<string, any>)[item.icon]
+                      ? (LucideIcons as Record<string, any>)[item.icon]
+                      : LucideIcons.Star;
+
+                  return (
+                    <Card
+                      key={index}
+                      className="flex flex-col rounded-2xl p-2 shadow-none"
+                    >
+                      <CardHeader>
+                        <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-yellow-200">
+                          <Icon className="h-10 w-10 text-yellow-600" />
+                        </div>
+                        <CardTitle className="text-center">
+                          {item?.title}
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="text-center">
+                        {item?.description}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </div>
             </div>
           </section>
 
           <section id="payment" className="py-20">
             <div className="container mx-auto px-4">
-              <h2 className="mb-12 text-center text-3xl font-bold">Pricing</h2>
+              <h2 className="mb-12 text-center text-3xl font-bold">
+                Та хичээлээ үзэхэд бэлэн үү?
+              </h2>
               <div className="mx-auto max-w-md">
                 <Card>
                   <CardHeader>
@@ -203,7 +225,10 @@ export default function CourseDetailPage() {
                     </ul>
                   </CardContent>
                   <CardFooter>
-                    <Button className="w-full font-semibold">
+                    <Button
+                      size={"lg"}
+                      className="w-full rounded-full bg-yellow-400 font-bold text-primary hover:bg-yellow-300"
+                    >
                       Сургалтанд бүртгүүлэх
                     </Button>
                   </CardFooter>
