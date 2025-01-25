@@ -39,7 +39,7 @@ export default function ClientLayout({
             <Separator orientation="vertical" className="mr-2 h-4" />
           </div>
         </header>
-        <main className="p-4">{children}</main>
+        <main>{children}</main>
       </SidebarInset>
     </SidebarProvider>
   );
