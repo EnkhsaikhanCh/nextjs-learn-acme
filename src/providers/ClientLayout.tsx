@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { Toaster } from "sonner";
 
 export default function ClientLayout({
   children,
@@ -39,7 +40,10 @@ export default function ClientLayout({
             <Separator orientation="vertical" className="mr-2 h-4" />
           </div>
         </header>
-        <main>{children}</main>
+        <main>
+          <Toaster richColors />
+          {children}
+        </main>
       </SidebarInset>
     </SidebarProvider>
   );
