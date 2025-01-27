@@ -77,6 +77,7 @@ export type DeleteSectionResponse = {
 export type Enrollment = {
   __typename?: 'Enrollment';
   _id: Scalars['ID']['output'];
+  completedLessons: Array<Scalars['ID']['output']>;
   courseId: Course;
   createdAt: Scalars['String']['output'];
   history?: Maybe<Array<EnrollmentHistory>>;
@@ -129,6 +130,8 @@ export type Mutation = {
   deleteSection: DeleteSectionResponse;
   deleteTest: Test;
   deleteUser: User;
+  markLessonAsCompleted?: Maybe<Enrollment>;
+  undoLessonCompletion?: Maybe<Enrollment>;
   updateCourse: Course;
   updateEnrollment?: Maybe<Enrollment>;
   updateLesson: Lesson;
@@ -193,6 +196,16 @@ export type MutationDeleteUserArgs = {
 };
 
 
+export type MutationMarkLessonAsCompletedArgs = {
+  input?: InputMaybe<MarkLessonAsCompletedInput>;
+};
+
+
+export type MutationUndoLessonCompletionArgs = {
+  input?: InputMaybe<UndoLessonCompletionInput>;
+};
+
+
 export type MutationUpdateCourseArgs = {
   input: UpdateCourseInput;
 };
@@ -239,6 +252,7 @@ export type Query = {
   getAllTest: Array<Test>;
   getAllUser: Array<User>;
   getCourseById?: Maybe<Course>;
+  getEnrollmentByUserAndCourse?: Maybe<Enrollment>;
   getEnrollmentsByCourse: Array<Enrollment>;
   getEnrollmentsByUser: Array<Enrollment>;
   getLessonById: Lesson;
@@ -251,6 +265,12 @@ export type Query = {
 
 export type QueryGetCourseByIdArgs = {
   _id: Scalars['ID']['input'];
+};
+
+
+export type QueryGetEnrollmentByUserAndCourseArgs = {
+  courseId: Scalars['ID']['input'];
+  userId: Scalars['ID']['input'];
 };
 
 
@@ -335,6 +355,7 @@ export type UpdateCourseInput = {
 
 export type UpdateEnrollmentInput = {
   _id: Scalars['ID']['input'];
+  completedLessons?: InputMaybe<Array<Scalars['ID']['input']>>;
   progress?: InputMaybe<Scalars['Float']['input']>;
   status?: InputMaybe<EnrollmentStatus>;
 };
@@ -379,12 +400,22 @@ export type WhyChooseInput = {
   title: Scalars['String']['input'];
 };
 
+export type MarkLessonAsCompletedInput = {
+  enrollmentId: Scalars['ID']['input'];
+  lessonId: Scalars['ID']['input'];
+};
+
 export type PricingDetails = {
   __typename?: 'pricingDetails';
   description?: Maybe<Scalars['String']['output']>;
   details?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   planTitle?: Maybe<Scalars['String']['output']>;
   price?: Maybe<Scalars['String']['output']>;
+};
+
+export type UndoLessonCompletionInput = {
+  enrollmentId: Scalars['ID']['input'];
+  lessonId: Scalars['ID']['input'];
 };
 
 export type CreateCourseMutationVariables = Exact<{
@@ -412,6 +443,28 @@ export type GetCourseByIdQueryVariables = Exact<{
 
 
 export type GetCourseByIdQuery = { __typename?: 'Query', getCourseById?: { __typename?: 'Course', _id: string, title: string, description: string, price: number, duration?: number | null, createdBy?: string | null, categories?: Array<string | null> | null, tags?: Array<string | null> | null, status?: CourseStatus | null, thumbnail?: string | null, whatYouWillLearn?: Array<string | null> | null, pricingDetails?: { __typename?: 'pricingDetails', planTitle?: string | null, description?: string | null, price?: string | null, details?: Array<string | null> | null } | null, sectionId?: Array<{ __typename?: 'Section', _id: string, title: string, lessonId?: Array<{ __typename?: 'Lesson', _id: string, title: string, isPublished: boolean } | null> | null } | null> | null, enrollmentId?: Array<{ __typename?: 'Enrollment', _id: string, userId?: { __typename?: 'User', _id: string, email: string } | null } | null> | null, whyChooseOurCourse?: Array<{ __typename?: 'WhyChoose', icon: string, title: string, description: string } | null> | null } | null };
+
+export type MarkLessonAsCompletedMutationVariables = Exact<{
+  input?: InputMaybe<MarkLessonAsCompletedInput>;
+}>;
+
+
+export type MarkLessonAsCompletedMutation = { __typename?: 'Mutation', markLessonAsCompleted?: { __typename?: 'Enrollment', _id: string } | null };
+
+export type UndoLessonCompletionMutationVariables = Exact<{
+  input?: InputMaybe<UndoLessonCompletionInput>;
+}>;
+
+
+export type UndoLessonCompletionMutation = { __typename?: 'Mutation', undoLessonCompletion?: { __typename?: 'Enrollment', _id: string } | null };
+
+export type GetEnrollmentByUserAndCourseQueryVariables = Exact<{
+  userId: Scalars['ID']['input'];
+  courseId: Scalars['ID']['input'];
+}>;
+
+
+export type GetEnrollmentByUserAndCourseQuery = { __typename?: 'Query', getEnrollmentByUserAndCourse?: { __typename?: 'Enrollment', _id: string, progress: number, status: EnrollmentStatus, completedLessons: Array<string> } | null };
 
 export type CreateLessonMutationVariables = Exact<{
   input: CreateLessonInput;
@@ -709,6 +762,116 @@ export type GetCourseByIdQueryHookResult = ReturnType<typeof useGetCourseByIdQue
 export type GetCourseByIdLazyQueryHookResult = ReturnType<typeof useGetCourseByIdLazyQuery>;
 export type GetCourseByIdSuspenseQueryHookResult = ReturnType<typeof useGetCourseByIdSuspenseQuery>;
 export type GetCourseByIdQueryResult = Apollo.QueryResult<GetCourseByIdQuery, GetCourseByIdQueryVariables>;
+export const MarkLessonAsCompletedDocument = gql`
+    mutation MarkLessonAsCompleted($input: markLessonAsCompletedInput) {
+  markLessonAsCompleted(input: $input) {
+    _id
+  }
+}
+    `;
+export type MarkLessonAsCompletedMutationFn = Apollo.MutationFunction<MarkLessonAsCompletedMutation, MarkLessonAsCompletedMutationVariables>;
+
+/**
+ * __useMarkLessonAsCompletedMutation__
+ *
+ * To run a mutation, you first call `useMarkLessonAsCompletedMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useMarkLessonAsCompletedMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [markLessonAsCompletedMutation, { data, loading, error }] = useMarkLessonAsCompletedMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useMarkLessonAsCompletedMutation(baseOptions?: Apollo.MutationHookOptions<MarkLessonAsCompletedMutation, MarkLessonAsCompletedMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<MarkLessonAsCompletedMutation, MarkLessonAsCompletedMutationVariables>(MarkLessonAsCompletedDocument, options);
+      }
+export type MarkLessonAsCompletedMutationHookResult = ReturnType<typeof useMarkLessonAsCompletedMutation>;
+export type MarkLessonAsCompletedMutationResult = Apollo.MutationResult<MarkLessonAsCompletedMutation>;
+export type MarkLessonAsCompletedMutationOptions = Apollo.BaseMutationOptions<MarkLessonAsCompletedMutation, MarkLessonAsCompletedMutationVariables>;
+export const UndoLessonCompletionDocument = gql`
+    mutation UndoLessonCompletion($input: undoLessonCompletionInput) {
+  undoLessonCompletion(input: $input) {
+    _id
+  }
+}
+    `;
+export type UndoLessonCompletionMutationFn = Apollo.MutationFunction<UndoLessonCompletionMutation, UndoLessonCompletionMutationVariables>;
+
+/**
+ * __useUndoLessonCompletionMutation__
+ *
+ * To run a mutation, you first call `useUndoLessonCompletionMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUndoLessonCompletionMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [undoLessonCompletionMutation, { data, loading, error }] = useUndoLessonCompletionMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUndoLessonCompletionMutation(baseOptions?: Apollo.MutationHookOptions<UndoLessonCompletionMutation, UndoLessonCompletionMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UndoLessonCompletionMutation, UndoLessonCompletionMutationVariables>(UndoLessonCompletionDocument, options);
+      }
+export type UndoLessonCompletionMutationHookResult = ReturnType<typeof useUndoLessonCompletionMutation>;
+export type UndoLessonCompletionMutationResult = Apollo.MutationResult<UndoLessonCompletionMutation>;
+export type UndoLessonCompletionMutationOptions = Apollo.BaseMutationOptions<UndoLessonCompletionMutation, UndoLessonCompletionMutationVariables>;
+export const GetEnrollmentByUserAndCourseDocument = gql`
+    query GetEnrollmentByUserAndCourse($userId: ID!, $courseId: ID!) {
+  getEnrollmentByUserAndCourse(userId: $userId, courseId: $courseId) {
+    _id
+    progress
+    status
+    completedLessons
+  }
+}
+    `;
+
+/**
+ * __useGetEnrollmentByUserAndCourseQuery__
+ *
+ * To run a query within a React component, call `useGetEnrollmentByUserAndCourseQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetEnrollmentByUserAndCourseQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetEnrollmentByUserAndCourseQuery({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *      courseId: // value for 'courseId'
+ *   },
+ * });
+ */
+export function useGetEnrollmentByUserAndCourseQuery(baseOptions: Apollo.QueryHookOptions<GetEnrollmentByUserAndCourseQuery, GetEnrollmentByUserAndCourseQueryVariables> & ({ variables: GetEnrollmentByUserAndCourseQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetEnrollmentByUserAndCourseQuery, GetEnrollmentByUserAndCourseQueryVariables>(GetEnrollmentByUserAndCourseDocument, options);
+      }
+export function useGetEnrollmentByUserAndCourseLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetEnrollmentByUserAndCourseQuery, GetEnrollmentByUserAndCourseQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetEnrollmentByUserAndCourseQuery, GetEnrollmentByUserAndCourseQueryVariables>(GetEnrollmentByUserAndCourseDocument, options);
+        }
+export function useGetEnrollmentByUserAndCourseSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetEnrollmentByUserAndCourseQuery, GetEnrollmentByUserAndCourseQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetEnrollmentByUserAndCourseQuery, GetEnrollmentByUserAndCourseQueryVariables>(GetEnrollmentByUserAndCourseDocument, options);
+        }
+export type GetEnrollmentByUserAndCourseQueryHookResult = ReturnType<typeof useGetEnrollmentByUserAndCourseQuery>;
+export type GetEnrollmentByUserAndCourseLazyQueryHookResult = ReturnType<typeof useGetEnrollmentByUserAndCourseLazyQuery>;
+export type GetEnrollmentByUserAndCourseSuspenseQueryHookResult = ReturnType<typeof useGetEnrollmentByUserAndCourseSuspenseQuery>;
+export type GetEnrollmentByUserAndCourseQueryResult = Apollo.QueryResult<GetEnrollmentByUserAndCourseQuery, GetEnrollmentByUserAndCourseQueryVariables>;
 export const CreateLessonDocument = gql`
     mutation CreateLesson($input: CreateLessonInput!) {
   createLesson(input: $input) {
