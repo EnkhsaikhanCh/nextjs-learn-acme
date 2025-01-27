@@ -75,6 +75,7 @@ EnrollmentSchema.virtual("totalLessons").get(async function () {
 
   // Calculate the total number of lessons across all sections
   return course.sectionId.reduce(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (total: number, section: any) => total + section.lessonId.length,
     0,
   );

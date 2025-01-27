@@ -12,35 +12,29 @@ import {
 } from "@/components/ui/card";
 import { CircleCheck } from "lucide-react";
 import * as LucideIcons from "lucide-react";
+import { LucideIcon } from "lucide-react";
 
-export interface CourseData {
-  title?: string | null;
-  description?: string;
-  whatYouWillLearn?: string[];
-  sectionId?: Array<{
-    lessonId?: any[];
-  }>;
-  categories?: string[];
-  tags?: string[];
+import { GetCourseByIdQuery } from "@/generated/graphql";
+
+type CourseById = NonNullable<GetCourseByIdQuery["getCourseById"]>;
+
+type ExtendedCourse = CourseById & {
   whyChooseOurCourse?: Array<{
-    icon?: string;
+    icon?: keyof typeof LucideIcons;
     title?: string;
     description?: string;
   }>;
-  pricingDetails?: {
-    description?: string;
-    price?: number;
-    details?: string[];
-  };
+};
+
+interface NotEnrolledUserViewProps {
+  course: ExtendedCourse; // → course проп нь заавал энэ төрлийнх байна
+  onScrollToPayment: () => void;
 }
 
 export function NotEnrolledUserView({
   course,
   onScrollToPayment,
-}: {
-  course?: CourseData;
-  onScrollToPayment: () => void;
-}) {
+}: NotEnrolledUserViewProps) {
   return (
     <>
       {/* Курсийн танилцуулга хэсэг */}
@@ -97,7 +91,7 @@ export function NotEnrolledUserView({
                     {course?.sectionId
                       ? course.sectionId.reduce(
                           (total, section) =>
-                            total + (section.lessonId?.length || 0),
+                            total + (section?.lessonId?.length || 0),
                           0,
                         )
                       : 0}
@@ -158,10 +152,12 @@ export function NotEnrolledUserView({
           <div className="grid gap-8 md:grid-cols-3">
             {course?.whyChooseOurCourse?.map((item, index) => {
               // item.icon-д тохирох Lucide icon-г динамикаар сонгох
-              const IconComponent =
-                item?.icon && (LucideIcons as any)[item.icon]
-                  ? (LucideIcons as any)[item.icon]
-                  : LucideIcons.Star;
+              const IconComponent: LucideIcon | undefined = item?.icon
+                ? (LucideIcons[
+                    item.icon as keyof typeof LucideIcons
+                  ] as LucideIcon)
+                : LucideIcons.Star;
+
               return (
                 <Card
                   key={index}
@@ -169,12 +165,14 @@ export function NotEnrolledUserView({
                 >
                   <CardHeader>
                     <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-yellow-200">
-                      <IconComponent className="h-10 w-10 text-yellow-600" />
+                      {IconComponent && (
+                        <IconComponent className="h-10 w-10 text-yellow-600" />
+                      )}
                     </div>
-                    <CardTitle className="text-center">{item.title}</CardTitle>
+                    <CardTitle className="text-center">{item?.title}</CardTitle>
                   </CardHeader>
                   <CardContent className="text-center">
-                    {item.description}
+                    {item?.description}
                   </CardContent>
                 </Card>
               );
