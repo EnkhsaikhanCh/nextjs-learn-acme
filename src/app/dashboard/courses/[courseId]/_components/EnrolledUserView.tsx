@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
-import { toast } from "sonner";
 import { Loader } from "lucide-react";
 
 import { Progress } from "@/components/ui/progress";
