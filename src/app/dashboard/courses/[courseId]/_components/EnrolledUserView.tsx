@@ -54,6 +54,7 @@ export function EnrolledUserView({ courseData }: { courseData: CourseData }) {
     enrollmentData,
     enrollmentLoading,
     enrollmentError,
+    isLessonActionLoading,
     handleMarkLessonAsCompleted,
     handleUndoLessonCompletion,
   } = useEnrollmentData({ courseId: courseData?._id });
@@ -114,17 +115,21 @@ export function EnrolledUserView({ courseData }: { courseData: CourseData }) {
   // Урт кодыг "CourseHeader" мэт жижиг компонент болгон мөн салгаж болно
   function renderCourseInfo() {
     return (
-      <>
-        <div className="m-2 mb-2 rounded-md border-b bg-zinc-900 text-primary-foreground">
-          <h1 className="p-4 text-2xl font-bold">{courseData.title}</h1>
+      <section className="my-4 flex flex-col gap-2">
+        <div className="rounded-md border-b bg-zinc-900 text-primary-foreground">
+          <h1 className="p-4 text-base font-bold md:text-xl lg:text-2xl">
+            {courseData.title}
+          </h1>
         </div>
-        <Card className="m-2 shadow-none">
+        <Card className="shadow-none">
           <CardHeader>
-            <CardTitle>Course Progress</CardTitle>
+            <CardTitle className="text-center md:text-xl lg:text-2xl">
+              Course Progress
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <Progress value={progress} className="w-full" />
-            <p className="mt-2 text-center font-semibold">
+            <Progress value={progress} className="mb-4 w-full" />
+            <p className="mt-2 text-center text-sm font-semibold md:text-base">
               {Math.round(progress)}% Complete
             </p>
             <p className="mt-2 text-center text-sm text-gray-500">
@@ -132,7 +137,7 @@ export function EnrolledUserView({ courseData }: { courseData: CourseData }) {
             </p>
           </CardContent>
         </Card>
-      </>
+      </section>
     );
   }
 
@@ -150,7 +155,7 @@ export function EnrolledUserView({ courseData }: { courseData: CourseData }) {
         // --------------------
         // MOBILE ХУВИЛБАР
         // --------------------
-        <div>
+        <div className="px-4">
           {renderCourseInfo()}
           <SectionAccordion
             sections={courseData.sectionId || []}
@@ -176,6 +181,7 @@ export function EnrolledUserView({ courseData }: { courseData: CourseData }) {
                     selectedLesson?._id &&
                     handleMarkLessonAsCompleted(selectedLesson._id)
                   }
+                  isLessonActionLoading={isLessonActionLoading}
                   onUndo={() =>
                     selectedLesson?._id &&
                     handleUndoLessonCompletion(selectedLesson._id)
@@ -192,7 +198,7 @@ export function EnrolledUserView({ courseData }: { courseData: CourseData }) {
         <ResizablePanelGroup direction="horizontal" className="h-full">
           {/* Зүүн талд: Секшн + Хичээлүүд */}
           <ResizablePanel defaultSize={30} minSize={35} maxSize={45}>
-            <div className="h-full overflow-y-auto p-4">
+            <div className="h-full overflow-y-auto md:px-2">
               {renderCourseInfo()}
               <SectionAccordion
                 sections={courseData.sectionId || []}
@@ -216,6 +222,7 @@ export function EnrolledUserView({ courseData }: { courseData: CourseData }) {
                   selectedLesson?._id &&
                   handleMarkLessonAsCompleted(selectedLesson._id)
                 }
+                isLessonActionLoading={isLessonActionLoading}
                 onUndo={() =>
                   selectedLesson?._id &&
                   handleUndoLessonCompletion(selectedLesson._id)
