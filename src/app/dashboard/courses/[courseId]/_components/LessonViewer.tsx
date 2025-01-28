@@ -12,6 +12,7 @@ interface LessonViewerProps {
   completedLessons: string[];
   onMarkComplete: () => void;
   onUndo: () => void;
+  isLessonActionLoading: boolean;
 }
 
 export function LessonViewer({
@@ -20,6 +21,7 @@ export function LessonViewer({
   completedLessons,
   onMarkComplete,
   onUndo,
+  isLessonActionLoading,
 }: LessonViewerProps) {
   // Хичээлийн ID-аар дэлгэрэнгүй мэдээлэл татна
   const {
@@ -50,7 +52,7 @@ export function LessonViewer({
   if (lessonLoading) {
     return (
       <div className="flex items-center justify-center gap-2">
-        <span>Loading lesson details...</span>
+        <span>Хичээлийн дэлгэрэнгүй мэдээлэл ачаалж байна...</span>
         <Loader className="h-5 w-5 animate-spin" />
       </div>
     );
@@ -59,7 +61,7 @@ export function LessonViewer({
   if (lessonError) {
     return (
       <p className="text-red-500">
-        Error loading lesson: {lessonError.message}
+        Хичээлийг ачааллахад алдаа гарлаа: {lessonError.message}
       </p>
     );
   }
@@ -75,14 +77,31 @@ export function LessonViewer({
             onClick={isCompleted ? onUndo : onMarkComplete}
             variant={"outline"}
             size={"sm"}
-            className={`font-semibold transition ${
+            disabled={isLessonActionLoading}
+            className={`rounded-full font-semibold transition ${
               isCompleted
                 ? "border-green-500 bg-green-100 text-green-500 hover:bg-green-200 hover:text-green-600"
                 : "hover:border-green-600 hover:bg-green-100 hover:text-green-600"
             }`}
           >
-            {isCompleted ? "Undo" : "Mark as Done"}
-            <CircleCheck className="ml-2 h-4 w-4" />
+            {/* {isCompleted ? "" : "Дуусгасан тэмдэглэл хийх"} */}
+            {isLessonActionLoading ? (
+              <div className="flex items-center gap-2">
+                <span>Ачаалж байна...</span>
+                <Loader className="h-4 w-4 animate-spin" />
+              </div>
+            ) : isCompleted ? (
+              <div className="flex items-center gap-2">
+                <span>Буцаах</span>
+                <CircleCheck className="h-4 w-4" />
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <span>Дуусгасан тэмдэглэл хийх</span>
+                <CircleCheck className="h-4 w-4" />
+              </div>
+            )}
+            {/* <CircleCheck /> */}
           </Button>
         </CardHeader>
       </Card>
