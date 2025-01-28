@@ -13,10 +13,10 @@ import { Toaster } from "sonner";
 
 export default function ClientLayout({
   children,
-  defaultOpen,
+  // defaultOpen,
 }: {
   children: React.ReactNode;
-  defaultOpen: boolean;
+  // defaultOpen: boolean;
 }) {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -31,7 +31,10 @@ export default function ClientLayout({
   }
 
   return (
-    <SidebarProvider defaultChecked={defaultOpen}>
+    <SidebarProvider
+      // defaultChecked={defaultOpen}
+      defaultOpen={false}
+    >
       <SideNav email={session.user?.email ?? undefined} />
       <SidebarInset>
         <header className="flex h-14 shrink-0 items-center gap-2 border-b">
