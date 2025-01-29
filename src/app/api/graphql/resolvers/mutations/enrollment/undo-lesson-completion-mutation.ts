@@ -32,9 +32,7 @@ export const undoLessonCompletion = async (
 
     // Check if the lesson is actually completed
     if (!enrollment.completedLessons.includes(lessonId)) {
-      console.log(
-        `Lesson ${lessonId} is not marked as completed for enrollment ${enrollmentId}`,
-      );
+      console.log("Lesson is not marked as completed for enrollment");
       return enrollment;
     }
 
@@ -86,19 +84,13 @@ export const undoLessonCompletion = async (
     // Save the enrollment changes
     await enrollment.save();
 
-    console.log(
-      `Lesson ${lessonId} undone for enrollment ${enrollmentId}. Progress: ${enrollment.progress.toFixed(
-        2,
-      )}%`,
-    );
-
     return enrollment;
   } catch (error) {
     if (error instanceof GraphQLError) {
       throw error;
     }
 
-    console.error(`Unexpected error for enrollment and lesson :`, error);
+    console.error(`Unexpected error for enrollment and lesson: `, error);
 
     throw new GraphQLError("Internal server error", {
       extensions: {

@@ -33,9 +33,7 @@ export const markLessonAsCompleted = async (
 
     // Check if the lesson is already completed
     if (enrollment.completedLessons.includes(lessonId)) {
-      console.log(
-        `Lesson ${lessonId} is already marked as completed for enrollment ${enrollmentId}`,
-      );
+      console.log("Lesson is already marked as completed for enrollment");
       return enrollment;
     }
 
@@ -50,10 +48,10 @@ export const markLessonAsCompleted = async (
     });
 
     if (!course) {
+      console.error(`Course not found for courseId: ${enrollment.courseId}`);
       throw new GraphQLError("Course not found", {
         extensions: {
-          code: "NOT_FOUND",
-          courseId: enrollment.courseId,
+          code: "COURSE_NOT_FOUND",
         },
       });
     }
@@ -85,19 +83,13 @@ export const markLessonAsCompleted = async (
     // Save the enrollment changes
     await enrollment.save();
 
-    console.log(
-      `Lesson ${lessonId} marked as completed for enrollment ${enrollmentId}. Progress: ${enrollment.progress.toFixed(
-        2,
-      )}%`,
-    );
-
     return enrollment;
   } catch (error) {
     if (error instanceof GraphQLError) {
       throw error;
     }
 
-    console.error(`Unexpected error for enrollment and lesson :`, error);
+    console.error(`Unexpected error for enrollment and lesson: `, error);
 
     throw new GraphQLError("Internal server error", {
       extensions: {
