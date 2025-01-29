@@ -10,7 +10,7 @@ if (!uri) {
 }
 
 // Global кэш үүсгэх (Next.js, Serverless орчинд тохиромжтой)
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// eslint-disable-next-line prefer-const, @typescript-eslint/no-explicit-any
 let cached = (global as any).mongoose || { conn: null, promise: null };
 
 export const connectToDatabase = async () => {
