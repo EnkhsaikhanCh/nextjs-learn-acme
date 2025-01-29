@@ -17,11 +17,11 @@ export default function Courses() {
   const { data, loading, error } = useGetAllCourseQuery();
 
   return (
-    <div>
+    <div className="p-4">
       {loading && <p>Loading...</p>}
       {error && <p>Error fetching courses: {error.message}</p>}
       {data && (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {data?.getAllCourse.map((course, index) => (
             <Card key={index} className="flex flex-col justify-between">
               <CardHeader>
@@ -36,15 +36,15 @@ export default function Courses() {
                   height={100}
                 />
               </CardContent>
-              <CardFooter className="flex justify-end">
+              <CardFooter className="">
                 <Link
                   // target="_blank"
                   href={`/dashboard/courses/${course._id}`}
                   passHref
                   rel="noopener noreferrer"
-                  className="cursor-pointer"
+                  className="flex w-full cursor-pointer justify-end"
                 >
-                  <Button size={"sm"} className="font-semibold">
+                  <Button className="w-full bg-yellow-400 font-semibold text-black hover:bg-yellow-300 md:w-1/2">
                     Хичээл үзэх
                   </Button>
                 </Link>
