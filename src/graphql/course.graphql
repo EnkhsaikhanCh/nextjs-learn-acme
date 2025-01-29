@@ -42,6 +42,12 @@ query GetCourseById($id: ID!) {
     title
     description
     price
+    pricingDetails {
+      planTitle
+      description
+      price
+      details
+    }
     sectionId {
       _id
       title
@@ -64,5 +70,11 @@ query GetCourseById($id: ID!) {
       }
     }
     thumbnail
+    whatYouWillLearn
+    whyChooseOurCourse {
+      icon
+      title
+      description
+    }
   }
 }

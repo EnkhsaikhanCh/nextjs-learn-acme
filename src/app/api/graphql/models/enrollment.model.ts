@@ -1,16 +1,22 @@
 // src/app/api/graphql/models/enrollment.models.ts
 import { model, models, Schema } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
+import { CourseModel } from "./course.model";
 
 export type Enrollment = {
   _id: string;
   userId: string;
   courseId: string;
-  progress: number;
+  completedLessons: string[];
+  progress: number; // Dynamically calculated or stored
   status: "ACTIVE" | "COMPLETED" | "CANCELLED" | "PENDING";
   isDeleted: boolean;
-  lastAccessedAt: Date;
-  history: string;
+  lastAccessedAt: Date | null;
+  history: {
+    status: string;
+    progress: number;
+    updatedAt: Date;
+  }[];
 };
 
 const EnrollmentSchema = new Schema<Enrollment>(
@@ -26,6 +32,10 @@ const EnrollmentSchema = new Schema<Enrollment>(
       ref: "Course",
       required: [true, "Course ID is required"],
     },
+    completedLessons: {
+      type: [Schema.Types.String], // Array of completed lesson IDs
+      default: [],
+    },
     progress: {
       type: Number,
       default: 0,
@@ -34,14 +44,11 @@ const EnrollmentSchema = new Schema<Enrollment>(
     },
     status: {
       type: String,
-      enum: {
-        values: ["ACTIVE", "COMPLETED", "CANCELLED", "PENDING"],
-        message: "Status must be one of ACTIVE, COMPLETED, CANCELLED, PENDING",
-      },
+      enum: ["ACTIVE", "COMPLETED", "CANCELLED", "PENDING"],
       default: "ACTIVE",
     },
     isDeleted: { type: Boolean, default: false },
-    lastAccessedAt: { type: Date, default: null }, // Add this
+    lastAccessedAt: { type: Date, default: null },
     history: [
       {
         status: { type: Schema.Types.String, required: true },
@@ -55,10 +62,39 @@ const EnrollmentSchema = new Schema<Enrollment>(
 
 EnrollmentSchema.index({ userId: 1, courseId: 1 }, { unique: true });
 
-EnrollmentSchema.virtual("isCompleted").get(function () {
-  return this.status === "COMPLETED";
+/**
+ * Virtual to dynamically calculate total lessons
+ */
+EnrollmentSchema.virtual("totalLessons").get(async function () {
+  const course = await CourseModel.findById(this.courseId).populate({
+    path: "sectionId",
+    populate: { path: "lessonId" },
+  });
+
+  if (!course) return 0;
+
+  // Calculate the total number of lessons across all sections
+  return course.sectionId.reduce(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (total: number, section: any) => total + section.lessonId.length,
+    0,
+  );
 });
 
+/**
+ * Virtual to dynamically calculate progress
+ */
+EnrollmentSchema.virtual("calculatedProgress").get(function () {
+  const totalLessons = this.get("totalLessons");
+  if (!totalLessons || totalLessons === 0) return 0;
+
+  const completedCount = this.get("completedLessons")?.length || 0;
+  return Math.min((completedCount / totalLessons) * 100, 100);
+});
+
+/**
+ * Transform the toJSON output
+ */
 EnrollmentSchema.set("toJSON", {
   transform: (_doc, ret) => {
     delete ret.__v;
@@ -66,9 +102,14 @@ EnrollmentSchema.set("toJSON", {
   },
 });
 
+/**
+ * Pre-save hook to log updates
+ */
 EnrollmentSchema.pre("save", function (next) {
-  if (this.isModified("progress")) {
-    console.log(`Progress updated to ${this.progress}`);
+  if (this.isModified("completedLessons") || this.isModified("progress")) {
+    console.log(
+      `Enrollment updated: progress=${this.progress}, completedLessons=${this.completedLessons?.length}`,
+    );
   }
   next();
 });

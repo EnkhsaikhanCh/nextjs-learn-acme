@@ -9,13 +9,14 @@ import {
 } from "@/components/ui/sidebar";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { Toaster } from "sonner";
 
 export default function ClientLayout({
   children,
-  defaultOpen,
+  // defaultOpen,
 }: {
   children: React.ReactNode;
-  defaultOpen: boolean;
+  // defaultOpen: boolean;
 }) {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -30,7 +31,10 @@ export default function ClientLayout({
   }
 
   return (
-    <SidebarProvider defaultChecked={defaultOpen}>
+    <SidebarProvider
+      // defaultChecked={defaultOpen}
+      defaultOpen={false}
+    >
       <SideNav email={session.user?.email ?? undefined} />
       <SidebarInset>
         <header className="flex h-14 shrink-0 items-center gap-2 border-b">
@@ -39,7 +43,10 @@ export default function ClientLayout({
             <Separator orientation="vertical" className="mr-2 h-4" />
           </div>
         </header>
-        <main className="p-4">{children}</main>
+        <main>
+          <Toaster richColors />
+          {children}
+        </main>
       </SidebarInset>
     </SidebarProvider>
   );
