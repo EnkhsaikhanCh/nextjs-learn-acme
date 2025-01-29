@@ -1,6 +1,7 @@
 "use client";
 
 import { SideNav } from "@/components/dashboard/sidebar/SideNav";
+import { LoadingOverlay } from "@/components/LoadingOverlay";
 import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
@@ -22,7 +23,7 @@ export default function ClientLayout({
   const router = useRouter();
 
   if (status === "loading") {
-    return <p>Loading...</p>; // Session өгөгдлийг ачаалж байна
+    return <LoadingOverlay />; // Session өгөгдлийг ачаалж байна
   }
 
   if (!session) {

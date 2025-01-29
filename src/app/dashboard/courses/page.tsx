@@ -1,6 +1,8 @@
 // src/app/dashboard/courses/page.tsx:
 "use client";
 
+import ErrorFallback from "@/components/ErrorFallback";
+import { LoadingOverlay } from "@/components/LoadingOverlay";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,12 +16,13 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default function Courses() {
-  const { data, loading, error } = useGetAllCourseQuery();
+  const { data, loading, error, refetch } = useGetAllCourseQuery();
+
+  if (loading) return <LoadingOverlay />;
+  if (error) return <ErrorFallback error={error} reset={refetch} />;
 
   return (
     <div className="p-4">
-      {loading && <p>Loading...</p>}
-      {error && <p>Error fetching courses: {error.message}</p>}
       {data && (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {data?.getAllCourse.map((course, index) => (
@@ -38,10 +41,8 @@ export default function Courses() {
               </CardContent>
               <CardFooter className="">
                 <Link
-                  // target="_blank"
                   href={`/dashboard/courses/${course._id}`}
                   passHref
-                  rel="noopener noreferrer"
                   className="flex w-full cursor-pointer justify-end"
                 >
                   <Button className="w-full bg-yellow-400 font-semibold text-black hover:bg-yellow-300 md:w-1/2">
