@@ -9,22 +9,35 @@ if (!uri) {
   throw new Error("Please add your MongoDB URI to .env.local");
 }
 
-let isConnected: boolean = false;
+// Global кэш үүсгэх (Next.js, Serverless орчинд тохиромжтой)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let cached = (global as any).mongoose || { conn: null, promise: null };
 
 export const connectToDatabase = async () => {
-  if (isConnected) {
-    console.log("already connected");
-    return;
+  if (cached.conn) {
+    console.log("Already connected to database");
+    return cached.conn;
   }
 
-  try {
-    await mongoose.connect(uri, {
-      serverSelectionTimeoutMS: 15000,
-    });
-    isConnected = true;
-    console.log("connected to database");
-  } catch (error) {
-    console.log("error connecting to database", error);
-    throw new Error("Error connecting to MongoDB");
+  if (!cached.promise) {
+    cached.promise = mongoose
+      .connect(uri, {
+        dbName: "test",
+      })
+      .then((mongoose) => {
+        console.log("Connected to database");
+        return mongoose;
+      })
+      .catch((error) => {
+        console.error("Error connecting to database", error.message);
+        throw new Error("Database connection failed");
+      });
   }
+
+  cached.conn = await cached.promise;
+  return cached.conn;
 };
+
+// Global объектод хадгалах
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+(global as any).mongoose = cached;
