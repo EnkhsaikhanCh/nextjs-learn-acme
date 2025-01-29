@@ -31,21 +31,16 @@ type ExtendedCourse = Omit<CourseById, "sectionId"> & {
 };
 
 export default function CourseDetailPage() {
-  // URL-аас courseId-г авах
   const { courseId } = useParams();
-  // Хэрэглэгчийн session мэдээллийг авах
   const { data: session } = useSession();
 
-  // GraphQL query ашиглан курсийн мэдээлэл авах
   const { data, loading, error } = useGetCourseByIdQuery({
-    variables: { id: courseId as string }, // courseId-г query-д дамжуулна
-    skip: !courseId, // courseId байхгүй бол query-г алгасах
+    variables: { id: courseId as string },
+    skip: !courseId,
   });
 
-  // Session-аас хэрэглэгчийн ID авах
   const loggedInUserId = session?.user?.id;
 
-  // Ачаалалтай үеийн байдал
   if (loading) {
     return (
       <div className="flex h-screen items-center justify-center">
@@ -55,7 +50,6 @@ export default function CourseDetailPage() {
     );
   }
 
-  // Алдааны байдал
   if (error) {
     return (
       <div className="flex h-screen items-center justify-center">
@@ -64,7 +58,6 @@ export default function CourseDetailPage() {
     );
   }
 
-  // Курсийн мэдээлэл олдохгүй бол
   if (!data?.getCourseById) {
     return (
       <div className="flex h-screen items-center justify-center">
