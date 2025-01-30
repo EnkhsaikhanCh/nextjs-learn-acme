@@ -1,4 +1,4 @@
-import { HydratedDocument, model, models, Schema } from "mongoose";
+import { model, models, Schema } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 
 export type Payment = {
