@@ -7,6 +7,7 @@ export const typeDefs = gql`
     _id: ID!
     title: String!
     description: String!
+    courseCode: String!
     price: Float!
     pricingDetails: pricingDetails
     sectionId: [Section]

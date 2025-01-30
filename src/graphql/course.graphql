@@ -41,6 +41,7 @@ query GetCourseById($id: ID!) {
     _id
     title
     description
+    courseCode
     price
     pricingDetails {
       planTitle
