@@ -15,11 +15,11 @@ interface EnrollmentHookProps {
 
 export function useEnrollmentData({ courseId }: EnrollmentHookProps) {
   const [isLessonActionLoading, setLessonActionLoading] =
-    useState<boolean>(false); // Тодорхой нэртэй болгосон
+    useState<boolean>(false);
   const { data: session } = useSession();
+
   const userId = session?.user?.id;
 
-  // Хэрэглэгчийн элсэлтийн мэдээлэл авах
   const {
     data: enrollmentData,
     loading: enrollmentLoading,
@@ -33,22 +33,23 @@ export function useEnrollmentData({ courseId }: EnrollmentHookProps) {
     skip: !userId || !courseId,
   });
 
-  // Дадлагаар хичээл дуусгасныг тэмдэглэх / буцаах мутацууд
   const [markLessonAsCompleted] = useMarkLessonAsCompletedMutation();
   const [undoLessonCompletion] = useUndoLessonCompletionMutation();
 
-  // Хичээл дуусгасныг тэмдэглэх
   const handleMarkLessonAsCompleted = async (lessonId: string) => {
     if (!enrollmentData?.getEnrollmentByUserAndCourse?._id || !lessonId) return;
     setLessonActionLoading(true);
+
     try {
       const enrollmentId = enrollmentData.getEnrollmentByUserAndCourse._id;
-      const res = await markLessonAsCompleted({
+
+      const response = await markLessonAsCompleted({
         variables: {
           input: { enrollmentId, lessonId },
         },
       });
-      if (res.data?.markLessonAsCompleted) {
+
+      if (response.data?.markLessonAsCompleted) {
         toast.success("Lesson marked as completed");
         await enrollmentRefetch();
       }
@@ -61,17 +62,18 @@ export function useEnrollmentData({ courseId }: EnrollmentHookProps) {
     }
   };
 
-  // Хичээл дууссаныг буцаах
   const handleUndoLessonCompletion = async (lessonId: string) => {
     if (!enrollmentData?.getEnrollmentByUserAndCourse?._id || !lessonId) return;
-    setLessonActionLoading(true); // Ачаалал эхэлсэн
+    setLessonActionLoading(true);
 
     try {
       const enrollmentId = enrollmentData.getEnrollmentByUserAndCourse._id;
-      const res = await undoLessonCompletion({
+
+      const response = await undoLessonCompletion({
         variables: { input: { enrollmentId, lessonId } },
       });
-      if (res.data?.undoLessonCompletion) {
+
+      if (response.data?.undoLessonCompletion) {
         toast.success("Lesson undone");
         await enrollmentRefetch();
       }
@@ -80,7 +82,7 @@ export function useEnrollmentData({ courseId }: EnrollmentHookProps) {
         `Failed to undo lesson completion: ${(error as Error).message}`,
       );
     } finally {
-      setLessonActionLoading(false); // Ачаалал эхэлсэн
+      setLessonActionLoading(false);
     }
   };
 

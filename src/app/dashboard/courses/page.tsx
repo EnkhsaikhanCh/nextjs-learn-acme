@@ -42,7 +42,6 @@ export default function Courses() {
               <CardFooter className="">
                 <Link
                   href={`/dashboard/courses/${course._id}`}
-                  passHref
                   className="flex w-full cursor-pointer justify-end"
                 >
                   <Button className="w-full bg-yellow-400 font-semibold text-black hover:bg-yellow-300 md:w-1/2">
