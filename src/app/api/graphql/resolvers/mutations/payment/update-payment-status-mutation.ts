@@ -1,5 +1,6 @@
 import { GraphQLError } from "graphql";
-import { PaymentModel } from "../../../models";
+import { EnrollmentModel, PaymentModel } from "../../../models";
+import { createEnrollment } from "../enrollment/create-enrollment";
 
 export const updatePaymentStatus = async (
   _: unknown,
@@ -15,7 +16,6 @@ export const updatePaymentStatus = async (
   }
 
   try {
-    // Step 1: Төлбөр байгаа эсэхийг шалгах**
     const payment = await PaymentModel.findById(_id);
     if (!payment) {
       throw new GraphQLError("Payment not found", {
@@ -23,14 +23,24 @@ export const updatePaymentStatus = async (
       });
     }
 
-    // Step 2: Төлбөрийн төлөв шинэчлэх**
     payment.status = status;
 
-    // Step 3: Хэрэв `COMPLETED` бол `expiryDate` тохируулах**
     if (status === "COMPLETED") {
       const now = new Date();
       now.setMonth(now.getMonth() + 1); // 1 сарын эрх
       payment.expiryDate = now;
+
+      // createEnrollment
+      const enrollmentExists = await EnrollmentModel.findOne({
+        userId: payment.userId,
+        courseId: payment.courseId,
+      });
+
+      if (!enrollmentExists) {
+        await createEnrollment(_, {
+          input: { userId: payment.userId, courseId: payment.courseId },
+        });
+      }
     }
 
     await payment.save();
