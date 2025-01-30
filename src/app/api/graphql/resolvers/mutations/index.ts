@@ -5,3 +5,4 @@ export * from "./course";
 export * from "./enrollment";
 export * from "./section";
 export * from "./lesson";
+export * from "./payment";

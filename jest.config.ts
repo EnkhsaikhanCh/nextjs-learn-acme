@@ -102,6 +102,15 @@ const config: Config = {
     "src/app/api/graphql/resolvers/mutations/section",
     "src/app/api/graphql/resolvers/mutations/lesson/create-lesson-mutation.ts",
     "src/app/api/graphql/resolvers/queries/course",
+    "src/app/api/graphql/resolvers/mutations/enrollment",
+    "src/app/api/graphql/resolvers/queries/enrollment/",
+    "src/app/api/graphql/resolvers/mutations/course/update-course-mutation.ts",
+    "src/app/api/graphql/resolvers/mutations/payment",
+    "src/components",
+    "src/app/error.tsx",
+    "src/app/loading.tsx",
+    "src/app/not-found.tsx",
+    "src/app/api/graphql/resolvers/mutations/course",
   ],
 
   // Indicates which provider should be used to instrument code for coverage
