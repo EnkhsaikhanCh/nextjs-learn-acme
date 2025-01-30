@@ -1,6 +1,10 @@
 "use client";
 
-import { GetCourseByIdQuery, useGetCourseByIdQuery } from "@/generated/graphql";
+import {
+  GetCourseByIdQuery,
+  useGetCourseByIdQuery,
+  useGetUserByIdQuery,
+} from "@/generated/graphql";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { NotEnrolledUserView } from "./_components/NotEnrolledUserView";
@@ -41,14 +45,27 @@ export default function CourseDetailPage() {
     skip: !courseId,
   });
 
+  const {
+    data: userData,
+    loading: userLoading,
+    error: userError,
+  } = useGetUserByIdQuery({
+    variables: { id: session?.user.id as string },
+  });
+
   const loggedInUserId = session?.user?.id;
 
-  if (loading) {
+  if (loading || userLoading) {
     return <LoadingOverlay />;
   }
 
-  if (error) {
-    return <ErrorFallback error={error} reset={refetch} />;
+  if (error || userError) {
+    return (
+      <ErrorFallback
+        error={error ?? userError ?? new Error("Unknown error")}
+        reset={refetch}
+      />
+    );
   }
 
   if (!data?.getCourseById) {
@@ -99,6 +116,7 @@ export default function CourseDetailPage() {
       <NotEnrolledUserView
         course={course} // ExtendedCourse өгөгдлийг дамжуулах
         onScrollToPayment={handleScrollToPayment} // Төлбөрийн хэсэг рүү гулсах функц дамжуулах
+        user={userData?.getUserById}
       />
     );
   }

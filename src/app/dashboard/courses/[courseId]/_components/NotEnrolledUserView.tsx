@@ -13,8 +13,8 @@ import {
 import { CircleCheck } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 import { LucideIcon } from "lucide-react";
-
 import { GetCourseByIdQuery } from "@/generated/graphql";
+import { PaymentDialog } from "./PaymentDialog";
 
 type CourseById = NonNullable<GetCourseByIdQuery["getCourseById"]>;
 
@@ -27,11 +27,13 @@ type ExtendedCourse = CourseById & {
 };
 
 interface NotEnrolledUserViewProps {
+  user: any;
   course: ExtendedCourse; // → course проп нь заавал энэ төрлийнх байна
   onScrollToPayment: () => void;
 }
 
 export function NotEnrolledUserView({
+  user,
   course,
   onScrollToPayment,
 }: NotEnrolledUserViewProps) {
@@ -209,12 +211,7 @@ export function NotEnrolledUserView({
                 </ul>
               </CardContent>
               <CardFooter>
-                <Button
-                  size="lg"
-                  className="w-full rounded-full bg-yellow-400 font-bold text-primary hover:bg-yellow-300"
-                >
-                  Сургалтанд бүртгүүлэх
-                </Button>
+                <PaymentDialog user={user} course={course} />
               </CardFooter>
             </Card>
           </div>

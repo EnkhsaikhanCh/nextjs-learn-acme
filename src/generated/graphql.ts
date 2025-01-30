@@ -21,6 +21,7 @@ export type Course = {
   __typename?: 'Course';
   _id: Scalars['ID']['output'];
   categories?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  courseCode: Scalars['String']['output'];
   createdBy?: Maybe<Scalars['String']['output']>;
   description: Scalars['String']['output'];
   duration?: Maybe<Scalars['Int']['output']>;
@@ -55,6 +56,14 @@ export type CreateEnrollmentInput = {
 export type CreateLessonInput = {
   sectionId: Scalars['ID']['input'];
   title: Scalars['String']['input'];
+};
+
+export type CreatePaymentInput = {
+  amount: Scalars['Float']['input'];
+  courseId: Scalars['ID']['input'];
+  paymentMethod: PaymentMethod;
+  transactionNote?: InputMaybe<Scalars['String']['input']>;
+  userId: Scalars['ID']['input'];
 };
 
 export type CreateSectionInput = {
@@ -122,6 +131,7 @@ export type Mutation = {
   createCourse: Course;
   createEnrollment?: Maybe<Enrollment>;
   createLesson: Lesson;
+  createPayment?: Maybe<Payment>;
   createSection?: Maybe<Section>;
   createTest: Test;
   createUser: RegisterResponse;
@@ -135,6 +145,7 @@ export type Mutation = {
   updateCourse: Course;
   updateEnrollment?: Maybe<Enrollment>;
   updateLesson: Lesson;
+  updatePaymentStatus?: Maybe<Payment>;
   updateSection: Section;
   updateTest: Test;
   updateUser: User;
@@ -153,6 +164,11 @@ export type MutationCreateEnrollmentArgs = {
 
 export type MutationCreateLessonArgs = {
   input: CreateLessonInput;
+};
+
+
+export type MutationCreatePaymentArgs = {
+  input: CreatePaymentInput;
 };
 
 
@@ -222,6 +238,12 @@ export type MutationUpdateLessonArgs = {
 };
 
 
+export type MutationUpdatePaymentStatusArgs = {
+  _id: Scalars['ID']['input'];
+  status: PaymentStatus;
+};
+
+
 export type MutationUpdateSectionArgs = {
   _id: Scalars['ID']['input'];
   input: UpdateSectionInput;
@@ -238,6 +260,36 @@ export type MutationUpdateUserArgs = {
   _id: Scalars['ID']['input'];
   input: UpdateInput;
 };
+
+export type Payment = {
+  __typename?: 'Payment';
+  _id: Scalars['ID']['output'];
+  amount: Scalars['Float']['output'];
+  courseId: Scalars['ID']['output'];
+  createdAt: Scalars['String']['output'];
+  expiryDate?: Maybe<Scalars['String']['output']>;
+  paymentMethod: PaymentMethod;
+  refundReason?: Maybe<Scalars['String']['output']>;
+  status: PaymentStatus;
+  transactionId?: Maybe<Scalars['String']['output']>;
+  transactionNote?: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['String']['output'];
+  userId: Scalars['ID']['output'];
+};
+
+export enum PaymentMethod {
+  BankTransfer = 'BANK_TRANSFER',
+  CreditCard = 'CREDIT_CARD',
+  Other = 'OTHER',
+  Qpay = 'QPAY'
+}
+
+export enum PaymentStatus {
+  Completed = 'COMPLETED',
+  Failed = 'FAILED',
+  Pending = 'PENDING',
+  Refunded = 'REFUNDED'
+}
 
 export type PricingDetailsInput = {
   description?: InputMaybe<Scalars['String']['input']>;
@@ -257,6 +309,8 @@ export type Query = {
   getEnrollmentsByUser: Array<Enrollment>;
   getLessonById: Lesson;
   getLessonsBySection: Array<Lesson>;
+  getPayment?: Maybe<Payment>;
+  getPaymentsByUser?: Maybe<Array<Maybe<Payment>>>;
   getSectionById: Section;
   getSections: Array<Section>;
   getUserById: User;
@@ -291,6 +345,16 @@ export type QueryGetLessonByIdArgs = {
 
 export type QueryGetLessonsBySectionArgs = {
   sectionId: Scalars['ID']['input'];
+};
+
+
+export type QueryGetPaymentArgs = {
+  _id: Scalars['ID']['input'];
+};
+
+
+export type QueryGetPaymentsByUserArgs = {
+  userId: Scalars['ID']['input'];
 };
 
 
@@ -442,7 +506,7 @@ export type GetCourseByIdQueryVariables = Exact<{
 }>;
 
 
-export type GetCourseByIdQuery = { __typename?: 'Query', getCourseById?: { __typename?: 'Course', _id: string, title: string, description: string, price: number, duration?: number | null, createdBy?: string | null, categories?: Array<string | null> | null, tags?: Array<string | null> | null, status?: CourseStatus | null, thumbnail?: string | null, whatYouWillLearn?: Array<string | null> | null, pricingDetails?: { __typename?: 'pricingDetails', planTitle?: string | null, description?: string | null, price?: string | null, details?: Array<string | null> | null } | null, sectionId?: Array<{ __typename?: 'Section', _id: string, title: string, lessonId?: Array<{ __typename?: 'Lesson', _id: string, title: string, isPublished: boolean } | null> | null } | null> | null, enrollmentId?: Array<{ __typename?: 'Enrollment', _id: string, userId?: { __typename?: 'User', _id: string, email: string } | null } | null> | null, whyChooseOurCourse?: Array<{ __typename?: 'WhyChoose', icon: string, title: string, description: string } | null> | null } | null };
+export type GetCourseByIdQuery = { __typename?: 'Query', getCourseById?: { __typename?: 'Course', _id: string, title: string, description: string, courseCode: string, price: number, duration?: number | null, createdBy?: string | null, categories?: Array<string | null> | null, tags?: Array<string | null> | null, status?: CourseStatus | null, thumbnail?: string | null, whatYouWillLearn?: Array<string | null> | null, pricingDetails?: { __typename?: 'pricingDetails', planTitle?: string | null, description?: string | null, price?: string | null, details?: Array<string | null> | null } | null, sectionId?: Array<{ __typename?: 'Section', _id: string, title: string, lessonId?: Array<{ __typename?: 'Lesson', _id: string, title: string, isPublished: boolean } | null> | null } | null> | null, enrollmentId?: Array<{ __typename?: 'Enrollment', _id: string, userId?: { __typename?: 'User', _id: string, email: string } | null } | null> | null, whyChooseOurCourse?: Array<{ __typename?: 'WhyChoose', icon: string, title: string, description: string } | null> | null } | null };
 
 export type MarkLessonAsCompletedMutationVariables = Exact<{
   input?: InputMaybe<MarkLessonAsCompletedInput>;
@@ -494,6 +558,13 @@ export type GetLessonByIdQueryVariables = Exact<{
 
 
 export type GetLessonByIdQuery = { __typename?: 'Query', getLessonById: { __typename?: 'Lesson', _id: string, title: string, content?: string | null, videoUrl?: string | null, order: number, isPublished: boolean, createdAt: string, updatedAt: string } };
+
+export type CreatePaymentMutationVariables = Exact<{
+  input: CreatePaymentInput;
+}>;
+
+
+export type CreatePaymentMutation = { __typename?: 'Mutation', createPayment?: { __typename?: 'Payment', _id: string } | null };
 
 export type CreateSectionMutationVariables = Exact<{
   input?: InputMaybe<CreateSectionInput>;
@@ -691,6 +762,7 @@ export const GetCourseByIdDocument = gql`
     _id
     title
     description
+    courseCode
     price
     pricingDetails {
       planTitle
@@ -1020,6 +1092,39 @@ export type GetLessonByIdQueryHookResult = ReturnType<typeof useGetLessonByIdQue
 export type GetLessonByIdLazyQueryHookResult = ReturnType<typeof useGetLessonByIdLazyQuery>;
 export type GetLessonByIdSuspenseQueryHookResult = ReturnType<typeof useGetLessonByIdSuspenseQuery>;
 export type GetLessonByIdQueryResult = Apollo.QueryResult<GetLessonByIdQuery, GetLessonByIdQueryVariables>;
+export const CreatePaymentDocument = gql`
+    mutation CreatePayment($input: CreatePaymentInput!) {
+  createPayment(input: $input) {
+    _id
+  }
+}
+    `;
+export type CreatePaymentMutationFn = Apollo.MutationFunction<CreatePaymentMutation, CreatePaymentMutationVariables>;
+
+/**
+ * __useCreatePaymentMutation__
+ *
+ * To run a mutation, you first call `useCreatePaymentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreatePaymentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createPaymentMutation, { data, loading, error }] = useCreatePaymentMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreatePaymentMutation(baseOptions?: Apollo.MutationHookOptions<CreatePaymentMutation, CreatePaymentMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreatePaymentMutation, CreatePaymentMutationVariables>(CreatePaymentDocument, options);
+      }
+export type CreatePaymentMutationHookResult = ReturnType<typeof useCreatePaymentMutation>;
+export type CreatePaymentMutationResult = Apollo.MutationResult<CreatePaymentMutation>;
+export type CreatePaymentMutationOptions = Apollo.BaseMutationOptions<CreatePaymentMutation, CreatePaymentMutationVariables>;
 export const CreateSectionDocument = gql`
     mutation CreateSection($input: CreateSectionInput) {
   createSection(input: $input) {
