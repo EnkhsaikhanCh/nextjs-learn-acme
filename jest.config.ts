@@ -110,6 +110,7 @@ const config: Config = {
     "src/app/error.tsx",
     "src/app/loading.tsx",
     "src/app/not-found.tsx",
+    "src/app/api/graphql/resolvers/mutations/course",
   ],
 
   // Indicates which provider should be used to instrument code for coverage
