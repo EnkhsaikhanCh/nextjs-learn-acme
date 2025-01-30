@@ -1,11 +1,13 @@
 "use client";
 
 import { GetCourseByIdQuery, useGetCourseByIdQuery } from "@/generated/graphql";
-import { Loader } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { NotEnrolledUserView } from "./_components/NotEnrolledUserView";
 import { EnrolledUserView } from "./_components/EnrolledUserView";
+import { LoadingOverlay } from "@/components/LoadingOverlay";
+import ErrorFallback from "@/components/ErrorFallback";
+import CourseNotFound from "@/components/CourseNotFound";
 
 // GraphQL-с буцаж ирэх хариултын төрлийг тодорхойлох (null болон undefined-г хассан төрөл)
 type CourseById = NonNullable<GetCourseByIdQuery["getCourseById"]>;
@@ -34,7 +36,7 @@ export default function CourseDetailPage() {
   const { courseId } = useParams();
   const { data: session } = useSession();
 
-  const { data, loading, error } = useGetCourseByIdQuery({
+  const { data, loading, error, refetch } = useGetCourseByIdQuery({
     variables: { id: courseId as string },
     skip: !courseId,
   });
@@ -42,28 +44,15 @@ export default function CourseDetailPage() {
   const loggedInUserId = session?.user?.id;
 
   if (loading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <Loader className="mr-2 h-6 w-6 animate-spin" />
-        <span>Уншиж байна...</span>
-      </div>
-    );
+    return <LoadingOverlay />;
   }
 
   if (error) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <p>Хичээл ачааллахад алдаа гарлаа: {error.message}</p>
-      </div>
-    );
+    return <ErrorFallback error={error} reset={refetch} />;
   }
 
   if (!data?.getCourseById) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <p>Курс олдсонгүй</p>
-      </div>
-    );
+    return <CourseNotFound />;
   }
 
   // API-с ирсэн өгөгдлийг ExtendedCourse төрөлтэй нийцүүлэхийн тулд трансформ хийх

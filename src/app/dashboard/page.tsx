@@ -11,6 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { LoadingOverlay } from "@/components/LoadingOverlay";
 
 export default function Page() {
   const { data: session, status } = useSession();
@@ -23,7 +24,7 @@ export default function Page() {
   });
 
   if (status === "loading") {
-    return <p>Loading...</p>; // Session өгөгдөл ачаалж байна
+    return <LoadingOverlay />; // Session өгөгдөл ачаалж байна
   }
 
   if (!session) {

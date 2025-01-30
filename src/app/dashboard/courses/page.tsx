@@ -1,6 +1,8 @@
 // src/app/dashboard/courses/page.tsx:
 "use client";
 
+import ErrorFallback from "@/components/ErrorFallback";
+import { LoadingOverlay } from "@/components/LoadingOverlay";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,14 +16,15 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default function Courses() {
-  const { data, loading, error } = useGetAllCourseQuery();
+  const { data, loading, error, refetch } = useGetAllCourseQuery();
+
+  if (loading) return <LoadingOverlay />;
+  if (error) return <ErrorFallback error={error} reset={refetch} />;
 
   return (
-    <div>
-      {loading && <p>Loading...</p>}
-      {error && <p>Error fetching courses: {error.message}</p>}
+    <div className="p-4">
       {data && (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {data?.getAllCourse.map((course, index) => (
             <Card key={index} className="flex flex-col justify-between">
               <CardHeader>
@@ -36,15 +39,12 @@ export default function Courses() {
                   height={100}
                 />
               </CardContent>
-              <CardFooter className="flex justify-end">
+              <CardFooter className="">
                 <Link
-                  // target="_blank"
                   href={`/dashboard/courses/${course._id}`}
-                  passHref
-                  rel="noopener noreferrer"
-                  className="cursor-pointer"
+                  className="flex w-full cursor-pointer justify-end"
                 >
-                  <Button size={"sm"} className="font-semibold">
+                  <Button className="w-full bg-yellow-400 font-semibold text-black hover:bg-yellow-300 md:w-1/2">
                     Хичээл үзэх
                   </Button>
                 </Link>

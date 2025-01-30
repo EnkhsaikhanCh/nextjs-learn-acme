@@ -23,6 +23,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
+import { LoadingOverlay } from "@/components/LoadingOverlay";
 
 export default function Page() {
   const { data, loading, error, refetch } = useGetAllTestQuery();
@@ -69,7 +70,7 @@ export default function Page() {
     }
   };
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <LoadingOverlay />;
   if (error) return <p>Error: {error.message}</p>;
 
   return (
