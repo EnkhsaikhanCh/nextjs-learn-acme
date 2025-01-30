@@ -7,7 +7,6 @@ export const createCourse = async (
   { input }: { input: CreateCourseInput },
 ) => {
   try {
-    // Validate input
     if (!input.title || !input.description || !input.price) {
       throw new GraphQLError(
         "Missing required fields: title, description, or price",
@@ -17,7 +16,20 @@ export const createCourse = async (
       );
     }
 
-    const savedCourse = await CourseModel.create(input);
+    const lastCourse = await CourseModel.findOne().sort({ courseCode: -1 });
+
+    let newCourseCode = "001"; // Default эхний код
+    if (lastCourse && lastCourse.courseCode) {
+      const lastCode = parseInt(lastCourse.courseCode, 10);
+      newCourseCode = String(lastCode + 1).padStart(3, "0"); // 3 оронтой формат
+    }
+
+    const newCourse = new CourseModel({
+      ...input,
+      courseCode: newCourseCode,
+    });
+
+    const savedCourse = await newCourse.save();
 
     return savedCourse;
   } catch (error) {

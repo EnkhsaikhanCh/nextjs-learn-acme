@@ -6,6 +6,7 @@ export type Course = {
   _id: string;
   title: string;
   description: string;
+  courseCode: string;
   price: number;
   pricingDetails?: {
     planTitle: string;
@@ -34,6 +35,7 @@ const CourseSchema = new Schema<Course>(
     _id: { type: String, default: () => uuidv4() },
     title: { type: String, required: true },
     description: { type: String, required: true },
+    courseCode: { type: String, required: true, unique: true },
     price: { type: Number, required: true, min: 0 },
     pricingDetails: {
       type: {
