@@ -25,10 +25,10 @@ export const typeDefs = gql`
   }
 
   enum PaymentMethod {
-    QPay
-    CreditCard
-    BankTransfer
-    Other
+    QPAY
+    CREDIT_CARD
+    BANK_TRANSFER
+    OTHER
   }
 
   type Query {
@@ -55,5 +55,5 @@ export type CreatePaymentInput = {
   courseId: string;
   amount: number;
   transactionNote: string;
-  paymentMethod: "QPay" | "CreditCard" | "BankTransfer" | "Other";
+  paymentMethod: "QPAY" | "CREDIT_CARD" | "BANK_TRANSFER" | "OTHER"; // ✅ Uppercase
 };
