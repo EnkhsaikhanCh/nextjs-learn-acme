@@ -27,6 +27,7 @@ type ExtendedCourse = CourseById & {
 };
 
 interface NotEnrolledUserViewProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   user: any;
   course: ExtendedCourse; // → course проп нь заавал энэ төрлийнх байна
   onScrollToPayment: () => void;
