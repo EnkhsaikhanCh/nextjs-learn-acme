@@ -45,7 +45,7 @@ export default function ClientLayout({
           </div>
         </header>
         <main>
-          <Toaster richColors />
+          <Toaster richColors position={"top-center"} />
           {children}
         </main>
       </SidebarInset>
