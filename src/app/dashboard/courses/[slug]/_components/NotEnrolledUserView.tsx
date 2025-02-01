@@ -13,23 +13,12 @@ import {
 import { CircleCheck } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 import { LucideIcon } from "lucide-react";
-import { GetCourseByIdQuery } from "@/generated/graphql";
 import { PaymentDialog } from "./PaymentDialog";
-
-type CourseById = NonNullable<GetCourseByIdQuery["getCourseById"]>;
-
-type ExtendedCourse = CourseById & {
-  whyChooseOurCourse?: Array<{
-    icon?: keyof typeof LucideIcons;
-    title?: string;
-    description?: string;
-  }>;
-};
+import { Course, User } from "@/generated/graphql";
 
 interface NotEnrolledUserViewProps {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  user: any;
-  course: ExtendedCourse; // → course проп нь заавал энэ төрлийнх байна
+  user: User;
+  course: Course;
   onScrollToPayment: () => void;
 }
 
@@ -91,8 +80,8 @@ export function NotEnrolledUserView({
                 <ul className="space-y-4">
                   <li>
                     <strong>Нийт хичээлүүд:</strong>{" "}
-                    {course?.sectionId
-                      ? course.sectionId.reduce(
+                    {course?.sections?.map
+                      ? course.sections.reduce(
                           (total, section) =>
                             total + (section?.lessonId?.length || 0),
                           0,

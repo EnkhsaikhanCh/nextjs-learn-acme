@@ -10,22 +10,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { PaymentMethod, useCreatePaymentMutation } from "@/generated/graphql";
+import {
+  Course,
+  PaymentMethod,
+  useCreatePaymentMutation,
+  User,
+} from "@/generated/graphql";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { CopyableField } from "./CopyableField";
-
-interface User {
-  _id: string;
-  studentId: string;
-}
-
-interface Course {
-  _id: string;
-  courseCode: string;
-  price: number;
-}
 
 interface PaymentDetails {
   bankName: string;
@@ -81,7 +75,7 @@ export function PaymentDialog({
           input: {
             userId: user._id,
             courseId: course._id,
-            amount: course.price,
+            amount: course.price?.amount ?? 0,
             paymentMethod: PaymentMethod.BankTransfer,
             transactionNote,
           },
@@ -148,10 +142,12 @@ export function PaymentDialog({
 
           <CopyableField
             label="Хичээлийн үнэ"
-            value={`₮${course.price.toLocaleString()}`}
+            value={`₮${(course.price?.amount ?? 0).toLocaleString()}`}
             fieldName="price"
             copiedField={copiedField}
-            onClick={() => handleCopy(course.price.toString(), "price")}
+            onClick={() =>
+              handleCopy((course.price?.amount ?? 0).toString(), "price")
+            }
           />
 
           <CopyableField
