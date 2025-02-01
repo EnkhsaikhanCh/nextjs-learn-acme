@@ -1,7 +1,6 @@
 import { GraphQLError } from "graphql";
-import { UpdateCourseInput } from "../../../schemas/course.schema";
-import { CourseModel, Course } from "../../../models";
-import { sanitizeInput } from "@/utils/sanitize";
+import { CourseModel } from "../../../models";
+import { UpdateCourseInput } from "@/generated/graphql";
 
 export const updateCourse = async (
   _: unknown,
@@ -10,104 +9,49 @@ export const updateCourse = async (
   try {
     const { _id } = input;
 
-    // 1. Course ID байх эсэхийг шалгах
+    // Course ID байх эсэхийг шалгах
     if (!_id) {
       throw new GraphQLError("Course ID is required", {
         extensions: { code: "BAD_USER_INPUT" },
       });
     }
 
-    // 2. Partial update хийхэд ашиглах обьект
-    const updateData: Partial<Course> = {};
+    // Оруулах утгуудыг зөвхөн дамжуулсан утгаар шинэчлэх
+    const updateFields: Partial<UpdateCourseInput> = {};
 
-    // title
-    if (typeof input.title === "string") {
-      updateData.title = sanitizeInput(input.title);
-    }
+    if (input.title !== undefined) updateFields.title = input.title;
+    if (input.description !== undefined)
+      updateFields.description = input.description;
+    if (input.price !== undefined) updateFields.price = input.price;
+    if (input.difficulty !== undefined)
+      updateFields.difficulty = input.difficulty;
+    if (input.thumbnail !== undefined) updateFields.thumbnail = input.thumbnail;
+    if (input.pricingDetails !== undefined)
+      updateFields.pricingDetails = input.pricingDetails;
+    if (input.categories !== undefined)
+      updateFields.categories = input.categories;
+    if (input.tags !== undefined) updateFields.tags = input.tags;
+    if (input.status !== undefined) updateFields.status = input.status;
+    if (input.whatYouWillLearn !== undefined)
+      updateFields.whatYouWillLearn = input.whatYouWillLearn;
+    if (input.whyChooseOurCourse !== undefined)
+      updateFields.whyChooseOurCourse = input.whyChooseOurCourse;
 
-    // description
-    if (typeof input.description === "string") {
-      updateData.description = sanitizeInput(input.description);
-    }
-
-    // price
-    if (input.price !== undefined) {
-      updateData.price = input.price;
-    }
-
-    // duration
-    if (input.duration !== undefined) {
-      updateData.duration = input.duration;
-    }
-
-    // createdBy
-    if (typeof input.createdBy === "string") {
-      updateData.createdBy = sanitizeInput(input.createdBy);
-    }
-
-    // categories
-    if (Array.isArray(input.categories)) {
-      updateData.categories = input.categories.map((c) => sanitizeInput(c));
-    }
-
-    // tags
-    if (Array.isArray(input.tags)) {
-      updateData.tags = input.tags.map((t) => sanitizeInput(t));
-    }
-
-    // status
-    if (typeof input.status === "string") {
-      const sanitizedStatus = sanitizeInput(input.status);
-      if (sanitizedStatus === "active" || sanitizedStatus === "archived") {
-        updateData.status = sanitizedStatus;
-      } else {
-        throw new GraphQLError("Invalid status value", {
-          extensions: { code: "BAD_USER_INPUT" },
-        });
-      }
-    }
-
-    // thumbnail
-    if (typeof input.thumbnail === "string") {
-      updateData.thumbnail = input.thumbnail;
-    }
-
-    // whatYouWillLearn
-    if (Array.isArray(input.whatYouWillLearn)) {
-      updateData.whatYouWillLearn = input.whatYouWillLearn;
-    }
-
-    // whyChooseOurCourse
-    if (Array.isArray(input.whyChooseOurCourse)) {
-      updateData.whyChooseOurCourse = input.whyChooseOurCourse;
-    }
-
-    // pricingDetails (илүү нарийн шалгалтуудыг энд хийж болох талтай)
-    if (input.pricingDetails) {
-      const { planTitle, description, price, details } = input.pricingDetails;
-      updateData.pricingDetails = {
-        planTitle: planTitle || "",
-        description: description || "",
-        price: price || "",
-        details: details || [],
-      };
-    }
-
-    // 4. findByIdAndUpdate ашиглан шууд update хийх
+    // findByIdAndUpdate ашиглан шинэчлэх
     const updatedCourse = await CourseModel.findByIdAndUpdate(
       _id,
-      { $set: updateData }, // Partial Update
-      { new: true }, // шинэчлэгдсэн баримтыг буцаана
+      updateFields,
+      { new: true },
     );
 
-    // 5. Олдсон эсэхийг шалгах
+    // Олдсон эсэхийг шалгах
     if (!updatedCourse) {
       throw new GraphQLError("Course not found", {
         extensions: { code: "NOT_FOUND" },
       });
     }
 
-    // 6. Амжилттай шинэчилсэн баримтыг буцаах
+    // Амжилттай шинэчилсэн баримтыг буцаах
     return updatedCourse;
   } catch (error) {
     if (error instanceof GraphQLError) {
