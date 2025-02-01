@@ -13,7 +13,7 @@ export const typeDefs = gql`
     isCompleted: Boolean!
     lastAccessedAt: String
     history: [EnrollmentHistory!]
-    completedLessons: [ID!]! # Array of completed lesson IDs
+    completedLessons: [ID!]!
   }
 
   type EnrollmentHistory {
@@ -33,6 +33,7 @@ export const typeDefs = gql`
     getEnrollmentsByUser(userId: ID!): [Enrollment!]!
     getEnrollmentsByCourse(courseId: ID!): [Enrollment!]!
     getEnrollmentByUserAndCourse(userId: ID!, courseId: ID!): Enrollment # Fetch a single enrollment
+    checkEnrollment(courseId: ID!, userId: ID!): Enrollment
   }
 
   input CreateEnrollmentInput {
