@@ -1,9 +1,12 @@
 import { GraphQLError } from "graphql";
 import { CourseModel } from "../../../models";
 
-export const getCourseById = async (_: unknown, { _id }: { _id: string }) => {
+export const getCourseBySlug = async (
+  _: unknown,
+  { slug }: { slug: string },
+) => {
   try {
-    const course = await CourseModel.findById(_id).populate({
+    const course = await CourseModel.findOne({ slug }).populate({
       path: "sectionId",
       model: "Section",
       populate: [
@@ -28,7 +31,7 @@ export const getCourseById = async (_: unknown, { _id }: { _id: string }) => {
       throw error;
     }
 
-    throw new GraphQLError("Failed to fetch user", {
+    throw new GraphQLError("Failed to fetch course", {
       extensions: {
         code: "INTERNAL_SERVER_ERROR",
         http: { status: 500 },

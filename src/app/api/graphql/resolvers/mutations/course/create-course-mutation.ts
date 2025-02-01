@@ -1,19 +1,34 @@
 import { GraphQLError } from "graphql";
 import { CourseModel } from "../../../models";
-import { CreateCourseInput } from "../../../schemas/course.schema";
+import { CreateCourseInput } from "@/generated/graphql";
+
+const slugify = (title: string): string => {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9а-яөү]/g, " ") // Тусгай тэмдэгтүүдийг устгах
+    .trim()
+    .replace(/\s+/g, "-"); // Сул зайг "-" болгох
+};
 
 export const createCourse = async (
   _: unknown,
   { input }: { input: CreateCourseInput },
 ) => {
   try {
-    if (!input.title || !input.description || !input.price) {
-      throw new GraphQLError(
-        "Missing required fields: title, description, or price",
-        {
-          extensions: { code: "BAD_USER_INPUT" },
-        },
-      );
+    if (!input.title) {
+      throw new GraphQLError("Missing required title field", {
+        extensions: { code: "BAD_USER_INPUT" },
+      });
+    }
+
+    const generatedSlug = slugify(input.title);
+
+    // slug давхцах эсэхийг шалгах
+    let uniqueSlug = generatedSlug;
+    let count = 1;
+    while (await CourseModel.findOne({ slug: uniqueSlug })) {
+      uniqueSlug = `${generatedSlug}-${count}`;
+      count++;
     }
 
     const lastCourse = await CourseModel.findOne().sort({ courseCode: -1 });
@@ -26,6 +41,7 @@ export const createCourse = async (
 
     const newCourse = new CourseModel({
       ...input,
+      slug: uniqueSlug,
       courseCode: newCourseCode,
     });
 

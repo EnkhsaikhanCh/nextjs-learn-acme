@@ -20,3 +20,15 @@ query GetEnrollmentByUserAndCourse($userId: ID!, $courseId: ID!) {
     completedLessons
   }
 }
+
+query CheckEnrollment($courseId: ID!, $userId: ID!) {
+  checkEnrollment(courseId: $courseId, userId: $userId) {
+    _id
+    userId {
+      _id
+    }
+    courseId {
+      _id
+    }
+  }
+}

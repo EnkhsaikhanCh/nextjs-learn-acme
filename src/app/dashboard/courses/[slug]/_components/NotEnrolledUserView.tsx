@@ -13,25 +13,17 @@ import {
 import { CircleCheck } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 import { LucideIcon } from "lucide-react";
-
-import { GetCourseByIdQuery } from "@/generated/graphql";
-
-type CourseById = NonNullable<GetCourseByIdQuery["getCourseById"]>;
-
-type ExtendedCourse = CourseById & {
-  whyChooseOurCourse?: Array<{
-    icon?: keyof typeof LucideIcons;
-    title?: string;
-    description?: string;
-  }>;
-};
+import { PaymentDialog } from "./PaymentDialog";
+import { Course, User } from "@/generated/graphql";
 
 interface NotEnrolledUserViewProps {
-  course: ExtendedCourse; // → course проп нь заавал энэ төрлийнх байна
+  user: User;
+  course: Course;
   onScrollToPayment: () => void;
 }
 
 export function NotEnrolledUserView({
+  user,
   course,
   onScrollToPayment,
 }: NotEnrolledUserViewProps) {
@@ -88,8 +80,8 @@ export function NotEnrolledUserView({
                 <ul className="space-y-4">
                   <li>
                     <strong>Нийт хичээлүүд:</strong>{" "}
-                    {course?.sectionId
-                      ? course.sectionId.reduce(
+                    {course?.sections?.map
+                      ? course.sections.reduce(
                           (total, section) =>
                             total + (section?.lessonId?.length || 0),
                           0,
@@ -209,12 +201,7 @@ export function NotEnrolledUserView({
                 </ul>
               </CardContent>
               <CardFooter>
-                <Button
-                  size="lg"
-                  className="w-full rounded-full bg-yellow-400 font-bold text-primary hover:bg-yellow-300"
-                >
-                  Сургалтанд бүртгүүлэх
-                </Button>
+                <PaymentDialog user={user} course={course} />
               </CardFooter>
             </Card>
           </div>

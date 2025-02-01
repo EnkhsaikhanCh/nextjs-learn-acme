@@ -7,7 +7,7 @@ export type Payment = {
   courseId: string;
   amount: number;
   transactionNote: string;
-  paymentMethod: "QPay" | "CreditCard" | "BankTransfer" | "Other";
+  paymentMethod: "QPAY" | "CREDIT_CARD" | "BANK_TRANSFER" | "OTHER";
   status: "PENDING" | "COMPLETED" | "FAILED" | "REFUNDED";
   createdAt: Date;
   updatedAt: Date;
@@ -45,7 +45,7 @@ const PaymentSchema = new Schema<Payment>(
     },
     paymentMethod: {
       type: String,
-      enum: ["QPay", "CreditCard", "BankTransfer", "Other"],
+      enum: ["QPAY", "CREDIT_CARD", "BANK_TRANSFER", "OTHER"],
       required: true,
     },
     expiryDate: { type: Date, default: null },
