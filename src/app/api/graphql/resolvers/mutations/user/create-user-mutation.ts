@@ -1,7 +1,6 @@
 // src/app/api/graphql/resolver/mutation/user/create-user-mutation.ts
 import { GraphQLError } from "graphql";
 import { UserModel } from "../../../models";
-import { RegisterInput } from "../../../schemas/user.schema";
 import argon2 from "argon2";
 import {
   sanitizeInput,
@@ -9,6 +8,7 @@ import {
   validationPassword,
 } from "@/utils/validation";
 import { generateUniqueStudentId } from "../../../../../../utils/generate-unique-student-id";
+import { RegisterInput } from "@/generated/graphql";
 
 const validationInputs = (email: string, password: string) => {
   const sanitizedEmail = sanitizeInput(email);
@@ -61,8 +61,8 @@ export const createUser = async (
     const newUser = await UserModel.create({
       email: sanitizedEmail,
       studentId: studentId,
-      role: "student",
       password: hashedPassword,
+      isVerified: false,
     });
 
     return {
