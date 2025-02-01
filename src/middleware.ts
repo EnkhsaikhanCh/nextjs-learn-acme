@@ -22,12 +22,12 @@ export async function middleware(request: NextRequest) {
   const role = token?.role; // Ensure your token includes the `role` field
 
   // `/admin` замд зөвхөн admin role-тэй хэрэглэгч нэвтрэх боломжтой
-  if (pathname.startsWith("/admin/dashboard") && role !== "admin") {
+  if (pathname.startsWith("/admin/dashboard") && role !== "ADMIN") {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
   // `/dashboard` замд зөвхөн student role-тэй хэрэглэгч нэвтрэх боломжтой
-  if (pathname.startsWith("/dashboard") && role !== "student") {
+  if (pathname.startsWith("/dashboard") && role !== "STUDENT") {
     return NextResponse.redirect(new URL("/admin", request.url));
   }
 
