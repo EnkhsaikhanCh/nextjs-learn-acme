@@ -7,31 +7,13 @@ mutation CreateCourse($input: CreateCourseInput!) {
   }
 }
 
-mutation UpdateCourse($input: UpdateCourseInput!) {
-  updateCourse(input: $input) {
-    _id
-    title
-    description
-    price
-    status
-    thumbnail
-  }
-}
-
 # Queries
 query GetAllCourse {
   getAllCourse {
     _id
     title
-    description
-    price
-    duration
-    categories
-    tags
+    slug
     status
-    enrollmentId {
-      _id
-    }
     thumbnail
   }
 }
@@ -40,42 +22,48 @@ query GetCourseById($id: ID!) {
   getCourseById(_id: $id) {
     _id
     title
+    slug
     description
     courseCode
-    price
+    difficulty
+    thumbnail
+    status
+  }
+}
+
+query GetCourseBySlug($slug: String!) {
+  getCourseBySlug(slug: $slug) {
+    _id
+    title
+    slug
+    description
+    courseCode
+    difficulty
+    status
+    price {
+      amount
+      currency
+      discount
+    }
     pricingDetails {
       planTitle
       description
       price
       details
     }
-    sectionId {
-      _id
-      title
-      lessonId {
-        _id
-        title
-        isPublished
-      }
-    }
-    duration
-    createdBy
     categories
     tags
-    status
-    enrollmentId {
-      _id
-      userId {
-        _id
-        email
-      }
-    }
-    thumbnail
     whatYouWillLearn
     whyChooseOurCourse {
       icon
       title
       description
+    }
+    sections {
+      _id
+      title
+      description
+      order
     }
   }
 }
