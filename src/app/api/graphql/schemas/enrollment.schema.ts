@@ -104,5 +104,5 @@ export type Enrollment = {
     progress: number;
     updatedAt: string;
   }[];
-  completedLessons: string[]; // Array of completed lesson IDs
+  completedLessons: string[];
 };

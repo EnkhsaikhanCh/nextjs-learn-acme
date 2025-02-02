@@ -23,7 +23,13 @@ export const checkEnrollment = async (
 
     return enrollment;
   } catch (error) {
-    throw new GraphQLError("Failed to check enrollment", {
+    if (error instanceof GraphQLError) {
+      throw error;
+    }
+
+    const message = (error as Error).message;
+
+    throw new GraphQLError(`Failed to check enrollment: ${message}`, {
       extensions: {
         code: "INTERNAL_SERVER_ERROR",
         http: { status: 500 },
