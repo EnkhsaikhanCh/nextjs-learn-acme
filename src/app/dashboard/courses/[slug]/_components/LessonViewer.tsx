@@ -69,7 +69,7 @@ export function LessonViewer({
   return (
     <>
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
+        <CardHeader className="flex flex-col items-center justify-between gap-2 md:flex-row">
           <CardTitle>
             {lessonData?.getLessonById?.title || lessonTitle}
           </CardTitle>

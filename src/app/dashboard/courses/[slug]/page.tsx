@@ -81,7 +81,7 @@ export default function CourseDetailPage() {
   return (
     <main>
       {isEnrolled ? (
-        <EnrolledUserView courseData={courseData?.getCourseBySlug} />
+        <EnrolledUserView courseData={courseData?.getCourseBySlug as Course} />
       ) : (
         <NotEnrolledUserView
           course={courseData?.getCourseBySlug as Course}
