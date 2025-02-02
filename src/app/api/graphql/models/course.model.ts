@@ -23,7 +23,7 @@ export type Course = {
   sectionId: string;
   categories?: string[];
   tags?: string[];
-  status?: "active" | "archived";
+  status?: "DRAFT" | "PUBLISHED" | "ARCHIVED";
   thumbnail?: string;
   whatYouWillLearn?: string[];
   whyChooseOurCourse?: {
