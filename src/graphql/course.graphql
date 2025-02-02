@@ -7,6 +7,12 @@ mutation CreateCourse($input: CreateCourseInput!) {
   }
 }
 
+mutation UpdateCourse($input: UpdateCourseInput!) {
+  updateCourse(input: $input) {
+    _id
+  }
+}
+
 # Queries
 query GetAllCourse {
   getAllCourse {
