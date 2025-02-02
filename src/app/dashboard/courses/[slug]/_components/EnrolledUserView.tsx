@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArrowDown, Loader, X } from "lucide-react";
+import { ArrowDown, Loader } from "lucide-react";
 
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -97,7 +97,9 @@ export function EnrolledUserView({ courseData }: { courseData: Course }) {
 
   const enrollment = enrollmentData?.getEnrollmentByUserAndCourse;
   const progress = enrollment?.progress || 0;
-  const completedLessons = enrollment?.completedLessons || [];
+  const completedLessons =
+    enrollment?.completedLessons?.filter((id): id is string => id !== null) ||
+    [];
 
   const allLessons =
     courseAllSectionsData?.getSectionsByCourseId?.flatMap(

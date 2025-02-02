@@ -95,16 +95,16 @@ export enum Difficulty {
 export type Enrollment = {
   __typename?: 'Enrollment';
   _id: Scalars['ID']['output'];
-  completedLessons: Array<Scalars['ID']['output']>;
-  courseId: Course;
-  createdAt: Scalars['String']['output'];
-  history?: Maybe<Array<EnrollmentHistory>>;
-  isCompleted: Scalars['Boolean']['output'];
-  isDeleted: Scalars['Boolean']['output'];
+  completedLessons?: Maybe<Array<Maybe<Scalars['ID']['output']>>>;
+  courseId?: Maybe<Course>;
+  createdAt?: Maybe<Scalars['String']['output']>;
+  history?: Maybe<Array<Maybe<EnrollmentHistory>>>;
+  isCompleted?: Maybe<Scalars['Boolean']['output']>;
+  isDeleted?: Maybe<Scalars['Boolean']['output']>;
   lastAccessedAt?: Maybe<Scalars['String']['output']>;
-  progress: Scalars['Float']['output'];
-  status: EnrollmentStatus;
-  updatedAt: Scalars['String']['output'];
+  progress?: Maybe<Scalars['Float']['output']>;
+  status?: Maybe<EnrollmentStatus>;
+  updatedAt?: Maybe<Scalars['String']['output']>;
   userId?: Maybe<User>;
 };
 
@@ -467,7 +467,6 @@ export type UpdateCourseInput = {
 
 export type UpdateEnrollmentInput = {
   _id: Scalars['ID']['input'];
-  completedLessons?: InputMaybe<Array<Scalars['ID']['input']>>;
   progress?: InputMaybe<Scalars['Float']['input']>;
   status?: InputMaybe<EnrollmentStatus>;
 };
@@ -575,7 +574,7 @@ export type GetEnrollmentByUserAndCourseQueryVariables = Exact<{
 }>;
 
 
-export type GetEnrollmentByUserAndCourseQuery = { __typename?: 'Query', getEnrollmentByUserAndCourse?: { __typename?: 'Enrollment', _id: string, progress: number, status: EnrollmentStatus, completedLessons: Array<string> } | null };
+export type GetEnrollmentByUserAndCourseQuery = { __typename?: 'Query', getEnrollmentByUserAndCourse?: { __typename?: 'Enrollment', _id: string, progress?: number | null, status?: EnrollmentStatus | null, completedLessons?: Array<string | null> | null } | null };
 
 export type CheckEnrollmentQueryVariables = Exact<{
   courseId: Scalars['ID']['input'];
@@ -583,7 +582,7 @@ export type CheckEnrollmentQueryVariables = Exact<{
 }>;
 
 
-export type CheckEnrollmentQuery = { __typename?: 'Query', checkEnrollment?: { __typename?: 'Enrollment', _id: string, userId?: { __typename?: 'User', _id: string } | null, courseId: { __typename?: 'Course', _id: string } } | null };
+export type CheckEnrollmentQuery = { __typename?: 'Query', checkEnrollment?: { __typename?: 'Enrollment', _id: string, userId?: { __typename?: 'User', _id: string } | null, courseId?: { __typename?: 'Course', _id: string } | null } | null };
 
 export type CreateLessonMutationVariables = Exact<{
   input: CreateLessonInput;

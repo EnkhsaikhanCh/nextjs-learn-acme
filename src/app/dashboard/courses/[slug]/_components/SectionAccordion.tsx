@@ -41,8 +41,9 @@ export function SectionAccordion({
               <div className="mt-2 space-y-3">
                 {section.lessonId?.map((lesson) => {
                   const isCompleted = completedLessons.includes(
-                    lesson?._id || "",
+                    lesson?._id ?? "",
                   );
+
                   const isSelected = selectedLessonId === lesson?._id;
 
                   return (
@@ -81,7 +82,7 @@ export function SectionAccordion({
           </AccordionItem>
         ))
       ) : (
-        <p className="text-gray-500">No sections available.</p> // ✅ Handle empty sections
+        <p className="text-gray-500">No sections available.</p>
       )}
     </Accordion>
   );

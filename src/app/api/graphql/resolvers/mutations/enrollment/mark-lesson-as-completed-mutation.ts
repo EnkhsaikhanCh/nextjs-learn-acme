@@ -1,7 +1,7 @@
 // src/app/api/graphql/resolvers/mutations/enrollment/mark-lesson-as-completed-mutation.ts
 import { GraphQLError } from "graphql";
 import { CourseModel, EnrollmentModel } from "../../../models";
-import { markLessonAsCompletedInput } from "../../../schemas/enrollment.schema";
+import { MarkLessonAsCompletedInput } from "@/generated/graphql";
 
 type Section = {
   lessonId: string[];
@@ -9,7 +9,7 @@ type Section = {
 
 export const markLessonAsCompleted = async (
   _: unknown,
-  { input }: { input: markLessonAsCompletedInput },
+  { input }: { input: MarkLessonAsCompletedInput },
 ) => {
   try {
     const { enrollmentId, lessonId } = input;

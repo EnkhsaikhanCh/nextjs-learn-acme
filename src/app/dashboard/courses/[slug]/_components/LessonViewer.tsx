@@ -84,7 +84,6 @@ export function LessonViewer({
                 : "hover:border-green-600 hover:bg-green-100 hover:text-green-600"
             }`}
           >
-            {/* {isCompleted ? "" : "Дуусгасан тэмдэглэл хийх"} */}
             {isLessonActionLoading ? (
               <div className="flex items-center gap-2">
                 <span>Ачаалж байна...</span>
@@ -101,7 +100,6 @@ export function LessonViewer({
                 <CircleCheck className="h-4 w-4" />
               </div>
             )}
-            {/* <CircleCheck /> */}
           </Button>
         </CardHeader>
       </Card>

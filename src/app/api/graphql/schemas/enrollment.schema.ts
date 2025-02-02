@@ -69,39 +69,3 @@ export const typeDefs = gql`
     undoLessonCompletion(input: undoLessonCompletionInput): Enrollment
   }
 `;
-
-export type markLessonAsCompletedInput = {
-  enrollmentId: string;
-  lessonId: string;
-};
-
-export type undoLessonCompletionInput = {
-  enrollmentId: string;
-  lessonId: string;
-};
-
-export type UpdateEnrollmentInput = {
-  _id: string;
-  progress?: number;
-  status?: "ACTIVE" | "COMPLETED" | "CANCELLED" | "PENDING";
-  completedLessons?: string[]; // Array of completed lesson IDs
-};
-
-export type Enrollment = {
-  _id: string;
-  userId: string;
-  courseId: string;
-  progress: number;
-  status: "ACTIVE" | "COMPLETED" | "CANCELLED" | "PENDING";
-  createdAt: string;
-  updatedAt: string;
-  isDeleted: boolean;
-  isCompleted: boolean;
-  lastAccessedAt: string | null;
-  history: {
-    status: "ACTIVE" | "COMPLETED" | "CANCELLED" | "PENDING";
-    progress: number;
-    updatedAt: string;
-  }[];
-  completedLessons: string[];
-};
