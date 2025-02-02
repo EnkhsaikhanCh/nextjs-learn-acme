@@ -36,8 +36,6 @@ export default function Page() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [price, setPrice] = useState("");
 
   const { data, loading, error, refetch } = useGetAllCourseQuery();
   const [createCourse] = useCreateCourseMutation();
@@ -46,22 +44,19 @@ export default function Page() {
     e.preventDefault();
     setIsCreating(true);
 
-    if (!title || !description || !price) {
-      toast.error("Title, description and price are required");
+    if (!title) {
+      toast.error("Title is required");
       setIsCreating(false);
       return;
     }
 
     const sanitizedTitle = sanitizeInput(title);
-    const sanitizedDescription = sanitizeInput(description);
 
     try {
       await createCourse({
         variables: {
           input: {
             title: sanitizedTitle,
-            description: sanitizedDescription,
-            price: parseFloat(price),
           },
         },
       });
@@ -69,9 +64,6 @@ export default function Page() {
       toast.success("Aмжилттай хичээл үүслээ");
       setIsDialogOpen(false);
       setTitle("");
-      setDescription("");
-      setPrice("");
-
       refetch();
     } catch (error) {
       console.error(error);
@@ -117,32 +109,6 @@ export default function Page() {
                   className="col-span-3"
                 />
               </div>
-              <div>
-                <Label htmlFor="description" className="font-semibold">
-                  Description
-                </Label>
-                <Textarea
-                  id="description"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  required
-                  placeholder="Course description"
-                />
-              </div>
-              <div>
-                <Label htmlFor="price" className="font-semibold">
-                  Price
-                </Label>
-                <Input
-                  id="price"
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  required
-                  type="number"
-                  placeholder="Enter price"
-                  className="col-span-3"
-                />
-              </div>
             </div>
             <DialogFooter>
               <Button type="submit" disabled={isCreating}>
@@ -183,16 +149,8 @@ export default function Page() {
               />
             </CardContent>
             <CardFooter>
-              <Link
-                target="_blank"
-                href={`/admin/course-management/${course._id}`}
-                passHref
-                rel="noopener noreferrer"
-                className="cursor-pointer"
-              >
-                <Button>
-                  Edit Course <ExternalLink />
-                </Button>
+              <Link href={`/admin/course-management/${course.slug}`}>
+                <Button>View Course</Button>
               </Link>
             </CardFooter>
           </Card>
