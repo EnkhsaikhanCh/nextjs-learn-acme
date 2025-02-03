@@ -31,6 +31,7 @@ import { LessonDetail } from "./_components/lesson/LessonDetail";
 import { useGetCourseBySlug } from "@/hooks/useGetCourseBySlug";
 import { useGetSectionsByCourseId } from "@/hooks/useGetSectionsByCourseId";
 import { LoadingOverlay } from "@/components/LoadingOverlay";
+import { useGetLessonById } from "@/hooks/useGetLessonById";
 
 export default function CourseDetailPage() {
   const [selectedLesson, setSelectedLesson] = useState<string | null>(null);
@@ -58,14 +59,8 @@ export default function CourseDetailPage() {
     courseId: fetchedCourseData?.getCourseBySlug?._id || "",
   });
 
-  const {
-    data: lessonData,
-    loading: lessonLoading,
-    error: lessonError,
-  } = useGetLessonByIdQuery({
-    variables: { getLessonByIdId: selectedLesson || "" },
-    skip: !selectedLesson, // selectedLesson байхгүй үед query хийхгүй
-  });
+  const { fetchedLessonData, fetchedLessonLoading, fetchedLessonError } =
+    useGetLessonById({ id: selectedLesson || "" });
 
   const [updateCourse] = useUpdateCourseMutation();
 
@@ -221,11 +216,11 @@ export default function CourseDetailPage() {
                   <LessonDetail
                     refetchCourse={fetchedCourseRefetch}
                     lessonId={selectedLesson}
-                    title={lessonData?.getLessonById?.title}
-                    videoUrl={lessonData?.getLessonById?.videoUrl || ""}
-                    content={lessonData?.getLessonById?.content || ""}
+                    title={fetchedLessonData?.getLessonById?.title}
+                    videoUrl={fetchedLessonData?.getLessonById?.videoUrl || ""}
+                    content={fetchedLessonData?.getLessonById?.content || ""}
                     isPublished={
-                      lessonData?.getLessonById?.isPublished || false
+                      fetchedLessonData?.getLessonById?.isPublished || false
                     }
                   />
                 ) : (
@@ -271,22 +266,22 @@ export default function CourseDetailPage() {
           <ResizablePanel defaultSize={70} minSize={50} className="bg-gray-50">
             <div className="p-4">
               {selectedLesson ? (
-                lessonLoading ? (
+                fetchedLessonLoading ? (
                   <div className="flex items-center justify-center gap-2">
                     <Loader className="h-4 w-4 animate-spin" />
                     Loading lesson details...
                   </div>
-                ) : lessonError ? (
-                  <p>Error loading lesson: {lessonError.message}</p>
+                ) : fetchedLessonError ? (
+                  <p>Error loading lesson: {fetchedLessonError.message}</p>
                 ) : (
                   <LessonDetail
                     refetchCourse={fetchedCourseRefetch}
                     lessonId={selectedLesson}
-                    title={lessonData?.getLessonById?.title}
-                    videoUrl={lessonData?.getLessonById?.videoUrl || ""}
-                    content={lessonData?.getLessonById?.content || ""}
+                    title={fetchedLessonData?.getLessonById?.title}
+                    videoUrl={fetchedLessonData?.getLessonById?.videoUrl || ""}
+                    content={fetchedLessonData?.getLessonById?.content || ""}
                     isPublished={
-                      lessonData?.getLessonById?.isPublished || false
+                      fetchedLessonData?.getLessonById?.isPublished || false
                     }
                   />
                 )
