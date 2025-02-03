@@ -86,6 +86,7 @@ export default function CourseDetailPage() {
       ) as UpdateCourseInput;
 
       // Remove __typename recursively from objects
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const removeTypename = (obj: any): any => {
         if (Array.isArray(obj)) {
           return obj.map(removeTypename);
@@ -120,6 +121,7 @@ export default function CourseDetailPage() {
           console.error("GraphQL Update Course Error:", error);
 
           if (error.graphQLErrors?.length) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             return error.graphQLErrors.map((e: any) => e.message).join(", ");
           }
 
