@@ -34,14 +34,6 @@ import {
 } from "@/components/ui/dialog";
 import { motion } from "framer-motion";
 
-// Lesson төрлийн тодорхойлолт
-interface Lesson {
-  _id: string;
-  title: string;
-  isPublished: boolean; // Add the isPublished property
-}
-
-// SectionItemProps-ийн тодорхойлолт
 interface SectionItemProps {
   section: Section;
   refetchCourse: () => void;

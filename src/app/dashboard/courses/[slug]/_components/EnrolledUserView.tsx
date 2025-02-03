@@ -26,6 +26,7 @@ import { useEnrollmentData } from "@/hooks/useEnrollmentData";
 import { Course, Lesson, Section } from "@/generated/graphql";
 import { useGetSectionsByCourseId } from "@/hooks/useGetSectionsByCourseId";
 import { Button } from "@/components/ui/button";
+import { LoadingOverlay } from "@/components/LoadingOverlay";
 
 export function EnrolledUserView({ courseData }: { courseData: Course }) {
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
@@ -47,7 +48,6 @@ export function EnrolledUserView({ courseData }: { courseData: Course }) {
     courseAllSectionsData,
     courseAllSectionsLoading,
     courseAllSectionsError,
-    courseAllSectionsRefetch,
   } = useGetSectionsByCourseId({ courseId: courseData?._id });
 
   // Дэлгэцийн өргөнийг шалгах
@@ -76,20 +76,18 @@ export function EnrolledUserView({ courseData }: { courseData: Course }) {
     );
   }
 
-  if (enrollmentLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <Loader className="animate-spin" />
-        <p className="ml-2">Loading enrollment data...</p>
-      </div>
-    );
+  if (enrollmentLoading || courseAllSectionsLoading) {
+    return <LoadingOverlay />;
   }
 
-  if (enrollmentError) {
+  if (enrollmentError || courseAllSectionsError) {
     return (
       <div className="flex h-screen items-center justify-center">
         <p className="text-red-500">
-          Error loading enrollment: {enrollmentError.message}
+          Error loading enrollment:{" "}
+          {enrollmentError?.message ||
+            courseAllSectionsError?.message ||
+            "Unknown error"}
         </p>
       </div>
     );

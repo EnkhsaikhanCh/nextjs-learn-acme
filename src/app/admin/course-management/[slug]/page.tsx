@@ -7,7 +7,6 @@ import {
   Course,
   Section,
   UpdateCourseInput,
-  useGetLessonByIdQuery,
   useUpdateCourseMutation,
 } from "@/generated/graphql";
 import { Loader } from "lucide-react";
@@ -38,7 +37,6 @@ export default function CourseDetailPage() {
   const [isDrawerOpen, setDrawerOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
-  // URL-оос slug авна
   const { slug } = useParams();
 
   const {
@@ -141,7 +139,6 @@ export default function CourseDetailPage() {
       toast.error(`Error updating course: ${(error as Error).message}`);
     }
   };
-  55;
 
   // Mobile эсэхийг шалгах (Tailwind breakpoints ашиглана)
   useEffect(() => {

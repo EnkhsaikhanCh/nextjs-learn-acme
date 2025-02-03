@@ -26,7 +26,7 @@ import {
   useGetAllCourseQuery,
 } from "@/generated/graphql";
 import { sanitizeInput } from "@/utils/sanitize";
-import { CirclePlus, ExternalLink, Loader, TriangleAlert } from "lucide-react";
+import { CirclePlus, Loader, TriangleAlert } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";

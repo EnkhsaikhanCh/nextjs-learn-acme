@@ -4,7 +4,7 @@ import { CircleCheck } from "lucide-react";
 import { Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import { useGetLessonByIdQuery } from "@/generated/graphql";
+import { useGetLessonById } from "@/hooks/useGetLessonById";
 
 interface LessonViewerProps {
   lessonId?: string;
@@ -23,15 +23,8 @@ export function LessonViewer({
   onUndo,
   isLessonActionLoading,
 }: LessonViewerProps) {
-  // Хичээлийн ID-аар дэлгэрэнгүй мэдээлэл татна
-  const {
-    data: lessonData,
-    loading: lessonLoading,
-    error: lessonError,
-  } = useGetLessonByIdQuery({
-    variables: { getLessonByIdId: lessonId || "" },
-    skip: !lessonId,
-  });
+  const { fetchedLessonData, fetchedLessonLoading, fetchedLessonError } =
+    useGetLessonById({ id: lessonId || "" });
 
   const isCompleted = lessonId ? completedLessons.includes(lessonId) : false;
 
@@ -49,7 +42,7 @@ export function LessonViewer({
     return <p className="text-gray-500">No lesson selected</p>;
   }
 
-  if (lessonLoading) {
+  if (fetchedLessonLoading) {
     return (
       <div className="flex items-center justify-center gap-2">
         <span>Хичээлийн дэлгэрэнгүй мэдээлэл ачаалж байна...</span>
@@ -58,10 +51,10 @@ export function LessonViewer({
     );
   }
 
-  if (lessonError) {
+  if (fetchedLessonError) {
     return (
       <p className="text-red-500">
-        Хичээлийг ачааллахад алдаа гарлаа: {lessonError.message}
+        Хичээлийг ачааллахад алдаа гарлаа: {fetchedLessonError.message}
       </p>
     );
   }
@@ -71,7 +64,7 @@ export function LessonViewer({
       <Card>
         <CardHeader className="flex flex-col items-center justify-between gap-2 md:flex-row">
           <CardTitle>
-            {lessonData?.getLessonById?.title || lessonTitle}
+            {fetchedLessonData?.getLessonById?.title || lessonTitle}
           </CardTitle>
           <Button
             onClick={isCompleted ? onUndo : onMarkComplete}
@@ -105,7 +98,7 @@ export function LessonViewer({
       </Card>
 
       <iframe
-        src={getEmbedUrl(lessonData?.getLessonById?.videoUrl || "")}
+        src={getEmbedUrl(fetchedLessonData?.getLessonById?.videoUrl || "")}
         className="mt-2 aspect-video w-full rounded-lg"
         allowFullScreen
         allow="autoplay; encrypted-media"
