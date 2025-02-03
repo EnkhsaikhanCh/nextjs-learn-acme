@@ -49,11 +49,3 @@ export const typeDefs = gql`
     updatePaymentStatus(_id: ID!, status: PaymentStatus!): Payment
   }
 `;
-
-export type CreatePaymentInput = {
-  userId: string;
-  courseId: string;
-  amount: number;
-  transactionNote: string;
-  paymentMethod: "QPAY" | "CREDIT_CARD" | "BANK_TRANSFER" | "OTHER"; // ✅ Uppercase
-};

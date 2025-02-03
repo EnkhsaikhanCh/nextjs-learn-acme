@@ -607,7 +607,7 @@ export type DeleteLessonMutationVariables = Exact<{
 export type DeleteLessonMutation = { __typename?: 'Mutation', deleteLesson: { __typename?: 'DeleteLessonReponse', success: boolean, message?: string | null } };
 
 export type GetLessonByIdQueryVariables = Exact<{
-  getLessonByIdId: Scalars['ID']['input'];
+  id: Scalars['ID']['input'];
 }>;
 
 
@@ -1182,8 +1182,8 @@ export type DeleteLessonMutationHookResult = ReturnType<typeof useDeleteLessonMu
 export type DeleteLessonMutationResult = Apollo.MutationResult<DeleteLessonMutation>;
 export type DeleteLessonMutationOptions = Apollo.BaseMutationOptions<DeleteLessonMutation, DeleteLessonMutationVariables>;
 export const GetLessonByIdDocument = gql`
-    query GetLessonById($getLessonByIdId: ID!) {
-  getLessonById(_id: $getLessonByIdId) {
+    query GetLessonById($id: ID!) {
+  getLessonById(_id: $id) {
     _id
     title
     content
@@ -1208,7 +1208,7 @@ export const GetLessonByIdDocument = gql`
  * @example
  * const { data, loading, error } = useGetLessonByIdQuery({
  *   variables: {
- *      getLessonByIdId: // value for 'getLessonByIdId'
+ *      id: // value for 'id'
  *   },
  * });
  */
