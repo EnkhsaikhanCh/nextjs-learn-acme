@@ -111,6 +111,8 @@ const config: Config = {
     "src/app/loading.tsx",
     "src/app/not-found.tsx",
     "src/app/api/graphql/resolvers/mutations/course",
+    "src/app/api/graphql/resolvers/queries/section",
+    "src/app/api/graphql/resolvers/mutations/user/create-user-mutation.ts",
   ],
 
   // Indicates which provider should be used to instrument code for coverage
