@@ -1,5 +1,28 @@
+# Mutation
 mutation CreatePayment($input: CreatePaymentInput!) {
   createPayment(input: $input) {
     _id
+  }
+}
+
+# Query
+query GetAllPayments {
+  getAllPayments {
+    _id
+    userId {
+      _id
+      email
+    }
+    courseId {
+      _id
+      title
+    }
+    amount
+    transactionNote
+    status
+    paymentMethod
+    expiryDate
+    refundReason
+    createdAt
   }
 }

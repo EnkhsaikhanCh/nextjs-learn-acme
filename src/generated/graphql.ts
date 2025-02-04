@@ -274,16 +274,15 @@ export type Payment = {
   __typename?: 'Payment';
   _id: Scalars['ID']['output'];
   amount: Scalars['Float']['output'];
-  courseId: Scalars['ID']['output'];
+  courseId: Course;
   createdAt: Scalars['String']['output'];
   expiryDate?: Maybe<Scalars['String']['output']>;
   paymentMethod: PaymentMethod;
   refundReason?: Maybe<Scalars['String']['output']>;
   status: PaymentStatus;
-  transactionId?: Maybe<Scalars['String']['output']>;
-  transactionNote?: Maybe<Scalars['String']['output']>;
+  transactionNote: Scalars['String']['output'];
   updatedAt: Scalars['String']['output'];
-  userId: Scalars['ID']['output'];
+  userId: User;
 };
 
 export enum PaymentMethod {
@@ -332,6 +331,7 @@ export type Query = {
   __typename?: 'Query';
   checkEnrollment?: Maybe<Enrollment>;
   getAllCourse: Array<Course>;
+  getAllPayments?: Maybe<Array<Maybe<Payment>>>;
   getAllTest: Array<Test>;
   getAllUser: Array<User>;
   getCourseById?: Maybe<Course>;
@@ -619,6 +619,11 @@ export type CreatePaymentMutationVariables = Exact<{
 
 
 export type CreatePaymentMutation = { __typename?: 'Mutation', createPayment?: { __typename?: 'Payment', _id: string } | null };
+
+export type GetAllPaymentsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllPaymentsQuery = { __typename?: 'Query', getAllPayments?: Array<{ __typename?: 'Payment', _id: string, amount: number, transactionNote: string, status: PaymentStatus, paymentMethod: PaymentMethod, expiryDate?: string | null, refundReason?: string | null, createdAt: string, userId: { __typename?: 'User', _id: string, email: string }, courseId: { __typename?: 'Course', _id: string, title: string } } | null> | null };
 
 export type CreateSectionMutationVariables = Exact<{
   input?: InputMaybe<CreateSectionInput>;
@@ -1261,6 +1266,60 @@ export function useCreatePaymentMutation(baseOptions?: Apollo.MutationHookOption
 export type CreatePaymentMutationHookResult = ReturnType<typeof useCreatePaymentMutation>;
 export type CreatePaymentMutationResult = Apollo.MutationResult<CreatePaymentMutation>;
 export type CreatePaymentMutationOptions = Apollo.BaseMutationOptions<CreatePaymentMutation, CreatePaymentMutationVariables>;
+export const GetAllPaymentsDocument = gql`
+    query GetAllPayments {
+  getAllPayments {
+    _id
+    userId {
+      _id
+      email
+    }
+    courseId {
+      _id
+      title
+    }
+    amount
+    transactionNote
+    status
+    paymentMethod
+    expiryDate
+    refundReason
+    createdAt
+  }
+}
+    `;
+
+/**
+ * __useGetAllPaymentsQuery__
+ *
+ * To run a query within a React component, call `useGetAllPaymentsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAllPaymentsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAllPaymentsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetAllPaymentsQuery(baseOptions?: Apollo.QueryHookOptions<GetAllPaymentsQuery, GetAllPaymentsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetAllPaymentsQuery, GetAllPaymentsQueryVariables>(GetAllPaymentsDocument, options);
+      }
+export function useGetAllPaymentsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAllPaymentsQuery, GetAllPaymentsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetAllPaymentsQuery, GetAllPaymentsQueryVariables>(GetAllPaymentsDocument, options);
+        }
+export function useGetAllPaymentsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetAllPaymentsQuery, GetAllPaymentsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetAllPaymentsQuery, GetAllPaymentsQueryVariables>(GetAllPaymentsDocument, options);
+        }
+export type GetAllPaymentsQueryHookResult = ReturnType<typeof useGetAllPaymentsQuery>;
+export type GetAllPaymentsLazyQueryHookResult = ReturnType<typeof useGetAllPaymentsLazyQuery>;
+export type GetAllPaymentsSuspenseQueryHookResult = ReturnType<typeof useGetAllPaymentsSuspenseQuery>;
+export type GetAllPaymentsQueryResult = Apollo.QueryResult<GetAllPaymentsQuery, GetAllPaymentsQueryVariables>;
 export const CreateSectionDocument = gql`
     mutation CreateSection($input: CreateSectionInput) {
   createSection(input: $input) {
