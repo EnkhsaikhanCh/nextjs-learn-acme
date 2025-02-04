@@ -1,7 +1,7 @@
 import { sanitizeInput } from "@/utils/sanitize";
-import { UpdateLessonInput } from "../../../schemas/lesson.schema";
 import { LessonModel } from "../../../models";
 import { GraphQLError } from "graphql";
+import { UpdateLessonInput } from "@/generated/graphql";
 
 export const updateLesson = async (
   _: unknown,

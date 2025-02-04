@@ -1,7 +1,7 @@
 // src/app/api/graphql/resolvers/mutations/enrollment/create-enrollemnt.ts
 import { GraphQLError } from "graphql";
-import { CreateEnrollmentInput } from "../../../schemas/enrollment.schema";
 import { CourseModel, EnrollmentModel, UserModel } from "../../../models";
+import { CreateEnrollmentInput } from "@/generated/graphql";
 
 export const createEnrollment = async (
   _: unknown,

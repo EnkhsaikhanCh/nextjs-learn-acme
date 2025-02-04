@@ -4,37 +4,45 @@ import { v4 as uuidv4 } from "uuid";
 import { CourseModel } from "./course.model";
 
 export type Enrollment = {
+  // Essential fields
   _id: string;
-  userId: string;
   courseId: string;
-  completedLessons: string[];
-  progress: number; // Dynamically calculated or stored
+  userId: string;
   status: "ACTIVE" | "COMPLETED" | "CANCELLED" | "PENDING";
-  isDeleted: boolean;
+  progress: number;
+
+  // User experience-related fields
+  isCompleted: boolean;
+  completedLessons: string[];
   lastAccessedAt: Date | null;
+
+  // System tracking fields
   history: {
     status: string;
     progress: number;
     updatedAt: Date;
   }[];
+  isDeleted: boolean;
 };
 
 const EnrollmentSchema = new Schema<Enrollment>(
   {
+    // Essential fields
     _id: { type: String, default: () => uuidv4() },
-    userId: {
-      type: Schema.Types.String,
-      ref: "User",
-      required: [true, "User ID is required"],
-    },
     courseId: {
       type: Schema.Types.String,
       ref: "Course",
       required: [true, "Course ID is required"],
     },
-    completedLessons: {
-      type: [Schema.Types.String], // Array of completed lesson IDs
-      default: [],
+    userId: {
+      type: Schema.Types.String,
+      ref: "User",
+      required: [true, "User ID is required"],
+    },
+    status: {
+      type: String,
+      enum: ["ACTIVE", "COMPLETED", "CANCELLED", "PENDING"],
+      default: "ACTIVE",
     },
     progress: {
       type: Number,
@@ -42,20 +50,21 @@ const EnrollmentSchema = new Schema<Enrollment>(
       min: [0, "Progress cannot be less than 0"],
       max: [100, "Progress cannot exceed 100"],
     },
-    status: {
-      type: String,
-      enum: ["ACTIVE", "COMPLETED", "CANCELLED", "PENDING"],
-      default: "ACTIVE",
-    },
-    isDeleted: { type: Boolean, default: false },
+
+    // User experience-related fields
+    isCompleted: { type: Boolean, default: false },
+    completedLessons: { type: [Schema.Types.String], default: [] },
     lastAccessedAt: { type: Date, default: null },
+
+    // System tracking fields
     history: [
       {
-        status: { type: Schema.Types.String, required: true },
+        status: { type: String, required: true },
         progress: { type: Number, required: true },
         updatedAt: { type: Date, required: true },
       },
     ],
+    isDeleted: { type: Boolean, default: false },
   },
   { timestamps: true },
 );

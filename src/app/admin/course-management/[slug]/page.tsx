@@ -4,9 +4,9 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import {
+  Course,
+  Section,
   UpdateCourseInput,
-  useGetCourseByIdQuery,
-  useGetLessonByIdQuery,
   useUpdateCourseMutation,
 } from "@/generated/graphql";
 import { Loader } from "lucide-react";
@@ -27,26 +27,38 @@ import {
   DrawerClose,
 } from "@/components/ui/drawer";
 import { LessonDetail } from "./_components/lesson/LessonDetail";
+import { useGetCourseBySlug } from "@/hooks/useGetCourseBySlug";
+import { useGetSectionsByCourseId } from "@/hooks/useGetSectionsByCourseId";
+import { LoadingOverlay } from "@/components/LoadingOverlay";
+import { useGetLessonById } from "@/hooks/useGetLessonById";
 
 export default function CourseDetailPage() {
-  const { courseId } = useParams();
   const [selectedLesson, setSelectedLesson] = useState<string | null>(null);
   const [isDrawerOpen, setDrawerOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
-  const { data, loading, error, refetch } = useGetCourseByIdQuery({
-    variables: { id: courseId as string },
-    skip: !courseId,
+  const { slug } = useParams();
+
+  const {
+    fetchedCourseData,
+    fetchedCourseLoading,
+    fetchedCourseError,
+    fetchedCourseRefetch,
+  } = useGetCourseBySlug({
+    slug: typeof slug === "string" ? slug : "",
   });
 
   const {
-    data: lessonData,
-    loading: lessonLoading,
-    error: lessonError,
-  } = useGetLessonByIdQuery({
-    variables: { getLessonByIdId: selectedLesson || "" },
-    skip: !selectedLesson, // selectedLesson байхгүй үед query хийхгүй
+    courseAllSectionsData,
+    courseAllSectionsLoading,
+    courseAllSectionsError,
+    courseAllSectionsRefetch,
+  } = useGetSectionsByCourseId({
+    courseId: fetchedCourseData?.getCourseBySlug?._id || "",
   });
+
+  const { fetchedLessonData, fetchedLessonLoading, fetchedLessonError } =
+    useGetLessonById({ id: selectedLesson || "" });
 
   const [updateCourse] = useUpdateCourseMutation();
 
@@ -66,38 +78,66 @@ export default function CourseDetailPage() {
         "thumbnail",
       ];
 
-      const filteredFields = Object.fromEntries(
+      // Filter only allowed fields
+      let filteredFields = Object.fromEntries(
         Object.entries(updatedFields).filter(([key]) =>
           allowedFields.includes(key),
         ),
       ) as UpdateCourseInput;
 
-      // Баталгаажуулах
+      // Remove __typename recursively from objects
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const removeTypename = (obj: any): any => {
+        if (Array.isArray(obj)) {
+          return obj.map(removeTypename);
+        } else if (obj !== null && typeof obj === "object") {
+          const newObj = { ...obj };
+          delete newObj.__typename;
+          Object.keys(newObj).forEach((key) => {
+            newObj[key] = removeTypename(newObj[key]);
+          });
+          return newObj;
+        }
+        return obj;
+      };
+
+      filteredFields = removeTypename(filteredFields);
+
       if (!filteredFields._id) {
         throw new Error("Course ID (_id) is required");
       }
 
-      // Toast-д ашиглах амлалт
+      // Toast promise for loading and success/error messages
       const promise = updateCourse({
         variables: {
           input: filteredFields,
         },
       }).then(() => ({ name: filteredFields.title || "Course" }));
 
-      // Toast ашиглах
       await toast.promise(promise, {
         loading: "Updating course...",
         success: (data) => `${data.name} has been updated successfully!`,
         error: (error) => {
-          const message =
-            error.response?.data?.message || "Error updating course.";
-          return message;
+          console.error("GraphQL Update Course Error:", error);
+
+          if (error.graphQLErrors?.length) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            return error.graphQLErrors.map((e: any) => e.message).join(", ");
+          }
+
+          if (error.networkError) {
+            return `Network error: ${error.networkError.message}`;
+          }
+
+          return "Error updating course.";
         },
       });
 
-      // Шинэчлэх
-      refetch();
+      // Refresh course data
+      fetchedCourseRefetch();
+      courseAllSectionsRefetch();
     } catch (error) {
+      console.error("Error in handleEditCourse:", error);
       toast.error(`Error updating course: ${(error as Error).message}`);
     }
   };
@@ -110,33 +150,23 @@ export default function CourseDetailPage() {
     return () => window.removeEventListener("resize", checkViewport);
   }, []);
 
-  if (!courseId) {
-    return <div>No ID provided in the URL</div>;
+  if (fetchedCourseLoading || courseAllSectionsLoading) {
+    return <LoadingOverlay />;
   }
 
-  if (Array.isArray(courseId)) {
-    return <div>Invalid Course ID</div>;
+  if (fetchedCourseError || courseAllSectionsError) {
+    const errorMessage =
+      fetchedCourseError?.message ||
+      courseAllSectionsError?.message ||
+      "Error loading course data.";
+
+    toast.error(errorMessage);
+    return <div>Error loading course data: {errorMessage}</div>;
   }
 
-  if (loading) {
-    return (
-      <div className="mt-2 flex h-full items-center justify-center gap-2">
-        <Loader className="h-4 w-4 animate-spin" />
-        <div>Loading...</div>
-      </div>
-    );
-  }
-
-  if (error) {
-    toast.error(error.message || "Error Loading Course");
-    return <div>Error loading course data: {error.message}</div>;
-  }
-
-  if (!data?.getCourseById) {
+  if (!fetchedCourseData?.getCourseBySlug) {
     return <div>No data found</div>;
   }
-
-  const course = data.getCourseById;
 
   const handleLessonSelect = (lessonId: string) => {
     setSelectedLesson(lessonId);
@@ -148,21 +178,27 @@ export default function CourseDetailPage() {
   return (
     <div className="h-screen">
       {isMobile ? (
-        // Mobile: Drawer ашиглана
         <div>
           <div className="rounded-md p-4 shadow">
-            {/* Курсын үндсэн мэдээлэл */}
-            <CourseInfo course={course} onEdit={handleEditCourse} />
+            <CourseInfo
+              course={fetchedCourseData?.getCourseBySlug as Course}
+              onEdit={handleEditCourse}
+            />
 
             {/* Section-ууд болон хичээлүүд */}
             <SectionList
-              sections={course.sectionId || []}
-              refetchCourse={refetch}
+              sections={
+                courseAllSectionsData?.getSectionsByCourseId as Section[]
+              }
+              refetchCourse={courseAllSectionsRefetch}
               onLessonSelect={handleLessonSelect}
             />
 
             {/* Section нэмэх хэсэг */}
-            <AddSectionForm courseId={courseId} refetchCourse={refetch} />
+            <AddSectionForm
+              courseId={fetchedCourseData.getCourseBySlug._id}
+              refetchCourse={courseAllSectionsRefetch}
+            />
           </div>
 
           {/* Drawer */}
@@ -177,13 +213,13 @@ export default function CourseDetailPage() {
               <div>
                 {selectedLesson ? (
                   <LessonDetail
-                    refetchCourse={refetch}
+                    refetchCourse={fetchedCourseRefetch}
                     lessonId={selectedLesson}
-                    title={lessonData?.getLessonById?.title}
-                    videoUrl={lessonData?.getLessonById?.videoUrl || ""}
-                    content={lessonData?.getLessonById?.content || ""}
+                    title={fetchedLessonData?.getLessonById?.title}
+                    videoUrl={fetchedLessonData?.getLessonById?.videoUrl || ""}
+                    content={fetchedLessonData?.getLessonById?.content || ""}
                     isPublished={
-                      lessonData?.getLessonById?.isPublished || false
+                      fetchedLessonData?.getLessonById?.isPublished || false
                     }
                   />
                 ) : (
@@ -199,18 +235,26 @@ export default function CourseDetailPage() {
           {/* Зүүн талын панель */}
           <ResizablePanel defaultSize={30} minSize={35} maxSize={45}>
             <div className="h-full overflow-y-auto p-4">
-              {/* Курсын үндсэн мэдээлэл */}
-              <CourseInfo course={course} onEdit={handleEditCourse} />
+              <CourseInfo
+                course={fetchedCourseData?.getCourseBySlug as Course}
+                onEdit={handleEditCourse}
+              />
 
               {/* Section-ууд болон хичээлүүд */}
               <SectionList
-                sections={course.sectionId || []}
-                refetchCourse={refetch}
+                sections={
+                  (courseAllSectionsData?.getSectionsByCourseId as Section[]) ||
+                  []
+                }
+                refetchCourse={courseAllSectionsRefetch}
                 onLessonSelect={handleLessonSelect}
               />
 
               {/* Section нэмэх хэсэг */}
-              <AddSectionForm courseId={courseId} refetchCourse={refetch} />
+              <AddSectionForm
+                courseId={fetchedCourseData.getCourseBySlug._id}
+                refetchCourse={courseAllSectionsRefetch}
+              />
             </div>
           </ResizablePanel>
 
@@ -221,22 +265,22 @@ export default function CourseDetailPage() {
           <ResizablePanel defaultSize={70} minSize={50} className="bg-gray-50">
             <div className="p-4">
               {selectedLesson ? (
-                lessonLoading ? (
+                fetchedLessonLoading ? (
                   <div className="flex items-center justify-center gap-2">
                     <Loader className="h-4 w-4 animate-spin" />
                     Loading lesson details...
                   </div>
-                ) : lessonError ? (
-                  <p>Error loading lesson: {lessonError.message}</p>
+                ) : fetchedLessonError ? (
+                  <p>Error loading lesson: {fetchedLessonError.message}</p>
                 ) : (
                   <LessonDetail
-                    refetchCourse={refetch}
+                    refetchCourse={fetchedCourseRefetch}
                     lessonId={selectedLesson}
-                    title={lessonData?.getLessonById?.title}
-                    videoUrl={lessonData?.getLessonById?.videoUrl || ""}
-                    content={lessonData?.getLessonById?.content || ""}
+                    title={fetchedLessonData?.getLessonById?.title}
+                    videoUrl={fetchedLessonData?.getLessonById?.videoUrl || ""}
+                    content={fetchedLessonData?.getLessonById?.content || ""}
                     isPublished={
-                      lessonData?.getLessonById?.isPublished || false
+                      fetchedLessonData?.getLessonById?.isPublished || false
                     }
                   />
                 )

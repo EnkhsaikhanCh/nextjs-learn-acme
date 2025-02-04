@@ -2,18 +2,23 @@ import gql from "graphql-tag";
 
 export const typeDefs = gql`
   type Enrollment {
+    # Essential fields
     _id: ID!
+    courseId: Course
     userId: User
-    courseId: Course!
-    progress: Float!
-    status: EnrollmentStatus!
-    createdAt: String!
-    updatedAt: String!
-    isDeleted: Boolean!
-    isCompleted: Boolean!
+    status: EnrollmentStatus
+    progress: Float
+
+    # User experience-related fields
+    isCompleted: Boolean
+    completedLessons: [ID]
     lastAccessedAt: String
-    history: [EnrollmentHistory!]
-    completedLessons: [ID!]! # Array of completed lesson IDs
+
+    # System tracking fields
+    createdAt: String
+    updatedAt: String
+    history: [EnrollmentHistory]
+    isDeleted: Boolean
   }
 
   type EnrollmentHistory {
@@ -32,7 +37,8 @@ export const typeDefs = gql`
   extend type Query {
     getEnrollmentsByUser(userId: ID!): [Enrollment!]!
     getEnrollmentsByCourse(courseId: ID!): [Enrollment!]!
-    getEnrollmentByUserAndCourse(userId: ID!, courseId: ID!): Enrollment # Fetch a single enrollment
+    getEnrollmentByUserAndCourse(userId: ID!, courseId: ID!): Enrollment
+    checkEnrollment(courseId: ID!, userId: ID!): Enrollment
   }
 
   input CreateEnrollmentInput {
@@ -44,7 +50,6 @@ export const typeDefs = gql`
     _id: ID!
     progress: Float
     status: EnrollmentStatus
-    completedLessons: [ID!] # Optionally update completed lessons
   }
 
   input markLessonAsCompletedInput {
@@ -60,48 +65,7 @@ export const typeDefs = gql`
   extend type Mutation {
     createEnrollment(input: CreateEnrollmentInput): Enrollment
     updateEnrollment(input: UpdateEnrollmentInput): Enrollment
-    markLessonAsCompleted(input: markLessonAsCompletedInput): Enrollment # New mutation for marking lessons
-    undoLessonCompletion(input: undoLessonCompletionInput): Enrollment # Mutation for undoing lesson completion
+    markLessonAsCompleted(input: markLessonAsCompletedInput): Enrollment
+    undoLessonCompletion(input: undoLessonCompletionInput): Enrollment
   }
 `;
-
-export type CreateEnrollmentInput = {
-  userId: string;
-  courseId: string;
-};
-
-export type markLessonAsCompletedInput = {
-  enrollmentId: string;
-  lessonId: string;
-};
-
-export type undoLessonCompletionInput = {
-  enrollmentId: string;
-  lessonId: string;
-};
-
-export type UpdateEnrollmentInput = {
-  _id: string;
-  progress?: number;
-  status?: "ACTIVE" | "COMPLETED" | "CANCELLED" | "PENDING";
-  completedLessons?: string[]; // Array of completed lesson IDs
-};
-
-export type Enrollment = {
-  _id: string;
-  userId: string;
-  courseId: string;
-  progress: number;
-  status: "ACTIVE" | "COMPLETED" | "CANCELLED" | "PENDING";
-  createdAt: string;
-  updatedAt: string;
-  isDeleted: boolean;
-  isCompleted: boolean;
-  lastAccessedAt: string | null;
-  history: {
-    status: "ACTIVE" | "COMPLETED" | "CANCELLED" | "PENDING";
-    progress: number;
-    updatedAt: string;
-  }[];
-  completedLessons: string[]; // Array of completed lesson IDs
-};

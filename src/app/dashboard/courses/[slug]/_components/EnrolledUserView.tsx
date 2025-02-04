@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Loader } from "lucide-react";
+import { ArrowDown } from "lucide-react";
 
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,6 +9,7 @@ import {
   Drawer,
   DrawerClose,
   DrawerContent,
+  DrawerFooter,
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
@@ -22,26 +23,12 @@ import {
 import { LessonViewer } from "./LessonViewer";
 import { SectionAccordion } from "./SectionAccordion";
 import { useEnrollmentData } from "@/hooks/useEnrollmentData";
+import { Course, Lesson, Section } from "@/generated/graphql";
+import { useGetSectionsByCourseId } from "@/hooks/useGetSectionsByCourseId";
+import { Button } from "@/components/ui/button";
+import { LoadingOverlay } from "@/components/LoadingOverlay";
 
-interface Lesson {
-  _id?: string;
-  title?: string;
-  isPublished?: boolean;
-}
-
-interface Section {
-  _id?: string;
-  title?: string;
-  lessonId?: Lesson[];
-}
-
-interface CourseData {
-  _id?: string;
-  title?: string | null;
-  sectionId?: Section[];
-}
-
-export function EnrolledUserView({ courseData }: { courseData: CourseData }) {
+export function EnrolledUserView({ courseData }: { courseData: Course }) {
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [isDrawerOpen, setDrawerOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -56,6 +43,12 @@ export function EnrolledUserView({ courseData }: { courseData: CourseData }) {
     handleMarkLessonAsCompleted,
     handleUndoLessonCompletion,
   } = useEnrollmentData({ courseId: courseData?._id });
+
+  const {
+    courseAllSectionsData,
+    courseAllSectionsLoading,
+    courseAllSectionsError,
+  } = useGetSectionsByCourseId({ courseId: courseData?._id });
 
   // Дэлгэцийн өргөнийг шалгах
   useEffect(() => {
@@ -83,20 +76,18 @@ export function EnrolledUserView({ courseData }: { courseData: CourseData }) {
     );
   }
 
-  if (enrollmentLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <Loader className="animate-spin" />
-        <p className="ml-2">Loading enrollment data...</p>
-      </div>
-    );
+  if (enrollmentLoading || courseAllSectionsLoading) {
+    return <LoadingOverlay />;
   }
 
-  if (enrollmentError) {
+  if (enrollmentError || courseAllSectionsError) {
     return (
       <div className="flex h-screen items-center justify-center">
         <p className="text-red-500">
-          Error loading enrollment: {enrollmentError.message}
+          Error loading enrollment:{" "}
+          {enrollmentError?.message ||
+            courseAllSectionsError?.message ||
+            "Unknown error"}
         </p>
       </div>
     );
@@ -104,10 +95,15 @@ export function EnrolledUserView({ courseData }: { courseData: CourseData }) {
 
   const enrollment = enrollmentData?.getEnrollmentByUserAndCourse;
   const progress = enrollment?.progress || 0;
-  const completedLessons = enrollment?.completedLessons || [];
+  const completedLessons =
+    enrollment?.completedLessons?.filter((id): id is string => id !== null) ||
+    [];
 
   const allLessons =
-    courseData.sectionId?.flatMap((section) => section.lessonId || []) || [];
+    courseAllSectionsData?.getSectionsByCourseId?.flatMap(
+      (section) => section?.lessonId || [],
+    ) || [];
+
   const totalLessons = allLessons.length;
 
   // Урт кодыг "CourseHeader" мэт жижиг компонент болгон мөн салгаж болно
@@ -156,7 +152,7 @@ export function EnrolledUserView({ courseData }: { courseData: CourseData }) {
         <div className="px-4">
           {renderCourseInfo()}
           <SectionAccordion
-            sections={courseData.sectionId || []}
+            sections={courseAllSectionsData?.getSectionsByCourseId as Section[]}
             completedLessons={completedLessons}
             selectedLessonId={selectedLesson?._id}
             onSelectLesson={handleSelectLesson}
@@ -165,10 +161,9 @@ export function EnrolledUserView({ courseData }: { courseData: CourseData }) {
           <Drawer open={isDrawerOpen} onOpenChange={setDrawerOpen}>
             <DrawerContent>
               <DrawerHeader>
-                <DrawerTitle>Selected Lesson</DrawerTitle>
-                <DrawerClose asChild>
-                  <button className="absolute right-4 top-4">X</button>
-                </DrawerClose>
+                <DrawerTitle className="text-base font-semibold text-gray-600">
+                  Selected Lesson
+                </DrawerTitle>
               </DrawerHeader>
               <div className="px-4 pb-4">
                 <LessonViewer
@@ -186,6 +181,13 @@ export function EnrolledUserView({ courseData }: { courseData: CourseData }) {
                   }
                 />
               </div>
+              <DrawerFooter>
+                <DrawerClose asChild>
+                  <Button variant="outline" className="font-semibold">
+                    Буцах <ArrowDown />
+                  </Button>
+                </DrawerClose>
+              </DrawerFooter>
             </DrawerContent>
           </Drawer>
         </div>
@@ -199,7 +201,9 @@ export function EnrolledUserView({ courseData }: { courseData: CourseData }) {
             <div className="h-full overflow-y-auto md:px-2">
               {renderCourseInfo()}
               <SectionAccordion
-                sections={courseData.sectionId || []}
+                sections={
+                  courseAllSectionsData?.getSectionsByCourseId as Section[]
+                }
                 completedLessons={completedLessons}
                 selectedLessonId={selectedLesson?._id}
                 onSelectLesson={handleSelectLesson}

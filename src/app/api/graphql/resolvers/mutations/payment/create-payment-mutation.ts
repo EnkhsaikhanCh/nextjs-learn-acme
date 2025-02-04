@@ -1,6 +1,6 @@
 import { GraphQLError } from "graphql";
-import { CreatePaymentInput } from "../../../schemas/payment.schema";
 import { CourseModel, PaymentModel, UserModel } from "../../../models";
+import { CreatePaymentInput } from "@/generated/graphql";
 
 export const createPayment = async (
   _: unknown,

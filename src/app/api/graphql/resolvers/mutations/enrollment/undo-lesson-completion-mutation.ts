@@ -1,6 +1,6 @@
 import { GraphQLError } from "graphql";
 import { CourseModel, EnrollmentModel } from "../../../models";
-import { undoLessonCompletionInput } from "../../../schemas/enrollment.schema";
+import { UndoLessonCompletionInput } from "@/generated/graphql";
 
 type Section = {
   lessonId: string[];
@@ -8,7 +8,7 @@ type Section = {
 
 export const undoLessonCompletion = async (
   _: unknown,
-  { input }: { input: undoLessonCompletionInput },
+  { input }: { input: UndoLessonCompletionInput },
 ) => {
   try {
     const { enrollmentId, lessonId } = input;

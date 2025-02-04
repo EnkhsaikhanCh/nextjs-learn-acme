@@ -6,8 +6,14 @@ export const typeDefs = gql`
     _id: ID!
     email: String!
     studentId: String!
-    role: String!
-    isVerified: String!
+    role: Role!
+    isVerified: Boolean!
+  }
+
+  enum Role {
+    STUDENT
+    INSTRUCTOR
+    ADMIN
   }
 
   type Query {
@@ -35,20 +41,3 @@ export const typeDefs = gql`
     deleteUser(id: ID!): User!
   }
 `;
-
-export type User = {
-  _id: string;
-  email: string;
-  studentId: string;
-  role: string;
-  isVerified: string;
-};
-
-export type RegisterInput = {
-  email: string;
-  password: string;
-};
-
-export type UpdateInput = {
-  email: string;
-};

@@ -1,6 +1,6 @@
 // src/app/api/graphql/resolver/mutation/user/update-user-mutation.ts
+import { UpdateInput } from "@/generated/graphql";
 import { UserModel } from "../../../models";
-import { UpdateInput } from "../../../schemas/user.schema";
 
 export const updateUser = async (
   _: unknown,

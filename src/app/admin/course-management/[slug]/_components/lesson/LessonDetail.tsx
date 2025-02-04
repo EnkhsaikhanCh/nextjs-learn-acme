@@ -26,6 +26,7 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
+import { useGetLessonById } from "@/hooks/useGetLessonById";
 
 interface LessonDetailProps {
   lessonId: string;
@@ -52,6 +53,7 @@ export function LessonDetail({
     isPublished || false,
   );
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const { fetchedLessonRefetch } = useGetLessonById({ id: lessonId });
 
   const getEmbedUrl = (url: string) => {
     const match = url.match(
@@ -80,7 +82,7 @@ export function LessonDetail({
         },
       });
 
-      await refetchCourse();
+      await fetchedLessonRefetch();
       setIsEditing(false);
       if (updatedLesson.data) {
         toast.success("Lesson updated successfully!");
