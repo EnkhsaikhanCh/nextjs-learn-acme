@@ -4,17 +4,16 @@ import gql from "graphql-tag";
 export const typeDefs = gql`
   type Payment {
     _id: ID!
-    userId: ID!
-    courseId: ID!
+    userId: User!
+    courseId: Course!
     amount: Float!
+    transactionNote: String!
     status: PaymentStatus!
-    transactionId: String
     paymentMethod: PaymentMethod!
-    createdAt: String!
-    updatedAt: String!
     expiryDate: String
     refundReason: String
-    transactionNote: String
+    createdAt: String!
+    updatedAt: String!
   }
 
   enum PaymentStatus {
@@ -32,6 +31,7 @@ export const typeDefs = gql`
   }
 
   type Query {
+    getAllPayments: [Payment]
     getPayment(_id: ID!): Payment
     getPaymentsByUser(userId: ID!): [Payment]
   }
