@@ -7,7 +7,12 @@ export const updatePaymentStatus = async (
   {
     _id,
     status,
-  }: { _id: string; status: "PENDING" | "COMPLETED" | "FAILED" | "REFUNDED" },
+    refundReason,
+  }: {
+    _id: string;
+    status: "PENDING" | "COMPLETED" | "FAILED" | "REFUNDED";
+    refundReason?: string;
+  },
 ) => {
   if (!_id) {
     throw new GraphQLError("Payment ID is required", {
@@ -41,6 +46,19 @@ export const updatePaymentStatus = async (
           input: { userId: payment.userId, courseId: payment.courseId },
         });
       }
+    }
+
+    // If REFUNDED, update refundReason
+    if (status === "REFUNDED") {
+      if (!refundReason) {
+        throw new GraphQLError(
+          "Refund reason is required when status is REFUNDED",
+          {
+            extensions: { code: "BAD_USER_INPUT" },
+          },
+        );
+      }
+      payment.refundReason = refundReason;
     }
 
     await payment.save();
