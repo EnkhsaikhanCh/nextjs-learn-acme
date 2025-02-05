@@ -1,64 +1,76 @@
+// utils.test.ts
 import {
   sanitizeInput,
   validateName,
   validationEmail,
-  validationPassword,
+  validatePassword,
 } from "../../src/utils/validation";
 
-describe("Validation Utility Functions", () => {
-  describe("sanitizeInput", () => {
-    it("should remove invalid characters", () => {
-      expect(sanitizeInput("hello@world!.com")).toBe("hello@world.com");
-      expect(sanitizeInput("test<>test")).toBe("testtest");
-      expect(sanitizeInput("valid_input123")).toBe("valid_input123");
-    });
-
-    it("should return an empty string if input contains only invalid characters", () => {
-      expect(sanitizeInput("!#$%^&*()")).toBe("");
-    });
+describe("sanitizeInput", () => {
+  test("should trim leading and trailing whitespaces", () => {
+    const input = "   Hello World   ";
+    const sanitized = sanitizeInput(input);
+    expect(sanitized).toBe("Hello World");
   });
 
-  describe("validateName", () => {
-    it("should return true for valid names", () => {
-      expect(validateName("John Doe")).toBe(true);
-      expect(validateName("Jane-Doe")).toBe(true);
-      expect(validateName("Valid.Name")).toBe(true);
-    });
+  test("should escape HTML characters to prevent XSS", () => {
+    const input = `<script>alert("XSS");</script>`;
+    const sanitized = sanitizeInput(input);
+    // <script> стаагаар шууд харуулахын оронд escaped тэмдэгт болж хувирахыг шалгана
+    expect(sanitized).not.toContain("<script>");
+    // Жишээ нь, &lt;script&gt; гэх мэтчлэн escape хийгдсэн байх ёстой
+    expect(sanitized).toContain("&lt;script&gt;");
+  });
+});
 
-    it("should return false for invalid names", () => {
-      expect(validateName("Invalid@Name")).toBe(false);
-      expect(validateName("Name!123")).toBe(false);
-    });
+describe("validateName", () => {
+  test("should return true for a valid name with letters, numbers, spaces, dot, dash", () => {
+    expect(validateName("John Doe-123.")).toBe(true);
   });
 
-  describe("validationEmail", () => {
-    it("should return true for valid email addresses", () => {
-      expect(validationEmail("test@example.com")).toBe(true);
-      expect(validationEmail("user.name+alias@domain.co")).toBe(true);
-    });
-
-    it("should return false for invalid email addresses", () => {
-      expect(validationEmail("invalid-email")).toBe(false);
-      expect(validationEmail("test@com")).toBe(false);
-      expect(validationEmail("test@.com")).toBe(false);
-    });
+  test("should return false for invalid characters", () => {
+    expect(validateName("John$Doe")).toBe(false);
+    expect(validateName("John@Doe")).toBe(false);
   });
 
-  describe("validationPassword", () => {
-    it("should return true for strong passwords", () => {
-      expect(validationPassword("Str0ng!Passw0rd")).toBe(true);
-      expect(validationPassword("Valid123!@#")).toBe(true);
-    });
+  test("should handle empty string correctly", () => {
+    expect(validateName("")).toBe(false);
+  });
+});
 
-    it("should return false for weak passwords", () => {
-      expect(validationPassword("weak")).toBe(false);
-      expect(validationPassword("NoNumbersOrSymbols")).toBe(true);
-      expect(validationPassword("short1!")).toBe(false);
-    });
+describe("validationEmail", () => {
+  test("should return true for a valid email", () => {
+    expect(validationEmail("test@example.com")).toBe(true);
+    expect(validationEmail("john.doe@gmail.com")).toBe(true);
+  });
 
-    it("should return false for passwords longer than 128 characters", () => {
-      const longPassword = "A".repeat(129);
-      expect(validationPassword(longPassword)).toBe(false);
-    });
+  test("should return false for an invalid email", () => {
+    expect(validationEmail("not an email")).toBe(false);
+    expect(validationEmail("test@@example.com")).toBe(false);
+    expect(validationEmail("test@example")).toBe(false);
+  });
+});
+
+describe("validatePassword", () => {
+  test("should return true for a valid password (>=8 chars)", () => {
+    // minLength=8, бусад нөхцөл (доод, дээд үсэг, тоо, символ) 0 тул зөвхөн уртад л анхаарч шалгана
+    expect(validatePassword("abcdefgh")).toBe(true);
+    expect(validatePassword("12345678")).toBe(true);
+    expect(validatePassword("passwordLongerThan8Chars")).toBe(true);
+  });
+
+  test("should return false for a password shorter than 8 chars", () => {
+    expect(validatePassword("abc")).toBe(false);
+    expect(validatePassword("1234567")).toBe(false);
+  });
+
+  test("should return false if password length > 128", () => {
+    const longPassword = "a".repeat(129);
+    expect(validatePassword(longPassword)).toBe(false);
+  });
+
+  test("should return true for exactly 128 chars password", () => {
+    const maxAllowedPassword = "a".repeat(128);
+    expect(validatePassword(maxAllowedPassword)).toBe(true);
   });
 });

@@ -21,8 +21,8 @@ mutation DeleteLesson($id: ID!) {
 }
 
 # Queries
-query GetLessonById($getLessonByIdId: ID!) {
-  getLessonById(_id: $getLessonByIdId) {
+query GetLessonById($id: ID!) {
+  getLessonById(_id: $id) {
     _id
     title
     content

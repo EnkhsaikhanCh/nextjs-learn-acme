@@ -1,3 +1,4 @@
+import { Section } from "@/generated/graphql";
 import { SectionItem } from "./SectionItem";
 
 export function SectionList({
@@ -5,8 +6,7 @@ export function SectionList({
   refetchCourse,
   onLessonSelect,
 }: {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  sections: any[];
+  sections: Section[];
   refetchCourse: () => void;
   onLessonSelect: (lessonId: string) => void;
 }) {

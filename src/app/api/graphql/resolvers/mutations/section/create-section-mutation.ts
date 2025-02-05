@@ -1,12 +1,12 @@
 import { GraphQLError } from "graphql";
-import { CreateSectionInput } from "../../../schemas/section.schema";
 import { CourseModel, SectionModel } from "../../../models";
+import { CreateSectionInput } from "@/generated/graphql";
 
 export const createSection = async (
   _: unknown,
   { input }: { input: CreateSectionInput },
 ) => {
-  const { courseId, title, description } = input;
+  const { courseId, title } = input;
 
   if (!courseId || !title) {
     throw new GraphQLError("Invalid input data", {
@@ -34,7 +34,6 @@ export const createSection = async (
     const newSection = await SectionModel.create({
       courseId,
       title,
-      description,
       order: maxOrder + 1,
     });
 

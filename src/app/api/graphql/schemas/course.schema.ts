@@ -1,93 +1,108 @@
-// src/app/api/grpahql/schemas/course.schema.ts
+// src/app/api/graphql/schemas/course.schema.ts
 import gql from "graphql-tag";
 
 export const typeDefs = gql`
-  # Course Type Definition
+  enum Currency {
+    USD
+    MNT
+  }
+
+  enum Difficulty {
+    BEGINNER
+    INTERMEDIATE
+    ADVANCED
+  }
+
+  enum CourseStatus {
+    DRAFT
+    PUBLISHED
+    ARCHIVED
+  }
+
   type Course {
     _id: ID!
     title: String!
-    description: String!
-    price: Float!
-    sectionId: [Section]
-    duration: Int
-    createdBy: String
+    slug: String
+    description: String
+    courseCode: String
+    difficulty: Difficulty
+    thumbnail: String
+    price: Price
+    pricingDetails: PricingDetails
+    sections: [Section]
     categories: [String]
     tags: [String]
     status: CourseStatus
-    enrollmentId: [Enrollment]
-    thumbnail: String
+    whatYouWillLearn: [String]
+    whyChooseOurCourse: [WhyChoose]
   }
 
-  # Enum for Course Status
-  enum CourseStatus {
-    active
-    archived
+  type PricingDetails {
+    planTitle: String
+    description: String
+    price: String
+    details: [String]
   }
 
-  # Queries
+  type Price {
+    amount: Float
+    currency: Currency
+    discount: Float
+  }
+
+  type WhyChoose {
+    icon: String
+    title: String
+    description: String
+  }
+
   type Query {
-    # Fetch a course by its ID
     getCourseById(_id: ID!): Course
-
-    # Fetch all available courses
+    getCourseBySlug(slug: String!): Course
     getAllCourse: [Course!]!
   }
 
-  # Input for creating a course
-  input CreateCourseInput {
-    title: String!
-    description: String!
-    price: Float!
+  input PriceInput {
+    amount: Float
+    currency: Currency
+    discount: Float
   }
 
-  # Input for updating a course
+  input PricingDetailsInput {
+    planTitle: String
+    description: String
+    price: String
+    details: [String]
+  }
+
+  input WhyChooseInput {
+    icon: String
+    title: String
+    description: String
+  }
+
+  input CreateCourseInput {
+    title: String
+  }
+
   input UpdateCourseInput {
     _id: ID!
     title: String
     description: String
-    price: Float
-    duration: Int
-    createdBy: String
+    price: PriceInput
+    difficulty: Difficulty
+    thumbnail: String
+    pricingDetails: PricingDetailsInput
     categories: [String]
     tags: [String]
     status: CourseStatus
-    thumbnail: String
+    whatYouWillLearn: [String]
+    whyChooseOurCourse: [WhyChooseInput]
   }
 
-  # Mutations
   type Mutation {
-    # Create a new course
     createCourse(input: CreateCourseInput!): Course!
-
-    # Update an existing course
     updateCourse(input: UpdateCourseInput!): Course!
-
-    # Delete a course by its ID
-    deleteCourse(_id: ID!): Boolean!
+    deleteCourse(id: ID!): Boolean!
   }
 `;
-
-export type CreateCourseInput = {
-  title: string;
-  description: string;
-  price: number;
-  duration?: number; // Optional
-  createdBy?: string; // Optional
-  categories?: string[]; // Optional
-  tags?: string[]; // Optional
-  status?: "active" | "archived"; // Optional
-  thumbnail?: string; // Optional
-};
-
-export type UpdateCourseInput = {
-  _id: string;
-  title?: string;
-  description?: string;
-  price?: number;
-  duration?: number; // Optional
-  createdBy?: string; // Optional
-  categories?: string[]; // Optional
-  tags?: string[]; // Optional
-  status?: "active" | "archived"; // Optional
-  thumbnail?: string; // Optional
-};

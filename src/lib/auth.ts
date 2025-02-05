@@ -10,7 +10,7 @@ dotenv.config();
 
 interface ExtendedJWT extends JWT {
   id?: string;
-  role?: "student" | "admin";
+  role?: "STUDENT" | "INSTRUCTOR" | "ADMIN";
   studentId?: string;
 }
 

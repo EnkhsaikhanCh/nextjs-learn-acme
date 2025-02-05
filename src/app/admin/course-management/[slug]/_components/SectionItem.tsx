@@ -18,6 +18,7 @@ import {
   Trash2,
 } from "lucide-react";
 import {
+  Section,
   useDeleteSectionMutation,
   useUpdateSectionMutation,
 } from "@/generated/graphql";
@@ -33,20 +34,8 @@ import {
 } from "@/components/ui/dialog";
 import { motion } from "framer-motion";
 
-// Lesson төрлийн тодорхойлолт
-interface Lesson {
-  _id: string;
-  title: string;
-  isPublished: boolean; // Add the isPublished property
-}
-
-// SectionItemProps-ийн тодорхойлолт
 interface SectionItemProps {
-  section: {
-    _id: string;
-    title: string;
-    lessonId: Lesson[];
-  };
+  section: Section;
   refetchCourse: () => void;
   onLessonSelect: (lessonId: string) => void;
 }
@@ -141,9 +130,9 @@ export function SectionItem({
               section.lessonId.map((lesson, index) => (
                 <div key={lesson?._id || index} className="flex items-center">
                   <div
-                    className={`flex h-5 w-5 items-center justify-center rounded-full ${lesson.isPublished ? "bg-green-200 text-green-500" : "bg-yellow-200 text-yellow-500"}`}
+                    className={`flex h-5 w-5 items-center justify-center rounded-full ${lesson?.isPublished ? "bg-green-200 text-green-500" : "bg-yellow-200 text-yellow-500"}`}
                   >
-                    {lesson.isPublished ? (
+                    {lesson?.isPublished ? (
                       <CircleCheck className="h-3 w-3" />
                     ) : (
                       <CircleDot className="h-3 w-3" />
@@ -154,7 +143,7 @@ export function SectionItem({
                       variant="link"
                       effect="hoverUnderline"
                       className="cursor-pointer text-base text-gray-700"
-                      onClick={() => onLessonSelect(lesson?._id)}
+                      onClick={() => lesson?._id && onLessonSelect(lesson._id)}
                     >
                       {lesson?.title}
                     </Button>

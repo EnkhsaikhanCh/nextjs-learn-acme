@@ -42,19 +42,3 @@ export const typeDefs = gql`
     isPublished: Boolean
   }
 `;
-
-export type CreateLessonInput = {
-  sectionId: string;
-  title: string;
-  content: string;
-  videoUrl: string;
-  order: number;
-};
-
-export type UpdateLessonInput = {
-  title?: string;
-  content?: string;
-  videoUrl?: string;
-  order?: number;
-  isPublished?: boolean;
-};

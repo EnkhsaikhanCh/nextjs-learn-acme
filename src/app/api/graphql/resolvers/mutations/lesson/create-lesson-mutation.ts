@@ -1,6 +1,6 @@
 import { GraphQLError } from "graphql";
-import { CreateLessonInput } from "../../../schemas/lesson.schema";
 import { LessonModel, SectionModel } from "../../../models";
+import { CreateLessonInput } from "@/generated/graphql";
 
 export const createLesson = async (
   _: unknown,

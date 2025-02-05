@@ -31,7 +31,7 @@ export const seedAdmin = async () => {
     const admin = new UserModel({
       email: ADMIN_EMAIL,
       studentId: ADMIN_STUDENT_ID,
-      role: "admin",
+      role: "ADMIN",
       password: hashedAdminPassword,
     });
 
