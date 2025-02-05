@@ -46,6 +46,10 @@ export const typeDefs = gql`
 
   type Mutation {
     createPayment(input: CreatePaymentInput!): Payment
-    updatePaymentStatus(_id: ID!, status: PaymentStatus!): Payment
+    updatePaymentStatus(
+      _id: ID!
+      status: PaymentStatus!
+      refundReason: String
+    ): Payment
   }
 `;
