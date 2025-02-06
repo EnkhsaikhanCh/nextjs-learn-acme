@@ -342,7 +342,8 @@ export type Query = {
   getEnrollmentsByUser: Array<Enrollment>;
   getLessonById: Lesson;
   getLessonsBySection: Array<Lesson>;
-  getPayment?: Maybe<Payment>;
+  getPaymentById?: Maybe<Payment>;
+  getPaymentByUserAndCourse?: Maybe<Payment>;
   getPaymentsByUser?: Maybe<Array<Maybe<Payment>>>;
   getSectionById: Section;
   getSectionsByCourseId: Array<Section>;
@@ -392,8 +393,14 @@ export type QueryGetLessonsBySectionArgs = {
 };
 
 
-export type QueryGetPaymentArgs = {
+export type QueryGetPaymentByIdArgs = {
   _id: Scalars['ID']['input'];
+};
+
+
+export type QueryGetPaymentByUserAndCourseArgs = {
+  courseId: Scalars['ID']['input'];
+  userId: Scalars['ID']['input'];
 };
 
 
@@ -634,6 +641,21 @@ export type GetAllPaymentsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetAllPaymentsQuery = { __typename?: 'Query', getAllPayments?: Array<{ __typename?: 'Payment', _id: string, amount: number, transactionNote: string, status: PaymentStatus, paymentMethod: PaymentMethod, expiryDate?: string | null, refundReason?: string | null, createdAt: string, userId: { __typename?: 'User', _id: string, email: string }, courseId: { __typename?: 'Course', _id: string, title: string } } | null> | null };
+
+export type GetPaymentByIdQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type GetPaymentByIdQuery = { __typename?: 'Query', getPaymentById?: { __typename?: 'Payment', _id: string, status: PaymentStatus, userId: { __typename?: 'User', _id: string }, courseId: { __typename?: 'Course', _id: string } } | null };
+
+export type GetPaymentByUserAndCourseQueryVariables = Exact<{
+  userId: Scalars['ID']['input'];
+  courseId: Scalars['ID']['input'];
+}>;
+
+
+export type GetPaymentByUserAndCourseQuery = { __typename?: 'Query', getPaymentByUserAndCourse?: { __typename?: 'Payment', _id: string, amount: number, transactionNote: string, status: PaymentStatus, paymentMethod: PaymentMethod, refundReason?: string | null, userId: { __typename?: 'User', _id: string, email: string }, courseId: { __typename?: 'Course', _id: string, title: string } } | null };
 
 export type CreateSectionMutationVariables = Exact<{
   input?: InputMaybe<CreateSectionInput>;
@@ -1365,6 +1387,107 @@ export type GetAllPaymentsQueryHookResult = ReturnType<typeof useGetAllPaymentsQ
 export type GetAllPaymentsLazyQueryHookResult = ReturnType<typeof useGetAllPaymentsLazyQuery>;
 export type GetAllPaymentsSuspenseQueryHookResult = ReturnType<typeof useGetAllPaymentsSuspenseQuery>;
 export type GetAllPaymentsQueryResult = Apollo.QueryResult<GetAllPaymentsQuery, GetAllPaymentsQueryVariables>;
+export const GetPaymentByIdDocument = gql`
+    query GetPaymentById($id: ID!) {
+  getPaymentById(_id: $id) {
+    _id
+    userId {
+      _id
+    }
+    courseId {
+      _id
+    }
+    status
+  }
+}
+    `;
+
+/**
+ * __useGetPaymentByIdQuery__
+ *
+ * To run a query within a React component, call `useGetPaymentByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPaymentByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetPaymentByIdQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetPaymentByIdQuery(baseOptions: Apollo.QueryHookOptions<GetPaymentByIdQuery, GetPaymentByIdQueryVariables> & ({ variables: GetPaymentByIdQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetPaymentByIdQuery, GetPaymentByIdQueryVariables>(GetPaymentByIdDocument, options);
+      }
+export function useGetPaymentByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetPaymentByIdQuery, GetPaymentByIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetPaymentByIdQuery, GetPaymentByIdQueryVariables>(GetPaymentByIdDocument, options);
+        }
+export function useGetPaymentByIdSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetPaymentByIdQuery, GetPaymentByIdQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetPaymentByIdQuery, GetPaymentByIdQueryVariables>(GetPaymentByIdDocument, options);
+        }
+export type GetPaymentByIdQueryHookResult = ReturnType<typeof useGetPaymentByIdQuery>;
+export type GetPaymentByIdLazyQueryHookResult = ReturnType<typeof useGetPaymentByIdLazyQuery>;
+export type GetPaymentByIdSuspenseQueryHookResult = ReturnType<typeof useGetPaymentByIdSuspenseQuery>;
+export type GetPaymentByIdQueryResult = Apollo.QueryResult<GetPaymentByIdQuery, GetPaymentByIdQueryVariables>;
+export const GetPaymentByUserAndCourseDocument = gql`
+    query GetPaymentByUserAndCourse($userId: ID!, $courseId: ID!) {
+  getPaymentByUserAndCourse(userId: $userId, courseId: $courseId) {
+    _id
+    userId {
+      _id
+      email
+    }
+    courseId {
+      _id
+      title
+    }
+    amount
+    transactionNote
+    status
+    paymentMethod
+    refundReason
+  }
+}
+    `;
+
+/**
+ * __useGetPaymentByUserAndCourseQuery__
+ *
+ * To run a query within a React component, call `useGetPaymentByUserAndCourseQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPaymentByUserAndCourseQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetPaymentByUserAndCourseQuery({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *      courseId: // value for 'courseId'
+ *   },
+ * });
+ */
+export function useGetPaymentByUserAndCourseQuery(baseOptions: Apollo.QueryHookOptions<GetPaymentByUserAndCourseQuery, GetPaymentByUserAndCourseQueryVariables> & ({ variables: GetPaymentByUserAndCourseQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetPaymentByUserAndCourseQuery, GetPaymentByUserAndCourseQueryVariables>(GetPaymentByUserAndCourseDocument, options);
+      }
+export function useGetPaymentByUserAndCourseLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetPaymentByUserAndCourseQuery, GetPaymentByUserAndCourseQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetPaymentByUserAndCourseQuery, GetPaymentByUserAndCourseQueryVariables>(GetPaymentByUserAndCourseDocument, options);
+        }
+export function useGetPaymentByUserAndCourseSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetPaymentByUserAndCourseQuery, GetPaymentByUserAndCourseQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetPaymentByUserAndCourseQuery, GetPaymentByUserAndCourseQueryVariables>(GetPaymentByUserAndCourseDocument, options);
+        }
+export type GetPaymentByUserAndCourseQueryHookResult = ReturnType<typeof useGetPaymentByUserAndCourseQuery>;
+export type GetPaymentByUserAndCourseLazyQueryHookResult = ReturnType<typeof useGetPaymentByUserAndCourseLazyQuery>;
+export type GetPaymentByUserAndCourseSuspenseQueryHookResult = ReturnType<typeof useGetPaymentByUserAndCourseSuspenseQuery>;
+export type GetPaymentByUserAndCourseQueryResult = Apollo.QueryResult<GetPaymentByUserAndCourseQuery, GetPaymentByUserAndCourseQueryVariables>;
 export const CreateSectionDocument = gql`
     mutation CreateSection($input: CreateSectionInput) {
   createSection(input: $input) {
