@@ -87,7 +87,10 @@ export default function PaymentManagement() {
     return "ALL";
   });
 
-  const payments = data?.getAllPayments || [];
+  const payments = useMemo(
+    () => data?.getAllPayments || [],
+    [data?.getAllPayments],
+  );
 
   // useMemo ашиглаж, status-ээр шүүх хэсгээс илүү ашигтай болгож болно.
   const filteredPayments = useMemo(() => {

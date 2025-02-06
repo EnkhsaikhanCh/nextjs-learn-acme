@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import {
   Course,
   Payment,
@@ -23,7 +23,6 @@ export function PaymentDialog({
   course: Course;
 }) {
   const [createPayment] = useCreatePaymentMutation();
-  const [paymentId, setPaymentId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const transactionNote = `${user.studentId}-${course.courseCode}`;
@@ -101,6 +100,7 @@ export function PaymentDialog({
         <PaymentVerification
           payment={existingPaymentData.getPaymentByUserAndCourse as Payment}
           isLoading={paymentLoading}
+          error={paymentError}
         />
       ) : (
         // Төлбөр үүсээгүй бол PaymentInformation хэсгээ харуулах

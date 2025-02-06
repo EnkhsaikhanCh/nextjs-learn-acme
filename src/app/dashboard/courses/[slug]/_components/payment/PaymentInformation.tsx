@@ -14,7 +14,6 @@ import {
   CircleUserRound,
   ClipboardCheck,
   CreditCard,
-  DollarSign,
   Loader2,
   Tag,
 } from "lucide-react";

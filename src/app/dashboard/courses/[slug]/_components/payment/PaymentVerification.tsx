@@ -1,6 +1,5 @@
 import {
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -8,16 +7,19 @@ import {
 import { Payment } from "@/generated/graphql";
 import { MailCheck, AlertTriangle, Loader } from "lucide-react";
 import clsx from "clsx";
-import { Badge } from "@/components/ui/badge";
+import { ApolloError } from "@apollo/client";
+import { InfoRow } from "@/components/InfoRow";
 
 type PaymentVerificationProps = {
   payment?: Payment;
   isLoading?: boolean;
+  error?: ApolloError;
 };
 
 export function PaymentVerification({
   payment,
   isLoading = false,
+  error,
 }: PaymentVerificationProps) {
   if (isLoading) {
     return (
@@ -25,6 +27,20 @@ export function PaymentVerification({
         <Loader className="animate-spin text-gray-500" size={24} />
         <p className="mt-2 text-sm text-gray-700" aria-live="polite">
           Төлбөрийн мэдээлэл ачааллаж байна...
+        </p>
+      </DialogContent>
+    );
+  }
+
+  if (error) {
+    return (
+      <DialogContent className="flex flex-col items-center p-6 text-center">
+        <AlertTriangle className="text-red-500" size={36} />
+        <p className="mt-2 text-lg font-semibold text-gray-800">
+          Төлбөрийн мэдээлэл олдсонгүй
+        </p>
+        <p className="mt-1 text-sm text-gray-600">
+          Та дахин шалгана уу эсвэл тусламж дэмжлэгтэй холбогдоно уу.
         </p>
       </DialogContent>
     );
@@ -38,8 +54,7 @@ export function PaymentVerification({
           Төлбөрийн мэдээлэл олдсонгүй
         </p>
         <p className="mt-1 text-sm text-gray-600">
-          Та дахин шалгана уу эсвэл тусламж авахын тулд дэмжлэгтэй холбогдоно
-          уу.
+          Та дахин шалгана уу эсвэл тусламж дэмжлэгтэй холбогдоно уу.
         </p>
       </DialogContent>
     );
@@ -100,36 +115,5 @@ export function PaymentVerification({
         болно. Түр хүлээнэ үү.
       </DialogFooter>
     </DialogContent>
-  );
-}
-
-type InfoRowProps = {
-  label: string;
-  value: string;
-  boldValue?: boolean;
-  valueClassName?: string;
-  isBadge?: boolean;
-};
-
-function InfoRow({
-  label,
-  value,
-  boldValue,
-  valueClassName,
-  isBadge = false,
-}: InfoRowProps) {
-  return (
-    <div className="flex justify-between text-sm text-gray-800">
-      <span className="font-semibold">{label}</span>
-      {isBadge ? (
-        <Badge className="border-yellow-600 bg-yellow-200 text-yellow-800 hover:bg-yellow-200">
-          {value}
-        </Badge>
-      ) : (
-        <span className={clsx(boldValue && "font-bold", valueClassName)}>
-          {value}
-        </span>
-      )}
-    </div>
   );
 }
