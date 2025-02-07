@@ -36,3 +36,35 @@ query GetAllPayments {
     createdAt
   }
 }
+
+query GetPaymentById($id: ID!) {
+  getPaymentById(_id: $id) {
+    _id
+    userId {
+      _id
+    }
+    courseId {
+      _id
+    }
+    status
+  }
+}
+
+query GetPaymentByUserAndCourse($userId: ID!, $courseId: ID!) {
+  getPaymentByUserAndCourse(userId: $userId, courseId: $courseId) {
+    _id
+    userId {
+      _id
+      email
+    }
+    courseId {
+      _id
+      title
+    }
+    amount
+    transactionNote
+    status
+    paymentMethod
+    refundReason
+  }
+}

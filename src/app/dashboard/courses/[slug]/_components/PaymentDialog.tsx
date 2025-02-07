@@ -1,37 +1,19 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import {
   Course,
+  Payment,
   PaymentMethod,
   useCreatePaymentMutation,
+  useGetPaymentByUserAndCourseQuery,
   User,
 } from "@/generated/graphql";
-import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { CopyableField } from "./CopyableField";
-
-interface PaymentDetails {
-  bankName: string;
-  accountNumber: string;
-  accountName: string;
-}
-
-const BANK_DETAILS: PaymentDetails = {
-  bankName: "ХААН БАНК",
-  accountNumber: "5000-XXXX-XXXX",
-  accountName: "ABC",
-};
+import { PaymentInformation } from "./payment/PaymentInformation";
+import { PaymentVerification } from "./payment/PaymentVerification";
 
 export function PaymentDialog({
   user,
@@ -41,21 +23,26 @@ export function PaymentDialog({
   course: Course;
 }) {
   const [createPayment] = useCreatePaymentMutation();
-  const [copiedField, setCopiedField] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const transactionNote = `${user.studentId}-${course.courseCode}`;
 
-  const handleCopy = (text: string, field: string) => {
-    navigator.clipboard.writeText(text);
-    setCopiedField(field);
-    setTimeout(() => setCopiedField(null), 2000);
-  };
-
-  const paymentKey = `payment_done_${user._id}_${course._id}`;
-  const [isPaymentSubmitted, setIsPaymentSubmitted] = useState(() => {
-    return localStorage.getItem(paymentKey) === "true";
+  // Хэрэглэгч болон курстэй холбоотой төлбөр байгаа эсэхийг шалгах query
+  const {
+    data: existingPaymentData,
+    loading: paymentLoading,
+    error: paymentError,
+    refetch: refetchExistingPayment,
+  } = useGetPaymentByUserAndCourseQuery({
+    variables: {
+      userId: user._id,
+      courseId: course._id,
+    },
+    skip: !user?._id || !course?._id,
   });
+
+  // Байгаа эсэхийг тодорхойлоход амар болгох
+  const existingPayment = existingPaymentData?.getPaymentByUserAndCourse;
 
   const handleCreatePayment = async () => {
     if (!user.studentId || !course.courseCode) {
@@ -63,14 +50,15 @@ export function PaymentDialog({
       return;
     }
 
-    if (isPaymentSubmitted) {
+    // If user already pressed the button, exit early
+    if (existingPayment) {
       toast.warning("Та аль хэдийн хүсэлт илгээсэн байна.");
       return;
     }
 
     setIsSubmitting(true);
     try {
-      await createPayment({
+      const { data } = await createPayment({
         variables: {
           input: {
             userId: user._id,
@@ -82,11 +70,11 @@ export function PaymentDialog({
         },
       });
 
-      toast.success(
-        "Таны хүсэлтийг хүлээн авлаа. Төлбөр баталгаажсаны дараа идэвхжих болно.",
-      );
-      localStorage.setItem(paymentKey, "true");
-      setIsPaymentSubmitted(true);
+      if (data?.createPayment?._id) {
+        toast.success("Төлбөрийн хүсэлт амжилттай үүслээ!");
+        // Шинэ төлбөр үүсмэгц дахин fetch хийж, одоо байгаа төлбөрийг (existingPayment) сэргээнэ
+        refetchExistingPayment();
+      }
     } catch (error) {
       console.error("Payment creation error:", error);
       toast.error("Алдаа гарлаа. Дахин оролдоно уу.");
@@ -105,77 +93,24 @@ export function PaymentDialog({
           Сургалтанд бүртгүүлэх
         </Button>
       </DialogTrigger>
-      <DialogContent className="p-6">
-        <DialogHeader>
-          <DialogTitle className="text-xl font-bold">
-            Сургалтанд бүртгүүлэх
-          </DialogTitle>
-          <DialogDescription>
-            Дараах мэдээллийг ашиглан төлбөрөө шилжүүлнэ үү:
-          </DialogDescription>
-        </DialogHeader>
-
-        <div className="mt-4 space-y-4">
-          {/* Non-copyable field */}
-          <CopyableField
-            label="Банк"
-            value={BANK_DETAILS.bankName}
-            fieldName="bank"
-            copiedField={copiedField}
-          />
-
-          <CopyableField
-            label="Дансны дугаар"
-            value={BANK_DETAILS.accountNumber}
-            fieldName="account"
-            copiedField={copiedField}
-            onClick={() => handleCopy(BANK_DETAILS.accountNumber, "account")}
-          />
-
-          {/* Non-copyable field */}
-          <CopyableField
-            label="Дансны нэр"
-            value={BANK_DETAILS.accountName}
-            fieldName="name"
-            copiedField={copiedField}
-          />
-
-          <CopyableField
-            label="Хичээлийн үнэ"
-            value={`₮${(course.price?.amount ?? 0).toLocaleString()}`}
-            fieldName="price"
-            copiedField={copiedField}
-            onClick={() =>
-              handleCopy((course.price?.amount ?? 0).toString(), "price")
-            }
-          />
-
-          <CopyableField
-            label="Гүйлгээний утга"
-            value={transactionNote}
-            fieldName="reference"
-            copiedField={copiedField}
-            onClick={() => handleCopy(transactionNote, "reference")}
-          />
-        </div>
-
-        <DialogFooter className="mt-4">
-          <Button
-            size="lg"
-            onClick={handleCreatePayment}
-            disabled={isSubmitting}
-            className="w-full rounded-full bg-yellow-400 font-bold text-black hover:bg-yellow-300"
-          >
-            {isSubmitting ? (
-              <Loader2 className="animate-spin" />
-            ) : isPaymentSubmitted ? (
-              "Хүсэлт илгээгдсэн"
-            ) : (
-              "Би төлбөрөө хийсэн"
-            )}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
+      {paymentLoading ? (
+        <p>Төлбөрийн мэдээлэл ачаалж байна...</p>
+      ) : existingPayment ? (
+        // Хэрэв төлбөр аль хэдийн үүссэн байвал Verification хэсэг рүү шууд орох
+        <PaymentVerification
+          payment={existingPaymentData.getPaymentByUserAndCourse as Payment}
+          isLoading={paymentLoading}
+          error={paymentError}
+        />
+      ) : (
+        // Төлбөр үүсээгүй бол PaymentInformation хэсгээ харуулах
+        <PaymentInformation
+          user={user}
+          course={course}
+          handleCreatePayment={handleCreatePayment}
+          isSubmitting={isSubmitting}
+        />
+      )}
     </Dialog>
   );
 }

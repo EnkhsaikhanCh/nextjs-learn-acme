@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { CircleCheck, Copy } from "lucide-react";
 
 interface CopyableFieldProps {
+  icon?: React.ReactNode;
   label: string;
   value: string;
   fieldName: string;
@@ -10,6 +11,7 @@ interface CopyableFieldProps {
 }
 
 export const CopyableField = ({
+  icon,
   label,
   value,
   fieldName,
@@ -18,7 +20,10 @@ export const CopyableField = ({
 }: CopyableFieldProps) => {
   return (
     <div>
-      <span className="font-semibold text-gray-700">{label}</span>
+      <span className="flex items-center gap-2 font-semibold text-gray-700">
+        {icon}
+        {label}
+      </span>
       <div
         className={`mt-1 flex items-center justify-between rounded-md border p-2 px-3 shadow-sm transition-all ${
           copiedField === fieldName

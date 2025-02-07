@@ -32,8 +32,9 @@ export const typeDefs = gql`
 
   type Query {
     getAllPayments: [Payment]
-    getPayment(_id: ID!): Payment
+    getPaymentById(_id: ID!): Payment
     getPaymentsByUser(userId: ID!): [Payment]
+    getPaymentByUserAndCourse(userId: ID!, courseId: ID!): Payment
   }
 
   input CreatePaymentInput {
