@@ -22,7 +22,7 @@ export async function middleware(request: NextRequest) {
   const role = token?.role; // Ensure your token includes the `role` field
 
   // `/admin` замд зөвхөн admin role-тэй хэрэглэгч нэвтрэх боломжтой
-  if (pathname.startsWith("/admin/dashboard") && role !== "ADMIN") {
+  if (pathname.startsWith("/admin") && role !== "ADMIN") {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
