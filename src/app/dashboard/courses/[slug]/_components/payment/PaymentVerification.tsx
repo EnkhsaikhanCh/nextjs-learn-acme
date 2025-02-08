@@ -86,13 +86,13 @@ export function PaymentVerification({
           value={
             status === "PENDING"
               ? "Шалгаж байна"
-              : status === "COMPLETED"
-                ? "Амжилттай"
+              : status === "APPROVED"
+                ? "Зөвшөөрөгдсөн"
                 : "Амжилтгүй"
           }
           valueClassName={clsx({
             "text-yellow-500": status === "PENDING",
-            "text-green-500": status === "COMPLETED",
+            "text-green-500": status === "APPROVED",
             "text-red-500": status === "FAILED",
           })}
           isBadge={true}

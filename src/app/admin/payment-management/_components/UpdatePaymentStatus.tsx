@@ -28,7 +28,7 @@ import { InfoItem } from "./InfoItem";
 
 const PAYMENT_STATUS_OPTIONS: { label: string; value: PaymentStatus }[] = [
   { label: "Хүлээгдэж байна", value: PaymentStatus.Pending },
-  { label: "Амжилттай", value: PaymentStatus.Completed },
+  { label: "Зөвшөөрөгдсөн", value: PaymentStatus.Approved },
   { label: "Амжилтгүй", value: PaymentStatus.Failed },
   { label: "Буцаалт хийгдсэн", value: PaymentStatus.Refunded },
 ];

@@ -32,7 +32,7 @@ import { UpdatePaymentStatus } from "./_components/UpdatePaymentStatus";
 // (Хэрэв олон газар давтаж бичих шаардлагатай бол ийм байдлаар тодорхойлвол тохиромжтой.)
 const PAYMENT_STATUS_OPTIONS: { label: string; value: PaymentStatus }[] = [
   { label: "Хүлээгдэж байна", value: PaymentStatus.Pending },
-  { label: "Амжилттай", value: PaymentStatus.Completed },
+  { label: "Амжилттай", value: PaymentStatus.Approved },
   { label: "Амжилтгүй", value: PaymentStatus.Failed },
   { label: "Буцаалт хийгдсэн", value: PaymentStatus.Refunded },
 ];
@@ -181,7 +181,7 @@ export default function PaymentManagement() {
                       className={`border font-semibold ${
                         status === "PENDING"
                           ? "border-yellow-600 bg-yellow-200 text-yellow-800 hover:bg-yellow-200"
-                          : status === "COMPLETED"
+                          : status === "APPROVED"
                             ? "border-green-600 bg-green-200 text-green-800 hover:bg-green-200"
                             : status === "FAILED"
                               ? "border-red-600 bg-red-200 text-red-800 hover:bg-red-200"

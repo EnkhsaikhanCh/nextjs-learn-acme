@@ -10,7 +10,7 @@ export const updatePaymentStatus = async (
     refundReason,
   }: {
     _id: string;
-    status: "PENDING" | "COMPLETED" | "FAILED" | "REFUNDED";
+    status: "PENDING" | "APPROVED" | "FAILED" | "REFUNDED";
     refundReason?: string;
   },
 ) => {
@@ -30,7 +30,7 @@ export const updatePaymentStatus = async (
 
     payment.status = status;
 
-    if (status === "COMPLETED") {
+    if (status === "APPROVED") {
       const now = new Date();
       now.setMonth(now.getMonth() + 1); // 1 сарын эрх
       payment.expiryDate = now;

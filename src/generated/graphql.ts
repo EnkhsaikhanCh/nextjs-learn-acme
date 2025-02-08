@@ -294,7 +294,7 @@ export enum PaymentMethod {
 }
 
 export enum PaymentStatus {
-  Completed = 'COMPLETED',
+  Approved = 'APPROVED',
   Failed = 'FAILED',
   Pending = 'PENDING',
   Refunded = 'REFUNDED'
