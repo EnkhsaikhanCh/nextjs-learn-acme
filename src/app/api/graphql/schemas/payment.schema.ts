@@ -18,7 +18,7 @@ export const typeDefs = gql`
 
   enum PaymentStatus {
     PENDING
-    COMPLETED
+    APPROVED
     FAILED
     REFUNDED
   }

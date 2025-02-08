@@ -8,7 +8,7 @@ export type Payment = {
   amount: number;
   transactionNote: string;
   paymentMethod: "QPAY" | "CREDIT_CARD" | "BANK_TRANSFER" | "OTHER";
-  status: "PENDING" | "COMPLETED" | "FAILED" | "REFUNDED";
+  status: "PENDING" | "APPROVED" | "FAILED" | "REFUNDED";
   createdAt: Date;
   updatedAt: Date;
   expiryDate?: Date; // COMPLETED үед л үүснэ
@@ -39,7 +39,7 @@ const PaymentSchema = new Schema<Payment>(
     },
     status: {
       type: String,
-      enum: ["PENDING", "COMPLETED", "FAILED", "REFUNDED"],
+      enum: ["PENDING", "APPROVED", "FAILED", "REFUNDED"],
       required: true,
       default: "PENDING",
     },
@@ -56,7 +56,7 @@ const PaymentSchema = new Schema<Payment>(
 
 // Middleware: `status` нь `COMPLETED` болбол `expiryDate`-ийг тохируулах
 PaymentSchema.pre("save", function (next) {
-  if (this.status === "COMPLETED" && !this.expiryDate) {
+  if (this.status === "APPROVED" && !this.expiryDate) {
     const now = new Date();
     now.setMonth(now.getMonth() + 1); // 1 сарын эрх
     this.expiryDate = now;
