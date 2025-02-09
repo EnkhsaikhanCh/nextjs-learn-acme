@@ -79,6 +79,7 @@ export function PaymentDialog({
         await refetchExistingPayment();
       }
     } catch (error) {
+      console.error("Create payment error: ", error);
       toast.error("Алдаа гарлаа. Дахин оролдоно уу.");
     } finally {
       setIsSubmitting(false);
