@@ -11,7 +11,6 @@ export type Payment = {
   status: "PENDING" | "APPROVED" | "FAILED" | "REFUNDED";
   createdAt: Date;
   updatedAt: Date;
-  expiryDate?: Date; // COMPLETED үед л үүснэ
   refundReason?: string;
 };
 
@@ -48,21 +47,10 @@ const PaymentSchema = new Schema<Payment>(
       enum: ["QPAY", "CREDIT_CARD", "BANK_TRANSFER", "OTHER"],
       required: true,
     },
-    expiryDate: { type: Date, default: null },
     refundReason: { type: String, default: null },
   },
   { timestamps: true },
 );
-
-// Middleware: `status` нь `COMPLETED` болбол `expiryDate`-ийг тохируулах
-PaymentSchema.pre("save", function (next) {
-  if (this.status === "APPROVED" && !this.expiryDate) {
-    const now = new Date();
-    now.setMonth(now.getMonth() + 1); // 1 сарын эрх
-    this.expiryDate = now;
-  }
-  next();
-});
 
 // Index for searching payments quickly
 PaymentSchema.index({ userId: 1, courseId: 1 }, { unique: false });
