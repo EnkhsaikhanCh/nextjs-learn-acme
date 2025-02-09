@@ -10,7 +10,6 @@ export const typeDefs = gql`
     transactionNote: String!
     status: PaymentStatus!
     paymentMethod: PaymentMethod!
-    expiryDate: String
     refundReason: String
     createdAt: String!
     updatedAt: String!
