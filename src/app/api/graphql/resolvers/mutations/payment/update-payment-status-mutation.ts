@@ -28,27 +28,49 @@ export const updatePaymentStatus = async (
       });
     }
 
+    // Шинэчлэхээс өмнөх хуучин статус хадгалах
+    const previousStatus = payment.status;
+
+    // Статус шинэчлэх
     payment.status = status;
 
-    if (status === "APPROVED") {
-      const now = new Date();
-      now.setMonth(now.getMonth() + 1); // 1 сарын эрх
-      payment.expiryDate = now;
-
-      // createEnrollment
-      const enrollmentExists = await EnrollmentModel.findOne({
+    // Хэрэв төлбөр `APPROVED` болсон бол, тухайн хэрэглэгчийн enrollment үүсгэх эсвэл сунгах
+    if (status === "APPROVED" && previousStatus !== "APPROVED") {
+      let enrollment = await EnrollmentModel.findOne({
         userId: payment.userId,
         courseId: payment.courseId,
       });
 
-      if (!enrollmentExists) {
-        await createEnrollment(_, {
+      if (enrollment) {
+        // Хэрэв бүртгэл аль хэдийн байвал хугацааг сунгана
+        const now = new Date();
+        const currentExpiryDate = enrollment.expiryDate
+          ? new Date(enrollment.expiryDate)
+          : now;
+
+        const newExpiryDate = new Date(
+          Math.max(now.getTime(), currentExpiryDate.getTime()),
+        );
+        newExpiryDate.setMonth(newExpiryDate.getMonth() + 1);
+
+        enrollment.expiryDate = newExpiryDate;
+        enrollment.status = "ACTIVE"; // Хугацаа сунгасан тул `ACTIVE` болгоно.
+        await enrollment.save();
+      } else {
+        // Хэрэв бүртгэл байхгүй бол шинээр Enrollment үүсгэнэ.
+        enrollment = await createEnrollment(_, {
           input: { userId: payment.userId, courseId: payment.courseId },
         });
+
+        // Хугацааг 1 сар тохируулах
+        const now = new Date();
+        now.setMonth(now.getMonth() + 1);
+        enrollment.expiryDate = now;
+        await enrollment.save();
       }
     }
 
-    // If REFUNDED, update refundReason
+    // Хэрэв `REFUNDED` бол `refundReason` шаардлагатай
     if (status === "REFUNDED") {
       if (!refundReason) {
         throw new GraphQLError(
