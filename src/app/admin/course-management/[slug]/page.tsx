@@ -51,7 +51,7 @@ export default function CourseDetailPage() {
   const {
     courseAllSectionsData,
     courseAllSectionsLoading,
-    courseAllSectionsError,
+    // courseAllSectionsError,
     courseAllSectionsRefetch,
   } = useGetSectionsByCourseId({
     courseId: fetchedCourseData?.getCourseBySlug?._id || "",
