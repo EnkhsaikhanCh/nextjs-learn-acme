@@ -8,7 +8,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { ReceiptText, Users, TestTubes, BookOpen } from "lucide-react";
+import { BookOpen } from "lucide-react";
 import Link from "next/link";
 
 export function NavLinks() {
