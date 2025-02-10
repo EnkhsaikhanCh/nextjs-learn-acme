@@ -8,7 +8,7 @@ export type Enrollment = {
   _id: string;
   courseId: string;
   userId: string;
-  status: "ACTIVE" | "COMPLETED" | "CANCELLED" | "PENDING";
+  status: "ACTIVE" | "COMPLETED" | "CANCELLED" | "PENDING" | "EXPIRED";
   progress: number;
 
   // User experience-related fields
@@ -17,6 +17,7 @@ export type Enrollment = {
   lastAccessedAt: Date | null;
 
   // System tracking fields
+  expiryDate?: Date; // COMPLETED үед л үүснэ
   history: {
     status: string;
     progress: number;
@@ -41,7 +42,7 @@ const EnrollmentSchema = new Schema<Enrollment>(
     },
     status: {
       type: String,
-      enum: ["ACTIVE", "COMPLETED", "CANCELLED", "PENDING"],
+      enum: ["ACTIVE", "COMPLETED", "CANCELLED", "PENDING", "EXPIRED"],
       default: "ACTIVE",
     },
     progress: {
@@ -57,6 +58,7 @@ const EnrollmentSchema = new Schema<Enrollment>(
     lastAccessedAt: { type: Date, default: null },
 
     // System tracking fields
+    expiryDate: { type: Date, default: null },
     history: [
       {
         status: { type: String, required: true },

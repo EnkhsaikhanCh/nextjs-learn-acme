@@ -14,11 +14,20 @@ export const checkEnrollment = async (
 
     // Fetch enrollment
     const enrollment = await EnrollmentModel.findOne({ courseId, userId })
-      .populate("userId", "_id")
-      .populate("courseId", "_id");
+      .populate({ path: "courseId", model: "Course" })
+      .populate({ path: "userId", model: "User" });
 
     if (!enrollment) {
       return null;
+    }
+
+    if (
+      enrollment.expiryDate &&
+      enrollment.expiryDate < new Date() &&
+      enrollment.status !== "EXPIRED"
+    ) {
+      enrollment.status = "EXPIRED";
+      await enrollment.save();
     }
 
     return enrollment;

@@ -98,6 +98,7 @@ export type Enrollment = {
   completedLessons?: Maybe<Array<Maybe<Scalars['ID']['output']>>>;
   courseId?: Maybe<Course>;
   createdAt?: Maybe<Scalars['String']['output']>;
+  expiryDate?: Maybe<Scalars['String']['output']>;
   history?: Maybe<Array<Maybe<EnrollmentHistory>>>;
   isCompleted?: Maybe<Scalars['Boolean']['output']>;
   isDeleted?: Maybe<Scalars['Boolean']['output']>;
@@ -119,6 +120,7 @@ export enum EnrollmentStatus {
   Active = 'ACTIVE',
   Cancelled = 'CANCELLED',
   Completed = 'COMPLETED',
+  Expired = 'EXPIRED',
   Pending = 'PENDING'
 }
 
@@ -277,7 +279,6 @@ export type Payment = {
   amount: Scalars['Float']['output'];
   courseId: Course;
   createdAt: Scalars['String']['output'];
-  expiryDate?: Maybe<Scalars['String']['output']>;
   paymentMethod: PaymentMethod;
   refundReason?: Maybe<Scalars['String']['output']>;
   status: PaymentStatus;
@@ -590,7 +591,7 @@ export type CheckEnrollmentQueryVariables = Exact<{
 }>;
 
 
-export type CheckEnrollmentQuery = { __typename?: 'Query', checkEnrollment?: { __typename?: 'Enrollment', _id: string, userId?: { __typename?: 'User', _id: string } | null, courseId?: { __typename?: 'Course', _id: string } | null } | null };
+export type CheckEnrollmentQuery = { __typename?: 'Query', checkEnrollment?: { __typename?: 'Enrollment', _id: string, expiryDate?: string | null, status?: EnrollmentStatus | null, userId?: { __typename?: 'User', _id: string } | null, courseId?: { __typename?: 'Course', _id: string } | null } | null };
 
 export type CreateLessonMutationVariables = Exact<{
   input: CreateLessonInput;
@@ -640,7 +641,7 @@ export type UpdatePaymentStatusMutation = { __typename?: 'Mutation', updatePayme
 export type GetAllPaymentsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAllPaymentsQuery = { __typename?: 'Query', getAllPayments?: Array<{ __typename?: 'Payment', _id: string, amount: number, transactionNote: string, status: PaymentStatus, paymentMethod: PaymentMethod, expiryDate?: string | null, refundReason?: string | null, createdAt: string, userId: { __typename?: 'User', _id: string, email: string }, courseId: { __typename?: 'Course', _id: string, title: string } } | null> | null };
+export type GetAllPaymentsQuery = { __typename?: 'Query', getAllPayments?: Array<{ __typename?: 'Payment', _id: string, amount: number, transactionNote: string, status: PaymentStatus, paymentMethod: PaymentMethod, refundReason?: string | null, createdAt: string, userId: { __typename?: 'User', _id: string, email: string }, courseId: { __typename?: 'Course', _id: string, title: string } } | null> | null };
 
 export type GetPaymentByIdQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -655,7 +656,7 @@ export type GetPaymentByUserAndCourseQueryVariables = Exact<{
 }>;
 
 
-export type GetPaymentByUserAndCourseQuery = { __typename?: 'Query', getPaymentByUserAndCourse?: { __typename?: 'Payment', _id: string, amount: number, transactionNote: string, status: PaymentStatus, paymentMethod: PaymentMethod, refundReason?: string | null, userId: { __typename?: 'User', _id: string, email: string }, courseId: { __typename?: 'Course', _id: string, title: string } } | null };
+export type GetPaymentByUserAndCourseQuery = { __typename?: 'Query', getPaymentByUserAndCourse?: { __typename?: 'Payment', _id: string, amount: number, transactionNote: string, status: PaymentStatus, paymentMethod: PaymentMethod, refundReason?: string | null, createdAt: string, userId: { __typename?: 'User', _id: string, email: string }, courseId: { __typename?: 'Course', _id: string, title: string } } | null };
 
 export type CreateSectionMutationVariables = Exact<{
   input?: InputMaybe<CreateSectionInput>;
@@ -1074,12 +1075,14 @@ export const CheckEnrollmentDocument = gql`
     query CheckEnrollment($courseId: ID!, $userId: ID!) {
   checkEnrollment(courseId: $courseId, userId: $userId) {
     _id
+    expiryDate
     userId {
       _id
     }
     courseId {
       _id
     }
+    status
   }
 }
     `;
@@ -1349,7 +1352,6 @@ export const GetAllPaymentsDocument = gql`
     transactionNote
     status
     paymentMethod
-    expiryDate
     refundReason
     createdAt
   }
@@ -1451,6 +1453,7 @@ export const GetPaymentByUserAndCourseDocument = gql`
     status
     paymentMethod
     refundReason
+    createdAt
   }
 }
     `;

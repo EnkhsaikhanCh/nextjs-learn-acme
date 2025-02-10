@@ -47,8 +47,8 @@ const CourseSchema = new Schema<Course>(
     price: {
       type: new Schema(
         {
-          amount: { type: Number },
-          currency: { type: String, enum: ["USD", "MNT"] },
+          amount: { type: Number, default: 0 },
+          currency: { type: String, enum: ["USD", "MNT"], default: "MNT" },
           discount: { type: Number, default: 0 },
         },
         { _id: false },

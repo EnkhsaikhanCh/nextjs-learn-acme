@@ -69,7 +69,13 @@ export default function CourseDetailPage() {
     return <CourseNotFound />;
   }
 
+  // Check if the user is enrolled
   const isEnrolled = enrollData?.checkEnrollment;
+
+  // Check if enrollment has expired
+  const isExpired = isEnrolled?.expiryDate
+    ? new Date(parseInt(isEnrolled.expiryDate)) < new Date()
+    : false;
 
   const handleScrollToPayment = () => {
     const paymentSection = document.getElementById("payment");
@@ -78,17 +84,20 @@ export default function CourseDetailPage() {
     }
   };
 
+  // If not enrolled OR expired, show NotEnrolledUserView
+  if (!isEnrolled || isExpired) {
+    return (
+      <NotEnrolledUserView
+        course={courseData?.getCourseBySlug as Course}
+        user={userData?.getUserById as User}
+        onScrollToPayment={handleScrollToPayment}
+      />
+    );
+  }
+
   return (
     <main>
-      {isEnrolled ? (
-        <EnrolledUserView courseData={courseData?.getCourseBySlug as Course} />
-      ) : (
-        <NotEnrolledUserView
-          course={courseData?.getCourseBySlug as Course}
-          user={userData?.getUserById as User}
-          onScrollToPayment={handleScrollToPayment}
-        />
-      )}
+      <EnrolledUserView courseData={courseData?.getCourseBySlug as Course} />
     </main>
   );
 }

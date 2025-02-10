@@ -51,7 +51,7 @@ export default function CourseDetailPage() {
   const {
     courseAllSectionsData,
     courseAllSectionsLoading,
-    courseAllSectionsError,
+    // courseAllSectionsError,
     courseAllSectionsRefetch,
   } = useGetSectionsByCourseId({
     courseId: fetchedCourseData?.getCourseBySlug?._id || "",
@@ -154,11 +154,9 @@ export default function CourseDetailPage() {
     return <LoadingOverlay />;
   }
 
-  if (fetchedCourseError || courseAllSectionsError) {
+  if (fetchedCourseError) {
     const errorMessage =
-      fetchedCourseError?.message ||
-      courseAllSectionsError?.message ||
-      "Error loading course data.";
+      fetchedCourseError?.message || "Error loading course data.";
 
     toast.error(errorMessage);
     return <div>Error loading course data: {errorMessage}</div>;

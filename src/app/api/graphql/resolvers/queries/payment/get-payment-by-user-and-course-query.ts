@@ -14,11 +14,10 @@ export const getPaymentByUserAndCourse = async (
   }
 
   try {
-    const payment = await PaymentModel.findOne({ userId, courseId })
-      .populate({
-        path: "userId",
-        model: "User",
-      })
+    const [payment] = await PaymentModel.find({ userId, courseId })
+      .sort({ createdAt: -1 })
+      .limit(1)
+      .populate({ path: "userId", model: "User" })
       .populate({ path: "courseId", model: "Course" });
 
     if (!payment) {

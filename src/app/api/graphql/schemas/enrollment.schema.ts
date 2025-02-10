@@ -15,6 +15,7 @@ export const typeDefs = gql`
     lastAccessedAt: String
 
     # System tracking fields
+    expiryDate: String
     createdAt: String
     updatedAt: String
     history: [EnrollmentHistory]
@@ -32,6 +33,7 @@ export const typeDefs = gql`
     COMPLETED
     CANCELLED
     PENDING
+    EXPIRED
   }
 
   extend type Query {

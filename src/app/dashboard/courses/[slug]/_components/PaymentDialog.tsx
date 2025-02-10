@@ -14,6 +14,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { PaymentInformation } from "./payment/PaymentInformation";
 import { PaymentVerification } from "./payment/PaymentVerification";
+import { ListChecks, Loader } from "lucide-react";
 
 export function PaymentDialog({
   user,
@@ -27,22 +28,25 @@ export function PaymentDialog({
 
   const transactionNote = `${user.studentId}-${course.courseCode}`;
 
-  // Хэрэглэгч болон курстэй холбоотой төлбөр байгаа эсэхийг шалгах query
+  // Тухайн хэрэглэгчийн сүүлийн төлбөрийг авах
   const {
     data: existingPaymentData,
     loading: paymentLoading,
     error: paymentError,
     refetch: refetchExistingPayment,
   } = useGetPaymentByUserAndCourseQuery({
-    variables: {
-      userId: user._id,
-      courseId: course._id,
-    },
+    variables: { userId: user._id, courseId: course._id },
     skip: !user?._id || !course?._id,
+    fetchPolicy: "network-only",
   });
 
-  // Байгаа эсэхийг тодорхойлоход амар болгох
-  const existingPayment = existingPaymentData?.getPaymentByUserAndCourse;
+  const existingPayment =
+    existingPaymentData?.getPaymentByUserAndCourse || null;
+
+  const hasPendingPayment =
+    existingPayment && existingPayment.status === "PENDING";
+
+  const validPayment = hasPendingPayment ? existingPayment : null;
 
   const handleCreatePayment = async () => {
     if (!user.studentId || !course.courseCode) {
@@ -50,13 +54,13 @@ export function PaymentDialog({
       return;
     }
 
-    // If user already pressed the button, exit early
-    if (existingPayment) {
-      toast.warning("Та аль хэдийн хүсэлт илгээсэн байна.");
+    if (validPayment) {
+      toast.warning("Та аль хэдийн төлбөр төлсөн байна.");
       return;
     }
 
     setIsSubmitting(true);
+
     try {
       const { data } = await createPayment({
         variables: {
@@ -72,16 +76,44 @@ export function PaymentDialog({
 
       if (data?.createPayment?._id) {
         toast.success("Төлбөрийн хүсэлт амжилттай үүслээ!");
-        // Шинэ төлбөр үүсмэгц дахин fetch хийж, одоо байгаа төлбөрийг (existingPayment) сэргээнэ
-        refetchExistingPayment();
+        await refetchExistingPayment();
       }
     } catch (error) {
-      console.error("Payment creation error:", error);
+      console.error("Create payment error: ", error);
       toast.error("Алдаа гарлаа. Дахин оролдоно уу.");
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  if (paymentLoading) {
+    return (
+      <div className="flex w-full items-center justify-center gap-2 rounded-md border-2 border-dashed border-gray-400 bg-gray-100 py-1 text-center text-sm font-semibold text-gray-500">
+        <p>Төлбөрийн мэдээлэл ачаалж байна...</p>
+        <Loader className="h-4 w-4 animate-spin" />
+      </div>
+    );
+  }
+
+  if (validPayment) {
+    return (
+      <>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button className="w-full">
+              Шалгах
+              <ListChecks />
+            </Button>
+          </DialogTrigger>
+          <PaymentVerification
+            payment={validPayment as Payment}
+            isLoading={paymentLoading}
+            error={paymentError}
+          />
+        </Dialog>
+      </>
+    );
+  }
 
   return (
     <Dialog>
@@ -93,24 +125,12 @@ export function PaymentDialog({
           Сургалтанд бүртгүүлэх
         </Button>
       </DialogTrigger>
-      {paymentLoading ? (
-        <p>Төлбөрийн мэдээлэл ачаалж байна...</p>
-      ) : existingPayment ? (
-        // Хэрэв төлбөр аль хэдийн үүссэн байвал Verification хэсэг рүү шууд орох
-        <PaymentVerification
-          payment={existingPaymentData.getPaymentByUserAndCourse as Payment}
-          isLoading={paymentLoading}
-          error={paymentError}
-        />
-      ) : (
-        // Төлбөр үүсээгүй бол PaymentInformation хэсгээ харуулах
-        <PaymentInformation
-          user={user}
-          course={course}
-          handleCreatePayment={handleCreatePayment}
-          isSubmitting={isSubmitting}
-        />
-      )}
+      <PaymentInformation
+        user={user}
+        course={course}
+        handleCreatePayment={handleCreatePayment}
+        isSubmitting={isSubmitting}
+      />
     </Dialog>
   );
 }
