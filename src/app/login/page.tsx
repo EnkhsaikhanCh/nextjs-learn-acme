@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ActionButton } from "@/components/ActionButton";
 import { BaseInput } from "@/components/BaseInput";
 import { cn } from "@/lib/utils";
-import { Eye, EyeOff, Globe, Loader } from "lucide-react";
+import { Eye, EyeOff, Globe, Loader, LogIn } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { toast, Toaster } from "sonner";
@@ -164,6 +164,7 @@ export default function Login() {
                   <ActionButton
                     type="submit"
                     disabled={isSubmitting}
+                    className=""
                     label={
                       isSubmitting
                         ? "Нэвтрэхийг баталгаажуулж байна..."
@@ -172,7 +173,9 @@ export default function Login() {
                     icon={
                       isSubmitting ? (
                         <Loader className="animate-spin font-semibold" />
-                      ) : null
+                      ) : (
+                        <LogIn />
+                      )
                     }
                   />
                 </div>
