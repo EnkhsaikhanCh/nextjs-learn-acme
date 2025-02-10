@@ -1,6 +1,6 @@
 "use client";
 
-import { Globe, Loader } from "lucide-react";
+import { Globe, LoaderCircle } from "lucide-react";
 import { useState } from "react";
 import { toast, Toaster } from "sonner";
 import { useRouter } from "next/navigation";
@@ -27,6 +27,7 @@ export default function SignUp() {
 
   // Input-ыг ариутгах
   const sanitizedEmail = sanitizeInput(email);
+
   const [createUser] = useCreateUserMutation();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -177,12 +178,10 @@ export default function SignUp() {
               <ActionButton
                 type="submit"
                 disabled={isSubmitting}
-                label={
-                  isSubmitting ? "Бүртгэл үүсгэж байна..." : "Бүртгэл үүсгэх"
-                }
+                label={isSubmitting ? "" : "Бүртгэл үүсгэх"}
                 icon={
                   isSubmitting ? (
-                    <Loader className="animate-spin font-semibold" />
+                    <LoaderCircle className="animate-spin font-semibold" />
                   ) : null
                 }
               />
