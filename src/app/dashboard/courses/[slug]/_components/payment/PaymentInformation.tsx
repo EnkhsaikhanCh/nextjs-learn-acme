@@ -81,7 +81,6 @@ export function PaymentInformation({
             icon={<CreditCard className="h-[18px] w-[18px]" />}
           />
 
-          {/* Non-copyable field */}
           <CopyableField
             label="Дансны нэр"
             value={BANK_DETAILS.accountName}

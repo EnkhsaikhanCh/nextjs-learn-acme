@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { CircleCheck, Copy } from "lucide-react";
 
 interface CopyableFieldProps {
@@ -29,24 +28,17 @@ export const CopyableField = ({
           copiedField === fieldName
             ? "border-green-500 bg-green-100 text-green-500"
             : "border-stone-300 bg-stone-100"
-        }`}
+        } ${onClick ? "cursor-pointer" : ""}`} // onClick байхгүй үед курсор заагч байхгүй
+        onClick={onClick} // Зөвхөн onClick байгаа үед л хуулна
       >
         <span>{copiedField === fieldName ? "Хуулагдсан" : value}</span>
-        {onClick && (
-          <Button
-            size={"icon"}
-            variant={"ghost"}
-            aria-label={`Хуулах ${label}`}
-            className={`h-[20px] w-[20px] transition-colors ${copiedField === fieldName ? "bg-green-100 text-green-600 hover:bg-green-100" : ""}`}
-            onClick={onClick}
-          >
-            {copiedField === fieldName ? (
-              <CircleCheck className="text-green-600" />
-            ) : (
-              <Copy />
-            )}
-          </Button>
-        )}
+        {onClick ? ( // Хуулах боломжгүй үед Copy icon байхгүй болно
+          copiedField === fieldName ? (
+            <CircleCheck className="h-4 w-4 text-green-600" />
+          ) : (
+            <Copy className="h-4 w-4 text-gray-500" />
+          )
+        ) : null}
       </div>
     </div>
   );
