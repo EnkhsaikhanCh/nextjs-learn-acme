@@ -19,14 +19,6 @@ export const getSectionsByCourseId = async (
       model: "Lesson",
     });
 
-    if (!sections.length) {
-      throw new GraphQLError("No sections found for this course", {
-        extensions: {
-          code: "NOT_FOUND",
-        },
-      });
-    }
-
     return sections;
   } catch (error) {
     if (error instanceof GraphQLError) {
