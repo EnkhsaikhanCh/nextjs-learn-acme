@@ -16,9 +16,6 @@ export function NavLinks() {
 
   const links = [
     { href: "/dashboard/courses", label: "Бүх сургалт", icon: BookOpen },
-    { href: "/dashboard/invoices", label: "Invoices", icon: ReceiptText },
-    { href: "/dashboard/costumers", label: "Costumers", icon: Users },
-    { href: "/dashboard/testpage", label: "test-page", icon: TestTubes },
   ];
 
   return (

@@ -71,7 +71,7 @@ export default function Login() {
         toast.error(`${result.error}`);
       } else {
         toast.success("Тавтай морил! Та амжилттай нэвтэрлээ 😊");
-        router.push("/dashboard");
+        router.push("/dashboard/courses");
       }
     } catch (error) {
       console.log("Нэвтрэхэд алдаа гарлаа. Дахин оролдоно уу.", error);
@@ -164,7 +164,6 @@ export default function Login() {
                   <ActionButton
                     type="submit"
                     disabled={isSubmitting}
-                    className=""
                     label={
                       isSubmitting
                         ? "Нэвтрэхийг баталгаажуулж байна..."
