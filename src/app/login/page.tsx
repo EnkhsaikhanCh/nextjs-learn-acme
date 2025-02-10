@@ -5,13 +5,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ActionButton } from "@/components/ActionButton";
 import { BaseInput } from "@/components/BaseInput";
 import { cn } from "@/lib/utils";
-import { Globe, Loader } from "lucide-react";
+import { Eye, EyeOff, Globe, Loader } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { toast, Toaster } from "sonner";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { escape } from "validator";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -20,7 +22,10 @@ export default function Login() {
   const [errors, setErrors] = useState<{ email?: string; password?: string }>(
     {},
   );
+  const [isVisible, setIsVisible] = useState<boolean>(false);
   const router = useRouter();
+
+  const toggleVisibility = () => setIsVisible((prevState) => !prevState);
 
   const sanitizeInput = (input: string) => {
     return escape(input);
@@ -108,24 +113,54 @@ export default function Login() {
                     autoComplete="email"
                     tabIndex={1}
                   />
-                  <BaseInput
-                    id="password"
-                    type="password"
-                    placeholder="Нууц үгээ оруулна уу"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    label="Password"
-                    error={errors.password}
-                    tabIndex={2}
-                    labelExtra={
-                      <Link
-                        href="/forgot-password"
-                        className="cursor-pointer rounded-sm hover:underline"
+
+                  {/* Password field */}
+                  <div>
+                    <div className="mb-1 flex items-center justify-between">
+                      <Label htmlFor={password} className="font-bold">
+                        Password{" "}
+                      </Label>
+                      <div className="text-sm">
+                        <Link
+                          href="/forgot-password"
+                          className="cursor-pointer text-sm underline underline-offset-4 hover:text-blue-600"
+                        >
+                          Нууц үг сэргээх үү?
+                        </Link>
+                      </div>
+                    </div>
+                    <div className="relative">
+                      <Input
+                        id={password}
+                        className="border bg-gray-50 pe-9"
+                        type={isVisible ? "text" : "password"}
+                        placeholder="Нууц үгээ оруулна уу"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                      />
+                      <button
+                        className="absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-lg text-muted-foreground/80 outline-offset-2 transition-colors hover:text-foreground focus:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring/70 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
+                        type="button"
+                        onClick={toggleVisibility}
+                        aria-label={
+                          isVisible ? "Hide password" : "Show password"
+                        }
+                        aria-pressed={isVisible}
+                        aria-controls="password"
                       >
-                        Forgot Password?
-                      </Link>
-                    }
-                  />
+                        {isVisible ? (
+                          <EyeOff
+                            size={16}
+                            strokeWidth={2}
+                            aria-hidden="true"
+                          />
+                        ) : (
+                          <Eye size={16} strokeWidth={2} aria-hidden="true" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
                   <ActionButton
                     type="submit"
                     disabled={isSubmitting}
@@ -143,7 +178,10 @@ export default function Login() {
                 </div>
                 <div className="mt-4 text-center text-sm">
                   Шинэ хэрэглэгч үү?{" "}
-                  <Link href="/signup" className="underline underline-offset-4">
+                  <Link
+                    href="/signup"
+                    className="underline underline-offset-4 hover:text-blue-600"
+                  >
                     Бүртгүүлэх
                   </Link>
                 </div>
