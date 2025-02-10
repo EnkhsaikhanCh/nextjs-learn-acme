@@ -9,6 +9,7 @@ import { MailCheck, AlertTriangle, Loader } from "lucide-react";
 import clsx from "clsx";
 import { ApolloError } from "@apollo/client";
 import { InfoRow } from "@/components/InfoRow";
+import { format } from "date-fns";
 
 type PaymentVerificationProps = {
   payment?: Payment;
@@ -60,7 +61,15 @@ export function PaymentVerification({
     );
   }
 
-  const { status, amount, transactionNote, userId, courseId } = payment;
+  const {
+    status,
+    amount,
+    transactionNote,
+    userId,
+    courseId,
+    createdAt,
+    paymentMethod,
+  } = payment;
 
   return (
     <DialogContent className="p-6">
@@ -80,9 +89,9 @@ export function PaymentVerification({
       </div>
 
       <div className="space-y-3 rounded-lg border border-gray-200 bg-gray-50 p-4 shadow-sm">
-        <InfoRow label="Төлбөрийн дүн:" value={`₮${amount}`} boldValue />
+        <InfoRow label="Төлбөрийн дүн" value={`₮${amount}`} />
         <InfoRow
-          label="Төлбөрийн төлөв:"
+          label="Төлбөрийн төлөв"
           value={
             status === "PENDING"
               ? "Шалгаж байна"
@@ -97,17 +106,34 @@ export function PaymentVerification({
           })}
           isBadge={true}
         />
+        <InfoRow label="Гүйлгээний утга" value={transactionNote || "Байхгүй"} />
         <InfoRow
-          label="Гүйлгээний утга:"
-          value={transactionNote || "Байхгүй"}
-        />
-        <InfoRow
-          label="И-мэйл хаяг:"
+          label="И-мэйл хаяг"
           value={userId?.email || "Мэдээлэл байхгүй"}
         />
         <InfoRow
-          label="Сургалтын нэр:"
+          label="Сургалтын нэр"
           value={courseId?.title || "Мэдээлэл байхгүй"}
+        />
+        <InfoRow
+          label="Төлбөрийн арга"
+          value={
+            paymentMethod === "BANK_TRANSFER"
+              ? "Банкны шилжүүлэг"
+              : paymentMethod === "QPAY"
+                ? "QPay"
+                : paymentMethod === "CREDIT_CARD"
+                  ? "Кредит карт"
+                  : "Бусад"
+          }
+        />
+        <InfoRow
+          label="Төлбөр хийгдсэн огноо"
+          value={
+            createdAt
+              ? format(new Date(Number(createdAt)), "dd-MM-yyyy")
+              : "Мэдээлэл байхгүй"
+          }
         />
       </div>
 
