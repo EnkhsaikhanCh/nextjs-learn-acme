@@ -27,7 +27,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // `/dashboard` замд зөвхөн student role-тэй хэрэглэгч нэвтрэх боломжтой
-  if (pathname.startsWith("/dashboard") && role !== "STUDENT") {
+  if (pathname.startsWith("/dashboard/courses") && role !== "STUDENT") {
     return NextResponse.redirect(new URL("/admin", request.url));
   }
 
