@@ -32,7 +32,7 @@ export default function Page() {
   }
 
   if (loading) {
-    return <p>Loading user details...</p>;
+    return <LoadingOverlay />;
   }
 
   if (error) {
@@ -42,7 +42,7 @@ export default function Page() {
   const user = data?.getUserById;
 
   return (
-    <main>
+    <main className="p-4">
       <h1>
         Welcome, <span className="font-bold">{session.user?.email}</span>
       </h1>
