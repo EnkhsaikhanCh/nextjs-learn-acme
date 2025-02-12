@@ -116,6 +116,7 @@ const config: Config = {
     "src/app/api/graphql/resolvers/queries/section",
     "src/app/api/graphql/resolvers/mutations/user/create-user-mutation.ts",
     "src/app/api/graphql/resolvers/queries/payment",
+    "src/app/api/payment",
   ],
 
   // Indicates which provider should be used to instrument code for coverage
