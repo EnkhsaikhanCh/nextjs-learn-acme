@@ -26,7 +26,7 @@ export function OTPInput({ length, onComplete, disabled }: OTPInputProps) {
           <InputOTPSlot
             key={index}
             index={index}
-            className="border-gray-400 sm:h-12 sm:w-12 md:h-14 md:w-14"
+            className="sm:h-12 sm:w-12 md:h-14 md:w-14"
             autoFocus={index === 0}
             inputMode="numeric"
           />
