@@ -75,8 +75,20 @@ export function PaymentDialog({
       });
 
       if (data?.createPayment?._id) {
-        toast.success("Төлбөрийн хүсэлт амжилттай үүслээ!");
         await refetchExistingPayment();
+
+        await fetch("/api/email/admin/verify-payment", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            paymentId: data.createPayment._id,
+            userEmail: user.email,
+            courseTitle: course.title,
+            transactionNote: transactionNote,
+          }),
+        });
+
+        toast.success("Төлбөрийн хүсэлт амжилттай үүслээ!");
       }
     } catch (error) {
       console.error("Create payment error: ", error);
