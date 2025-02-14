@@ -2,17 +2,24 @@ import gql from "graphql-tag";
 
 export const typeDefs = gql`
   type Enrollment {
+    # Essential fields
     _id: ID!
+    courseId: Course
     userId: User
-    courseId: Course!
-    progress: Float!
-    status: EnrollmentStatus!
-    createdAt: String!
-    updatedAt: String!
-    isDeleted: Boolean!
-    isCompleted: Boolean!
+    status: EnrollmentStatus
+    progress: Float
+
+    # User experience-related fields
+    isCompleted: Boolean
+    completedLessons: [ID]
     lastAccessedAt: String
-    history: [EnrollmentHistory!]
+
+    # System tracking fields
+    expiryDate: String
+    createdAt: String
+    updatedAt: String
+    history: [EnrollmentHistory]
+    isDeleted: Boolean
   }
 
   type EnrollmentHistory {
@@ -26,11 +33,14 @@ export const typeDefs = gql`
     COMPLETED
     CANCELLED
     PENDING
+    EXPIRED
   }
 
   extend type Query {
     getEnrollmentsByUser(userId: ID!): [Enrollment!]!
     getEnrollmentsByCourse(courseId: ID!): [Enrollment!]!
+    getEnrollmentByUserAndCourse(userId: ID!, courseId: ID!): Enrollment
+    checkEnrollment(courseId: ID!, userId: ID!): Enrollment
   }
 
   input CreateEnrollmentInput {
@@ -44,13 +54,20 @@ export const typeDefs = gql`
     status: EnrollmentStatus
   }
 
+  input markLessonAsCompletedInput {
+    enrollmentId: ID!
+    lessonId: ID!
+  }
+
+  input undoLessonCompletionInput {
+    enrollmentId: ID!
+    lessonId: ID!
+  }
+
   extend type Mutation {
     createEnrollment(input: CreateEnrollmentInput): Enrollment
     updateEnrollment(input: UpdateEnrollmentInput): Enrollment
+    markLessonAsCompleted(input: markLessonAsCompletedInput): Enrollment
+    undoLessonCompletion(input: undoLessonCompletionInput): Enrollment
   }
 `;
-
-export type CreateEnrollmentInput = {
-  userId: string;
-  courseId: string;
-};

@@ -1,0 +1,70 @@
+# Mutation
+mutation CreatePayment($input: CreatePaymentInput!) {
+  createPayment(input: $input) {
+    _id
+  }
+}
+
+mutation UpdatePaymentStatus(
+  $id: ID!
+  $status: PaymentStatus!
+  $refundReason: String
+) {
+  updatePaymentStatus(_id: $id, status: $status, refundReason: $refundReason) {
+    _id
+  }
+}
+
+# Query
+query GetAllPayments {
+  getAllPayments {
+    _id
+    userId {
+      _id
+      email
+    }
+    courseId {
+      _id
+      title
+    }
+    amount
+    transactionNote
+    status
+    paymentMethod
+    refundReason
+    createdAt
+  }
+}
+
+query GetPaymentById($id: ID!) {
+  getPaymentById(_id: $id) {
+    _id
+    userId {
+      _id
+    }
+    courseId {
+      _id
+    }
+    status
+  }
+}
+
+query GetPaymentByUserAndCourse($userId: ID!, $courseId: ID!) {
+  getPaymentByUserAndCourse(userId: $userId, courseId: $courseId) {
+    _id
+    userId {
+      _id
+      email
+    }
+    courseId {
+      _id
+      title
+    }
+    amount
+    transactionNote
+    status
+    paymentMethod
+    refundReason
+    createdAt
+  }
+}

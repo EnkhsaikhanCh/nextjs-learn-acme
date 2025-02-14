@@ -23,6 +23,7 @@ export function VerifyOtpForm() {
   const [isVerifying, setIsVerifying] = useState<boolean>(false);
   const [isResending, setIsResending] = useState<boolean>(false);
   const [success, setSuccess] = useState<boolean>(false);
+  const [resendTimer, setResendTimer] = useState<number>(0);
   const router = useRouter();
 
   useEffect(() => {
@@ -30,9 +31,46 @@ export function VerifyOtpForm() {
     setEmail(params.get("email")); // Get the 'email' parameter and set it in state
   }, []);
 
+  // Хуудас дахин ачаалах үед үлдсэн цагийг тооцоолох (expiry timestamp-г ашиглан)
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const expiry = localStorage.getItem("resendExpiry");
+      if (expiry) {
+        const remainingTime = Math.ceil((Number(expiry) - Date.now()) / 1000);
+        setResendTimer(remainingTime > 0 ? remainingTime : 0);
+      }
+    }
+  }, []);
+
+  // Countdown хийх: 1 секунд тутамд үлдсэн цагийг шинэчилнэ
+  useEffect(() => {
+    if (resendTimer > 0) {
+      const timer = setInterval(() => {
+        setResendTimer((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            if (typeof window !== "undefined") {
+              localStorage.removeItem("resendExpiry");
+            }
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [resendTimer]);
+
   // OTP дахин илгээх
   const handleResendOTP = async () => {
+    if (resendTimer > 0) return;
+
     setIsResending(true);
+    // 60 секундийн хугацаатай дуусах цагийг тооцоолоод хадгална
+    const expiryTime = Date.now() + 60000;
+    localStorage.setItem("resendExpiry", String(expiryTime));
+    setResendTimer(60);
+
     try {
       const response = await fetch("/api/auth/send-otp", {
         method: "POST",
@@ -159,7 +197,7 @@ export function VerifyOtpForm() {
         {!success ? (
           <>
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="flex items-center justify-center text-center">
                   <OTPInput
                     length={6}
@@ -183,23 +221,29 @@ export function VerifyOtpForm() {
                   )}
                 </Button>
               </form>
-              <div className="mt-3 text-center text-sm">
+              <div className="mt-4 text-center text-sm">
                 Баталгаажуулах код хүлээн аваагүй байна уу?
                 <div>
                   <Button
                     variant="link"
                     type="button"
-                    className="text-blue-600 hover:underline"
+                    className={`text-blue-600 transition-opacity hover:underline ${
+                      isResending || resendTimer > 0
+                        ? "cursor-not-allowed opacity-50"
+                        : ""
+                    }`}
                     onClick={handleResendOTP}
-                    disabled={isResending}
+                    disabled={isResending || resendTimer > 0}
                   >
                     {isResending ? (
                       <>
-                        Дахин илгээж байна...
-                        <Loader className="mr-2 h-4 w-4 animate-spin" />
+                        Код дахин илгээж байна...
+                        <Loader className="h-4 w-4 animate-spin" />
                       </>
+                    ) : resendTimer > 0 ? (
+                      <>Кодыг дахин илгээх ({resendTimer} сек)</>
                     ) : (
-                      <>Дахин илгээх</>
+                      <>Кодыг дахин илгээх</>
                     )}
                   </Button>
                 </div>

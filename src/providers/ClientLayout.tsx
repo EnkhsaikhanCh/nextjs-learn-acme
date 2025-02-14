@@ -1,6 +1,7 @@
 "use client";
 
 import { SideNav } from "@/components/dashboard/sidebar/SideNav";
+import { LoadingOverlay } from "@/components/LoadingOverlay";
 import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
@@ -9,6 +10,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { Toaster } from "sonner";
 
 export default function ClientLayout({
   children,
@@ -21,7 +23,7 @@ export default function ClientLayout({
   const router = useRouter();
 
   if (status === "loading") {
-    return <p>Loading...</p>; // Session өгөгдлийг ачаалж байна
+    return <LoadingOverlay />; // Session өгөгдлийг ачаалж байна
   }
 
   if (!session) {
@@ -39,7 +41,10 @@ export default function ClientLayout({
             <Separator orientation="vertical" className="mr-2 h-4" />
           </div>
         </header>
-        <main className="p-4">{children}</main>
+        <main>
+          <Toaster richColors position={"top-center"} />
+          {children}
+        </main>
       </SidebarInset>
     </SidebarProvider>
   );

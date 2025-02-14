@@ -3,23 +3,10 @@ import { CourseModel } from "../../../models";
 
 export const getAllCourse = async () => {
   try {
-    const courses = await CourseModel.find()
-      .populate({ path: "sectionId", model: "Section" })
-      .populate({
-        path: "enrollmentId",
-        model: "Enrollment",
-        populate: [
-          {
-            path: "userId", // `Enrollment` модел дотор `userId` байх ёстой
-            select: "_id email studentId role isVerified",
-          },
-          {
-            path: "courseId", // `Enrollment` модел дотор `courseId` байх ёстой
-            select:
-              "_id title description price duration createdBy categories tags status thumbnail",
-          },
-        ],
-      });
+    const courses = await CourseModel.find().populate({
+      path: "sectionId",
+      model: "Section",
+    });
     return courses;
   } catch (error) {
     if (error instanceof GraphQLError) {

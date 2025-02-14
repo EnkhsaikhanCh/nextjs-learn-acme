@@ -6,37 +6,91 @@ export type Course = {
   _id: string;
   title: string;
   description: string;
-  price: number;
+  slug: string;
+  courseCode: string;
+  difficulty: "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
+  price?: {
+    amount: number;
+    currency: "USD" | "MNT";
+    discount: number;
+  };
+  pricingDetails?: {
+    planTitle: string;
+    description: string;
+    price: string;
+    details: string[];
+  };
   sectionId: string;
-  duration?: number;
-  createdBy?: string;
   categories?: string[];
   tags?: string[];
-  status?: "active" | "archived";
-  enrollmentId?: string[];
+  status?: "DRAFT" | "PUBLISHED" | "ARCHIVED";
   thumbnail?: string;
+  whatYouWillLearn?: string[];
+  whyChooseOurCourse?: {
+    icon: string;
+    title: string;
+    description: string;
+  }[];
 };
 
 const CourseSchema = new Schema<Course>(
   {
     _id: { type: String, default: () => uuidv4() },
     title: { type: String, required: true },
-    description: { type: String, required: true },
-    price: { type: Number, required: true, min: 0 },
+    description: { type: String },
+    slug: { type: String },
+    courseCode: { type: String, required: true, unique: true },
+    difficulty: {
+      type: String,
+      enum: ["BEGINNER", "INTERMEDIATE", "ADVANCED"],
+    },
+    price: {
+      type: new Schema(
+        {
+          amount: { type: Number, default: 0 },
+          currency: { type: String, enum: ["USD", "MNT"], default: "MNT" },
+          discount: { type: Number, default: 0 },
+        },
+        { _id: false },
+      ),
+      default: {},
+    },
+    pricingDetails: {
+      type: new Schema(
+        {
+          planTitle: { type: String, default: "" },
+          description: { type: String, default: "" },
+          price: { type: String, default: "" },
+          details: { type: [String], default: [] },
+        },
+        { _id: false },
+      ),
+      default: {},
+    },
     sectionId: [{ type: Schema.Types.String, ref: "Section", default: [] }],
-    duration: { type: Number, min: 0 },
-    createdBy: { type: String },
     categories: { type: [String], default: [] },
     tags: { type: [String], default: [] },
-    status: { type: String, enum: ["active", "archived"], default: "archived" },
-    enrollmentId: [
-      {
-        type: Schema.Types.String,
-        ref: "Enrollment",
-        default: [],
-      },
-    ],
+    status: {
+      type: String,
+      enum: ["DRAFT", "PUBLISHED", "ARCHIVED"],
+      default: "DRAFT",
+    },
     thumbnail: { type: String },
+    whatYouWillLearn: { type: [String], default: [] },
+
+    whyChooseOurCourse: {
+      type: [
+        new Schema(
+          {
+            icon: { type: String },
+            title: { type: String },
+            description: { type: String },
+          },
+          { _id: false },
+        ),
+      ],
+      default: [],
+    },
   },
   { timestamps: true },
 );

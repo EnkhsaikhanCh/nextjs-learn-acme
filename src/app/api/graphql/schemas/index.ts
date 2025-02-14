@@ -6,6 +6,7 @@ import { typeDefs as CourseTypeDefs } from "./course.schema";
 import { typeDefs as EnrollmentTypeDefs } from "./enrollment.schema";
 import { typeDefs as SectionTypeDefs } from "./section.schema";
 import { typeDefs as LessonTypeDefs } from "./lesson.schema";
+import { typeDefs as PaymentTypeDefs } from "./payment.schema";
 
 export const typeDefs = mergeTypeDefs([
   TestTypeDefs,
@@ -14,4 +15,5 @@ export const typeDefs = mergeTypeDefs([
   EnrollmentTypeDefs,
   SectionTypeDefs,
   LessonTypeDefs,
+  PaymentTypeDefs,
 ]);

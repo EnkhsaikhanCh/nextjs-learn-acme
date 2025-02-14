@@ -13,7 +13,7 @@ export const typeDefs = gql`
   }
 
   type Query {
-    getSections(courseId: ID!): [Section!]!
+    getSectionsByCourseId(courseId: ID!): [Section!]!
     getSectionById(id: ID!): Section!
   }
 
@@ -39,16 +39,3 @@ export const typeDefs = gql`
     order: Int
   }
 `;
-
-export type CreateSectionInput = {
-  courseId: string;
-  title: string;
-  description: string;
-  order: number;
-};
-
-export type UpdateSectionInput = {
-  title: string;
-  description: string;
-  order: number;
-};

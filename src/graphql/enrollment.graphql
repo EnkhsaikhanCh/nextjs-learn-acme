@@ -1,0 +1,36 @@
+# Mutations
+mutation MarkLessonAsCompleted($input: markLessonAsCompletedInput) {
+  markLessonAsCompleted(input: $input) {
+    _id
+  }
+}
+
+mutation UndoLessonCompletion($input: undoLessonCompletionInput) {
+  undoLessonCompletion(input: $input) {
+    _id
+  }
+}
+
+# Queries
+query GetEnrollmentByUserAndCourse($userId: ID!, $courseId: ID!) {
+  getEnrollmentByUserAndCourse(userId: $userId, courseId: $courseId) {
+    _id
+    progress
+    status
+    completedLessons
+  }
+}
+
+query CheckEnrollment($courseId: ID!, $userId: ID!) {
+  checkEnrollment(courseId: $courseId, userId: $userId) {
+    _id
+    expiryDate
+    userId {
+      _id
+    }
+    courseId {
+      _id
+    }
+    status
+  }
+}

@@ -10,7 +10,7 @@ dotenv.config();
 
 interface ExtendedJWT extends JWT {
   id?: string;
-  role?: "student" | "admin";
+  role?: "STUDENT" | "INSTRUCTOR" | "ADMIN";
   studentId?: string;
 }
 
@@ -74,7 +74,7 @@ export const authOptions: NextAuthOptions = {
         token.email = user.email;
 
         if ("role" in user && "studentId" in user) {
-          token.role = user.role;
+          token.role = user.role || "STUDENT";
           token.studentId = user.studentId;
         }
       }

@@ -1,7 +1,7 @@
 import { sanitizeInput } from "@/utils/sanitize";
-import { UpdateSectionInput } from "../../../schemas/section.schema";
 import { SectionModel } from "../../../models";
 import { GraphQLError } from "graphql";
+import { UpdateSectionInput } from "@/generated/graphql";
 
 export const updateSection = async (
   _: unknown,
