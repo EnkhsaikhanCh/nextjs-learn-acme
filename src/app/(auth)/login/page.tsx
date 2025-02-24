@@ -11,47 +11,40 @@ import { useState } from "react";
 import { toast, Toaster } from "sonner";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { escape } from "validator";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { AnimatePresence, motion } from "framer-motion";
+
+interface ErrorState {
+  email?: string;
+  password?: string;
+}
 
 export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>(
-    {},
-  );
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [errors, setErrors] = useState<ErrorState>({});
   const [isVisible, setIsVisible] = useState<boolean>(false);
+
   const router = useRouter();
 
   const toggleVisibility = () => setIsVisible((prevState) => !prevState);
-
-  const sanitizeInput = (input: string) => {
-    return escape(input);
-  };
-
-  // Input-ыг ариутгах
-  const sanitizedEmail = sanitizeInput(email);
-  const sanitizedPassword = sanitizeInput(password);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Form validation
     const newErrors: { email?: string; password?: string } = {};
 
-    if (!sanitizedEmail) {
+    if (!email.trim()) {
       newErrors.email = "Имэйл хаяг шаардлагатай.";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       newErrors.email = "Имэйл хаяг буруу байна.";
     }
 
-    if (!sanitizedPassword) {
+    if (!password.trim()) {
       newErrors.password = "Нууц үг шаардлагатай.";
-    } else if (password.length < 8) {
-      newErrors.password = "Нууц үг хамгийн багадаа 8 тэмдэгттэй байх ёстой.";
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -64,13 +57,13 @@ export default function Login() {
       const result = await signIn("credentials", {
         email: email,
         password: password,
-        redirect: false, // Redirect хийхгүй
+        redirect: false,
       });
 
       if (result?.error) {
-        toast.error(`${result.error}`);
+        toast.error(result.error);
       } else {
-        toast.success("Тавтай морил! Та амжилттай нэвтэрлээ 😊");
+        toast.success("Тавтай морил! Амжилттай нэвтэрлээ 😊");
         router.push("/dashboard/courses");
       }
     } catch (error) {
@@ -84,7 +77,7 @@ export default function Login() {
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted md:p-10">
       <Toaster position="top-center" expand={false} richColors />
-      <div className="flex w-full max-w-sm flex-col gap-6">
+      <div className="flex w-full max-w-sm flex-col gap-6 sm:mx-auto sm:w-full sm:max-w-md">
         <Link
           href="/"
           className="flex items-center gap-2 self-center font-medium"
@@ -95,9 +88,12 @@ export default function Login() {
           Nomad Tech Inc.
         </Link>
         <div className={cn("flex flex-col gap-6")}>
-          <Card className="rounded-none sm:rounded-lg">
-            <CardHeader className="text-center">
-              <CardTitle className="text-xl">Нэвтрэх</CardTitle>
+          <Card>
+            <CardHeader className="gap-2 text-center">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
+                <LogIn className="h-6 w-6 text-blue-600" />
+              </div>
+              <CardTitle className="text-3xl">Тавтай морил</CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleLogin}>
@@ -114,16 +110,16 @@ export default function Login() {
                     tabIndex={1}
                   />
 
-                  {/* Password field */}
+                  {/* Password талбарыг боловсруулах */}
                   <div>
                     <div className="mb-1 flex items-center justify-between">
-                      <Label htmlFor={password} className="font-bold">
+                      <Label htmlFor="password" className="font-bold">
                         Password{" "}
                       </Label>
                       <div className="text-sm">
                         <Link
                           href="/forgot-password"
-                          className="cursor-pointer text-sm underline underline-offset-4 hover:text-blue-600"
+                          className="cursor-pointer text-sm font-semibold text-blue-600 hover:text-blue-500"
                         >
                           Нууц үг сэргээх үү?
                         </Link>
@@ -131,15 +127,15 @@ export default function Login() {
                     </div>
                     <div className="relative">
                       <Input
-                        id={password}
-                        className="border bg-gray-50 pe-9"
+                        id="password"
+                        className={`border bg-gray-50 pe-9 ${errors.password ? "border-red-500" : ""}`}
                         type={isVisible ? "text" : "password"}
                         placeholder="Нууц үгээ оруулна уу"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                       />
                       <button
-                        className="absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-lg text-muted-foreground/80 outline-offset-2 transition-colors hover:text-foreground focus:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring/70 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
+                        className={`absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-lg border ${errors.password ? "border-y-red-500 border-r-red-500" : ""} bg-background text-muted-foreground/80 outline-offset-2 transition-colors hover:text-foreground focus:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring/70 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50`}
                         type="button"
                         onClick={toggleVisibility}
                         aria-label={
@@ -159,26 +155,40 @@ export default function Login() {
                         )}
                       </button>
                     </div>
+
+                    <AnimatePresence>
+                      {errors.password && (
+                        <motion.div
+                          className="mt-1 w-full rounded-sm bg-red-100 px-2 py-1 text-sm font-semibold text-red-500"
+                          role="alert"
+                          initial={{ y: -10, opacity: 0 }}
+                          animate={{ y: 0, opacity: 1 }}
+                          exit={{ y: -10, opacity: 0 }}
+                          transition={{ type: "spring", stiffness: 100 }}
+                        >
+                          {errors.password}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
 
                   <ActionButton
                     type="submit"
                     disabled={isSubmitting}
+                    className="rounded-2xl"
                     label={isSubmitting ? "" : "Нэвтрэх"}
                     icon={
-                      isSubmitting ? (
+                      isSubmitting && (
                         <LoaderCircle className="animate-spin font-semibold" />
-                      ) : (
-                        <LogIn />
                       )
                     }
                   />
                 </div>
-                <div className="mt-4 text-center text-sm">
+                <div className="mt-6 text-center text-sm">
                   Шинэ хэрэглэгч үү?{" "}
                   <Link
                     href="/signup"
-                    className="underline underline-offset-4 hover:text-blue-600"
+                    className="font-semibold text-blue-600 hover:text-blue-500"
                   >
                     Бүртгүүлэх
                   </Link>

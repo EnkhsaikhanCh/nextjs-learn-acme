@@ -1,3 +1,4 @@
+import { AnimatePresence, motion } from "framer-motion";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { ReactNode, useEffect, useRef } from "react";
@@ -79,15 +80,21 @@ export const BaseInput = ({
         </p>
       )}
 
-      {error && (
-        <span
-          id={`${inputId}-error`}
-          className="-mt-1 text-sm text-red-500"
-          role="alert"
-        >
-          {error}
-        </span>
-      )}
+      <AnimatePresence>
+        {error && (
+          <motion.span
+            id={`${inputId}-error`}
+            className="-mt-1 rounded-sm bg-red-100 px-2 py-1 text-sm font-semibold text-red-500"
+            role="alert"
+            initial={{ y: -10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -10, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 100 }}
+          >
+            {error}
+          </motion.span>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
