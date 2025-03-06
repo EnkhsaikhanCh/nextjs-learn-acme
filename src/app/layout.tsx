@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import ApolloWrapper from "./api/graphql/ApolloWrappre";
 import SessionProviderWrapper from "@/providers/SessionProviderWrapper";
+import { GeistSans } from "geist/font/sans";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -12,10 +13,13 @@ interface RootLayoutProps {
   children: React.ReactNode;
 }
 
+// Geist Sans-г ашиглах
+const geistSans = GeistSans;
+
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="en">
-      <body className={`antialiased`}>
+    <html lang="en" className={geistSans.variable}>
+      <body className={`font-sans antialiased`}>
         <SessionProviderWrapper>
           <ApolloWrapper>{children}</ApolloWrapper>
         </SessionProviderWrapper>
