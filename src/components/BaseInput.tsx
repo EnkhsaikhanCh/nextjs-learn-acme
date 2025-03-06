@@ -48,7 +48,7 @@ export const BaseInput = ({
   return (
     <div className="grid gap-2">
       <div className="flex items-center justify-between">
-        <Label htmlFor={inputId} className="font-bold">
+        <Label htmlFor={inputId} className="font-semibold">
           {label} {required && <span className="text-red-500">*</span>}
         </Label>
         {labelExtra && <div className="text-sm">{labelExtra}</div>}
