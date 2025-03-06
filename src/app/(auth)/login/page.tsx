@@ -104,7 +104,7 @@ export default function Login() {
                     placeholder="hello@email.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    label="Email"
+                    label="Имэйл"
                     error={errors.email}
                     autoComplete="email"
                     tabIndex={1}
@@ -113,8 +113,8 @@ export default function Login() {
                   {/* Password талбарыг боловсруулах */}
                   <div>
                     <div className="mb-1 flex items-center justify-between">
-                      <Label htmlFor="password" className="font-bold">
-                        Password{" "}
+                      <Label htmlFor="password" className="font-semibold">
+                        Нууц үг{" "}
                       </Label>
                       <div className="text-sm">
                         <Link
