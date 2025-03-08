@@ -72,6 +72,7 @@ export default function Login() {
         toast.success("Тавтай морил! Амжилттай нэвтэрлээ 😊");
         router.push("/dashboard/courses");
       }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       toast.error("Нэвтрэхэд алдаа гарлаа. Дахин оролдоно уу.");
     } finally {
