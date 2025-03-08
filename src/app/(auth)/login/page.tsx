@@ -64,7 +64,10 @@ export default function Login() {
       if (result?.error) {
         toast.error("Имэйл эсвэл нууц үг буруу байна.");
       } else {
-        toast.success("Тавтай морил! Амжилттай нэвтэрлээ 😊");
+        toast.success("Амжилттай нэвтэрлээ", {
+          description: "Таныг системд нэвтрүүлж байна...",
+          duration: 3000,
+        });
         router.push("/dashboard/courses");
       }
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -81,24 +84,26 @@ export default function Login() {
       <div className="flex w-full max-w-sm flex-col gap-6 sm:mx-auto sm:w-full sm:max-w-md">
         <Link
           href="/"
-          className="flex items-center gap-2 self-center font-medium"
+          className="flex items-center gap-2 self-center font-semibold text-foreground/90"
         >
           <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
             <Globe className="h-4 w-4" />
           </div>
-          Nomad Tech Inc.
+          OXON
         </Link>
-        <div className={cn("flex flex-col gap-6")}>
-          <Card>
-            <CardHeader className="gap-2 text-center">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
-                <LogIn className="h-6 w-6 text-blue-600" />
-              </div>
-              <CardTitle className="text-2xl font-bold text-foreground/80 md:text-3xl">
-                Тавтай морил
+        <div className={cn("flex flex-col gap-3")}>
+          <Card className="shadow-none">
+            <CardHeader className="">
+              <CardTitle className="flex items-center gap-3 text-2xl font-bold text-foreground/80">
+                <div className="flex h-10 w-10 items-center justify-center rounded-md border-2 border-blue-500 bg-blue-200">
+                  <LogIn className="h-5 w-5 stroke-[2.5] text-blue-600" />
+                  <span className="sr-only">Log in</span>
+                </div>
+                <p>Нэвтрэх</p>
               </CardTitle>
             </CardHeader>
-            <CardContent>
+
+            <CardContent className="">
               <form onSubmit={handleLogin}>
                 <div className="grid gap-6">
                   <BaseInput
@@ -107,6 +112,7 @@ export default function Login() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     label="Имэйл"
+                    placeholder="welcome@mail.com"
                     error={errors.email}
                     autoComplete="email"
                     tabIndex={1}
@@ -130,16 +136,20 @@ export default function Login() {
                     }
                   />
                 </div>
-                <div className="mt-6 text-center text-sm">
-                  Шинэ хэрэглэгч үү?{" "}
-                  <Link
-                    href="/signup"
-                    className="font-semibold text-blue-600 hover:text-blue-500"
-                  >
-                    Бүртгүүлэх
-                  </Link>
-                </div>
               </form>
+            </CardContent>
+          </Card>
+          <Card className="shadow-none">
+            <CardContent className="py-4">
+              <div className="flex justify-center gap-2 text-center font-semibold">
+                <p className="text-foreground/80">Шинэ хэрэглэгч үү?</p>
+                <Link
+                  href="/signup"
+                  className="font-semibold text-blue-600 hover:text-blue-500 hover:underline"
+                >
+                  Бүртгүүлэх
+                </Link>
+              </div>
             </CardContent>
           </Card>
         </div>

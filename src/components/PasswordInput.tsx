@@ -43,6 +43,7 @@ export const PasswordInput = ({
       <div className="relative">
         <Input
           id="password"
+          placeholder="••••••••"
           className={`border ${errorMessage ? "border-red-500" : "border-gray-300"} bg-gray-50 pe-10`}
           type={isVisible ? "text" : "password"}
           value={value}
