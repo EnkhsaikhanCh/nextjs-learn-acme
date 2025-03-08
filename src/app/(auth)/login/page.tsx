@@ -20,6 +20,22 @@ interface ErrorState {
   password?: string;
 }
 
+const validateForm = (email: string, password: string): ErrorState => {
+  const errors: ErrorState = {};
+
+  if (!email.trim()) {
+    errors.email = "Имэйл хаяг шаардлагатай.";
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    errors.email = "Имэйл хаяг буруу байна.";
+  }
+
+  if (!password.trim()) {
+    errors.password = "Нууц үг шаардлагатай.";
+  }
+
+  return errors;
+};
+
 export default function Login() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -35,20 +51,10 @@ export default function Login() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    const newErrors: { email?: string; password?: string } = {};
+    const validationErrors = validateForm(email, password);
 
-    if (!email.trim()) {
-      newErrors.email = "Имэйл хаяг шаардлагатай.";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      newErrors.email = "Имэйл хаяг буруу байна.";
-    }
-
-    if (!password.trim()) {
-      newErrors.password = "Нууц үг шаардлагатай.";
-    }
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
       setIsSubmitting(false);
       return;
     }
@@ -61,13 +67,12 @@ export default function Login() {
       });
 
       if (result?.error) {
-        toast.error(result.error);
+        toast.error("Имэйл эсвэл нууц үг буруу байна.");
       } else {
         toast.success("Тавтай морил! Амжилттай нэвтэрлээ 😊");
         router.push("/dashboard/courses");
       }
     } catch (error) {
-      console.log("Нэвтрэхэд алдаа гарлаа. Дахин оролдоно уу.", error);
       toast.error("Нэвтрэхэд алдаа гарлаа. Дахин оролдоно уу.");
     } finally {
       setIsSubmitting(false);
@@ -75,7 +80,7 @@ export default function Login() {
   };
 
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted md:p-10">
+    <div className="flex min-h-svh flex-col items-center gap-6 bg-muted md:p-10">
       <Toaster position="top-center" expand={false} richColors />
       <div className="flex w-full max-w-sm flex-col gap-6 sm:mx-auto sm:w-full sm:max-w-md">
         <Link
@@ -93,7 +98,9 @@ export default function Login() {
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
                 <LogIn className="h-6 w-6 text-blue-600" />
               </div>
-              <CardTitle className="text-3xl">Тавтай морил</CardTitle>
+              <CardTitle className="text-2xl font-bold text-foreground/80 md:text-3xl">
+                Тавтай морил
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleLogin}>
@@ -101,7 +108,6 @@ export default function Login() {
                   <BaseInput
                     id="email"
                     type="email"
-                    placeholder="hello@email.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     label="Имэйл"
@@ -128,14 +134,13 @@ export default function Login() {
                     <div className="relative">
                       <Input
                         id="password"
-                        className={`border bg-gray-50 pe-9 ${errors.password ? "border-red-500" : ""}`}
+                        className={`border bg-gray-50 pe-9 ${errors.password ? "border-red-500" : "border-gray-300"}`}
                         type={isVisible ? "text" : "password"}
-                        placeholder="Нууц үгээ оруулна уу"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                       />
                       <button
-                        className={`absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-lg border ${errors.password ? "border-y-red-500 border-r-red-500" : ""} bg-background text-muted-foreground/80 outline-offset-2 transition-colors hover:text-foreground focus:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring/70 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50`}
+                        className={`absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-lg ${errors.password ? "border-y-red-500 border-r-red-500" : ""} text-muted-foreground/80 outline-offset-2 transition-colors hover:text-foreground focus:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring/70 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50`}
                         type="button"
                         onClick={toggleVisibility}
                         aria-label={
@@ -175,7 +180,6 @@ export default function Login() {
                   <ActionButton
                     type="submit"
                     disabled={isSubmitting}
-                    className="rounded-2xl"
                     label={isSubmitting ? "" : "Нэвтрэх"}
                     icon={
                       isSubmitting && (

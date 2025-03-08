@@ -128,8 +128,8 @@ export default function SignUp() {
   };
 
   return (
-    <main className="grid h-screen grid-cols-1 md:grid-cols-2">
-      <div className="relative hidden md:block">
+    <main className="grid h-screen grid-cols-1 lg:grid-cols-2">
+      <div className="relative hidden lg:block">
         <div className="absolute inset-0 bg-gradient-to-br from-stone-700 to-zinc-600" />
         <div className="absolute inset-0 bg-black/50" />
         <div className="relative z-20 flex h-full flex-col items-center justify-between p-8 text-white">
@@ -173,7 +173,6 @@ export default function SignUp() {
               <BaseInput
                 id="email"
                 type="email"
-                placeholder="welcome@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 label="Имэйл"
@@ -188,14 +187,13 @@ export default function SignUp() {
                 <div className="relative">
                   <Input
                     id="password"
-                    className={`border bg-gray-50 pe-9 ${errors.password ? "border-red-500" : ""}`}
+                    className={`border bg-gray-50 pe-9 ${errors.password ? "border-red-500" : "border-gray-300"}`}
                     type={isVisible ? "text" : "password"}
-                    placeholder="Нууц үгээ оруулна уу"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
                   <button
-                    className={`absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-lg border ${errors.password ? "border-y-red-500 border-r-red-500" : ""} bg-background text-muted-foreground/80 outline-offset-2 transition-colors hover:text-foreground focus:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring/70 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50`}
+                    className={`absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-lg ${errors.password ? "border-y-red-500 border-r-red-500" : ""} text-muted-foreground/80 outline-offset-2 transition-colors hover:text-foreground focus:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring/70 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50`}
                     type="button"
                     onClick={toggleVisibility}
                     aria-label={isVisible ? "Hide password" : "Show password"}
@@ -249,7 +247,7 @@ export default function SignUp() {
               <ActionButton
                 type="submit"
                 disabled={isSubmitting}
-                className="rounded-2xl"
+                className=""
                 label={isSubmitting ? "" : "Бүртгэл үүсгэх"}
                 icon={
                   isSubmitting ? (
