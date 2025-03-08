@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  CheckIcon,
-  Eye,
-  EyeOff,
-  Globe,
-  LoaderCircle,
-  XIcon,
-} from "lucide-react";
+import { CheckIcon, Globe, LoaderCircle, XIcon } from "lucide-react";
 import { useState } from "react";
 import { toast, Toaster } from "sonner";
 import { useRouter } from "next/navigation";
@@ -17,9 +10,7 @@ import { signIn } from "next-auth/react";
 import { BaseInput } from "@/components/BaseInput";
 import { ActionButton } from "@/components/ActionButton";
 import Link from "next/link";
-import { Input } from "@/components/ui/input";
-import { AnimatePresence, motion } from "framer-motion";
-import { Label } from "@/components/ui/label";
+import { PasswordInput } from "@/components/PasswordInput";
 
 export default function SignUp() {
   const [email, setEmail] = useState("");
@@ -28,11 +19,8 @@ export default function SignUp() {
   const [errors, setErrors] = useState<{ email?: string; password?: string }>(
     {},
   );
-  const [isVisible, setIsVisible] = useState<boolean>(false);
 
   const router = useRouter();
-
-  const toggleVisibility = () => setIsVisible((prevState) => !prevState);
 
   const sanitizeInput = (input: string) => {
     return escape(input);
@@ -181,47 +169,12 @@ export default function SignUp() {
               />
 
               <div className="space-y-1">
-                <Label htmlFor="password" className="font-semibold">
-                  Нууц үг
-                </Label>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    className={`border bg-gray-50 pe-9 ${errors.password ? "border-red-500" : "border-gray-300"}`}
-                    type={isVisible ? "text" : "password"}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                  <button
-                    className={`absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-lg ${errors.password ? "border-y-red-500 border-r-red-500" : ""} text-muted-foreground/80 outline-offset-2 transition-colors hover:text-foreground focus:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring/70 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50`}
-                    type="button"
-                    onClick={toggleVisibility}
-                    aria-label={isVisible ? "Hide password" : "Show password"}
-                    aria-pressed={isVisible}
-                    aria-controls="password"
-                  >
-                    {isVisible ? (
-                      <EyeOff size={16} strokeWidth={2} aria-hidden="true" />
-                    ) : (
-                      <Eye size={16} strokeWidth={2} aria-hidden="true" />
-                    )}
-                  </button>
-                </div>
+                <PasswordInput
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  errorMessage={errors.password}
+                />
 
-                <AnimatePresence>
-                  {errors.password && (
-                    <motion.div
-                      className="mt-1 w-full rounded-sm bg-red-100 px-2 py-1 text-sm font-semibold text-red-500"
-                      role="alert"
-                      initial={{ y: -10, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      exit={{ y: -10, opacity: 0 }}
-                      transition={{ type: "spring", stiffness: 100 }}
-                    >
-                      {errors.password}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
                 <ul className="mt-2 space-y-1.5">
                   {strength.map((req, index) => (
                     <li key={index} className="flex items-center gap-2 text-xs">

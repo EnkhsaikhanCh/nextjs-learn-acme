@@ -5,15 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ActionButton } from "@/components/ActionButton";
 import { BaseInput } from "@/components/BaseInput";
 import { cn } from "@/lib/utils";
-import { Eye, EyeOff, Globe, LoaderCircle, LogIn } from "lucide-react";
+import { Globe, LoaderCircle, LogIn } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { toast, Toaster } from "sonner";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { AnimatePresence, motion } from "framer-motion";
+import { PasswordInput } from "@/components/PasswordInput";
 
 interface ErrorState {
   email?: string;
@@ -41,11 +39,8 @@ export default function Login() {
   const [password, setPassword] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [errors, setErrors] = useState<ErrorState>({});
-  const [isVisible, setIsVisible] = useState<boolean>(false);
 
   const router = useRouter();
-
-  const toggleVisibility = () => setIsVisible((prevState) => !prevState);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -117,66 +112,12 @@ export default function Login() {
                     tabIndex={1}
                   />
 
-                  {/* Password талбарыг боловсруулах */}
-                  <div>
-                    <div className="mb-1 flex items-center justify-between">
-                      <Label htmlFor="password" className="font-semibold">
-                        Нууц үг{" "}
-                      </Label>
-                      <div className="text-sm">
-                        <Link
-                          href="/forgot-password"
-                          className="cursor-pointer text-sm font-semibold text-blue-600 hover:text-blue-500"
-                        >
-                          Нууц үг сэргээх үү?
-                        </Link>
-                      </div>
-                    </div>
-                    <div className="relative">
-                      <Input
-                        id="password"
-                        className={`border bg-gray-50 pe-9 ${errors.password ? "border-red-500" : "border-gray-300"}`}
-                        type={isVisible ? "text" : "password"}
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                      />
-                      <button
-                        className={`absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-lg ${errors.password ? "border-y-red-500 border-r-red-500" : ""} text-muted-foreground/80 outline-offset-2 transition-colors hover:text-foreground focus:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring/70 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50`}
-                        type="button"
-                        onClick={toggleVisibility}
-                        aria-label={
-                          isVisible ? "Hide password" : "Show password"
-                        }
-                        aria-pressed={isVisible}
-                        aria-controls="password"
-                      >
-                        {isVisible ? (
-                          <EyeOff
-                            size={16}
-                            strokeWidth={2}
-                            aria-hidden="true"
-                          />
-                        ) : (
-                          <Eye size={16} strokeWidth={2} aria-hidden="true" />
-                        )}
-                      </button>
-                    </div>
-
-                    <AnimatePresence>
-                      {errors.password && (
-                        <motion.div
-                          className="mt-1 w-full rounded-sm bg-red-100 px-2 py-1 text-sm font-semibold text-red-500"
-                          role="alert"
-                          initial={{ y: -10, opacity: 0 }}
-                          animate={{ y: 0, opacity: 1 }}
-                          exit={{ y: -10, opacity: 0 }}
-                          transition={{ type: "spring", stiffness: 100 }}
-                        >
-                          {errors.password}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
+                  <PasswordInput
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    errorMessage={errors.password}
+                    resetPassword={true}
+                  />
 
                   <ActionButton
                     type="submit"
