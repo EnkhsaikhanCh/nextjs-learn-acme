@@ -1,6 +1,6 @@
 "use client";
 
-import { Globe, LoaderCircle } from "lucide-react";
+import { CheckIcon, Globe, LoaderCircle, User, XIcon } from "lucide-react";
 import { useState } from "react";
 import { toast, Toaster } from "sonner";
 import { useRouter } from "next/navigation";
@@ -10,7 +10,8 @@ import { signIn } from "next-auth/react";
 import { BaseInput } from "@/components/BaseInput";
 import { ActionButton } from "@/components/ActionButton";
 import Link from "next/link";
-import { Checkbox } from "@/components/ui/checkbox";
+import { PasswordInput } from "@/components/PasswordInput";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function SignUp() {
   const [email, setEmail] = useState("");
@@ -19,6 +20,7 @@ export default function SignUp() {
   const [errors, setErrors] = useState<{ email?: string; password?: string }>(
     {},
   );
+
   const router = useRouter();
 
   const sanitizeInput = (input: string) => {
@@ -29,6 +31,15 @@ export default function SignUp() {
   const sanitizedEmail = sanitizeInput(email);
 
   const [createUser] = useCreateUserMutation();
+
+  const passwordRequirements = [
+    { regex: /.{8,}/, text: "Нууц үг хамгийн багадаа 8 тэмдэгт байх ёстой" },
+  ];
+
+  const strength = passwordRequirements.map((req) => ({
+    valid: req.regex.test(password),
+    text: req.text,
+  }));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,8 +75,6 @@ export default function SignUp() {
       });
 
       if (data?.createUser?.user) {
-        // toast.success("Бүртгэл амжилттай үүсгэлээ!");
-
         // OTP илгээх
         const otpResponse = await fetch("/api/auth/send-otp", {
           method: "POST",
@@ -108,76 +117,97 @@ export default function SignUp() {
   };
 
   return (
-    <main className="grid h-screen grid-cols-1 md:grid-cols-2">
-      <div className="relative m-4 hidden rounded-2xl bg-zinc-900 p-6 text-white sm:m-6 sm:p-8 md:block">
-        <div className="absolute inset-0 z-10 rounded-2xl bg-zinc-900" />
-        <div className="relative z-20 items-center text-lg font-medium">
-          <Link href={"/"} className="flex items-center gap-3">
-            <Globe />
-            Nomad Tech Inc.
+    <main className="grid h-screen grid-cols-1 lg:grid-cols-2">
+      <div className="relative hidden lg:block">
+        <div className="absolute inset-0 bg-gradient-to-br from-stone-700 to-zinc-600" />
+        <div className="absolute inset-0 bg-black/50" />
+        <div className="relative z-20 flex h-full flex-col items-center justify-between p-8 text-white">
+          <Link href="/" className="flex items-center gap-3 text-lg font-bold">
+            <Globe className="h-6 w-6" />
+            OXON
           </Link>
+          <div className="text-center">
+            <h2 className="text-3xl font-bold">Welcome to Nomad Tech</h2>
+            <p className="mt-2 text-lg">Your journey starts here</p>
+          </div>
+          <p className="text-sm"></p>
         </div>
       </div>
 
-      <div className="flex items-center justify-center p-4 sm:p-8">
+      <div className="flex flex-col items-center justify-center gap-3 bg-gray-50 p-4 sm:p-8">
         <Toaster position="top-right" richColors expand={false} />
-        <div className="lg:p-8">
-          <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
-            <div className="flex flex-col space-y-2 text-center">
-              <h1 className="text-2xl font-semibold tracking-tight">
-                Шинэ бүртгэл үүсгэх
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                Доорх мэдээллийг бөглөж бүртгэлээ үүсгэнэ үү
-              </p>
-            </div>
-            <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+
+        <Link
+          href="/"
+          className="mb-3 flex items-center justify-center gap-2 text-lg font-semibold"
+        >
+          <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
+            <Globe className="h-4 w-4" />
+          </div>
+          OXON
+        </Link>
+
+        <Card className="w-full max-w-md shadow-none">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-3 text-2xl font-bold text-foreground/80">
+              <div className="flex h-10 w-10 items-center justify-center rounded-md border-2 border-green-500 bg-green-200">
+                <User className="h-6 w-6 stroke-[2.5] text-green-600" />
+                <span className="sr-only">Sing up</span>
+              </div>
+              <p>Шинэ бүртгэл үүсгэх</p>
+            </CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Доорх мэдээллийг бөглөж бүртгэлээ үүсгэнэ үү
+            </p>
+          </CardHeader>
+
+          <CardContent>
+            <form
+              onSubmit={handleSubmit}
+              className="flex flex-col gap-5 md:gap-7"
+            >
               <BaseInput
                 id="email"
                 type="email"
-                placeholder="welcome@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 label="Имэйл"
                 error={errors.email}
                 autoComplete="email"
+                placeholder="welcome@email.com"
               />
 
-              <BaseInput
-                id="password"
-                type="password"
-                placeholder="Нууц үгээ оруулна уу"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                label="Нууц үг"
-                error={errors.password}
-                description="Нууц үг хамгийн багадаа 8 тэмдэгт байх ёстой"
-              />
+              <div className="space-y-2">
+                <PasswordInput
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  errorMessage={errors.password}
+                />
 
-              <div className="flex items-center space-x-2">
-                <Checkbox id="terms" />
-                <label
-                  htmlFor="terms"
-                  className="text-xs font-medium text-muted-foreground peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  Би{" "}
-                  <Link href="/terms" className="underline hover:text-primary">
-                    Үйлчилгээний нөхцөл
-                  </Link>{" "}
-                  болон{" "}
-                  <Link
-                    href="/privacy"
-                    className="underline hover:text-primary"
-                  >
-                    Нууцлалын бодлого
-                  </Link>
-                  -г зөвшөөрч байна.
-                </label>
+                <ul className="">
+                  {strength.map((req, index) => (
+                    <li key={index} className="flex items-center gap-2 text-xs">
+                      {req.valid ? (
+                        <CheckIcon size={16} className="text-green-500" />
+                      ) : (
+                        <XIcon size={16} className="text-muted-foreground/80" />
+                      )}
+                      <span
+                        className={
+                          req.valid ? "text-green-500" : "text-muted-foreground"
+                        }
+                      >
+                        {req.text}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
               </div>
 
               <ActionButton
                 type="submit"
                 disabled={isSubmitting}
+                className=""
                 label={isSubmitting ? "" : "Бүртгэл үүсгэх"}
                 icon={
                   isSubmitting ? (
@@ -186,17 +216,22 @@ export default function SignUp() {
                 }
               />
             </form>
-            <div className="text-center text-sm">
-              Бүртгэлтэй хэрэглэгч үү?{" "}
+          </CardContent>
+        </Card>
+
+        <Card className="w-full max-w-md shadow-none">
+          <CardContent className="py-4">
+            <div className="flex justify-center gap-2 text-center font-semibold">
+              <p className="text-foreground/80">Бүртгэлтэй хэрэглэгч үү?</p>
               <Link
                 href="/login"
-                className="text-blue-600 underline underline-offset-4 hover:text-blue-700"
+                className="font-semibold text-blue-600 hover:text-blue-500 hover:underline"
               >
                 Нэвтрэх
               </Link>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     </main>
   );
