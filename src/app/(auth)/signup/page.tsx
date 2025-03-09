@@ -1,6 +1,16 @@
 "use client";
 
-import { CheckIcon, Globe, LoaderCircle, XIcon } from "lucide-react";
+import {
+  ArrowBigDown,
+  CheckIcon,
+  Globe,
+  LoaderCircle,
+  Plus,
+  User,
+  UserPlus,
+  UserRoundPlus,
+  XIcon,
+} from "lucide-react";
 import { useState } from "react";
 import { toast, Toaster } from "sonner";
 import { useRouter } from "next/navigation";
@@ -11,6 +21,7 @@ import { BaseInput } from "@/components/BaseInput";
 import { ActionButton } from "@/components/ActionButton";
 import Link from "next/link";
 import { PasswordInput } from "@/components/PasswordInput";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function SignUp() {
   const [email, setEmail] = useState("");
@@ -133,27 +144,34 @@ export default function SignUp() {
         </div>
       </div>
 
-      <div className="flex items-center justify-center p-4 sm:p-8">
+      <div className="flex flex-col items-center justify-center gap-3 bg-gray-50 p-4 sm:p-8">
         <Toaster position="top-right" richColors expand={false} />
-        <div className="w-full max-w-md space-y-8">
-          <div className="flex w-full flex-col justify-center space-y-8">
-            <div className="flex flex-col space-y-2 text-center">
-              <Link
-                href="/"
-                className="mb-3 flex items-center justify-center gap-2 text-lg font-semibold md:hidden"
-              >
-                <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
-                  <Globe className="h-4 w-4" />
-                </div>
-                OXON
-              </Link>
-              <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
-                Шинэ бүртгэл үүсгэх
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                Доорх мэдээллийг бөглөж бүртгэлээ үүсгэнэ үү
-              </p>
-            </div>
+
+        <Link
+          href="/"
+          className="mb-3 flex items-center justify-center gap-2 text-lg font-semibold"
+        >
+          <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
+            <Globe className="h-4 w-4" />
+          </div>
+          OXON
+        </Link>
+
+        <Card className="w-full max-w-md shadow-none">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-3 text-2xl font-bold text-foreground/80">
+              <div className="flex h-10 w-10 items-center justify-center rounded-md border-2 border-green-500 bg-green-200">
+                <User className="h-6 w-6 stroke-[2.5] text-green-600" />
+                <span className="sr-only">Sing up</span>
+              </div>
+              <p>Шинэ бүртгэл үүсгэх</p>
+            </CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Доорх мэдээллийг бөглөж бүртгэлээ үүсгэнэ үү
+            </p>
+          </CardHeader>
+
+          <CardContent>
             <form
               onSubmit={handleSubmit}
               className="flex flex-col gap-5 md:gap-7"
@@ -166,28 +184,27 @@ export default function SignUp() {
                 label="Имэйл"
                 error={errors.email}
                 autoComplete="email"
+                placeholder="welcome@email.com"
               />
 
-              <div className="space-y-1">
+              <div className="space-y-2">
                 <PasswordInput
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   errorMessage={errors.password}
                 />
 
-                <ul className="mt-2 space-y-1.5">
+                <ul className="">
                   {strength.map((req, index) => (
                     <li key={index} className="flex items-center gap-2 text-xs">
                       {req.valid ? (
-                        <CheckIcon size={16} className="text-emerald-500" />
+                        <CheckIcon size={16} className="text-green-500" />
                       ) : (
                         <XIcon size={16} className="text-muted-foreground/80" />
                       )}
                       <span
                         className={
-                          req.valid
-                            ? "text-emerald-600"
-                            : "text-muted-foreground"
+                          req.valid ? "text-green-500" : "text-muted-foreground"
                         }
                       >
                         {req.text}
@@ -209,17 +226,22 @@ export default function SignUp() {
                 }
               />
             </form>
-            <div className="text-center text-sm text-gray-600 dark:text-gray-400">
-              Бүртгэлтэй хэрэглэгч үү?{" "}
+          </CardContent>
+        </Card>
+
+        <Card className="w-full max-w-md shadow-none">
+          <CardContent className="py-4">
+            <div className="flex justify-center gap-2 text-center font-semibold">
+              <p className="text-foreground/80">Бүртгэлтэй хэрэглэгч үү?</p>
               <Link
-                href="/login"
-                className="font-semibold text-blue-600 hover:text-blue-500"
+                href="/signup"
+                className="font-semibold text-blue-600 hover:text-blue-500 hover:underline"
               >
                 Нэвтрэх
               </Link>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     </main>
   );

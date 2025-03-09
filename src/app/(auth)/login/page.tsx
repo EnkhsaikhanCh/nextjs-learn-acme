@@ -93,7 +93,7 @@ export default function Login() {
         </Link>
         <div className={cn("flex flex-col gap-3")}>
           <Card className="shadow-none">
-            <CardHeader className="">
+            <CardHeader>
               <CardTitle className="flex items-center gap-3 text-2xl font-bold text-foreground/80">
                 <div className="flex h-10 w-10 items-center justify-center rounded-md border-2 border-blue-500 bg-blue-200">
                   <LogIn className="h-5 w-5 stroke-[2.5] text-blue-600" />
@@ -103,7 +103,7 @@ export default function Login() {
               </CardTitle>
             </CardHeader>
 
-            <CardContent className="">
+            <CardContent>
               <form onSubmit={handleLogin}>
                 <div className="grid gap-6">
                   <BaseInput
@@ -139,6 +139,7 @@ export default function Login() {
               </form>
             </CardContent>
           </Card>
+
           <Card className="shadow-none">
             <CardContent className="py-4">
               <div className="flex justify-center gap-2 text-center font-semibold">
