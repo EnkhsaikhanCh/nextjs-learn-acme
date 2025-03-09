@@ -79,7 +79,7 @@ export default function Login() {
   };
 
   return (
-    <div className="flex min-h-svh flex-col items-center gap-6 bg-muted md:p-10">
+    <div className="flex min-h-svh flex-col items-center gap-6 bg-muted px-4 md:p-10">
       <Toaster position="top-center" expand={false} richColors />
       <div className="flex w-full max-w-sm flex-col gap-6 sm:mx-auto sm:w-full sm:max-w-md">
         <Link

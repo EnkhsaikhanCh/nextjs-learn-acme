@@ -224,7 +224,7 @@ export default function SignUp() {
             <div className="flex justify-center gap-2 text-center font-semibold">
               <p className="text-foreground/80">Бүртгэлтэй хэрэглэгч үү?</p>
               <Link
-                href="/signup"
+                href="/login"
                 className="font-semibold text-blue-600 hover:text-blue-500 hover:underline"
               >
                 Нэвтрэх
