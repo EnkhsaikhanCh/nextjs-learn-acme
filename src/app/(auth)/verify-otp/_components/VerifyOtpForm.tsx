@@ -99,8 +99,7 @@ export function VerifyOtpForm() {
     }
   };
 
-  const handleSubmit = async (e?: React.FormEvent) => {
-    e?.preventDefault();
+  const handleSubmit = async () => {
     setIsVerifying(true);
     setError("");
 
@@ -128,6 +127,7 @@ export function VerifyOtpForm() {
         );
       } else {
         setSuccess(true);
+        setOtp("");
         toast.success("Имэйл амжилттай баталгаажлаа!");
         localStorage.removeItem("userEmail");
         localStorage.removeItem("resendExpiry");
@@ -217,38 +217,32 @@ export function VerifyOtpForm() {
           </CardTitle>
         </CardHeader>
         {!success ? (
-          <>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="flex items-center text-center">
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="flex flex-col items-center text-center">
+                {!isVerifying ? (
                   <OTPInput
                     length={6}
-                    onComplete={(value) => setOtp(value)}
+                    onComplete={(value) => {
+                      setOtp(value);
+                      handleSubmit();
+                    }}
                     disabled={isVerifying}
+                    isError={!!error}
+                    onChange={(value) => {
+                      setOtp(value);
+                      setError("");
+                    }}
+                    value={otp}
                   />
-                </div>
-                {error && (
-                  <p className="flex items-center justify-center rounded-md border border-yellow-500 bg-yellow-200 px-2 py-2 text-center text-sm font-semibold text-yellow-600">
-                    {error}
-                  </p>
+                ) : (
+                  <div className="flex h-14 items-center justify-center">
+                    <Loader className="h-8 w-8 animate-spin text-teal-600" />
+                  </div>
                 )}
-                <Button
-                  type="submit"
-                  disabled={isVerifying}
-                  className="w-full bg-teal-700 hover:bg-teal-800/90"
-                >
-                  {isVerifying ? (
-                    <>
-                      Баталгаажуулж байна...
-                      <Loader className="mr-2 h-4 w-4 animate-spin" />
-                    </>
-                  ) : (
-                    <>Имэйл баталгаажуулах</>
-                  )}
-                </Button>
-              </form>
-            </CardContent>
-          </>
+              </div>
+            </form>
+          </CardContent>
         ) : (
           <div className="flex flex-col p-5">
             <motion.div
