@@ -27,8 +27,12 @@ export function VerifyOtpForm() {
   const router = useRouter();
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search); // Access the query parameters
-    setEmail(params.get("email")); // Get the 'email' parameter and set it in state
+    const storedEmail = localStorage.getItem("userEmail");
+    if (!storedEmail) {
+      router.push("/signup");
+    } else {
+      setEmail(storedEmail);
+    }
   }, []);
 
   // Хуудас дахин ачаалах үед үлдсэн цагийг тооцоолох (expiry timestamp-г ашиглан)
@@ -125,6 +129,7 @@ export function VerifyOtpForm() {
       } else {
         setSuccess(true);
         toast.success("Имэйл амжилттай баталгаажлаа!");
+        localStorage.removeItem("userEmail");
         setTimeout(() => router.push("/dashboard"), 2000);
       }
     } catch (error) {

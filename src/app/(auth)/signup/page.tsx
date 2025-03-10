@@ -102,7 +102,8 @@ export default function SignUp() {
         }
 
         // OTP баталгаажуулах хуудас руу дамжуулах
-        router.push(`/verify-otp?email=${encodeURIComponent(sanitizedEmail)}`);
+        localStorage.setItem("userEmail", sanitizedEmail);
+        router.push("/verify-otp");
       } else {
         toast.error(
           data?.createUser?.message || "Серверээс буруу хариу ирлээ.",
