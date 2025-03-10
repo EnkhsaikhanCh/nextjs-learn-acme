@@ -21,12 +21,12 @@ export function OTPInput({ length, onComplete, disabled }: OTPInputProps) {
       aria-label="OTP input"
       className={disabled ? "pointer-events-none opacity-50" : ""}
     >
-      <InputOTPGroup>
+      <InputOTPGroup className="flex w-full justify-between">
         {Array.from({ length }, (_, index) => (
           <InputOTPSlot
             key={index}
             index={index}
-            className="sm:h-12 sm:w-12 md:h-14 md:w-14"
+            className="h-12 w-12 rounded-sm border-stone-300 bg-stone-100 text-lg font-semibold ring-teal-500 md:h-14 md:w-14 md:text-xl"
             autoFocus={index === 0}
             inputMode="numeric"
           />

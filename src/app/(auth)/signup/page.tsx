@@ -207,7 +207,6 @@ export default function SignUp() {
               <ActionButton
                 type="submit"
                 disabled={isSubmitting}
-                className=""
                 label={isSubmitting ? "" : "Бүртгэл үүсгэх"}
                 icon={
                   isSubmitting ? (

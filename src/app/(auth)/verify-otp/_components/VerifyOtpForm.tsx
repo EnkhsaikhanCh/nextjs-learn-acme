@@ -6,15 +6,15 @@ import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { OTPInput } from "@/components/otp-input";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Loader, RectangleEllipsis } from "lucide-react";
+import { ArrowLeft, Globe, Loader, MailCheck } from "lucide-react";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import Link from "next/link";
 
 export function VerifyOtpForm() {
   const [email, setEmail] = useState<string | null>(null);
@@ -145,21 +145,30 @@ export function VerifyOtpForm() {
           exit={{ opacity: 0, y: 20 }}
           transition={{ duration: 0.3 }}
         >
+          <Link
+            href="/"
+            className="mb-6 flex items-center justify-center gap-2 text-lg font-semibold"
+          >
+            <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
+              <Globe className="h-4 w-4" />
+            </div>
+            OXON
+          </Link>
           <Card className="min-w-full max-w-md sm:w-[460px]">
             <CardHeader>
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
-                <RectangleEllipsis className="h-6 w-6 text-blue-600" />
-              </div>
-              <CardTitle className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                Имэйл баталгаажуулалт
+              <CardTitle className="flex items-center gap-3 text-2xl font-bold text-foreground/80">
+                <div className="flex h-10 w-10 items-center justify-center rounded-md border-2 border-teal-500 bg-teal-200">
+                  <MailCheck className="h-6 w-6 stroke-[2.5] text-teal-600" />
+                  <span className="sr-only">Sing up</span>
+                </div>
+                <p>Имэйл баталгаажуулалт</p>
               </CardTitle>
-              <CardDescription className="mt-2 text-center text-sm text-gray-600">
-                Таны и-мэйл рүү баталгаажуулах код илгээгдсэн.
-              </CardDescription>
             </CardHeader>
-            <div className="mx-5 mb-5 rounded-md border-2 border-dashed border-yellow-300 bg-yellow-100 px-3 py-2 text-center font-semibold text-yellow-600">
-              <p>И-мэйл хаяг оруулаагүй байна. Дахин оролдоно уу.</p>
-            </div>
+            <CardContent>
+              <div className="rounded-md border-2 border-dashed border-yellow-500 bg-yellow-200 px-3 py-2 text-center font-semibold text-yellow-600">
+                <p>И-мэйл хаяг оруулаагүй байна. Дахин оролдоно уу.</p>
+              </div>
+            </CardContent>
             <CardFooter>
               <Button
                 variant="outline"
@@ -182,23 +191,30 @@ export function VerifyOtpForm() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Card className="min-w-full max-w-md sm:w-[460px]">
+      <Link
+        href="/"
+        className="mb-6 flex items-center justify-center gap-2 text-lg font-semibold"
+      >
+        <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
+          <Globe className="h-4 w-4" />
+        </div>
+        OXON
+      </Link>
+      <Card className="min-w-full max-w-md shadow-none">
         <CardHeader>
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
-            <RectangleEllipsis className="h-6 w-6 text-blue-600" />
-          </div>
-          <CardTitle className="mt-6 text-center text-2xl font-extrabold text-gray-900 md:text-3xl">
-            Имэйл баталгаажуулалт
+          <CardTitle className="flex items-center gap-3 text-2xl font-bold text-foreground/80">
+            <div className="flex h-10 w-10 items-center justify-center rounded-md border-2 border-teal-500 bg-teal-200">
+              <MailCheck className="h-6 w-6 stroke-[2.5] text-teal-600" />
+              <span className="sr-only">Sing up</span>
+            </div>
+            <p>Имэйл баталгаажуулалт</p>
           </CardTitle>
-          <CardDescription className="mt-2 text-center text-sm text-gray-600">
-            Таны и-мэйл хаяг руу баталгаажуулах код илгээгдсэн байна.
-          </CardDescription>
         </CardHeader>
         {!success ? (
           <>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="flex items-center justify-center text-center">
+                <div className="flex items-center text-center">
                   <OTPInput
                     length={6}
                     onComplete={(value) => setOtp(value)}
@@ -210,7 +226,11 @@ export function VerifyOtpForm() {
                     {error}
                   </p>
                 )}
-                <Button type="submit" disabled={isVerifying} className="w-full">
+                <Button
+                  type="submit"
+                  disabled={isVerifying}
+                  className="w-full bg-teal-700 hover:bg-teal-800/90"
+                >
                   {isVerifying ? (
                     <>
                       Баталгаажуулж байна...
@@ -221,33 +241,6 @@ export function VerifyOtpForm() {
                   )}
                 </Button>
               </form>
-              <div className="mt-4 text-center text-sm">
-                Баталгаажуулах код хүлээн аваагүй байна уу?
-                <div>
-                  <Button
-                    variant="link"
-                    type="button"
-                    className={`text-blue-600 transition-opacity hover:underline ${
-                      isResending || resendTimer > 0
-                        ? "cursor-not-allowed opacity-50"
-                        : ""
-                    }`}
-                    onClick={handleResendOTP}
-                    disabled={isResending || resendTimer > 0}
-                  >
-                    {isResending ? (
-                      <>
-                        Код дахин илгээж байна...
-                        <Loader className="h-4 w-4 animate-spin" />
-                      </>
-                    ) : resendTimer > 0 ? (
-                      <>Кодыг дахин илгээх ({resendTimer} сек)</>
-                    ) : (
-                      <>Кодыг дахин илгээх</>
-                    )}
-                  </Button>
-                </div>
-              </div>
             </CardContent>
           </>
         ) : (
@@ -281,6 +274,41 @@ export function VerifyOtpForm() {
           </div>
         )}
       </Card>
+
+      {!success && (
+        <Card className="mt-4 text-center shadow-none">
+          <CardHeader className="py-4 pb-0 pt-4">
+            <CardTitle className="text-md font-semibold text-foreground/80">
+              Баталгаажуулах код хүлээн аваагүй байна уу?
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="px-4 pb-4">
+            <Button
+              variant="link"
+              type="button"
+              size={"sm"}
+              className={`text-blue-600 transition-opacity hover:underline ${
+                isResending || resendTimer > 0
+                  ? "cursor-not-allowed opacity-50"
+                  : ""
+              }`}
+              onClick={handleResendOTP}
+              disabled={isResending || resendTimer > 0}
+            >
+              {isResending ? (
+                <>
+                  Код дахин илгээж байна...
+                  <Loader className="h-4 w-4 animate-spin" />
+                </>
+              ) : resendTimer > 0 ? (
+                <>Кодыг дахин илгээх ({resendTimer} сек)</>
+              ) : (
+                <>Кодыг дахин илгээх</>
+              )}
+            </Button>
+          </CardContent>
+        </Card>
+      )}
     </motion.div>
   );
 }
