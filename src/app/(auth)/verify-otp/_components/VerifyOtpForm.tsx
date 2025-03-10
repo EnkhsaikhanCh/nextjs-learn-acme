@@ -130,6 +130,7 @@ export function VerifyOtpForm() {
         setSuccess(true);
         toast.success("Имэйл амжилттай баталгаажлаа!");
         localStorage.removeItem("userEmail");
+        localStorage.removeItem("resendExpiry");
         setTimeout(() => router.push("/dashboard"), 2000);
       }
     } catch (error) {
