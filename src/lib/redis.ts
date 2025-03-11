@@ -7,13 +7,11 @@ if (!redisUrl) {
 }
 
 export const redis = new Redis(redisUrl, {
-  lazyConnect: true, // Анхны хүсэлтээр холбогдоно
-  maxRetriesPerRequest: 5, // Холболтын оролдлогын дээд хэмжээ
-  retryStrategy: (times) => Math.min(times * 100, 2000), // Холболтын алдаанд дахин оролдлогын стратеги
-  enableOfflineQueue: process.env.NODE_ENV !== "production", // Prod орчинд offline queue идэвхгүй
+  lazyConnect: true,
+  maxRetriesPerRequest: 5,
+  retryStrategy: (times) => Math.min(times * 100, 2000),
 });
 
-// Redis холболтын амжилттай байдал болон алдааг логлох
 redis.on("connect", () => {
   console.log(`✅ Redis сервертэй холбогдлоо: ${redisUrl}`);
 });
