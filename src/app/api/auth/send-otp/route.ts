@@ -1,13 +1,10 @@
 // src/app/api/auth/send-otp/route.ts
 import { generateOTP } from "@/utils/generate-otp";
 import { NextResponse } from "next/server";
-import { UserModel } from "../../graphql/models";
+import { redis } from "@/lib/redis"; // Redis клиент импортлох
 import { sendEmail } from "@/lib/email";
-import { connectToDatabase } from "@/lib/mongodb";
 
 export async function POST(request: Request) {
-  await connectToDatabase();
-
   try {
     const { email } = await request.json();
 
@@ -19,16 +16,10 @@ export async function POST(request: Request) {
     }
 
     const otp = generateOTP();
-    const otpExpiry = Date.now() + 5 * 60 * 1000; // 5 минутын хүчинтэй
+    const otpExpiry = 5 * 60; // 5 минут (секундээр)
 
-    const user = await UserModel.findOne({ email }).exec();
-
-    if (user) {
-      // Хэрэглэгч байгаа бол шинэчлэх
-      user.otp = otp;
-      user.otpExpiry = otpExpiry;
-      await user.save();
-    }
+    // Redis-д OTP хадгалах
+    await redis.set(`otp:${email}`, otp, "EX", otpExpiry);
 
     await sendEmail({
       to: email,
