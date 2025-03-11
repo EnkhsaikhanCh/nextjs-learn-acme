@@ -9,5 +9,14 @@ if (!redisUrl) {
 export const redis = new Redis(redisUrl, {
   lazyConnect: true,
   maxRetriesPerRequest: 5,
-  retryStrategy: (times) => Math.min(times * 100, 2000),
+  retryStrategy: (times) => Math.min(times * 50, 2000),
+  enableOfflineQueue: process.env.NODE_ENV !== "production",
+});
+
+redis.on("error", (error) => {
+  console.error("❌ Redis холболтын алдаа:", error);
+});
+
+redis.on("connect", () => {
+  console.log(`✅ Redis сервертэй холбогдлоо: ${redisUrl}`);
 });
