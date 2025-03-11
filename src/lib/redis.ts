@@ -6,7 +6,6 @@ if (!redisUrl) {
   throw new Error("⚠️ REDIS_URL тохируулагдаагүй байна!");
 }
 
-// Vercel-ийн preview орчинд ч гэсэн secure холболт хиймээр байвал энд нэмж өг
 const isProduction =
   process.env.NODE_ENV === "production" ||
   process.env.VERCEL_ENV === "production" ||
@@ -24,10 +23,18 @@ const redisOptions: RedisOptions = {
 
 export const redis = new Redis(redisUrl, redisOptions);
 
+// Холболтын алдааг нарийвчлан бүртгэх
 redis.on("error", (error) => {
-  console.error("❌ Redis холболтын алдаа:", error);
+  console.error("❌ Redis холболтын алдаа:", error.message);
+  console.log("Redis статус:", redis.status);
 });
 
+// Холболт амжилттай болсныг бүртгэх
 redis.on("connect", () => {
   console.log(`✅ Redis сервертэй холбогдлоо: ${redisUrl}`);
+});
+
+// Холболтыг гараар эхлүүлэх
+redis.connect().catch((err) => {
+  console.error("❌ Redis эхний холболт амжилтгүй:", err);
 });
