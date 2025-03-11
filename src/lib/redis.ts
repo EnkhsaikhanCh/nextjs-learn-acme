@@ -11,16 +11,3 @@ export const redis = new Redis(redisUrl, {
   maxRetriesPerRequest: 5,
   retryStrategy: (times) => Math.min(times * 100, 2000),
 });
-
-redis.on("connect", () => {
-  console.log(`✅ Redis сервертэй холбогдлоо: ${redisUrl}`);
-});
-
-redis.on("error", (error) => {
-  console.error("❌ Redis холболтын алдаа:", error);
-});
-
-// Холболтыг шууд эхлүүлэх, алдаа шалгах
-redis.connect().catch((err) => {
-  console.error("❌ Redis эхний холболт амжилтгүй:", err);
-});
