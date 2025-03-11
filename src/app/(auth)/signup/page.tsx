@@ -165,6 +165,7 @@ export default function SignUp() {
           <CardContent>
             <form
               onSubmit={handleSubmit}
+              method="POST"
               className="flex flex-col gap-5 md:gap-7"
             >
               <BaseInput
@@ -183,6 +184,7 @@ export default function SignUp() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   errorMessage={errors.password}
+                  autoComplete="new-password"
                 />
 
                 <ul className="">
