@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { redis } from "@/lib/redis"; // Redis клиент импортлох
 import { UserModel } from "../../graphql/models";
 import { connectToDatabase } from "@/lib/mongodb";
+import { v4 as uuidv4 } from "uuid";
 
 export async function POST(request: Request) {
   await connectToDatabase();
@@ -40,8 +41,13 @@ export async function POST(request: Request) {
     // Redis-с OTP кодыг устгах
     await redis.del(`otp:${email}`);
 
+    // Create a temporary sign-in token
+    const signInToken = uuidv4();
+    await redis.set(`signin-token:${signInToken}`, email, "EX", 300); // Token valid for 5 minutes
+
     return NextResponse.json({
       message: "И-мэйл амжилттай баталгаажлаа.",
+      signInToken,
     });
   } catch (error) {
     console.error("OTP баталгаажуулахад алдаа гарлаа:", error);

@@ -15,6 +15,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
 
 export function VerifyOtpForm() {
   const [email, setEmail] = useState<string | null>(null);
@@ -129,9 +130,24 @@ export function VerifyOtpForm() {
         setSuccess(true);
         setOtp("");
         toast.success("Имэйл амжилттай баталгаажлаа!");
-        localStorage.removeItem("userEmail");
-        localStorage.removeItem("resendExpiry");
-        setTimeout(() => router.push("/dashboard"), 2000);
+
+        // Use signInToken to sign in
+        const result = await signIn("credentials", {
+          redirect: false,
+          email,
+          signInToken: data.signInToken,
+        });
+
+        if (result?.error) {
+          toast.error("Нэвтрэхэд алдаа гарлаа. Дахин оролдоно уу.");
+          router.push("/login");
+          setIsVerifying(false);
+          return;
+        } else {
+          localStorage.removeItem("userEmail");
+          localStorage.removeItem("resendExpiry");
+          setTimeout(() => router.push("/dashboard"), 2000);
+        }
       }
     } catch (error) {
       console.error(error);
@@ -242,6 +258,10 @@ export function VerifyOtpForm() {
                 )}
               </div>
             </form>
+            <p className="mt-4 text-center text-sm text-foreground/60">
+              <strong>{email}</strong> хаяг руу 6 оронтой баталгаажуулах код
+              илгээсэн.
+            </p>
           </CardContent>
         ) : (
           <div className="flex flex-col p-5">

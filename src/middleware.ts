@@ -26,6 +26,10 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
+  if (!token.isVerified && pathname !== "/verify-otp") {
+    return NextResponse.redirect(new URL("/verify-otp", request.url));
+  }
+
   // `/dashboard` замд зөвхөн student role-тэй хэрэглэгч нэвтрэх боломжтой
   if (pathname.startsWith("/dashboard/courses") && role !== "STUDENT") {
     return NextResponse.redirect(new URL("/admin", request.url));
