@@ -30,7 +30,7 @@ export async function GET() {
   } catch (error) {
     console.error("Redis Test Error:", error);
     return NextResponse.json(
-      { error: "❌ Redis холболтын алдаа." },
+      { error: `❌ Redis холболтын алдаа. ${error}` },
       { status: 500 },
     );
   }
