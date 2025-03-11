@@ -8,8 +8,6 @@ export type User = {
   studentId?: string;
   role: "STUDENT" | "INSTRUCTOR" | "ADMIN";
   password: string;
-  otp?: string;
-  otpExpiry?: Date;
   isVerified: boolean;
   resetToken?: string;
   resetTokenExpiry?: Date;
@@ -35,8 +33,6 @@ const UserSchema = new Schema(
       default: "STUDENT",
     },
     password: { type: String, required: true, minlength: 8 },
-    otp: { type: String },
-    otpExpiry: { type: Date },
     isVerified: { type: Boolean, default: false },
     resetToken: { type: String },
     resetTokenExpiry: { type: Date },
