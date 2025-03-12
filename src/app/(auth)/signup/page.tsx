@@ -88,20 +88,6 @@ export default function SignUp() {
 
         toast.success("OTP код амжилттай илгээгдлээ!");
 
-        // Auth.js ашиглан Sign In хийх
-        const result = await signIn("credentials", {
-          email: sanitizedEmail,
-          password: password,
-          redirect: false, // OTP баталгаажуулах хуудас руу дамжуулах тул redirect-г false болгоно
-        });
-
-        if (result?.error) {
-          toast.error("Нэвтрэхэд алдаа гарлаа. Дахин оролдоно уу.");
-          setIsSubmitting(false);
-          return;
-        }
-
-        // OTP баталгаажуулах хуудас руу дамжуулах
         localStorage.setItem("userEmail", sanitizedEmail);
         router.push("/verify-otp");
       } else {

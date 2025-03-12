@@ -9,7 +9,7 @@ import { Globe, LoaderCircle, LogIn } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { toast, Toaster } from "sonner";
-import { signIn } from "next-auth/react";
+import { getSession, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { PasswordInput } from "@/components/PasswordInput";
 
@@ -62,13 +62,45 @@ export default function Login() {
       });
 
       if (result?.error) {
-        toast.error("Имэйл эсвэл нууц үг буруу байна.");
+        if (result.error.includes("баталгаажаагүй")) {
+          const otpResponse = await fetch("/api/auth/send-otp", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: email }),
+          });
+
+          if (!otpResponse.ok) {
+            throw new Error("OTP илгээхэд алдаа гарлаа.");
+          }
+
+          toast.success("OTP код амжилттай илгээгдлээ!");
+
+          localStorage.setItem("userEmail", email);
+          router.push("/verify-otp");
+        } else {
+          toast.error("Имэйл эсвэл нууц үг буруу байна.");
+          console.error(result.error);
+        }
       } else {
+        const session = await getSession();
+
+        if (!session || !session.user?.role) {
+          toast.error("Хэрэглэгчийн мэдээлэл олдсонгүй.");
+          return;
+        }
+
+        const userRole = session.user.role;
+
         toast.success("Амжилттай нэвтэрлээ", {
           description: "Таныг системд нэвтрүүлж байна...",
           duration: 3000,
         });
-        router.push("/dashboard/courses");
+
+        if (userRole.toUpperCase() === "ADMIN") {
+          router.push("/admin");
+        } else {
+          router.push("/dashboard/courses");
+        }
       }
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {

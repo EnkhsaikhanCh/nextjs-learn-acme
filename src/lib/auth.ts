@@ -47,6 +47,12 @@ export const authOptions: NextAuthOptions = {
           );
         }
 
+        if (!user.isVerified) {
+          throw new Error(
+            "И-мэйл баталгаажаагүй байна. Эхлээд имэйлээ баталгаажуулна уу.",
+          );
+        }
+
         // Allow sign-in with temporary token
         if (credentials.signInToken) {
           const storedEmail = await redis.get(
