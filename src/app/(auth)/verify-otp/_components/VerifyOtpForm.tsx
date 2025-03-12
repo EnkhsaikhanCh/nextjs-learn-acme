@@ -311,8 +311,8 @@ export function VerifyOtpForm() {
               </div>
             </form>
             <p className="mt-4 text-center text-sm text-foreground/60">
-              <strong>{email}</strong> хаяг руу 6 оронтой баталгаажуулах код
-              илгээсэн.
+              6 оронтой код таны <strong>{email}</strong> хаяг руу илгээгдсэн.
+              Код 5 минутын дотор хүчинтэй.
             </p>
           </CardContent>
         ) : (
