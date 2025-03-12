@@ -18,8 +18,12 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next(); // Үргэлжлүүлэх
   }
 
+  if (!token.isVerified && pathname !== "/verify-otp") {
+    return NextResponse.redirect(new URL("/verify-otp", request.url));
+  }
+
   // Token-оос хэрэглэгчийн role авна
-  const role = token?.role; // Ensure your token includes the `role` field
+  const role = token?.role;
 
   // `/admin` замд зөвхөн admin role-тэй хэрэглэгч нэвтрэх боломжтой
   if (pathname.startsWith("/admin") && role !== "ADMIN") {
@@ -32,10 +36,6 @@ export async function middleware(request: NextRequest) {
     role !== "ADMIN"
   ) {
     return NextResponse.redirect(new URL("/admin", request.url));
-  }
-
-  if (!token.isVerified && pathname !== "/verify-otp") {
-    return NextResponse.redirect(new URL("/verify-otp", request.url));
   }
 
   // Хэрэглэгч `/login` эсвэл `/signup` руу орох үед `/dashboard` руу чиглүүлэх

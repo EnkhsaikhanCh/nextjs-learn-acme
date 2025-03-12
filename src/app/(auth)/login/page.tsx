@@ -62,7 +62,18 @@ export default function Login() {
       });
 
       if (result?.error) {
-        if (result.error.includes("баталгаажаагүй")) {
+        toast.error("Имэйл эсвэл нууц үг буруу байна.");
+        console.error(result.error);
+      } else {
+        const session = await getSession();
+
+        if (!session || !session.user?.role) {
+          toast.error("Хэрэглэгчийн мэдээлэл олдсонгүй.");
+          return;
+        }
+
+        // Баталгаажаагүй эсэхийг шалгах
+        if (!session.user.isVerified) {
           const otpResponse = await fetch("/api/auth/send-otp", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -74,19 +85,9 @@ export default function Login() {
           }
 
           toast.success("OTP код амжилттай илгээгдлээ!");
-
           localStorage.setItem("userEmail", email);
           router.push("/verify-otp");
-        } else {
-          toast.error("Имэйл эсвэл нууц үг буруу байна.");
-          console.error(result.error);
-        }
-      } else {
-        const session = await getSession();
-
-        if (!session || !session.user?.role) {
-          toast.error("Хэрэглэгчийн мэдээлэл олдсонгүй.");
-          return;
+          return; // Эндээс гарах
         }
 
         const userRole = session.user.role;
