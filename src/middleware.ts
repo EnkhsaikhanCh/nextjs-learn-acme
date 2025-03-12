@@ -18,16 +18,23 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next(); // Үргэлжлүүлэх
   }
 
+  if (!token.isVerified && pathname !== "/verify-otp") {
+    return NextResponse.redirect(new URL("/verify-otp", request.url));
+  }
+
   // Token-оос хэрэглэгчийн role авна
-  const role = token?.role; // Ensure your token includes the `role` field
+  const role = token?.role;
 
   // `/admin` замд зөвхөн admin role-тэй хэрэглэгч нэвтрэх боломжтой
   if (pathname.startsWith("/admin") && role !== "ADMIN") {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
-  // `/dashboard` замд зөвхөн student role-тэй хэрэглэгч нэвтрэх боломжтой
-  if (pathname.startsWith("/dashboard/courses") && role !== "STUDENT") {
+  if (
+    pathname.startsWith("/dashboard/courses") &&
+    role !== "STUDENT" &&
+    role !== "ADMIN"
+  ) {
     return NextResponse.redirect(new URL("/admin", request.url));
   }
 

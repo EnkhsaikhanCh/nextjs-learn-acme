@@ -10,6 +10,7 @@ interface PasswordInputProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   errorMessage?: string;
   resetPassword?: boolean;
+  autoComplete?: string;
 }
 
 export const PasswordInput = ({
@@ -17,6 +18,7 @@ export const PasswordInput = ({
   onChange,
   errorMessage,
   resetPassword,
+  autoComplete,
 }: PasswordInputProps) => {
   const [isVisible, setIsVisible] = useState(false);
 
@@ -48,6 +50,7 @@ export const PasswordInput = ({
           type={isVisible ? "text" : "password"}
           value={value}
           onChange={onChange}
+          autoComplete={autoComplete}
           aria-invalid={errorMessage ? "true" : "false"}
           aria-describedby={errorMessage ? "password-error" : undefined}
         />

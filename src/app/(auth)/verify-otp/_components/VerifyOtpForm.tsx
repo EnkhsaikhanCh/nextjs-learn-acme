@@ -6,30 +6,53 @@ import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { OTPInput } from "@/components/otp-input";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Loader, RectangleEllipsis } from "lucide-react";
+import { ArrowLeft, Globe, Loader, MailCheck } from "lucide-react";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import Link from "next/link";
+import { signIn } from "next-auth/react";
 
 export function VerifyOtpForm() {
   const [email, setEmail] = useState<string | null>(null);
   const [otp, setOtp] = useState<string>("");
   const [error, setError] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isVerifying, setIsVerifying] = useState<boolean>(false);
   const [isResending, setIsResending] = useState<boolean>(false);
   const [success, setSuccess] = useState<boolean>(false);
   const [resendTimer, setResendTimer] = useState<number>(0);
   const router = useRouter();
 
+  // Хуудас ачаалахад tempToken-оос имэйлийг авах
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search); // Access the query parameters
-    setEmail(params.get("email")); // Get the 'email' parameter and set it in state
-  }, []);
+    const tempToken = localStorage.getItem("tempToken");
+    if (tempToken) {
+      setIsLoading(true);
+      fetch("/api/auth/get-email-from-token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: tempToken }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.email) {
+            setEmail(data.email);
+          } else {
+            localStorage.removeItem("tempToken");
+            router.push("/login");
+          }
+        })
+        .catch(() => router.push("/login"))
+        .finally(() => setIsLoading(false));
+    } else {
+      router.push("/login");
+    }
+  }, [router]);
 
   // Хуудас дахин ачаалах үед үлдсэн цагийг тооцоолох (expiry timestamp-г ашиглан)
   useEffect(() => {
@@ -66,7 +89,6 @@ export function VerifyOtpForm() {
     if (resendTimer > 0) return;
 
     setIsResending(true);
-    // 60 секундийн хугацаатай дуусах цагийг тооцоолоод хадгална
     const expiryTime = Date.now() + 60000;
     localStorage.setItem("resendExpiry", String(expiryTime));
     setResendTimer(60);
@@ -95,8 +117,7 @@ export function VerifyOtpForm() {
     }
   };
 
-  const handleSubmit = async (e?: React.FormEvent) => {
-    e?.preventDefault();
+  const handleSubmit = async () => {
     setIsVerifying(true);
     setError("");
 
@@ -116,16 +137,30 @@ export function VerifyOtpForm() {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(
-          data.error || "Код буруу эсвэл баталгаажуулалт амжилтгүй боллоо.",
-        );
-        toast.error(
-          data.error || "Баталгаажуулалт амжилтгүй боллоо. Дахин оролдоно уу.",
-        );
+        setError(data.error || "Код буруу байна.");
+        toast.error(data.error || "Баталгаажуулалт амжилтгүй боллоо.");
       } else {
         setSuccess(true);
+        setOtp("");
         toast.success("Имэйл амжилттай баталгаажлаа!");
-        setTimeout(() => router.push("/dashboard"), 2000);
+
+        // Use signInToken to sign in
+        const result = await signIn("credentials", {
+          redirect: false,
+          email,
+          signInToken: data.signInToken,
+        });
+
+        if (result?.error) {
+          toast.error("Нэвтрэхэд алдаа гарлаа. Дахин оролдоно уу.");
+          router.push("/login");
+          setIsVerifying(false);
+          return;
+        } else {
+          localStorage.removeItem("tempToken");
+          localStorage.removeItem("resendExpiry");
+          setTimeout(() => router.push("/dashboard"), 2000);
+        }
       }
     } catch (error) {
       console.error(error);
@@ -136,6 +171,45 @@ export function VerifyOtpForm() {
     }
   };
 
+  // Ачаалж байгаа төлөв
+  if (isLoading) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 20 }}
+        transition={{ duration: 0.3 }}
+      >
+        <Link
+          href="/"
+          className="mb-6 flex items-center justify-center gap-2 text-lg font-semibold"
+        >
+          <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
+            <Globe className="h-4 w-4" />
+          </div>
+          OXON
+        </Link>
+        <Card className="min-w-full max-w-md sm:w-[460px]">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-3 text-2xl font-bold text-foreground/80">
+              <div className="flex h-10 w-10 items-center justify-center rounded-md border-2 border-teal-500 bg-teal-200">
+                <MailCheck className="h-6 w-6 stroke-[2.5] text-teal-600" />
+                <span className="sr-only">Sing up</span>
+              </div>
+              <p>Имэйл баталгаажуулалт</p>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-center">
+              <Loader className="h-8 w-8 animate-spin text-teal-600" />
+              <p className="ml-2 text-foreground/60">Ачаалж байна...</p>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+    );
+  }
+
   if (!email) {
     return (
       <>
@@ -145,21 +219,30 @@ export function VerifyOtpForm() {
           exit={{ opacity: 0, y: 20 }}
           transition={{ duration: 0.3 }}
         >
+          <Link
+            href="/"
+            className="mb-6 flex items-center justify-center gap-2 text-lg font-semibold"
+          >
+            <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
+              <Globe className="h-4 w-4" />
+            </div>
+            OXON
+          </Link>
           <Card className="min-w-full max-w-md sm:w-[460px]">
             <CardHeader>
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
-                <RectangleEllipsis className="h-6 w-6 text-blue-600" />
-              </div>
-              <CardTitle className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                Имэйл баталгаажуулалт
+              <CardTitle className="flex items-center gap-3 text-2xl font-bold text-foreground/80">
+                <div className="flex h-10 w-10 items-center justify-center rounded-md border-2 border-teal-500 bg-teal-200">
+                  <MailCheck className="h-6 w-6 stroke-[2.5] text-teal-600" />
+                  <span className="sr-only">Sing up</span>
+                </div>
+                <p>Имэйл баталгаажуулалт</p>
               </CardTitle>
-              <CardDescription className="mt-2 text-center text-sm text-gray-600">
-                Таны и-мэйл рүү баталгаажуулах код илгээгдсэн.
-              </CardDescription>
             </CardHeader>
-            <div className="mx-5 mb-5 rounded-md border-2 border-dashed border-yellow-300 bg-yellow-100 px-3 py-2 text-center font-semibold text-yellow-600">
-              <p>И-мэйл хаяг оруулаагүй байна. Дахин оролдоно уу.</p>
-            </div>
+            <CardContent>
+              <div className="rounded-md border-2 border-dashed border-yellow-500 bg-yellow-200 px-3 py-2 text-center font-semibold text-yellow-600">
+                <p>И-мэйл хаяг оруулаагүй байна. Дахин оролдоно уу.</p>
+              </div>
+            </CardContent>
             <CardFooter>
               <Button
                 variant="outline"
@@ -182,74 +265,56 @@ export function VerifyOtpForm() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Card className="min-w-full max-w-md sm:w-[460px]">
+      <Link
+        href="/"
+        className="mb-6 flex items-center justify-center gap-2 text-lg font-semibold"
+      >
+        <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
+          <Globe className="h-4 w-4" />
+        </div>
+        OXON
+      </Link>
+      <Card className="min-w-full max-w-md shadow-none">
         <CardHeader>
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
-            <RectangleEllipsis className="h-6 w-6 text-blue-600" />
-          </div>
-          <CardTitle className="mt-6 text-center text-2xl font-extrabold text-gray-900 md:text-3xl">
-            Имэйл баталгаажуулалт
+          <CardTitle className="flex items-center gap-3 text-2xl font-bold text-foreground/80">
+            <div className="flex h-10 w-10 items-center justify-center rounded-md border-2 border-teal-500 bg-teal-200">
+              <MailCheck className="h-6 w-6 stroke-[2.5] text-teal-600" />
+              <span className="sr-only">Sing up</span>
+            </div>
+            <p>Имэйл баталгаажуулалт</p>
           </CardTitle>
-          <CardDescription className="mt-2 text-center text-sm text-gray-600">
-            Таны и-мэйл хаяг руу баталгаажуулах код илгээгдсэн байна.
-          </CardDescription>
         </CardHeader>
         {!success ? (
-          <>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="flex items-center justify-center text-center">
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="flex flex-col items-center text-center">
+                {!isVerifying ? (
                   <OTPInput
                     length={6}
-                    onComplete={(value) => setOtp(value)}
+                    onComplete={(value) => {
+                      setOtp(value);
+                      handleSubmit();
+                    }}
                     disabled={isVerifying}
+                    isError={!!error}
+                    onChange={(value) => {
+                      setOtp(value);
+                      setError("");
+                    }}
+                    value={otp}
                   />
-                </div>
-                {error && (
-                  <p className="flex items-center justify-center rounded-md border border-yellow-500 bg-yellow-200 px-2 py-2 text-center text-sm font-semibold text-yellow-600">
-                    {error}
-                  </p>
+                ) : (
+                  <div className="flex h-14 items-center justify-center">
+                    <Loader className="h-8 w-8 animate-spin text-teal-600" />
+                  </div>
                 )}
-                <Button type="submit" disabled={isVerifying} className="w-full">
-                  {isVerifying ? (
-                    <>
-                      Баталгаажуулж байна...
-                      <Loader className="mr-2 h-4 w-4 animate-spin" />
-                    </>
-                  ) : (
-                    <>Имэйл баталгаажуулах</>
-                  )}
-                </Button>
-              </form>
-              <div className="mt-4 text-center text-sm">
-                Баталгаажуулах код хүлээн аваагүй байна уу?
-                <div>
-                  <Button
-                    variant="link"
-                    type="button"
-                    className={`text-blue-600 transition-opacity hover:underline ${
-                      isResending || resendTimer > 0
-                        ? "cursor-not-allowed opacity-50"
-                        : ""
-                    }`}
-                    onClick={handleResendOTP}
-                    disabled={isResending || resendTimer > 0}
-                  >
-                    {isResending ? (
-                      <>
-                        Код дахин илгээж байна...
-                        <Loader className="h-4 w-4 animate-spin" />
-                      </>
-                    ) : resendTimer > 0 ? (
-                      <>Кодыг дахин илгээх ({resendTimer} сек)</>
-                    ) : (
-                      <>Кодыг дахин илгээх</>
-                    )}
-                  </Button>
-                </div>
               </div>
-            </CardContent>
-          </>
+            </form>
+            <p className="mt-4 text-center text-sm text-foreground/60">
+              6 оронтой код таны <strong>{email}</strong> хаяг руу илгээгдсэн.
+              Код 5 минутын дотор хүчинтэй.
+            </p>
+          </CardContent>
         ) : (
           <div className="flex flex-col p-5">
             <motion.div
@@ -281,6 +346,41 @@ export function VerifyOtpForm() {
           </div>
         )}
       </Card>
+
+      {!success && (
+        <Card className="mt-4 text-center shadow-none">
+          <CardHeader className="py-4 pb-0 pt-4">
+            <CardTitle className="text-md font-semibold text-foreground/80">
+              Баталгаажуулах код хүлээн аваагүй байна уу?
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="px-4 pb-4">
+            <Button
+              variant="link"
+              type="button"
+              size={"sm"}
+              className={`text-blue-600 transition-opacity hover:underline ${
+                isResending || resendTimer > 0
+                  ? "cursor-not-allowed opacity-50"
+                  : ""
+              }`}
+              onClick={handleResendOTP}
+              disabled={isResending || resendTimer > 0}
+            >
+              {isResending ? (
+                <>
+                  Код дахин илгээж байна...
+                  <Loader className="h-4 w-4 animate-spin" />
+                </>
+              ) : resendTimer > 0 ? (
+                <>Кодыг дахин илгээх ({resendTimer} сек)</>
+              ) : (
+                <>Кодыг дахин илгээх</>
+              )}
+            </Button>
+          </CardContent>
+        </Card>
+      )}
     </motion.div>
   );
 }

@@ -6,7 +6,6 @@ import { toast, Toaster } from "sonner";
 import { useRouter } from "next/navigation";
 import { escape } from "validator";
 import { useCreateUserMutation } from "@/generated/graphql";
-import { signIn } from "next-auth/react";
 import { BaseInput } from "@/components/BaseInput";
 import { ActionButton } from "@/components/ActionButton";
 import Link from "next/link";
@@ -14,9 +13,9 @@ import { PasswordInput } from "@/components/PasswordInput";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function SignUp() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>(
     {},
   );
@@ -75,6 +74,21 @@ export default function SignUp() {
       });
 
       if (data?.createUser?.user) {
+        // Токен үүсгэх
+        const tokenResponse = await fetch("/api/auth/generate-temp-token", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: sanitizedEmail }),
+        });
+
+        if (!tokenResponse.ok) {
+          throw new Error("Токен үүсгэхэд алдаа гарлаа.");
+        }
+
+        const { token } = await tokenResponse.json();
+
+        localStorage.setItem("tempToken", token);
+
         // OTP илгээх
         const otpResponse = await fetch("/api/auth/send-otp", {
           method: "POST",
@@ -88,21 +102,7 @@ export default function SignUp() {
 
         toast.success("OTP код амжилттай илгээгдлээ!");
 
-        // Auth.js ашиглан Sign In хийх
-        const result = await signIn("credentials", {
-          email: sanitizedEmail,
-          password: password,
-          redirect: false, // OTP баталгаажуулах хуудас руу дамжуулах тул redirect-г false болгоно
-        });
-
-        if (result?.error) {
-          toast.error("Нэвтрэхэд алдаа гарлаа. Дахин оролдоно уу.");
-          setIsSubmitting(false);
-          return;
-        }
-
-        // OTP баталгаажуулах хуудас руу дамжуулах
-        router.push(`/verify-otp?email=${encodeURIComponent(sanitizedEmail)}`);
+        router.push("/verify-otp");
       } else {
         toast.error(
           data?.createUser?.message || "Серверээс буруу хариу ирлээ.",
@@ -164,6 +164,7 @@ export default function SignUp() {
           <CardContent>
             <form
               onSubmit={handleSubmit}
+              method="POST"
               className="flex flex-col gap-5 md:gap-7"
             >
               <BaseInput
@@ -182,6 +183,7 @@ export default function SignUp() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   errorMessage={errors.password}
+                  autoComplete="new-password"
                 />
 
                 <ul className="">
@@ -207,7 +209,6 @@ export default function SignUp() {
               <ActionButton
                 type="submit"
                 disabled={isSubmitting}
-                className=""
                 label={isSubmitting ? "" : "Бүртгэл үүсгэх"}
                 icon={
                   isSubmitting ? (
