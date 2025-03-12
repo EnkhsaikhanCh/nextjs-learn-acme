@@ -74,6 +74,21 @@ export default function Login() {
 
         // Баталгаажаагүй эсэхийг шалгах
         if (!session.user.isVerified) {
+          // Токен үүсгэх
+          const tokenResponse = await fetch("/api/auth/generate-temp-token", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: email }),
+          });
+
+          if (!tokenResponse.ok) {
+            throw new Error("Токен үүсгэхэд алдаа гарлаа.");
+          }
+
+          const { token } = await tokenResponse.json();
+          localStorage.setItem("tempToken", token);
+
+          // OTP илгээх
           const otpResponse = await fetch("/api/auth/send-otp", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -85,7 +100,6 @@ export default function Login() {
           }
 
           toast.success("OTP код амжилттай илгээгдлээ!");
-          localStorage.setItem("userEmail", email);
           router.push("/verify-otp");
           return; // Эндээс гарах
         }

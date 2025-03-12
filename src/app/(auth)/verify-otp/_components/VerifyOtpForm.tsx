@@ -21,18 +21,36 @@ export function VerifyOtpForm() {
   const [email, setEmail] = useState<string | null>(null);
   const [otp, setOtp] = useState<string>("");
   const [error, setError] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isVerifying, setIsVerifying] = useState<boolean>(false);
   const [isResending, setIsResending] = useState<boolean>(false);
   const [success, setSuccess] = useState<boolean>(false);
   const [resendTimer, setResendTimer] = useState<number>(0);
   const router = useRouter();
 
+  // Хуудас ачаалахад tempToken-оос имэйлийг авах
   useEffect(() => {
-    const storedEmail = localStorage.getItem("userEmail");
-    if (!storedEmail) {
-      router.push("/signup");
+    const tempToken = localStorage.getItem("tempToken");
+    if (tempToken) {
+      setIsLoading(true);
+      fetch("/api/auth/get-email-from-token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: tempToken }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.email) {
+            setEmail(data.email);
+          } else {
+            localStorage.removeItem("tempToken");
+            router.push("/login");
+          }
+        })
+        .catch(() => router.push("/login"))
+        .finally(() => setIsLoading(false));
     } else {
-      setEmail(storedEmail);
+      router.push("/login");
     }
   }, [router]);
 
@@ -71,7 +89,6 @@ export function VerifyOtpForm() {
     if (resendTimer > 0) return;
 
     setIsResending(true);
-    // 60 секундийн хугацаатай дуусах цагийг тооцоолоод хадгална
     const expiryTime = Date.now() + 60000;
     localStorage.setItem("resendExpiry", String(expiryTime));
     setResendTimer(60);
@@ -120,12 +137,8 @@ export function VerifyOtpForm() {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(
-          data.error || "Код буруу эсвэл баталгаажуулалт амжилтгүй боллоо.",
-        );
-        toast.error(
-          data.error || "Баталгаажуулалт амжилтгүй боллоо. Дахин оролдоно уу.",
-        );
+        setError(data.error || "Код буруу байна.");
+        toast.error(data.error || "Баталгаажуулалт амжилтгүй боллоо.");
       } else {
         setSuccess(true);
         setOtp("");
@@ -144,7 +157,7 @@ export function VerifyOtpForm() {
           setIsVerifying(false);
           return;
         } else {
-          localStorage.removeItem("userEmail");
+          localStorage.removeItem("tempToken");
           localStorage.removeItem("resendExpiry");
           setTimeout(() => router.push("/dashboard"), 2000);
         }
@@ -157,6 +170,45 @@ export function VerifyOtpForm() {
       setIsVerifying(false);
     }
   };
+
+  // Ачаалж байгаа төлөв
+  if (isLoading) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 20 }}
+        transition={{ duration: 0.3 }}
+      >
+        <Link
+          href="/"
+          className="mb-6 flex items-center justify-center gap-2 text-lg font-semibold"
+        >
+          <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
+            <Globe className="h-4 w-4" />
+          </div>
+          OXON
+        </Link>
+        <Card className="min-w-full max-w-md sm:w-[460px]">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-3 text-2xl font-bold text-foreground/80">
+              <div className="flex h-10 w-10 items-center justify-center rounded-md border-2 border-teal-500 bg-teal-200">
+                <MailCheck className="h-6 w-6 stroke-[2.5] text-teal-600" />
+                <span className="sr-only">Sing up</span>
+              </div>
+              <p>Имэйл баталгаажуулалт</p>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-center">
+              <Loader className="h-8 w-8 animate-spin text-teal-600" />
+              <p className="ml-2 text-foreground/60">Ачаалж байна...</p>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+    );
+  }
 
   if (!email) {
     return (

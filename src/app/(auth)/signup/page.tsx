@@ -74,6 +74,21 @@ export default function SignUp() {
       });
 
       if (data?.createUser?.user) {
+        // Токен үүсгэх
+        const tokenResponse = await fetch("/api/auth/generate-temp-token", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: sanitizedEmail }),
+        });
+
+        if (!tokenResponse.ok) {
+          throw new Error("Токен үүсгэхэд алдаа гарлаа.");
+        }
+
+        const { token } = await tokenResponse.json();
+
+        localStorage.setItem("tempToken", token);
+
         // OTP илгээх
         const otpResponse = await fetch("/api/auth/send-otp", {
           method: "POST",
@@ -87,7 +102,6 @@ export default function SignUp() {
 
         toast.success("OTP код амжилттай илгээгдлээ!");
 
-        localStorage.setItem("userEmail", sanitizedEmail);
         router.push("/verify-otp");
       } else {
         toast.error(
