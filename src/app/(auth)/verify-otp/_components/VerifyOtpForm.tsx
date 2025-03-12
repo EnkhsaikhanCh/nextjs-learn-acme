@@ -34,7 +34,7 @@ export function VerifyOtpForm() {
     } else {
       setEmail(storedEmail);
     }
-  }, []);
+  }, [router]);
 
   // Хуудас дахин ачаалах үед үлдсэн цагийг тооцоолох (expiry timestamp-г ашиглан)
   useEffect(() => {

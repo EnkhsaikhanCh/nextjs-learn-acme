@@ -6,7 +6,6 @@ import { toast, Toaster } from "sonner";
 import { useRouter } from "next/navigation";
 import { escape } from "validator";
 import { useCreateUserMutation } from "@/generated/graphql";
-import { signIn } from "next-auth/react";
 import { BaseInput } from "@/components/BaseInput";
 import { ActionButton } from "@/components/ActionButton";
 import Link from "next/link";
