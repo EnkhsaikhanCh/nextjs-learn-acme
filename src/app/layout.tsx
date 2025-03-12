@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/react";
 import ApolloWrapper from "./api/graphql/ApolloWrappre";
 import SessionProviderWrapper from "@/providers/SessionProviderWrapper";
 import { GeistSans } from "geist/font/sans";
@@ -23,6 +24,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <SessionProviderWrapper>
           <ApolloWrapper>{children}</ApolloWrapper>
         </SessionProviderWrapper>
+        <Analytics />
       </body>
     </html>
   );
