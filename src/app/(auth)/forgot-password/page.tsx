@@ -6,12 +6,11 @@ import { motion } from "framer-motion";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { AlertCircle, ArrowLeft, Loader, Mail } from "lucide-react";
+import { AlertCircle, ArrowLeft, Globe, KeyRound, Loader } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -43,7 +42,7 @@ export default function ForgotPassword() {
     }
 
     try {
-      const response = await fetch("/api/auth/forgot-password", {
+      const response = await fetch("/api/auth/forgot-password-token", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
@@ -66,107 +65,108 @@ export default function ForgotPassword() {
   };
 
   return (
-    <>
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gray-50 px-2 py-12 sm:px-6 md:px-4 lg:px-8">
-        <Toaster richColors position="top-center" />
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 20 }}
-          transition={{ duration: 0.3 }}
+    <main className="flex min-h-svh flex-col items-center gap-6 bg-muted px-4 md:p-10">
+      <Toaster richColors position="top-center" />
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 20 }}
+        transition={{ duration: 0.3 }}
+      >
+        <Link
+          href="/"
+          className="mb-6 flex items-center justify-center gap-2 text-lg font-semibold"
         >
-          <Card className="max-w-mds w-full">
-            <CardHeader>
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
-                <Mail className="h-6 w-6 text-blue-600" />
+          <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
+            <Globe className="h-4 w-4" />
+          </div>
+          OXON
+        </Link>
+
+        {/* Card */}
+        <Card className="min-w-full max-w-md">
+          {/* Card Header */}
+          <CardHeader>
+            <CardTitle className="flex items-center gap-3 text-2xl font-bold text-foreground/80">
+              <div className="flex h-10 w-10 items-center justify-center rounded-md border-2 border-amber-500 bg-amber-200">
+                <KeyRound className="h-6 w-6 stroke-[2.5] text-amber-600" />
+                <span className="sr-only">forgot password</span>
               </div>
-              <CardTitle className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                Нууц үгээ мартсан уу?
-              </CardTitle>
-              <CardDescription className="mt-2 text-center text-sm text-gray-600">
-                Таны и-мэйл хаяг руу нууц үг сэргээх холбоос илгээх болно.
-              </CardDescription>
-            </CardHeader>
-            <form onSubmit={handleSubmit}>
-              <CardContent>
-                <div className="grid w-full items-center gap-4">
-                  <div className="flex flex-col space-y-1.5">
-                    <Label htmlFor="email" className="font-semibold">
-                      Email
-                    </Label>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      autoComplete="email"
-                      required
-                      className="relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
-                      placeholder="Таны и-мэйл хаяг"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                    />
-                  </div>
+              <p>Нууц үгээ мартсан уу?</p>
+            </CardTitle>
+          </CardHeader>
+          {/* Form */}
+          <form onSubmit={handleSubmit}>
+            <CardContent>
+              <div className="grid w-full items-center gap-4">
+                <div className="flex flex-col space-y-1.5">
+                  <Label htmlFor="email" className="font-semibold">
+                    Имэйл
+                  </Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    placeholder="hello@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                  <p className="text-sm text-gray-500">
+                    Имэйл хаягаа оруулна уу. Бид таны имэйл рүү нууц үг сэргээх
+                    холбоос илгээх болно.
+                  </p>
                 </div>
-                {formError && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mt-4 flex items-center gap-2 font-semibold text-red-500"
-                  >
-                    <AlertCircle size={16} />
-                    <span className="text-sm">{formError}</span>
-                  </motion.div>
+              </div>
+              {formError && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mt-2 flex items-center gap-2 font-semibold text-red-500"
+                >
+                  <AlertCircle size={16} />
+                  <span className="text-sm">{formError}</span>
+                </motion.div>
+              )}
+            </CardContent>
+            <CardFooter className="flex flex-col gap-3">
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    Холбоос илгээж байна...
+                    <Loader className="mr-2 h-4 w-4 animate-spin" />
+                  </>
+                ) : (
+                  "Холбоос илгээх"
                 )}
-              </CardContent>
-              <CardFooter className="flex flex-col gap-4">
-                <Button
-                  type="submit"
-                  className="group relative flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-bold text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <>
-                      Холбоос илгээж байна...
-                      <Loader className="mr-2 h-4 w-4 animate-spin" />
-                    </>
-                  ) : (
-                    "Холбоос илгээх"
-                  )}
+              </Button>
+              <Link href="/login" className="w-full">
+                <Button type="button" variant="outline" className="w-full">
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Нэвтрэх хуудас руу буцах
                 </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="flex w-full flex-col"
+              </Link>
+            </CardFooter>
+          </form>
+          {success && (
+            <motion.div>
+              <div className="-mt-9 p-6 sm:mx-auto sm:w-full sm:max-w-md">
+                <div
+                  className="relative rounded border-2 border-green-400 bg-green-100 px-4 py-3 text-center text-green-700"
+                  role="alert"
                 >
-                  <Link
-                    href={"/login"}
-                    className="flex flex-row items-center justify-center"
-                  >
-                    <ArrowLeft className="mr-2 h-4 w-4" />
-                    Нэвтрэх хуудас руу буцах
-                  </Link>
-                </Button>
-              </CardFooter>
-            </form>
-            {success && (
-              <motion.div>
-                <div className="-mt-5 p-6 sm:mx-auto sm:w-full sm:max-w-md">
-                  <div
-                    className="relative rounded border-2 border-dashed border-green-400 bg-green-100 px-4 py-3 text-center text-green-700"
-                    role="alert"
-                  >
-                    <strong className="font-bold">Амжилттай!</strong>
-                    <span className="block sm:inline">
-                      {" "}
-                      Таны и-мэйл хаяг руу холбоос амжилттай илгээгдлээ.
-                    </span>
-                  </div>
+                  <strong className="font-bold">Амжилттай!</strong>
+                  <span className="block sm:inline">
+                    {" "}
+                    Таны и-мэйл хаяг руу холбоос амжилттай илгээгдлээ.
+                  </span>
                 </div>
-              </motion.div>
-            )}
-          </Card>
-        </motion.div>
-      </main>
-    </>
+              </div>
+            </motion.div>
+          )}
+        </Card>
+      </motion.div>
+    </main>
   );
 }
