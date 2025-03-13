@@ -6,16 +6,12 @@ import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { OTPInput } from "@/components/otp-input";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Globe, Loader, MailCheck } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Globe, Loader, MailCheck } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { signIn, signOut } from "next-auth/react";
+import { LoadingUI } from "./LoadingUI";
+import { ErrorUI } from "./ErrorUI";
 
 export function VerifyOtpForm() {
   const [email, setEmail] = useState<string | null>(null);
@@ -187,90 +183,12 @@ export function VerifyOtpForm() {
     }
   };
 
-  // Ачаалж байгаа төлөв
   if (isLoading) {
-    return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 20 }}
-        transition={{ duration: 0.3 }}
-      >
-        <Link
-          href="/"
-          className="mb-6 flex items-center justify-center gap-2 text-lg font-semibold"
-        >
-          <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
-            <Globe className="h-4 w-4" />
-          </div>
-          OXON
-        </Link>
-        <Card className="min-w-full max-w-md sm:w-[460px]">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-3 text-2xl font-bold text-foreground/80">
-              <div className="flex h-10 w-10 items-center justify-center rounded-md border-2 border-teal-500 bg-teal-200">
-                <MailCheck className="h-6 w-6 stroke-[2.5] text-teal-600" />
-                <span className="sr-only">Sing up</span>
-              </div>
-              <p>Имэйл баталгаажуулалт</p>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-center">
-              <Loader className="h-8 w-8 animate-spin text-teal-600" />
-              <p className="ml-2 text-foreground/60">Ачаалж байна...</p>
-            </div>
-          </CardContent>
-        </Card>
-      </motion.div>
-    );
+    return <LoadingUI />;
   }
 
   if (!email) {
-    return (
-      <>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 20 }}
-          transition={{ duration: 0.3 }}
-        >
-          <Link
-            href="/"
-            className="mb-6 flex items-center justify-center gap-2 text-lg font-semibold"
-          >
-            <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
-              <Globe className="h-4 w-4" />
-            </div>
-            OXON
-          </Link>
-          <Card className="min-w-full max-w-md sm:w-[460px]">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-3 text-2xl font-bold text-foreground/80">
-                <div className="flex h-10 w-10 items-center justify-center rounded-md border-2 border-teal-500 bg-teal-200">
-                  <MailCheck className="h-6 w-6 stroke-[2.5] text-teal-600" />
-                  <span className="sr-only">Sing up</span>
-                </div>
-                <p>Имэйл баталгаажуулалт</p>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="rounded-md border-2 border-dashed border-yellow-500 bg-yellow-200 px-3 py-2 text-center font-semibold text-yellow-600">
-                <p>И-мэйл хаяг оруулаагүй байна. Дахин оролдоно уу.</p>
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Link href={"/"} className="w-full">
-                <Button variant="outline" className="w-full">
-                  <ArrowLeft className="mr-2 h-4 w-4" />
-                  Нэвтрэх хуудас руу буцах
-                </Button>
-              </Link>
-            </CardFooter>
-          </Card>
-        </motion.div>
-      </>
-    );
+    return <ErrorUI />;
   }
 
   return (
@@ -336,23 +254,16 @@ export function VerifyOtpForm() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}
               transition={{ duration: 0.3 }}
-            ></motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.3 }}
             >
               <div className="mt-4 sm:mx-auto sm:w-full sm:max-w-md">
                 <div
                   className="relative rounded border border-green-400 bg-green-100 px-4 py-3 text-green-700"
                   role="alert"
                 >
-                  <strong className="font-bold">Амжилттай!</strong>
+                  <strong className="font-bold">Амжилттай</strong>
                   <span className="block sm:inline">
                     {" "}
-                    Амжилттай баталгаажлаа! Таныг dashboard руу шилжүүлж
-                    байна...
+                    баталгаажлаа Таныг dashboard руу шилжүүлж байна...
                   </span>
                 </div>
               </div>
