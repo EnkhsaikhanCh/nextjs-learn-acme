@@ -17,7 +17,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const email = await redis.get(`forgot-password-token:${token}`);
+    const email = await redis.get(`reset-token:${token}`);
     if (!email) {
       return NextResponse.json(
         { error: "Token буруу эсвэл хугацаа дууссан" },
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
       { email },
       { $set: { password: hashedPassword } },
     );
-    await redis.del(`forgot-password-token:${token}`);
+    await redis.del(`reset-token:${token}`);
 
     return NextResponse.json({ message: "Нууц үг амжилттай шинэчлэгдлээ." });
   } catch (error) {

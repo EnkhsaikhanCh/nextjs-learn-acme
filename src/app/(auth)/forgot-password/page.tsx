@@ -42,7 +42,7 @@ export default function ForgotPassword() {
     }
 
     try {
-      const response = await fetch("/api/auth/forgot-password-token", {
+      const response = await fetch("/api/auth/reset-password-token", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),

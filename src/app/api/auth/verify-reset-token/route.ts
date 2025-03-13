@@ -14,7 +14,7 @@ export async function POST(request: Request) {
     }
 
     // Redis-с token-той холбоотой имэйлийг авах
-    const email = await redis.get(`forgot-password-token:${token}`);
+    const email = await redis.get(`reset-token:${token}`);
 
     // Token олдсон эсэх, хугацаа дуусаагүй эсэхийг шалгах
     if (!email) {
