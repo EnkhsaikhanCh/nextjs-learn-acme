@@ -49,6 +49,7 @@ export default function ResetPassword() {
           router.push("/login");
         }
       } catch (error) {
+        console.error("Алдаа гарлаа:", error);
         toast.error("Алдаа гарлаа. Дахин оролдоно уу.");
         router.push("/login");
       } finally {
