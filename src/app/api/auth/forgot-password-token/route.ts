@@ -18,7 +18,7 @@ export async function POST(request: Request) {
   const expiry = 15 * 60; // 15 минут
 
   // Redis-д 15 минутын хугацаатай хадгална
-  await redis.set(`reset-password-token:${token}`, email, "EX", expiry);
+  await redis.set(`forgot-password-token:${token}`, email, "EX", expiry);
 
   const baseUrl = process.env.VERCEL_URL
     ? `https://${process.env.VERCEL_URL}`
