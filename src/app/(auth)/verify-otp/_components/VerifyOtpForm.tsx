@@ -15,7 +15,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Link from "next/link";
-import { signIn } from "next-auth/react";
+import { signIn, signOut } from "next-auth/react";
 
 export function VerifyOtpForm() {
   const [email, setEmail] = useState<string | null>(null);
@@ -28,31 +28,47 @@ export function VerifyOtpForm() {
   const [resendTimer, setResendTimer] = useState<number>(0);
   const router = useRouter();
 
+  // Хэрэглэгчийг гаргах функц
+  const handleSignOut = async () => {
+    localStorage.removeItem("tempToken");
+    localStorage.removeItem("resendExpiry");
+    await signOut({ callbackUrl: "/login" });
+  };
+
   // Хуудас ачаалахад tempToken-оос имэйлийг авах
   useEffect(() => {
     const tempToken = localStorage.getItem("tempToken");
-    if (tempToken) {
-      setIsLoading(true);
-      fetch("/api/auth/get-email-from-token", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: tempToken }),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.email) {
-            setEmail(data.email);
-          } else {
-            localStorage.removeItem("tempToken");
-            router.push("/login");
-          }
-        })
-        .catch(() => router.push("/login"))
-        .finally(() => setIsLoading(false));
-    } else {
-      router.push("/login");
+    if (!tempToken) {
+      handleSignOut();
+      return;
     }
-  }, [router]);
+
+    const fetchEmail = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch("/api/auth/get-email-from-token", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token: tempToken }),
+        });
+
+        const data = await response.json();
+
+        if (data.email) {
+          setEmail(data.email);
+        } else {
+          await handleSignOut(); // Имэйл байхгүй бол гаргана
+        }
+      } catch (error) {
+        console.error(error);
+        await handleSignOut();
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchEmail();
+  }, []);
 
   // Хуудас дахин ачаалах үед үлдсэн цагийг тооцоолох (expiry timestamp-г ашиглан)
   useEffect(() => {
@@ -244,14 +260,12 @@ export function VerifyOtpForm() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={() => router.push("/login")}
-              >
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Нэвтрэх хуудас руу буцах
-              </Button>
+              <Link href={"/"} className="w-full">
+                <Button variant="outline" className="w-full">
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Нэвтрэх хуудас руу буцах
+                </Button>
+              </Link>
             </CardFooter>
           </Card>
         </motion.div>
@@ -337,8 +351,8 @@ export function VerifyOtpForm() {
                   <strong className="font-bold">Амжилттай!</strong>
                   <span className="block sm:inline">
                     {" "}
-                    Таны имайл хаяг амжилттай баталгаажлаа. Одоо та нэвтрэх
-                    боломжтой.
+                    Амжилттай баталгаажлаа! Таныг dashboard руу шилжүүлж
+                    байна...
                   </span>
                 </div>
               </div>
