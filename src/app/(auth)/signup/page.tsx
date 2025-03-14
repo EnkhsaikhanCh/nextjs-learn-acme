@@ -1,120 +1,26 @@
 "use client";
 
 import { CheckIcon, Globe, LoaderCircle, User, XIcon } from "lucide-react";
-import { useState } from "react";
-import { toast, Toaster } from "sonner";
-import { useRouter } from "next/navigation";
-import { escape } from "validator";
-import { useCreateUserMutation } from "@/generated/graphql";
+import { Toaster } from "sonner";
 import { BaseInput } from "@/components/BaseInput";
 import { ActionButton } from "@/components/ActionButton";
 import Link from "next/link";
 import { PasswordInput } from "@/components/PasswordInput";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useHandleRegister } from "./features/useHandleRegister";
 
 export default function SignUp() {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>(
-    {},
-  );
-
-  const router = useRouter();
-
-  const sanitizeInput = (input: string) => {
-    return escape(input);
-  };
-
-  // Input-ыг ариутгах
-  const sanitizedEmail = sanitizeInput(email);
-
-  const [createUser] = useCreateUserMutation();
-
-  const passwordRequirements = [
-    { regex: /.{8,}/, text: "Нууц үг хамгийн багадаа 8 тэмдэгт байх ёстой" },
-  ];
-
-  const strength = passwordRequirements.map((req) => ({
-    valid: req.regex.test(password),
-    text: req.text,
-  }));
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
-    const newErrors: { email?: string; password?: string } = {};
-
-    // Имэйл болон нууц үг шалгах
-    if (!sanitizedEmail) {
-      newErrors.email = "Имэйл хаяг шаардлагатай.";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      newErrors.email = "Имэйл хаяг буруу байна.";
-    }
-
-    if (!password) {
-      newErrors.password = "Нууц үг шаардлагатай.";
-    } else if (password.length < 8) {
-      newErrors.password = "Нууц үг хамгийн багадаа 8 тэмдэгттэй байх ёстой.";
-    }
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      setIsSubmitting(false);
-      return;
-    }
-
-    try {
-      // Бүртгэл үүсгэх
-      const { data } = await createUser({
-        variables: {
-          input: { email: sanitizedEmail, password },
-        },
-      });
-
-      if (data?.createUser?.user) {
-        // Токен үүсгэх
-        const tokenResponse = await fetch("/api/auth/generate-temp-token", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: sanitizedEmail }),
-        });
-
-        if (!tokenResponse.ok) {
-          throw new Error("Токен үүсгэхэд алдаа гарлаа.");
-        }
-
-        const { token } = await tokenResponse.json();
-
-        localStorage.setItem("tempToken", token);
-
-        // OTP илгээх
-        const otpResponse = await fetch("/api/auth/send-otp", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: sanitizedEmail }),
-        });
-
-        if (!otpResponse.ok) {
-          throw new Error("OTP илгээхэд алдаа гарлаа.");
-        }
-
-        toast.success("OTP код амжилттай илгээгдлээ!");
-
-        router.push("/verify-otp");
-      } else {
-        toast.error(
-          data?.createUser?.message || "Серверээс буруу хариу ирлээ.",
-        );
-      }
-    } catch (error) {
-      console.error("Бүртгэл үүсгэхэд алдаа гарлаа:", error);
-      toast.error("Алдаа гарлаа. Дахин оролдоно уу.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  const {
+    email,
+    setEmail,
+    password,
+    setPassword,
+    isSubmitting,
+    errors,
+    setErrors,
+    handleRegister,
+    strength,
+  } = useHandleRegister();
 
   return (
     <main className="grid h-screen grid-cols-1 lg:grid-cols-2">
@@ -163,7 +69,7 @@ export default function SignUp() {
 
           <CardContent>
             <form
-              onSubmit={handleSubmit}
+              onSubmit={handleRegister}
               method="POST"
               className="flex flex-col gap-5 md:gap-7"
             >
@@ -171,7 +77,10 @@ export default function SignUp() {
                 id="email"
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setErrors({});
+                }}
                 label="Имэйл"
                 error={errors.email}
                 autoComplete="email"
@@ -181,7 +90,10 @@ export default function SignUp() {
               <div className="space-y-2">
                 <PasswordInput
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setErrors({});
+                  }}
                   errorMessage={errors.password}
                   autoComplete="new-password"
                 />
