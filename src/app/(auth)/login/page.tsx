@@ -169,6 +169,10 @@ export default function Login() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     errorMessage={errors.password}
+                    actionLink={{
+                      href: "/forgot-password",
+                      label: "Нууц үгээ мартсан уу?",
+                    }}
                   />
 
                   <ActionButton
