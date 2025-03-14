@@ -1,7 +1,6 @@
 // src/app/forgot-password/page.tsx
 "use client";
 
-import { useState } from "react";
 import { motion } from "framer-motion";
 import {
   Card,
@@ -11,61 +10,26 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { AlertCircle, ArrowLeft, Globe, KeyRound, Loader } from "lucide-react";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { toast, Toaster } from "sonner";
+import { Toaster } from "sonner";
 import Link from "next/link";
-import { sanitizeInput } from "@/utils/sanitize";
+import { useSendPasswordResetToken } from "./features/useSendPasswordResetToken";
+import { SucessMessage } from "./components/SuccessMessage";
+import { BaseInput } from "@/components/BaseInput";
 
 export default function ForgotPassword() {
-  const [email, setEmail] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [formError, setFormError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<boolean>(false);
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setFormError(null);
-
-    // Sanitize and validate email
-    const sanitizedEmail = sanitizeInput(email);
-    if (!sanitizedEmail) {
-      setFormError("Имэйл хаяг шаардлагатай.");
-      setIsLoading(false);
-      return;
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(sanitizedEmail)) {
-      setFormError("Имэйл хаяг буруу байна.");
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      const response = await fetch("/api/auth/reset-password-token", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setFormError(data.error || "Алдаа гарлаа. Дахин оролдоно уу.");
-      } else {
-        setSuccess(true);
-        toast.success("Таны и-мэйл хаяг руу холбоос амжилттай илгээгдлээ.");
-      }
-    } catch (error) {
-      toast.error(`Сүлжээний алдаа гарлаа: ${error}`);
-      setFormError("Сүлжээний алдаа гарлаа. Дахин оролдоно уу.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const {
+    email,
+    setEmail,
+    isLoading,
+    formError,
+    setFormError,
+    success,
+    sendPasswordResetToken,
+  } = useSendPasswordResetToken();
 
   return (
-    <main className="flex min-h-svh flex-col items-center gap-6 bg-muted px-4 md:p-10">
+    <main className="flex min-h-screen flex-col items-center gap-6 bg-muted px-4 md:p-10">
       <Toaster richColors position="top-center" />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -83,9 +47,7 @@ export default function ForgotPassword() {
           OXON
         </Link>
 
-        {/* Card */}
         <Card className="min-w-full max-w-md">
-          {/* Card Header */}
           <CardHeader>
             <CardTitle className="flex items-center gap-3 text-2xl font-bold text-foreground/80">
               <div className="flex h-10 w-10 items-center justify-center rounded-md border-2 border-amber-500 bg-amber-200">
@@ -95,75 +57,69 @@ export default function ForgotPassword() {
               <p>Нууц үгээ мартсан уу?</p>
             </CardTitle>
           </CardHeader>
-          {/* Form */}
-          <form onSubmit={handleSubmit}>
-            <CardContent>
-              <div className="grid w-full items-center gap-4">
-                <div className="flex flex-col space-y-1.5">
-                  <Label htmlFor="email" className="font-semibold">
-                    Имэйл
-                  </Label>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    required
-                    placeholder="hello@email.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                  <p className="text-sm text-gray-500">
-                    Имэйл хаягаа оруулна уу. Бид таны имэйл рүү нууц үг сэргээх
-                    холбоос илгээх болно.
-                  </p>
-                </div>
-              </div>
-              {formError && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mt-2 flex items-center gap-2 font-semibold text-red-500"
-                >
-                  <AlertCircle size={16} />
-                  <span className="text-sm">{formError}</span>
-                </motion.div>
-              )}
-            </CardContent>
-            <CardFooter className="flex flex-col gap-3">
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? (
-                  <>
-                    Холбоос илгээж байна...
-                    <Loader className="mr-2 h-4 w-4 animate-spin" />
-                  </>
-                ) : (
-                  "Холбоос илгээх"
+
+          <CardContent className="pb-3">
+            {success ? (
+              <SucessMessage />
+            ) : (
+              <form onSubmit={sendPasswordResetToken}>
+                <BaseInput
+                  label="Имэйл"
+                  id="email"
+                  type="email"
+                  autoComplete="email"
+                  placeholder="hello@email.com"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setFormError(null);
+                  }}
+                />
+                {formError && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mt-2 flex items-center gap-2 font-semibold text-red-500"
+                    aria-live="polite"
+                  >
+                    <AlertCircle size={16} />
+                    <span className="text-sm">{formError}</span>
+                  </motion.div>
                 )}
-              </Button>
-              <Link href="/login" className="w-full">
-                <Button type="button" variant="outline" className="w-full">
+                <p className="mt-1 text-sm text-gray-500">
+                  Имэйл хаягаа оруулна уу. Бид таны имэйл рүү нууц үг сэргээх
+                  холбоос илгээх болно.
+                </p>
+                <Button
+                  type="submit"
+                  className="mt-4 w-full"
+                  disabled={isLoading}
+                  aria-label={
+                    isLoading ? "Холбоос илгээж байна" : "Холбоос илгээх"
+                  }
+                >
+                  {isLoading ? (
+                    <>
+                      Холбоос илгээж байна...
+                      <Loader className="ml-2 h-4 w-4 animate-spin" />
+                    </>
+                  ) : (
+                    "Холбоос илгээх"
+                  )}
+                </Button>
+              </form>
+            )}
+          </CardContent>
+
+          {!success && (
+            <CardFooter className="flex flex-col gap-3">
+              <Button asChild variant="outline" className="w-full">
+                <Link href="/login">
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   Нэвтрэх хуудас руу буцах
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             </CardFooter>
-          </form>
-          {success && (
-            <motion.div>
-              <div className="-mt-9 p-6 sm:mx-auto sm:w-full sm:max-w-md">
-                <div
-                  className="relative rounded border-2 border-green-400 bg-green-100 px-4 py-3 text-center text-green-700"
-                  role="alert"
-                >
-                  <strong className="font-bold">Амжилттай!</strong>
-                  <span className="block sm:inline">
-                    {" "}
-                    Таны и-мэйл хаяг руу холбоос амжилттай илгээгдлээ.
-                  </span>
-                </div>
-              </div>
-            </motion.div>
           )}
         </Card>
       </motion.div>
