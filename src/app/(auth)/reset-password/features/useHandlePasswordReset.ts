@@ -22,27 +22,24 @@ export const useHandlePasswordReset = () => {
       }
 
       try {
-        const res = await fetch("/api/auth/verify-reset-token", {
+        const response = await fetch("/api/auth/verify-reset-token", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ token }),
           signal: controller.signal,
         });
-        const data = (await res.json()) as { email?: string; error?: string };
+
+        const data = (await response.json()) as {
+          email?: string;
+          error?: string;
+        };
 
         if (!data.email) {
           toast.error("Token буруу эсвэл хугацаа дууссан.");
           router.push("/login");
         }
-      } catch (error) {
-        if (error instanceof Error) {
-          if (error.name === "AbortError") return;
-          console.error("Алдаа гарлаа:", error);
-          toast.error("Алдаа гарлаа. Дахин оролдоно уу.");
-        } else {
-          console.error("Тодорхойгүй алдаа:", error);
-          toast.error("Алдаа гарлаа. Дахин оролдоно уу.");
-        }
+      } catch {
+        toast.error("Алдаа гарлаа. Дахин оролдоно уу.");
         router.push("/login");
       } finally {
         setIsChecking(false);
@@ -94,15 +91,12 @@ export const useHandlePasswordReset = () => {
 
       if (!response.ok) {
         setFormError(data.error || "Алдаа гарлаа. Дахин оролдоно уу.");
-        toast.error(data.error || "Алдаа гарлаа. Дахин оролдоно уу.");
       } else {
         setSuccess(true);
         toast.success("Нууц үг амжилттай шинэчлэгдсэн.");
       }
-    } catch (err) {
-      console.error("Сүлжээний алдаа гарлаа:", err);
+    } catch {
       setFormError("Сүлжээний алдаа гарлаа. Дахин оролдоно уу.");
-      toast.error("Сүлжээний алдаа гарлаа. Дахин оролдоно уу.");
     } finally {
       setIsLoading(false);
     }
