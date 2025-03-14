@@ -1,4 +1,3 @@
-import { sanitizeInput } from "@/utils/sanitize";
 import { SectionModel } from "../../../models";
 import { GraphQLError } from "graphql";
 import { UpdateSectionInput } from "@/generated/graphql";
@@ -13,8 +12,6 @@ export const updateSection = async (
     throw new Error("Section ID is required");
   }
 
-  const sanitizedTitle = sanitizeInput(title || "");
-  const sanitizedDescription = sanitizeInput(description || "");
   const sanitizedOrder = order !== undefined ? order : 0; // Default to 0 or another value
 
   try {
@@ -27,11 +24,11 @@ export const updateSection = async (
     }
 
     if (title) {
-      section.title = sanitizedTitle;
+      section.title = title;
     }
 
     if (description) {
-      section.description = sanitizedDescription;
+      section.description = description;
     }
 
     if (order) {
