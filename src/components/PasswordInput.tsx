@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
-import { Eye, EyeOff } from "lucide-react";
+import { AlertCircle, Eye, EyeOff } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 
@@ -111,14 +111,13 @@ export const PasswordInput = ({
       <AnimatePresence>
         {errorMessage && (
           <motion.div
-            className="mt-1 w-full rounded-sm bg-red-100 px-2 py-1 text-sm font-semibold text-red-500"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-2 flex items-center gap-2 font-semibold text-red-500"
             role="alert"
-            initial={{ y: -10, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -10, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 100 }}
           >
-            {errorMessage}
+            <AlertCircle size={16} />
+            <span className="text-sm">{errorMessage}</span>
           </motion.div>
         )}
       </AnimatePresence>
