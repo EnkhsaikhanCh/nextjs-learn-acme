@@ -13,11 +13,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { AlertCircle, ArrowLeft, Globe, KeyRound, Loader } from "lucide-react";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import Link from "next/link";
+import { PasswordInput } from "@/components/PasswordInput";
 
 export default function ResetPassword() {
   const [password, setPassword] = useState("");
@@ -210,38 +209,21 @@ export default function ResetPassword() {
                     тэмдэгттэй байх ёстой.
                   </p>
                   <div className="grid w-full items-center gap-4">
-                    <div>
-                      <Label htmlFor="password" className="font-semibold">
-                        Шинэ нууц үг
-                      </Label>
-                      <Input
-                        id="password"
-                        name="password"
-                        type="password"
-                        placeholder="••••••••"
-                        required
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                      />
-                    </div>
+                    <PasswordInput
+                      id="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      label="Шинэ нууц үг"
+                      placeholder="••••••••"
+                    />
 
-                    <div>
-                      <Label
-                        htmlFor="confirm-password"
-                        className="font-semibold"
-                      >
-                        Шинэ нууц үгээ давтаж оруулна уу
-                      </Label>
-                      <Input
-                        id="confirm-password"
-                        name="confirm-password"
-                        type="password"
-                        placeholder="••••••••"
-                        required
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                      />
-                    </div>
+                    <PasswordInput
+                      id="confirm-password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      label="Шинэ нууц үг давтах"
+                      placeholder="••••••••"
+                    />
                   </div>
 
                   {formError && (
@@ -297,10 +279,6 @@ export default function ResetPassword() {
                   </span>
                 </div>
               </div>
-
-              <Link href={"/login"}>
-                <Button className="w-full">Нэвтрэх</Button>
-              </Link>
             </motion.div>
           )}
         </Card>

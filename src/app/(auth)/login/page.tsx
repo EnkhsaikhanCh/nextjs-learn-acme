@@ -169,7 +169,6 @@ export default function Login() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     errorMessage={errors.password}
-                    resetPassword={true}
                   />
 
                   <ActionButton
