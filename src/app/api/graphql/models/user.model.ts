@@ -9,8 +9,6 @@ export type User = {
   role: "STUDENT" | "INSTRUCTOR" | "ADMIN";
   password: string;
   isVerified: boolean;
-  resetToken?: string;
-  resetTokenExpiry?: Date;
   enrolledCourses?: string;
 };
 
@@ -34,8 +32,6 @@ const UserSchema = new Schema(
     },
     password: { type: String, required: true, minlength: 8 },
     isVerified: { type: Boolean, default: false },
-    resetToken: { type: String },
-    resetTokenExpiry: { type: Date },
     enrolledCourses: [{ type: String, ref: "Course" }],
   },
   { timestamps: true },

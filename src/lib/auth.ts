@@ -101,12 +101,9 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
         token.email = user.email;
-
-        if ("role" in user && "studentId" in user && "isVerified" in user) {
-          token.role = user.role || "STUDENT";
-          token.studentId = user.studentId;
-          token.isVerified = user.isVerified;
-        }
+        token.role = user.role || "STUDENT";
+        token.studentId = user.studentId;
+        token.isVerified = user.isVerified; // Нөхцөлгүйгээр шууд хадгал
       }
 
       // Токены хугацаа дууссан эсэхийг шалгах

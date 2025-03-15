@@ -2,38 +2,37 @@
 import { NextResponse } from "next/server";
 import { UserModel } from "@/app/api/graphql/models";
 import argon2 from "argon2";
+import { connectToDatabase } from "@/lib/mongodb";
+import { redis } from "@/lib/redis";
 
 export async function POST(request: Request) {
+  await connectToDatabase();
   try {
-    const { token, newPassword } = await request.json();
+    const { token, password } = await request.json();
 
-    if (!token || !newPassword) {
+    if (!token || !password) {
       return NextResponse.json(
-        { error: "Мэдээлэл дутуу байна." },
+        { error: "Token болон нууц үг шаардлагатай" },
         { status: 400 },
       );
     }
 
-    const user = await UserModel.findOne({
-      resetToken: token,
-      resetTokenExpiry: { $gt: Date.now() }, // Токен хүчинтэй эсэхийг шалгах
-    }).exec();
-
-    if (!user) {
+    const email = await redis.get(`reset-token:${token}`);
+    if (!email) {
       return NextResponse.json(
-        { error: "Токен хүчингүй эсвэл хугацаа дууссан." },
+        { error: "Token буруу эсвэл хугацаа дууссан" },
         { status: 400 },
       );
     }
 
-    // Нууц үг шифрлэх ба хадгалах
-    user.password = await argon2.hash(newPassword);
-    user.resetToken = undefined; // Токеныг устгах
-    user.resetTokenExpiry = undefined; // Хугацааг устгах
+    const hashedPassword = await argon2.hash(password);
+    await UserModel.updateOne(
+      { email },
+      { $set: { password: hashedPassword } },
+    );
+    await redis.del(`reset-token:${token}`);
 
-    await user.save();
-
-    return NextResponse.json({ message: "Нууц үг амжилттай шинэчлэгдсэн." });
+    return NextResponse.json({ message: "Нууц үг амжилттай шинэчлэгдлээ." });
   } catch (error) {
     console.error("Серверийн алдаа:", error);
 
