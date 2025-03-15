@@ -4,6 +4,10 @@ import { NextResponse } from "next/server";
 import { redis } from "@/lib/redis"; // Redis клиент импортлох
 import { sendEmail } from "@/lib/email";
 
+const RATE_LIMIT_KEY = "rate_limit:send_otp:"; // Имэйл тус бүрт өвөрмөц key
+const MAX_REQUESTS = 10; // Цагт 10 удаа
+const WINDOW = 3600; // 1 цаг (секундээр)
+
 export async function POST(request: Request) {
   try {
     const { email } = await request.json();
@@ -13,6 +17,24 @@ export async function POST(request: Request) {
         { error: "И-мэйл хаяг шаардлагатай." },
         { status: 400 },
       );
+    }
+
+    // Rate limiting шалгах
+    const rateLimitKey = `${RATE_LIMIT_KEY}${email}`;
+    const currentCount = await redis.get(rateLimitKey);
+
+    if (currentCount && parseInt(currentCount) >= MAX_REQUESTS) {
+      return NextResponse.json(
+        { error: "Хэт олон хүсэлт. 1 цагийн дараа дахин оролдоно уу." },
+        { status: 429 },
+      );
+    }
+
+    // Хүсэлтийн тоог нэмэх
+    if (!currentCount) {
+      await redis.set(rateLimitKey, 1, "EX", WINDOW); // Анхны хүсэлт
+    } else {
+      await redis.incr(rateLimitKey); // Тоог нэмэх
     }
 
     const otp = generateOTP();
