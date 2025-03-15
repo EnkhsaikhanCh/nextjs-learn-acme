@@ -5,6 +5,10 @@ import argon2 from "argon2";
 import { connectToDatabase } from "@/lib/mongodb";
 import { redis } from "@/lib/redis";
 
+const RATE_LIMIT_KEY = "rate_limit:reset-password:"; // Rate limiting-ийн key
+const MAX_REQUESTS = 3; // Цагт 3 удаа
+const WINDOW = 3600; // 1 цаг (секундээр)
+
 export async function POST(request: Request) {
   await connectToDatabase();
   try {
@@ -17,6 +21,25 @@ export async function POST(request: Request) {
       );
     }
 
+    // Rate limiting шалгах
+    const rateLimitKey = `${RATE_LIMIT_KEY}${token}`; // Token дээр суурилсан key
+    const currentCount = await redis.get(rateLimitKey);
+
+    if (currentCount && parseInt(currentCount) >= MAX_REQUESTS) {
+      return NextResponse.json(
+        { error: "Хэт олон хүсэлт. 1 цагийн дараа дахин оролдоно уу." },
+        { status: 429 },
+      );
+    }
+
+    // Хүсэлтийн тоог нэмэх
+    if (!currentCount) {
+      await redis.set(rateLimitKey, 1, "EX", WINDOW); // Анхны хүсэлт
+    } else {
+      await redis.incr(rateLimitKey); // Тоог нэмэх
+    }
+
+    // Одоо байгаа логик
     const email = await redis.get(`reset-token:${token}`);
     if (!email) {
       return NextResponse.json(
@@ -33,10 +56,7 @@ export async function POST(request: Request) {
     await redis.del(`reset-token:${token}`);
 
     return NextResponse.json({ message: "Нууц үг амжилттай шинэчлэгдлээ." });
-  } catch (error) {
-    console.error("Серверийн алдаа:", error);
-
-    // Ерөнхий алдааны хариу
+  } catch {
     return NextResponse.json(
       { error: "Серверт алдаа гарлаа. Дахин оролдоно уу." },
       { status: 500 },
