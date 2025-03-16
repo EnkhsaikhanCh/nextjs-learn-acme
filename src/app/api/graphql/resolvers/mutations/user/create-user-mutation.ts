@@ -37,8 +37,18 @@ const validationInputs = (email: string, password: string) => {
 export const createUser = async (
   _: unknown,
   { input }: { input: RegisterInput },
+  context: any,
 ) => {
   try {
+    const { checkRateLimit, req } = context;
+
+    // Rate limiting шалгах: IP дээр суурилсан хязгаарлалт
+    const ip = req.headers["x-forwarded-for"] || req.ip || "unknown";
+    const rateLimitKey = `createUser:${ip}`;
+    const MAX_REQUESTS = 5; // 5 удаа
+    const WINDOW = 3600; // 1 цаг
+    await checkRateLimit(rateLimitKey, MAX_REQUESTS, WINDOW);
+
     const { sanitizedEmail } = validationInputs(input.email, input.password);
 
     const existingUser = await UserModel.findOne({ email: sanitizedEmail });
@@ -81,6 +91,13 @@ export const createUser = async (
     }
 
     const message = (error as Error).message;
+
+    // Rate limiting-ийн алдааг тусгайлан шалгах
+    if (message.includes("Хэт олон хүсэлт")) {
+      throw new GraphQLError(message, {
+        extensions: { code: "TOO_MANY_REQUESTS" },
+      });
+    }
 
     throw new GraphQLError(`Internal server error: ${message}`, {
       extensions: { code: "INTERNAL_SERVER_ERROR" },
