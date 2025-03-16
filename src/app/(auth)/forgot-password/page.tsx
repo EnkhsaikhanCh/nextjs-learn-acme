@@ -82,7 +82,7 @@ export default function ForgotPassword() {
                     className="mt-2 flex items-center gap-2 font-semibold text-red-500"
                     aria-live="polite"
                   >
-                    <AlertCircle size={16} />
+                    <AlertCircle size={16} className="w-10" />
                     <span className="text-sm">{formError}</span>
                   </motion.div>
                 )}

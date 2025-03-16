@@ -1,16 +1,21 @@
 // src/app/api/auth/verify-otp/route.ts
-import { NextResponse } from "next/server";
-import { redis } from "@/lib/redis"; // Redis клиент импортлох
+import { NextRequest, NextResponse } from "next/server";
+import { redis } from "@/lib/redis";
 import { UserModel } from "../../graphql/models";
 import { connectToDatabase } from "@/lib/mongodb";
 import { v4 as uuidv4 } from "uuid";
 
-export async function POST(request: Request) {
+const RATE_LIMIT_KEY = "rate_limit:verify-otp:";
+const MAX_REQUESTS = 4; // Минутанд хамгийн их хүсэлт
+const WINDOW = 60; // 1 минут (секундээр)
+
+export async function POST(request: NextRequest) {
   await connectToDatabase();
 
   try {
     const { email, otp } = await request.json();
 
+    // Оролтын параметрүүдийг шалгах
     if (!email || !otp) {
       return NextResponse.json(
         { error: "И-мэйл болон OTP код шаардлагатай." },
@@ -18,9 +23,29 @@ export async function POST(request: Request) {
       );
     }
 
-    // Redis-с OTP кодыг авах
-    const storedOtp = await redis.get(`otp:${email}`);
+    // Rate limiting шалгах
+    const rateLimitKey = `${RATE_LIMIT_KEY}${email}`;
+    const currentCount = await redis.get(rateLimitKey);
 
+    if (currentCount && parseInt(currentCount as string, 10) >= MAX_REQUESTS) {
+      return NextResponse.json(
+        { error: "Хэт олон оролдлого. 1 минутын дараа дахин оролдоно уу." },
+        { status: 429 },
+      );
+    }
+
+    // Хүсэлтийн тоог шинэчлэх
+    if (!currentCount) {
+      await redis.set(rateLimitKey, "1", { ex: WINDOW }); // Анхны хүсэлт
+    } else {
+      await redis.incr(rateLimitKey); // Тоог нэмэх
+    }
+
+    // Redis-ээс хадгалагдсан OTP-г авах
+    const normalizedEmail = email.toLowerCase();
+    const storedOtp = await redis.get(`otp:${normalizedEmail}`);
+
+    // OTP-н оршин байгааг шалгах
     if (!storedOtp) {
       return NextResponse.json(
         { error: "OTP код олдсонгүй эсвэл хугацаа дууссан." },
@@ -28,29 +53,40 @@ export async function POST(request: Request) {
       );
     }
 
-    if (storedOtp !== otp) {
+    // OTP таарч байгаа эсэхийг шалгах
+    if (String(storedOtp) !== String(otp)) {
       return NextResponse.json(
         { error: "OTP код буруу байна." },
         { status: 400 },
       );
     }
 
-    // Хэрэглэгчийг баталгаажуулах
-    await UserModel.updateOne({ email }, { $set: { isVerified: true } });
+    // Хэрэглэгчийн баталгаажуулалтын төлөвийг шинэчлэх
+    const updateResult = await UserModel.updateOne(
+      { email },
+      { $set: { isVerified: true } },
+    );
 
-    // Redis-с OTP кодыг устгах
+    if (updateResult.modifiedCount === 0) {
+      return NextResponse.json(
+        { error: "Хэрэглэгч олдсонгүй эсвэл аль хэдийн баталгаажсан байна." },
+        { status: 400 },
+      );
+    }
+
+    // Redis-ээс OTP-г устгах
     await redis.del(`otp:${email}`);
 
-    // Create a temporary sign-in token
+    // Нэвтрэх токен үүсгэх ба хадгалах
     const signInToken = uuidv4();
-    await redis.set(`signin-token:${signInToken}`, email, "EX", 300); // Token valid for 5 minutes
+    await redis.set(`signin-token:${signInToken}`, email, { ex: 300 }); // 5 минутын хугацаа
 
+    // Амжилттай хариуг буцаах
     return NextResponse.json({
       message: "И-мэйл амжилттай баталгаажлаа.",
       signInToken,
     });
-  } catch (error) {
-    console.error("OTP баталгаажуулахад алдаа гарлаа:", error);
+  } catch {
     return NextResponse.json({ error: "Алдаа гарлаа." }, { status: 500 });
   }
 }
