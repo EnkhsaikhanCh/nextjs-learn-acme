@@ -37,6 +37,7 @@ const validationInputs = (email: string, password: string) => {
 export const createUser = async (
   _: unknown,
   { input }: { input: RegisterInput },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   context: any,
 ) => {
   try {
