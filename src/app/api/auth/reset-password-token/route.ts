@@ -1,14 +1,14 @@
 // src/app/api/auth/reset-password-token/route.ts
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { redis } from "@/lib/redis";
 import { sendEmail } from "../../../../lib/email";
 import { v4 as uuidv4 } from "uuid";
 
-const RATE_LIMIT_KEY = "rate_limit:reset-password-token:"; // Имэйл тус бүрт rate limit-ийн key
+const RATE_LIMIT_KEY = "rate_limit:reset-password-token:";
 const MAX_REQUESTS = 5; // 1 цагт хамгийн ихдээ 5 хүсэлт
 const WINDOW = 3600; // 1 цаг (секундээр)
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const { email } = await request.json();
 
@@ -24,7 +24,7 @@ export async function POST(request: Request) {
     const rateLimitKey = `${RATE_LIMIT_KEY}${email}`;
     const currentCount = await redis.get(rateLimitKey);
 
-    if (currentCount && parseInt(currentCount as string) >= MAX_REQUESTS) {
+    if (currentCount && parseInt(currentCount as string, 10) >= MAX_REQUESTS) {
       return NextResponse.json(
         { error: "Хэт олон хүсэлт. 1 цагийн дараа дахин оролдоно уу." },
         { status: 429 },
@@ -33,17 +33,17 @@ export async function POST(request: Request) {
 
     // Хүсэлтийн тоог нэмэх
     if (!currentCount) {
-      await redis.set(rateLimitKey, 1, "EX", WINDOW); // Анхны хүсэлт
+      await redis.set(rateLimitKey, "1", { ex: WINDOW }); // Анхны хүсэлт
     } else {
       await redis.incr(rateLimitKey); // Тоог нэмэх
     }
 
     // Шинэ токен үүсгэх
     const token = uuidv4();
-    const expiry = 15 * 60; // 15 минут
+    const expiry = 15 * 60; // 15 минут (секундээр)
 
-    // Шинэ токенийг Redis-д хадгалах (хуучин токенийг устгахгүй)
-    await redis.set(`reset-token:${token}`, email, "EX", expiry);
+    // Шинэ токенийг Redis-д хадгалах
+    await redis.set(`reset-token:${token}`, email, { ex: expiry });
 
     // Reset URL үүсгэх
     const baseUrl = process.env.VERCEL_URL
@@ -55,13 +55,29 @@ export async function POST(request: Request) {
     await sendEmail({
       to: email,
       subject: "Нууц үг сэргээх холбоос",
-      html: `<p>Нууц үгээ сэргээхийн тулд дараах холбоос дээр дарна уу:</p>
-             <a href="${resetUrl}">${resetUrl}</a>`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 400px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 8px; background-color: #ffffff; color: #333;">
+          <h2 style="text-align: center; font-size: 20px; font-weight: 600; margin-bottom: 20px; color: #222;">Нууц Үг Сэргээх</h2>
+          <p style="font-size: 16px; text-align: center; margin-bottom: 30px;">
+            Нууц үгээ сэргээхийн тулд доорх холбоос дээр дарна уу:
+          </p>
+          <div style="text-align: center;">
+            <a href="${resetUrl}" style="display: inline-block; padding: 10px 20px; background-color: #0070f3; color: #fff; text-decoration: none; border-radius: 5px;">
+              Нууц Үг Сэргээх
+            </a>
+          </div>
+          <p style="font-size: 14px; text-align: center; margin-top: 20px; color: #666;">
+            Энэ холбоос 15 минутын дотор хүчинтэй.
+          </p>
+          <p style="font-size: 12px; text-align: center; margin-top: 20px; color: #aaa;">
+            Хэрэв та энэ хүсэлтийг илгээгээгүй бол үл тоомсорлоно уу.
+          </p>
+        </div>
+      `,
     });
 
     return NextResponse.json({ message: "Нууц үг сэргээх линк илгээгдлээ." });
-  } catch (error) {
-    console.error("Reset password token error:", error);
+  } catch {
     return NextResponse.json({ error: "Алдаа гарлаа." }, { status: 500 });
   }
 }

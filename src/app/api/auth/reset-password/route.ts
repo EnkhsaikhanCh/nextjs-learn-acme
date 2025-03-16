@@ -1,15 +1,15 @@
 // src/app/api/auth/reset-password/route.ts
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { UserModel } from "@/app/api/graphql/models";
 import argon2 from "argon2";
 import { connectToDatabase } from "@/lib/mongodb";
 import { redis } from "@/lib/redis";
 
-const RATE_LIMIT_KEY = "rate_limit:reset-password:"; // Rate limiting-ийн key
+const RATE_LIMIT_KEY = "rate_limit:reset-password:";
 const MAX_REQUESTS = 3; // Цагт 3 удаа
 const WINDOW = 3600; // 1 цаг (секундээр)
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   await connectToDatabase();
   try {
     const { token, password } = await request.json();
@@ -22,10 +22,10 @@ export async function POST(request: Request) {
     }
 
     // Rate limiting шалгах
-    const rateLimitKey = `${RATE_LIMIT_KEY}${token}`; // Token дээр суурилсан key
+    const rateLimitKey = `${RATE_LIMIT_KEY}${token}`;
     const currentCount = await redis.get(rateLimitKey);
 
-    if (currentCount && parseInt(currentCount as string) >= MAX_REQUESTS) {
+    if (currentCount && parseInt(currentCount as string, 10) >= MAX_REQUESTS) {
       return NextResponse.json(
         { error: "Хэт олон хүсэлт. 1 цагийн дараа дахин оролдоно уу." },
         { status: 429 },
@@ -34,12 +34,12 @@ export async function POST(request: Request) {
 
     // Хүсэлтийн тоог нэмэх
     if (!currentCount) {
-      await redis.set(rateLimitKey, 1, "EX", WINDOW); // Анхны хүсэлт
+      await redis.set(rateLimitKey, "1", { ex: WINDOW }); // Анхны хүсэлт
     } else {
       await redis.incr(rateLimitKey); // Тоог нэмэх
     }
 
-    // Одоо байгаа логик
+    // Токеноос имэйл авах
     const email = await redis.get(`reset-token:${token}`);
     if (!email) {
       return NextResponse.json(
@@ -48,15 +48,26 @@ export async function POST(request: Request) {
       );
     }
 
+    // Нууц үгийг шинэчлэх
     const hashedPassword = await argon2.hash(password);
-    await UserModel.updateOne(
+    const updateResult = await UserModel.updateOne(
       { email },
       { $set: { password: hashedPassword } },
     );
+
+    if (updateResult.modifiedCount === 0) {
+      return NextResponse.json(
+        { error: "Хэрэглэгч олдсонгүй эсвэл алдаа гарлаа" },
+        { status: 400 },
+      );
+    }
+
+    // Токеныг устгах
     await redis.del(`reset-token:${token}`);
 
     return NextResponse.json({ message: "Нууц үг амжилттай шинэчлэгдлээ." });
-  } catch {
+  } catch (error) {
+    console.error("Нууц үг шинэчлэхэд алдаа гарлаа:", error);
     return NextResponse.json(
       { error: "Серверт алдаа гарлаа. Дахин оролдоно уу." },
       { status: 500 },

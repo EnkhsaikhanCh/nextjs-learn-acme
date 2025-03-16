@@ -27,16 +27,23 @@ const handler = startServerAndCreateNextHandler<NextRequest>(server, {
         const rateLimitKey = `rate_limit:${key}`;
         const currentCount = await redis.get(rateLimitKey);
 
-        if (currentCount && parseInt(currentCount as string) >= maxRequests) {
+        // currentCount нь string эсвэл null байж болно, тиймээс parseInt-д default утга өгнө
+        if (
+          currentCount &&
+          parseInt(currentCount as string, 10) >= maxRequests
+        ) {
           throw new GraphQLError(
             "Хэт олон хүсэлт. 1 цагийн дараа дахин оролдоно уу.",
+            {
+              extensions: { code: "RATE_LIMIT_EXCEEDED" },
+            },
           );
         }
 
         if (!currentCount) {
-          await redis.set(rateLimitKey, 1, "EX", window); // Анхны хүсэлт
+          await redis.set(rateLimitKey, "1", { ex: window }); // Анхны хүсэлт
         } else {
-          await redis.incr(rateLimitKey);
+          await redis.incr(rateLimitKey); // Тоог нэмэх
         }
       },
     };

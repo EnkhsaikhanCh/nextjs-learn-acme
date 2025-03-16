@@ -1,17 +1,18 @@
 // src/app/api/auth/send-otp/route.ts
 import { generateOTP } from "@/utils/generate-otp";
-import { NextResponse } from "next/server";
-import { redis } from "@/lib/redis"; // Redis клиент импортлох
-// import { sendEmail } from "@/lib/email";
+import { NextRequest, NextResponse } from "next/server";
+import { redis } from "@/lib/redis";
+import { sendEmail } from "@/lib/email";
 
-const RATE_LIMIT_KEY = "rate_limit:send_otp:"; // Имэйл тус бүрт өвөрмөц key
+const RATE_LIMIT_KEY = "rate_limit:send_otp:";
 const MAX_REQUESTS = 10; // Цагт 10 удаа
 const WINDOW = 3600; // 1 цаг (секундээр)
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const { email } = await request.json();
 
+    // Имэйл байгаа эсэхийг шалгах
     if (!email) {
       return NextResponse.json(
         { error: "И-мэйл хаяг шаардлагатай." },
@@ -23,7 +24,7 @@ export async function POST(request: Request) {
     const rateLimitKey = `${RATE_LIMIT_KEY}${email}`;
     const currentCount = await redis.get(rateLimitKey);
 
-    if (currentCount && parseInt(currentCount as string) >= MAX_REQUESTS) {
+    if (currentCount && parseInt(currentCount as string, 10) >= MAX_REQUESTS) {
       return NextResponse.json(
         { error: "Хэт олон хүсэлт. 1 цагийн дараа дахин оролдоно уу." },
         { status: 429 },
@@ -32,16 +33,17 @@ export async function POST(request: Request) {
 
     // Хүсэлтийн тоог нэмэх
     if (!currentCount) {
-      await redis.set(rateLimitKey, 1, "EX", WINDOW); // Анхны хүсэлт
+      await redis.set(rateLimitKey, "1", { ex: WINDOW }); // Анхны хүсэлт
     } else {
       await redis.incr(rateLimitKey); // Тоог нэмэх
     }
 
+    // OTP үүсгэх
     const otp = generateOTP();
     const otpExpiry = 5 * 60; // 5 минут (секундээр)
 
     // Redis-д OTP хадгалах
-    await redis.set(`otp:${email}`, otp, "EX", otpExpiry);
+    await redis.set(`otp:${email}`, otp, { ex: otpExpiry });
 
     // await sendEmail({
     //   to: email,
