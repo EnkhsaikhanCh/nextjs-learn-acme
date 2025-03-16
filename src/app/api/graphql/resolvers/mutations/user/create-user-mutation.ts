@@ -44,19 +44,21 @@ export const createUser = async (
     const { checkRateLimit, req } = context;
 
     console.log("Headers:", req.headers);
-    console.log("IP from x-forwarded-for:", req.headers["x-forwarded-for"]);
-    console.log("IP from req.ip:", req.ip);
+    console.log(
+      "IP from x-vercel-forwarded-for:",
+      req.headers["x-vercel-forwarded-for"],
+    );
 
     // Rate limiting шалгах: IP дээр суурилсан хязгаарлалт
     const ip =
+      req.headers["x-vercel-forwarded-for"]?.toString() ||
       req.headers["x-forwarded-for"]?.toString() ||
-      req.headers["x-real-ip"]?.toString() ||
       req.ip ||
       "unknown";
 
     console.log("Final IP:", ip);
 
-    const rateLimitKey = ip ? `createUser:${ip}` : `createUser:${input.email}`;
+    const rateLimitKey = `createUser:${ip}`;
     const MAX_REQUESTS = 5; // 5 удаа
     const WINDOW = 3600; // 1 цаг
     await checkRateLimit(rateLimitKey, MAX_REQUESTS, WINDOW);
