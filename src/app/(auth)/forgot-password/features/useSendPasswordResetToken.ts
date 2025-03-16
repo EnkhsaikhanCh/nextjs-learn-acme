@@ -51,6 +51,7 @@ export const useSendPasswordResetToken = () => {
       if (error instanceof Error) {
         if (error.name === "AbortError") return;
         const errorMessage = `Сүлжээний алдаа гарлаа: ${error.message}`;
+        console.error(`Сүлжээний алдаа гарлаа: ${error.message}`);
         toast.error(errorMessage);
         setFormError("Сүлжээний алдаа гарлаа. Дахин оролдоно уу.");
       } else {
