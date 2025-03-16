@@ -16,7 +16,7 @@ export async function POST(req: Request) {
     const rateLimitKey = `${RATE_LIMIT_KEY}${email}`;
     const currentCount = await redis.get(rateLimitKey);
 
-    if (currentCount && parseInt(currentCount) >= MAX_REQUESTS) {
+    if (currentCount && parseInt(currentCount as string) >= MAX_REQUESTS) {
       return NextResponse.json(
         { error: "Хэт их хүсэлт. 1 цагийн дараа дахин оролдоно уу." },
         { status: 429 },

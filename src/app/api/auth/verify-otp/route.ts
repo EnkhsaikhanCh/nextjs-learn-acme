@@ -32,7 +32,7 @@ export async function POST(request: Request) {
     const currentCount = await redis.get(rateLimitKey); // Одоогийн хүсэлтийн тоог авах
 
     // Алхам 5: Хязгаарыг хэтрүүлсэн бол хязгаарлах
-    if (currentCount && parseInt(currentCount) >= MAX_REQUESTS) {
+    if (currentCount && parseInt(currentCount as string) >= MAX_REQUESTS) {
       return NextResponse.json(
         { error: "Хэт олон оролдлого. 1 минутын дараа дахин оролдоно уу." },
         { status: 429 },

@@ -21,7 +21,7 @@ export async function POST(req: Request) {
     const rateLimitKey = `${RATE_LIMIT_KEY}${token}`; // Token дээр суурилсан key
     const currentCount = await redis.get(rateLimitKey);
 
-    if (currentCount && parseInt(currentCount) >= MAX_REQUESTS) {
+    if (currentCount && parseInt(currentCount as string) >= MAX_REQUESTS) {
       return NextResponse.json(
         { error: "Хэт олон хүсэлт. 1 цагийн дараа дахин оролдоно уу." },
         { status: 429 },

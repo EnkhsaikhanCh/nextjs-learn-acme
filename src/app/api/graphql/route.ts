@@ -27,7 +27,7 @@ const handler = startServerAndCreateNextHandler<NextRequest>(server, {
         const rateLimitKey = `rate_limit:${key}`;
         const currentCount = await redis.get(rateLimitKey);
 
-        if (currentCount && parseInt(currentCount) >= maxRequests) {
+        if (currentCount && parseInt(currentCount as string) >= maxRequests) {
           throw new GraphQLError(
             "Хэт олон хүсэлт. 1 цагийн дараа дахин оролдоно уу.",
           );
