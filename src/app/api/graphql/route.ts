@@ -4,6 +4,8 @@ import { typeDefs } from "./schemas";
 import { NextRequest } from "next/server";
 import { resolvers } from "./resolvers";
 import { connectToDatabase } from "@/lib/mongodb";
+import { redis } from "@/lib/redis";
+import { GraphQLError } from "graphql";
 
 await connectToDatabase();
 
@@ -14,8 +16,30 @@ const server = new ApolloServer({
 });
 
 const handler = startServerAndCreateNextHandler<NextRequest>(server, {
-  context: async () => {
-    return {};
+  context: async (req) => {
+    return {
+      req,
+      checkRateLimit: async (
+        key: string,
+        maxRequests: number,
+        window: number,
+      ) => {
+        const rateLimitKey = `rate_limit:${key}`;
+        const currentCount = await redis.get(rateLimitKey);
+
+        if (currentCount && parseInt(currentCount) >= maxRequests) {
+          throw new GraphQLError(
+            "Хэт олон хүсэлт. 1 цагийн дараа дахин оролдоно уу.",
+          );
+        }
+
+        if (!currentCount) {
+          await redis.set(rateLimitKey, 1, "EX", window); // Анхны хүсэлт
+        } else {
+          await redis.incr(rateLimitKey);
+        }
+      },
+    };
   },
 });
 
