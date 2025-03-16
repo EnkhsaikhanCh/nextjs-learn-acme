@@ -2,7 +2,7 @@
 import { generateOTP } from "@/utils/generate-otp";
 import { NextResponse } from "next/server";
 import { redis } from "@/lib/redis"; // Redis клиент импортлох
-import { sendEmail } from "@/lib/email";
+// import { sendEmail } from "@/lib/email";
 
 const RATE_LIMIT_KEY = "rate_limit:send_otp:"; // Имэйл тус бүрт өвөрмөц key
 const MAX_REQUESTS = 10; // Цагт 10 удаа
