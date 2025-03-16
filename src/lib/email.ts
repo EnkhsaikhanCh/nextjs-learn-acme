@@ -13,7 +13,7 @@ export async function sendEmail({
 }) {
   const isProduction =
     process.env.NODE_ENV === "production" &&
-    !process.env.VERCEL_ENV?.includes("preview"); // preview орчныг production-оос ялгах
+    !process.env.VERCEL_ENV?.includes("preview");
 
   const transport = nodemailer.createTransport({
     host: isProduction ? process.env.SMTP_HOST : process.env.MAILTRAP_HOST,
@@ -26,8 +26,13 @@ export async function sendEmail({
     },
   });
 
+  // Орчноос хамаарсан from имэйл хаяг
+  const fromEmail = isProduction
+    ? `"YourApp" <${process.env.PRODUCTION_SENDER_EMAIL}>` // Production-д
+    : '"YourApp" <no-reply@yourapp.com>'; // Local болон Preview-д
+
   const mailOptions = {
-    from: '"YourApp" <no-reply@yourapp.com>',
+    from: fromEmail,
     to,
     subject,
     html,
@@ -35,10 +40,8 @@ export async function sendEmail({
 
   try {
     const info = await transport.sendMail(mailOptions);
-    console.log(`И-мэйл илгээгдсэн: ${info.messageId}`);
     return info;
-  } catch (error) {
-    console.error("И-мэйл илгээхэд алдаа гарлаа:", error);
+  } catch {
     throw new Error("И-мэйл илгээхэд алдаа гарлаа.");
   }
 }
