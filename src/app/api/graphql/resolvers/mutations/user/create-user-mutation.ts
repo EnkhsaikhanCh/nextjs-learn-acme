@@ -43,9 +43,20 @@ export const createUser = async (
   try {
     const { checkRateLimit, req } = context;
 
+    console.log("Headers:", req.headers);
+    console.log("IP from x-forwarded-for:", req.headers["x-forwarded-for"]);
+    console.log("IP from req.ip:", req.ip);
+
     // Rate limiting шалгах: IP дээр суурилсан хязгаарлалт
-    const ip = req.headers["x-forwarded-for"] || req.ip || "unknown";
-    const rateLimitKey = `createUser:${ip}`;
+    const ip =
+      req.headers["x-forwarded-for"]?.toString() ||
+      req.headers["x-real-ip"]?.toString() ||
+      req.ip ||
+      "unknown";
+
+    console.log("Final IP:", ip);
+
+    const rateLimitKey = ip ? `createUser:${ip}` : `createUser:${input.email}`;
     const MAX_REQUESTS = 5; // 5 удаа
     const WINDOW = 3600; // 1 цаг
     await checkRateLimit(rateLimitKey, MAX_REQUESTS, WINDOW);
