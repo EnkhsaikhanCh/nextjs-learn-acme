@@ -118,6 +118,8 @@ const config: Config = {
     "src/app/api/graphql/resolvers/queries/payment",
     "src/app/api/payment",
     "src/app/api/email",
+    "src/app/\\(auth\\)/forgot-password",
+    "src/app/api/rate-limit.ts",
   ],
 
   // Indicates which provider should be used to instrument code for coverage

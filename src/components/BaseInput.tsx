@@ -1,13 +1,15 @@
+import { AnimatePresence, motion } from "framer-motion";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { ReactNode, useEffect, useRef } from "react";
+import { AlertCircle } from "lucide-react";
 
 interface BaseInputProp {
   label: string;
   id?: string;
   value?: string | number;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  error?: string;
+  error?: string | { [key: string]: string };
   required?: boolean;
   placeholder?: string;
   autoComplete?: string;
@@ -31,23 +33,22 @@ export const BaseInput = ({
   description,
   tabIndex,
 }: BaseInputProp) => {
-  const inputId =
-    id || `base-input-${label.replace(/\s+/g, "-").toLowerCase()}`;
+  const inputId = id || `input-${label.replace(/\s+/g, "-").toLowerCase()}`;
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Focus and blur management for errors
+  const errorMessage =
+    typeof error === "string" ? error : error?.[inputId || label];
+
   useEffect(() => {
-    if (error && inputRef.current) {
+    if (errorMessage && inputRef.current) {
       inputRef.current.focus();
-    } else if (!error && inputRef.current) {
-      inputRef.current.blur();
     }
-  }, [error]);
+  }, [errorMessage]);
 
   return (
     <div className="grid gap-2">
       <div className="flex items-center justify-between">
-        <Label htmlFor={inputId} className="font-bold">
+        <Label htmlFor={inputId} className="font-semibold">
           {label} {required && <span className="text-red-500">*</span>}
         </Label>
         {labelExtra && <div className="text-sm">{labelExtra}</div>}
@@ -61,33 +62,37 @@ export const BaseInput = ({
         required={required}
         autoComplete={autoComplete}
         placeholder={placeholder}
-        aria-required={required}
         tabIndex={tabIndex}
-        aria-invalid={!!error}
         ref={inputRef}
+        aria-invalid={!!errorMessage}
+        aria-describedby={errorMessage ? `${inputId}-error` : undefined}
         className={`border bg-gray-50 ${
-          error ? "border-red-500" : "border-gray-300"
-        } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500`}
+          errorMessage ? "border-red-500" : "border-gray-300"
+        } focus:outline-none focus:ring-2 focus:ring-blue-500`}
       />
 
       {description && (
         <p
-          id={`${inputId}-description`}
-          className={`-mt-1 text-xs text-gray-500 ${error ? "text-red-500" : ""}`}
+          className={`-mt-1 text-xs text-gray-500 ${errorMessage ? "text-red-500" : ""}`}
         >
           {description}
         </p>
       )}
 
-      {error && (
-        <span
-          id={`${inputId}-error`}
-          className="-mt-1 text-sm text-red-500"
-          role="alert"
-        >
-          {error}
-        </span>
-      )}
+      <AnimatePresence>
+        {errorMessage && (
+          <motion.span
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            id={`${inputId}-error`}
+            className="flex items-center gap-2 font-semibold text-red-500"
+            role="alert"
+          >
+            <AlertCircle size={16} />
+            <span className="text-sm">{errorMessage}</span>
+          </motion.span>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
