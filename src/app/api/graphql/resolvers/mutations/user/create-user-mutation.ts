@@ -56,6 +56,12 @@ export const createUser = async (
       req.ip ||
       "unknown";
 
+    console.log(
+      "x-vercel-forwarded-for:",
+      req.headers["x-vercel-forwarded-for"],
+    );
+    console.log("IP from x-forwarded-for:", req.headers["x-forwarded-for"]);
+    console.log("req.ip:", req.ip);
     console.log("Final IP:", ip);
 
     const rateLimitKey = `createUser:${ip}`;
