@@ -42,7 +42,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Redis-ээс хадгалагдсан OTP-г авах
-    const storedOtp = await redis.get(`otp:${email}`);
+    const normalizedEmail = email.toLowerCase();
+    const storedOtp = await redis.get(`otp:${normalizedEmail}`);
 
     // OTP-н оршин байгааг шалгах
     if (!storedOtp) {
@@ -53,7 +54,7 @@ export async function POST(request: NextRequest) {
     }
 
     // OTP таарч байгаа эсэхийг шалгах
-    if (storedOtp !== otp) {
+    if (String(storedOtp) !== String(otp)) {
       return NextResponse.json(
         { error: "OTP код буруу байна." },
         { status: 400 },

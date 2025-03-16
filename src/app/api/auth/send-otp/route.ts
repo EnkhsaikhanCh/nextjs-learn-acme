@@ -43,7 +43,8 @@ export async function POST(request: NextRequest) {
     const otpExpiry = 5 * 60; // 5 минут (секундээр)
 
     // Redis-д OTP хадгалах
-    await redis.set(`otp:${email}`, otp, { ex: otpExpiry });
+    const normalizedEmail = email.toLowerCase();
+    await redis.set(`otp:${normalizedEmail}`, otp, { ex: otpExpiry });
 
     // await sendEmail({
     //   to: email,

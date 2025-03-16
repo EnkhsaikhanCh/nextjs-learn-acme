@@ -57,13 +57,13 @@ export async function POST(request: NextRequest) {
       subject: "Нууц үг сэргээх холбоос",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 400px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 8px; background-color: #ffffff; color: #333;">
-          <h2 style="text-align: center; font-size: 20px; font-weight: 600; margin-bottom: 20px; color: #222;">Нууц Үг Сэргээх</h2>
+          <h2 style="text-align: center; font-size: 20px; font-weight: 600; margin-bottom: 20px; color: #222;">Нууц үг сэргээх</h2>
           <p style="font-size: 16px; text-align: center; margin-bottom: 30px;">
             Нууц үгээ сэргээхийн тулд доорх холбоос дээр дарна уу:
           </p>
           <div style="text-align: center;">
             <a href="${resetUrl}" style="display: inline-block; padding: 10px 20px; background-color: #0070f3; color: #fff; text-decoration: none; border-radius: 5px;">
-              Нууц Үг Сэргээх
+              Нууц үг сэргээх
             </a>
           </div>
           <p style="font-size: 14px; text-align: center; margin-top: 20px; color: #666;">
