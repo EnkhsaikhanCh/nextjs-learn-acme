@@ -43,7 +43,6 @@ export const useSendPasswordResetToken = () => {
       if (!response.ok) {
         const errorMessage = data.error || "Алдаа гарлаа. Дахин оролдоно уу.";
         setFormError(errorMessage);
-        toast.error(errorMessage);
       } else {
         setSuccess(true);
         toast.success("Таны и-мэйл хаяг руу холбоос амжилттай илгээгдлээ.");

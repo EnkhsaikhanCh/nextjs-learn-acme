@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { redis } from "@/lib/redis";
 // import { sendEmail } from "../../../../lib/email";
 import { v4 as uuidv4 } from "uuid";
+import { UserModel } from "../../graphql/models";
 
 const RATE_LIMIT_KEY = "rate_limit:reset-password-token:";
 const MAX_REQUESTS = 5; // 1 цагт хамгийн ихдээ 5 хүсэлт
@@ -33,9 +34,20 @@ export async function POST(request: NextRequest) {
 
     // Хүсэлтийн тоог нэмэх
     if (!currentCount) {
-      await redis.set(rateLimitKey, "1", { ex: WINDOW }); // Анхны хүсэлт
+      await redis.set(rateLimitKey, "1", { ex: WINDOW, nx: true }); // Анхны хүсэлт
     } else {
       await redis.incr(rateLimitKey); // Тоог нэмэх
+    }
+
+    const existingUser = await UserModel.findOne({ email: email });
+    if (!existingUser) {
+      return NextResponse.json(
+        {
+          error:
+            "Бүртгэлгүй имайл байна! Та имайл хаягаа шалгаад дахин оролдон уу.",
+        },
+        { status: 409 },
+      );
     }
 
     // Шинэ токен үүсгэх
