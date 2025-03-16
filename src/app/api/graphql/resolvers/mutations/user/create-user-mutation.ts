@@ -34,6 +34,30 @@ const validationInputs = (email: string, password: string) => {
   return { sanitizedEmail };
 };
 
+async function checkRateLimit(
+  key: string,
+  maxRequests: number,
+  window: number,
+) {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_VERCEL_URL}/api/rate-limit`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ key, maxRequests, window }),
+    },
+  );
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw new GraphQLError(data.error || "Rate limit check failed", {
+      extensions: { code: "TOO_MANY_REQUESTS" },
+    });
+  }
+
+  return data.ip; // Edge Function-ээс авсан IP-г буцаана
+}
+
 export const createUser = async (
   _: unknown,
   { input }: { input: RegisterInput },
@@ -41,30 +65,18 @@ export const createUser = async (
   context: any,
 ) => {
   try {
-    const { checkRateLimit, req } = context;
+    const { req } = context;
 
-    console.log("Headers:", req.headers);
-    console.log("All Headers:", Object.fromEntries(req.headers));
-    console.log(
-      "IP from x-vercel-forwarded-for:",
-      req.headers["x-vercel-forwarded-for"],
-    );
-    console.log("IP from x-forwarded-for:", req.headers["x-forwarded-for"]);
+    console.log("Headers:", Object.fromEntries(req.headers));
     console.log("req.ip:", req.ip);
 
-    // Rate limiting шалгах: IP дээр суурилсан хязгаарлалт
-    const ip =
-      req.headers["x-vercel-forwarded-for"]?.toString() ||
-      req.headers["x-forwarded-for"]?.toString() ||
-      req.ip ||
-      "unknown";
-
-    console.log("Final IP:", ip);
-
+    // Edge Function-аас IP-г авах
+    const MAX_REQUESTS = 5;
+    const WINDOW = 3600;
+    const ip = await checkRateLimit("createUser", MAX_REQUESTS, WINDOW);
     const rateLimitKey = `createUser:${ip}`;
-    const MAX_REQUESTS = 5; // 5 удаа
-    const WINDOW = 3600; // 1 цаг
-    await checkRateLimit(rateLimitKey, MAX_REQUESTS, WINDOW);
+    console.log("Final IP from Edge:", ip);
+    console.log("Rate Limit Key:", rateLimitKey);
 
     const { sanitizedEmail } = validationInputs(input.email, input.password);
 
