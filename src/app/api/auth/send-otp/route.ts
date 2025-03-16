@@ -2,7 +2,7 @@
 import { generateOTP } from "@/utils/generate-otp";
 import { NextRequest, NextResponse } from "next/server";
 import { redis } from "@/lib/redis";
-// import { sendEmail } from "@/lib/email";
+import { sendEmail } from "@/lib/email";
 
 const RATE_LIMIT_KEY = "rate_limit:send_otp:";
 const MAX_REQUESTS = 10; // Цагт 10 удаа
@@ -46,27 +46,27 @@ export async function POST(request: NextRequest) {
     const normalizedEmail = email.toLowerCase();
     await redis.set(`otp:${normalizedEmail}`, otp, { ex: otpExpiry });
 
-    // await sendEmail({
-    //   to: email,
-    //   subject: "Таны OTP код",
-    //   html: `
-    //     <div style="font-family: Arial, sans-serif; max-width: 400px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 8px; background-color: #ffffff; color: #333;">
-    //       <h2 style="text-align: center; font-size: 20px; font-weight: 600; margin-bottom: 20px; color: #222;">Таны OTP Код</h2>
-    //       <p style="font-size: 16px; text-align: center; margin-bottom: 30px;">
-    //         Дараах кодыг ашиглан үйлдлээ баталгаажуулна уу:
-    //       </p>
-    //       <div style="font-size: 24px; font-weight: bold; text-align: center; padding: 10px 20px; border: 1px dashed #ddd; border-radius: 8px; background-color: #f9f9f9; color: #000;">
-    //         ${otp}
-    //       </div>
-    //       <p style="font-size: 14px; text-align: center; margin-top: 20px; color: #666;">
-    //         Код 5 минутын дотор хүчинтэй.
-    //       </p>
-    //       <p style="font-size: 12px; text-align: center; margin-top: 20px; color: #aaa;">
-    //         Хэрэв та энэ имэйлийг санамсаргүйгээр хүлээн авсан бол үл тоомсорлоно уу.
-    //       </p>
-    //     </div>
-    //   `,
-    // });
+    await sendEmail({
+      to: email,
+      subject: "Таны OTP код",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 400px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 8px; background-color: #ffffff; color: #333;">
+          <h2 style="text-align: center; font-size: 20px; font-weight: 600; margin-bottom: 20px; color: #222;">Таны OTP Код</h2>
+          <p style="font-size: 16px; text-align: center; margin-bottom: 30px;">
+            Дараах кодыг ашиглан үйлдлээ баталгаажуулна уу:
+          </p>
+          <div style="font-size: 24px; font-weight: bold; text-align: center; padding: 10px 20px; border: 1px dashed #ddd; border-radius: 8px; background-color: #f9f9f9; color: #000;">
+            ${otp}
+          </div>
+          <p style="font-size: 14px; text-align: center; margin-top: 20px; color: #666;">
+            Код 5 минутын дотор хүчинтэй.
+          </p>
+          <p style="font-size: 12px; text-align: center; margin-top: 20px; color: #aaa;">
+            Хэрэв та энэ имэйлийг санамсаргүйгээр хүлээн авсан бол үл тоомсорлоно уу.
+          </p>
+        </div>
+      `,
+    });
 
     return NextResponse.json({ message: "OTP код амжилттай илгээгдлээ." });
   } catch (error) {
