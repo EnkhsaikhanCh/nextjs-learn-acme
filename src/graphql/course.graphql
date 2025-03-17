@@ -87,3 +87,9 @@ query GetEnrolledCourseContentBySlug($slug: String!) {
     }
   }
 }
+
+query GetCourseIdBySlug($slug: String) {
+  getCourseIdBySlug(slug: $slug) {
+    _id
+  }
+}

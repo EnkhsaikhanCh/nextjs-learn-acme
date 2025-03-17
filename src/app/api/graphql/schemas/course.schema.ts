@@ -61,6 +61,7 @@ export const typeDefs = gql`
     getCourseBySlug(slug: String!): Course
     getAllCourse: [Course!]!
     getEnrolledCourseContentBySlug(slug: String!): Course
+    getCourseIdBySlug(slug: String): Course
   }
 
   input PriceInput {
