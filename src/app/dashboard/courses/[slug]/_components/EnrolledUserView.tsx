@@ -111,10 +111,8 @@ export function EnrolledUserView({ courseData }: { courseData: Course }) {
         toast.success("Lesson marked as completed");
         await enrollmentRefetch();
       }
-    } catch (error) {
-      toast.error(
-        `Failed to mark lesson as completed: ${(error as Error).message}`,
-      );
+    } catch {
+      toast.error("Failed to mark lesson as completed");
     } finally {
       setLessonActionLoading(false);
     }
@@ -138,10 +136,8 @@ export function EnrolledUserView({ courseData }: { courseData: Course }) {
         toast.success("Lesson undone");
         await enrollmentRefetch();
       }
-    } catch (error) {
-      toast.error(
-        `Failed to undo lesson completion: ${(error as Error).message}`,
-      );
+    } catch {
+      toast.error("Failed to undo lesson completion");
     } finally {
       setLessonActionLoading(false);
     }
