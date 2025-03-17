@@ -19,26 +19,43 @@ import {
 } from "@/components/ui/resizable";
 import { LessonViewer } from "./LessonViewer";
 import { SectionAccordion } from "./SectionAccordion";
-import { useEnrollmentData } from "@/hooks/useEnrollmentData";
-import { Course, Lesson, Section } from "@/generated/graphql";
+import {
+  Course,
+  Lesson,
+  Section,
+  useGetEnrollmentByUserAndCourseQuery,
+  useMarkLessonAsCompletedMutation,
+  useUndoLessonCompletionMutation,
+} from "@/generated/graphql";
 import { Button } from "@/components/ui/button";
 import { LoadingOverlay } from "@/components/LoadingOverlay";
+import { toast } from "sonner";
+import { useSession } from "next-auth/react";
 
 export function EnrolledUserView({ courseData }: { courseData: Course }) {
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [isDrawerOpen, setDrawerOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isLessonActionLoading, setLessonActionLoading] = useState(false);
+  const { data: session } = useSession();
 
-  // Элсэлтийн мэдээлэл татах hook
+  const userId = session?.user?.id;
+
   const {
-    userId,
-    enrollmentData,
-    enrollmentLoading,
-    enrollmentError,
-    isLessonActionLoading,
-    handleMarkLessonAsCompleted,
-    handleUndoLessonCompletion,
-  } = useEnrollmentData({ courseId: courseData?._id });
+    data: enrollmentData,
+    loading: enrollmentLoading,
+    error: enrollmentError,
+    refetch: enrollmentRefetch,
+  } = useGetEnrollmentByUserAndCourseQuery({
+    variables: {
+      userId: userId || "",
+      courseId: courseData._id || "",
+    },
+    skip: !userId || !courseData._id,
+  });
+
+  const [markLessonAsCompleted] = useMarkLessonAsCompletedMutation();
+  const [undoLessonCompletion] = useUndoLessonCompletionMutation();
 
   // Дэлгэцийн өргөнийг шалгах
   useEffect(() => {
@@ -50,6 +67,14 @@ export function EnrolledUserView({ courseData }: { courseData: Course }) {
     return () => window.removeEventListener("resize", checkViewport);
   }, []);
 
+  if (enrollmentLoading) {
+    return <LoadingOverlay />;
+  }
+
+  if (enrollmentError) {
+    return <p>Алдаа: {enrollmentError.message}</p>;
+  }
+
   if (!courseData) {
     return (
       <div className="flex h-screen items-center justify-center">
@@ -58,37 +83,76 @@ export function EnrolledUserView({ courseData }: { courseData: Course }) {
     );
   }
 
-  if (!userId || !courseData?._id) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <p>User ID болон Course ID дутуу байна.</p>
-      </div>
-    );
-  }
-
-  if (enrollmentLoading) {
-    return <LoadingOverlay />;
-  }
-
-  if (enrollmentError) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <p className="text-red-500">
-          Error loading enrollment: {enrollmentError.message || "Unknown error"}
-        </p>
-      </div>
-    );
-  }
-
+  // Бүртгэл байгаа эсэхийг шалгах
   const enrollment = enrollmentData?.getEnrollmentByUserAndCourse;
+  if (!enrollment) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <p>Энэ хэрэглэгч энэ курст бүртгэлгүй байна.</p>
+      </div>
+    );
+  }
+
+  const handleMarkLessonAsCompleted = async (lessonId: string) => {
+    if (!enrollment._id || !lessonId) return; // enrollment._id-г шалгах
+    setLessonActionLoading(true);
+
+    try {
+      const response = await markLessonAsCompleted({
+        variables: {
+          input: {
+            enrollmentId: enrollment._id,
+            lessonId,
+          },
+        },
+      });
+
+      if (response.data?.markLessonAsCompleted) {
+        toast.success("Lesson marked as completed");
+        await enrollmentRefetch();
+      }
+    } catch (error) {
+      toast.error(
+        `Failed to mark lesson as completed: ${(error as Error).message}`,
+      );
+    } finally {
+      setLessonActionLoading(false);
+    }
+  };
+
+  const handleUndoLessonCompletion = async (lessonId: string) => {
+    if (!enrollment._id || !lessonId) return; // enrollment._id-г шалгах
+    setLessonActionLoading(true);
+
+    try {
+      const response = await undoLessonCompletion({
+        variables: {
+          input: {
+            enrollmentId: enrollment._id,
+            lessonId,
+          },
+        },
+      });
+
+      if (response.data?.undoLessonCompletion) {
+        toast.success("Lesson undone");
+        await enrollmentRefetch();
+      }
+    } catch (error) {
+      toast.error(
+        `Failed to undo lesson completion: ${(error as Error).message}`,
+      );
+    } finally {
+      setLessonActionLoading(false);
+    }
+  };
+
   const progress = enrollment?.progress || 0;
   const completedLessons =
     enrollment?.completedLessons?.filter((id): id is string => id !== null) ||
     [];
-
   const allLessons =
     courseData?.sectionId?.flatMap((section) => section?.lessonId || []) || [];
-
   const totalLessons = allLessons.length;
 
   function renderCourseInfo() {
