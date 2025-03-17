@@ -2,8 +2,10 @@
 
 import {
   Course,
-  useCheckEnrollmentQuery,
-  useGetCourseBySlugQuery,
+  useCheckEnrollmentLazyQuery,
+  useGetCourseBySlugLazyQuery,
+  useGetCourseIdBySlugLazyQuery,
+  useGetEnrolledCourseContentBySlugLazyQuery,
   useGetUserByIdQuery,
   User,
 } from "@/generated/graphql";
@@ -12,23 +14,17 @@ import { useParams } from "next/navigation";
 import { NotEnrolledUserView } from "./_components/NotEnrolledUserView";
 import { EnrolledUserView } from "./_components/EnrolledUserView";
 import { LoadingOverlay } from "@/components/LoadingOverlay";
-import ErrorFallback from "@/components/ErrorFallback";
 import CourseNotFound from "@/components/CourseNotFound";
+import { useEffect, useState } from "react";
 
 export default function CourseDetailPage() {
   const { data: session } = useSession();
   const { slug } = useParams();
 
-  const {
-    data: courseData,
-    loading: courseLoading,
-    error: courseError,
-    refetch: refetchCourse,
-  } = useGetCourseBySlugQuery({
-    variables: { slug: slug as string },
-    skip: !slug,
-  });
+  const [isEnrolled, setIsEnrolled] = useState<boolean>(false);
+  const [isExpired, setIsExpired] = useState<boolean>(false);
 
+  // 1. Хэрэглэгчийн мэдээлэл
   const {
     data: userData,
     loading: userLoading,
@@ -36,68 +32,129 @@ export default function CourseDetailPage() {
   } = useGetUserByIdQuery({
     variables: { id: session?.user?.id as string },
     skip: !session?.user?.id,
+    fetchPolicy: "cache-first",
   });
 
-  const {
-    data: enrollData,
-    loading: enrollLoading,
-    error: enrollError,
-  } = useCheckEnrollmentQuery({
-    variables: {
-      userId: userData?.getUserById?._id as string,
-      courseId: courseData?.getCourseBySlug?._id as string,
+  // 2. Курсийн ID-г авах Lazy Query
+  const [
+    fetchCourseId,
+    { data: courseIdData, loading: courseIdLoading, error: courseIdError },
+  ] = useGetCourseIdBySlugLazyQuery({
+    fetchPolicy: "cache-first",
+  });
+
+  // 3. Энроллмент шалгах Lazy Query
+  const [
+    checkEnrollment,
+    { data: enrollData, loading: enrollLoading, error: enrollError },
+  ] = useCheckEnrollmentLazyQuery({
+    fetchPolicy: "cache-first",
+  });
+
+  // 4. Бүртгэлтэй хэрэглэгчдэд зориулсан курсийн контент
+  const [
+    fetchEnrolledCourseContent,
+    {
+      data: enrolledUserCourseData,
+      loading: enrolledCourseLoading,
+      error: enrolledCourseError,
     },
-    skip: !userData?.getUserById?._id || !courseData?.getCourseBySlug?._id,
+  ] = useGetEnrolledCourseContentBySlugLazyQuery({
+    fetchPolicy: "cache-first",
   });
 
-  if (courseLoading || userLoading || enrollLoading) {
+  // 5. Бүртгэлгүй хэрэглэгчид зориулсан курсийн мэдээлэл
+  const [
+    fetchCourse,
+    { data: courseData, loading: courseLoading, error: courseError },
+  ] = useGetCourseBySlugLazyQuery({
+    fetchPolicy: "cache-first",
+  });
+
+  // --- UseEffects ---
+
+  // (A) Slug-аар courseId авах
+  useEffect(() => {
+    if (slug) {
+      fetchCourseId({ variables: { slug: slug as string } });
+    }
+  }, [slug, fetchCourseId]);
+
+  // (B) courseId болон userId бэлэн болмогц enrollment шалгах
+  useEffect(() => {
+    const userId = userData?.getUserById?._id;
+    const courseId = courseIdData?.getCourseIdBySlug?._id;
+    if (userId && courseId) {
+      checkEnrollment({ variables: { userId, courseId } });
+    }
+  }, [userData, courseIdData, checkEnrollment]);
+
+  // (C) enrollment үр дүнгээс шалтгаалан дараагийн query-гаа дуудах
+  useEffect(() => {
+    if (enrollData?.checkEnrollment) {
+      setIsEnrolled(true);
+
+      const expiryDate = enrollData.checkEnrollment.expiryDate
+        ? new Date(parseInt(enrollData.checkEnrollment.expiryDate))
+        : null;
+      setIsExpired(!!expiryDate && expiryDate < new Date());
+
+      fetchEnrolledCourseContent({ variables: { slug: slug as string } });
+    } else if (enrollData && !enrollData.checkEnrollment) {
+      fetchCourse({ variables: { slug: slug as string } });
+    }
+  }, [enrollData, fetchEnrolledCourseContent, fetchCourse, slug]);
+
+  // --- Loading / Error States ---
+  if (
+    userLoading ||
+    enrollLoading ||
+    courseIdLoading ||
+    courseLoading ||
+    enrolledCourseLoading
+  ) {
     return <LoadingOverlay />;
   }
 
-  if (courseError || userError || enrollError) {
-    return (
-      <ErrorFallback
-        error={
-          courseError ?? userError ?? enrollError ?? new Error("Unknown error")
-        }
-        reset={refetchCourse}
-      />
-    );
+  if (
+    userError ||
+    enrollError ||
+    courseIdError ||
+    courseError ||
+    enrolledCourseError
+  ) {
+    return <div>Error fetching data!</div>;
   }
 
-  if (!courseData?.getCourseBySlug) {
+  if (!isEnrolled && !courseData?.getCourseBySlug) {
     return <CourseNotFound />;
   }
-
-  // Check if the user is enrolled
-  const isEnrolled = enrollData?.checkEnrollment;
-
-  // Check if enrollment has expired
-  const isExpired = isEnrolled?.expiryDate
-    ? new Date(parseInt(isEnrolled.expiryDate)) < new Date()
-    : false;
 
   const handleScrollToPayment = () => {
     const paymentSection = document.getElementById("payment");
     if (paymentSection) {
-      paymentSection.scrollIntoView({ behavior: "smooth" });
+      window.scrollTo({
+        top: paymentSection.offsetTop,
+        behavior: "smooth",
+      });
     }
   };
 
-  // If not enrolled OR expired, show NotEnrolledUserView
-  if (!isEnrolled || isExpired) {
-    return (
-      <NotEnrolledUserView
-        course={courseData?.getCourseBySlug as Course}
-        user={userData?.getUserById as User}
-        onScrollToPayment={handleScrollToPayment}
-      />
-    );
-  }
-
   return (
     <main>
-      <EnrolledUserView courseData={courseData?.getCourseBySlug as Course} />
+      {!isEnrolled || isExpired ? (
+        <NotEnrolledUserView
+          course={courseData?.getCourseBySlug as Course}
+          user={userData?.getUserById as User}
+          onScrollToPayment={handleScrollToPayment}
+        />
+      ) : (
+        <EnrolledUserView
+          courseData={
+            enrolledUserCourseData?.getEnrolledCourseContentBySlug as Course
+          }
+        />
+      )}
     </main>
   );
 }

@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { ArrowDown } from "lucide-react";
-
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -13,18 +12,15 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
-
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-
 import { LessonViewer } from "./LessonViewer";
 import { SectionAccordion } from "./SectionAccordion";
 import { useEnrollmentData } from "@/hooks/useEnrollmentData";
 import { Course, Lesson, Section } from "@/generated/graphql";
-import { useGetSectionsByCourseId } from "@/hooks/useGetSectionsByCourseId";
 import { Button } from "@/components/ui/button";
 import { LoadingOverlay } from "@/components/LoadingOverlay";
 
@@ -43,12 +39,6 @@ export function EnrolledUserView({ courseData }: { courseData: Course }) {
     handleMarkLessonAsCompleted,
     handleUndoLessonCompletion,
   } = useEnrollmentData({ courseId: courseData?._id });
-
-  const {
-    courseAllSectionsData,
-    courseAllSectionsLoading,
-    courseAllSectionsError,
-  } = useGetSectionsByCourseId({ courseId: courseData?._id });
 
   // Дэлгэцийн өргөнийг шалгах
   useEffect(() => {
@@ -76,18 +66,15 @@ export function EnrolledUserView({ courseData }: { courseData: Course }) {
     );
   }
 
-  if (enrollmentLoading || courseAllSectionsLoading) {
+  if (enrollmentLoading) {
     return <LoadingOverlay />;
   }
 
-  if (enrollmentError || courseAllSectionsError) {
+  if (enrollmentError) {
     return (
       <div className="flex h-screen items-center justify-center">
         <p className="text-red-500">
-          Error loading enrollment:{" "}
-          {enrollmentError?.message ||
-            courseAllSectionsError?.message ||
-            "Unknown error"}
+          Error loading enrollment: {enrollmentError.message || "Unknown error"}
         </p>
       </div>
     );
@@ -100,13 +87,10 @@ export function EnrolledUserView({ courseData }: { courseData: Course }) {
     [];
 
   const allLessons =
-    courseAllSectionsData?.getSectionsByCourseId?.flatMap(
-      (section) => section?.lessonId || [],
-    ) || [];
+    courseData?.sectionId?.flatMap((section) => section?.lessonId || []) || [];
 
   const totalLessons = allLessons.length;
 
-  // Урт кодыг "CourseHeader" мэт жижиг компонент болгон мөн салгаж болно
   function renderCourseInfo() {
     return (
       <section className="my-4 flex flex-col gap-2">
@@ -135,7 +119,6 @@ export function EnrolledUserView({ courseData }: { courseData: Course }) {
     );
   }
 
-  // Тухайн хичээл дээр дархад Drawer эсвэл Resizable Panel дээр дэлгэцэнд гаргана
   function handleSelectLesson(lesson: Lesson) {
     setSelectedLesson(lesson);
     if (isMobile) {
@@ -146,18 +129,14 @@ export function EnrolledUserView({ courseData }: { courseData: Course }) {
   return (
     <main className="h-screen">
       {isMobile ? (
-        // --------------------
-        // MOBILE ХУВИЛБАР
-        // --------------------
         <div className="px-4">
           {renderCourseInfo()}
           <SectionAccordion
-            sections={courseAllSectionsData?.getSectionsByCourseId as Section[]}
+            sections={courseData?.sectionId as Section[]}
             completedLessons={completedLessons}
             selectedLessonId={selectedLesson?._id}
             onSelectLesson={handleSelectLesson}
           />
-          {/* Mobile-д iframe Drawer ашиглах */}
           <Drawer open={isDrawerOpen} onOpenChange={setDrawerOpen}>
             <DrawerContent>
               <DrawerHeader>
@@ -192,28 +171,19 @@ export function EnrolledUserView({ courseData }: { courseData: Course }) {
           </Drawer>
         </div>
       ) : (
-        // --------------------
-        // DESKTOP ХУВИЛБАР
-        // --------------------
         <ResizablePanelGroup direction="horizontal" className="h-full">
-          {/* Зүүн талд: Секшн + Хичээлүүд */}
           <ResizablePanel defaultSize={30} minSize={35} maxSize={45}>
             <div className="h-full overflow-y-auto md:px-2">
               {renderCourseInfo()}
               <SectionAccordion
-                sections={
-                  courseAllSectionsData?.getSectionsByCourseId as Section[]
-                }
+                sections={courseData?.sectionId as Section[]}
                 completedLessons={completedLessons}
                 selectedLessonId={selectedLesson?._id}
                 onSelectLesson={handleSelectLesson}
               />
             </div>
           </ResizablePanel>
-
           <ResizableHandle />
-
-          {/* Баруун талд: Сонгосон хичээл */}
           <ResizablePanel defaultSize={70} minSize={50} className="bg-gray-50">
             <div className="h-full overflow-y-auto p-4">
               <LessonViewer
