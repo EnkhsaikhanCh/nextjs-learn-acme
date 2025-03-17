@@ -4,8 +4,8 @@ import { typeDefs } from "./schemas";
 import { NextRequest } from "next/server";
 import { resolvers } from "./resolvers";
 import { connectToDatabase } from "@/lib/mongodb";
-import { redis } from "@/lib/redis";
-import { GraphQLError } from "graphql";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth"; // Таны auth.js файл
 
 await connectToDatabase();
 
@@ -16,36 +16,12 @@ const server = new ApolloServer({
 });
 
 const handler = startServerAndCreateNextHandler<NextRequest>(server, {
-  context: async (req) => {
+  context: async (req: NextRequest) => {
+    // getServerSession-г App Router-д тохируулан дуудна
+    const session = await getServerSession({ req, ...authOptions });
+    console.log("Session in context:", session); // Шалгах
     return {
-      req,
-      checkRateLimit: async (
-        key: string,
-        maxRequests: number,
-        window: number,
-      ) => {
-        const rateLimitKey = `rate_limit:${key}`;
-        const currentCount = await redis.get(rateLimitKey);
-
-        // currentCount нь string эсвэл null байж болно, тиймээс parseInt-д default утга өгнө
-        if (
-          currentCount &&
-          parseInt(currentCount as string, 10) >= maxRequests
-        ) {
-          throw new GraphQLError(
-            "Хэт олон хүсэлт. 1 цагийн дараа дахин оролдоно уу.",
-            {
-              extensions: { code: "RATE_LIMIT_EXCEEDED" },
-            },
-          );
-        }
-
-        if (!currentCount) {
-          await redis.set(rateLimitKey, "1", { ex: window }); // Анхны хүсэлт
-        } else {
-          await redis.incr(rateLimitKey); // Тоог нэмэх
-        }
-      },
+      user: session?.user || null,
     };
   },
 });
