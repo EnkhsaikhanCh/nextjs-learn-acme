@@ -29,7 +29,7 @@ export const typeDefs = gql`
     thumbnail: String
     price: Price
     pricingDetails: PricingDetails
-    sections: [Section]
+    sectionId: [Section]
     categories: [String]
     tags: [String]
     status: CourseStatus
@@ -60,6 +60,7 @@ export const typeDefs = gql`
     getCourseById(_id: ID!): Course
     getCourseBySlug(slug: String!): Course
     getAllCourse: [Course!]!
+    getEnrolledCourseContentBySlug(slug: String!): Course
   }
 
   input PriceInput {
