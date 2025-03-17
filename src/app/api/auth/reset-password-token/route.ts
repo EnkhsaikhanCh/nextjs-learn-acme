@@ -4,6 +4,7 @@ import { redis } from "@/lib/redis";
 // import { sendEmail } from "../../../../lib/email";
 import { v4 as uuidv4 } from "uuid";
 import { UserModel } from "../../graphql/models";
+import { connectToDatabase } from "@/lib/mongodb";
 
 const RATE_LIMIT_KEY = "rate_limit:reset-password-token:";
 const MAX_REQUESTS = 5; // 1 цагт хамгийн ихдээ 5 хүсэлт
@@ -11,6 +12,8 @@ const WINDOW = 3600; // 1 цаг (секундээр)
 
 export async function POST(request: NextRequest) {
   try {
+    await connectToDatabase();
+
     const { email } = await request.json();
 
     // Имэйл байгаа эсэхийг шалгах
