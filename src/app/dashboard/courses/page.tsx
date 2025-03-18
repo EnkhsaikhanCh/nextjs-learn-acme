@@ -51,7 +51,7 @@ function CourseCard({
         )}
       </CardContent>
       <CardFooter className="p-4 pt-0">
-        <Link href={`/dashboard/courses/${slug}`} prefetch className="w-full">
+        <Link href={`/dashboard/courses/${slug}`} className="w-full">
           <Button
             className="w-full bg-yellow-400 font-semibold text-black hover:bg-yellow-300"
             variant="default"
