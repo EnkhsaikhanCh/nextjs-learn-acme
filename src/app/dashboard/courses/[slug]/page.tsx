@@ -40,7 +40,7 @@ export default function CourseDetailPage() {
     fetchCourseId,
     { data: courseIdData, loading: courseIdLoading, error: courseIdError },
   ] = useGetCourseIdBySlugLazyQuery({
-    fetchPolicy: "cache-first",
+    fetchPolicy: "network-only",
   });
 
   // 3. Энроллмент шалгах Lazy Query
@@ -75,8 +75,8 @@ export default function CourseDetailPage() {
 
   // (A) Slug-аар courseId авах
   useEffect(() => {
-    if (slug) {
-      fetchCourseId({ variables: { slug: slug as string } });
+    if (slug && typeof slug === "string") {
+      fetchCourseId({ variables: { slug } });
     }
   }, [slug, fetchCourseId]);
 
@@ -91,16 +91,27 @@ export default function CourseDetailPage() {
 
   // (C) enrollment үр дүнгээс шалтгаалан дараагийн query-гаа дуудах
   useEffect(() => {
-    if (enrollData?.checkEnrollment) {
+    if (!enrollData) return;
+
+    if (enrollData.checkEnrollment) {
       setIsEnrolled(true);
 
       const expiryDate = enrollData.checkEnrollment.expiryDate
         ? new Date(parseInt(enrollData.checkEnrollment.expiryDate))
         : null;
-      setIsExpired(!!expiryDate && expiryDate < new Date());
+      const expired = !!expiryDate && expiryDate < new Date();
+      setIsExpired(expired);
 
-      fetchEnrolledCourseContent({ variables: { slug: slug as string } });
-    } else if (enrollData && !enrollData.checkEnrollment) {
+      if (!expired) {
+        // Хугацаа дуусаагүй бол бүртгэлтэй хэрэглэгчийн контентыг татна
+        fetchEnrolledCourseContent({ variables: { slug: slug as string } });
+      } else {
+        // Хугацаа дууссан бол бүртгэлгүй хэрэглэгчийн мэдээллийг татна
+        fetchCourse({ variables: { slug: slug as string } });
+      }
+    } else {
+      setIsEnrolled(false);
+      setIsExpired(false);
       fetchCourse({ variables: { slug: slug as string } });
     }
   }, [enrollData, fetchEnrolledCourseContent, fetchCourse, slug]);
