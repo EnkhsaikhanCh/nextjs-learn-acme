@@ -1,5 +1,5 @@
 import { GraphQLError } from "graphql";
-import { CourseModel, EnrollmentModel } from "../../../models";
+import { CourseModel } from "../../../models";
 import { User } from "@/generated/graphql";
 import { requireAuthAndRoles } from "../../../route";
 
