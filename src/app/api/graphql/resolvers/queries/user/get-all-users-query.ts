@@ -7,9 +7,7 @@ import { requireAuthAndRoles } from "@/lib/auth-utils";
 export const getAllUser = async (
   _: unknown,
   __: unknown,
-  context: {
-    user?: User;
-  },
+  context: { user?: User },
 ) => {
   const { user } = context;
 
