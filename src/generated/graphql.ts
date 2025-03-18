@@ -26,7 +26,7 @@ export type Course = {
   difficulty?: Maybe<Difficulty>;
   price?: Maybe<Price>;
   pricingDetails?: Maybe<PricingDetails>;
-  sections?: Maybe<Array<Maybe<Section>>>;
+  sectionId?: Maybe<Array<Maybe<Section>>>;
   slug?: Maybe<Scalars['String']['output']>;
   status?: Maybe<CourseStatus>;
   tags?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
@@ -338,6 +338,8 @@ export type Query = {
   getAllUser: Array<User>;
   getCourseById?: Maybe<Course>;
   getCourseBySlug?: Maybe<Course>;
+  getCourseIdBySlug?: Maybe<Course>;
+  getEnrolledCourseContentBySlug?: Maybe<Course>;
   getEnrollmentByUserAndCourse?: Maybe<Enrollment>;
   getEnrollmentsByCourse: Array<Enrollment>;
   getEnrollmentsByUser: Array<Enrollment>;
@@ -364,6 +366,16 @@ export type QueryGetCourseByIdArgs = {
 
 
 export type QueryGetCourseBySlugArgs = {
+  slug: Scalars['String']['input'];
+};
+
+
+export type QueryGetCourseIdBySlugArgs = {
+  slug?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryGetEnrolledCourseContentBySlugArgs = {
   slug: Scalars['String']['input'];
 };
 
@@ -561,7 +573,21 @@ export type GetCourseBySlugQueryVariables = Exact<{
 }>;
 
 
-export type GetCourseBySlugQuery = { __typename?: 'Query', getCourseBySlug?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, description?: string | null, courseCode?: string | null, difficulty?: Difficulty | null, status?: CourseStatus | null, categories?: Array<string | null> | null, tags?: Array<string | null> | null, whatYouWillLearn?: Array<string | null> | null, price?: { __typename?: 'Price', amount?: number | null, currency?: Currency | null, discount?: number | null } | null, pricingDetails?: { __typename?: 'PricingDetails', planTitle?: string | null, description?: string | null, price?: string | null, details?: Array<string | null> | null } | null, whyChooseOurCourse?: Array<{ __typename?: 'WhyChoose', icon?: string | null, title?: string | null, description?: string | null } | null> | null, sections?: Array<{ __typename?: 'Section', _id: string, title: string, description?: string | null, order: number } | null> | null } | null };
+export type GetCourseBySlugQuery = { __typename?: 'Query', getCourseBySlug?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, description?: string | null, courseCode?: string | null, difficulty?: Difficulty | null, status?: CourseStatus | null, categories?: Array<string | null> | null, tags?: Array<string | null> | null, whatYouWillLearn?: Array<string | null> | null, price?: { __typename?: 'Price', amount?: number | null, currency?: Currency | null, discount?: number | null } | null, pricingDetails?: { __typename?: 'PricingDetails', planTitle?: string | null, description?: string | null, price?: string | null, details?: Array<string | null> | null } | null, whyChooseOurCourse?: Array<{ __typename?: 'WhyChoose', icon?: string | null, title?: string | null, description?: string | null } | null> | null } | null };
+
+export type GetEnrolledCourseContentBySlugQueryVariables = Exact<{
+  slug: Scalars['String']['input'];
+}>;
+
+
+export type GetEnrolledCourseContentBySlugQuery = { __typename?: 'Query', getEnrolledCourseContentBySlug?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, description?: string | null, status?: CourseStatus | null, sectionId?: Array<{ __typename?: 'Section', _id: string, title: string, lessonId?: Array<{ __typename?: 'Lesson', _id: string, title: string, content?: string | null, videoUrl?: string | null } | null> | null } | null> | null } | null };
+
+export type GetCourseIdBySlugQueryVariables = Exact<{
+  slug?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type GetCourseIdBySlugQuery = { __typename?: 'Query', getCourseIdBySlug?: { __typename?: 'Course', _id: string } | null };
 
 export type MarkLessonAsCompletedMutationVariables = Exact<{
   input?: InputMaybe<MarkLessonAsCompletedInput>;
@@ -919,12 +945,6 @@ export const GetCourseBySlugDocument = gql`
       title
       description
     }
-    sections {
-      _id
-      title
-      description
-      order
-    }
   }
 }
     `;
@@ -961,6 +981,100 @@ export type GetCourseBySlugQueryHookResult = ReturnType<typeof useGetCourseBySlu
 export type GetCourseBySlugLazyQueryHookResult = ReturnType<typeof useGetCourseBySlugLazyQuery>;
 export type GetCourseBySlugSuspenseQueryHookResult = ReturnType<typeof useGetCourseBySlugSuspenseQuery>;
 export type GetCourseBySlugQueryResult = Apollo.QueryResult<GetCourseBySlugQuery, GetCourseBySlugQueryVariables>;
+export const GetEnrolledCourseContentBySlugDocument = gql`
+    query GetEnrolledCourseContentBySlug($slug: String!) {
+  getEnrolledCourseContentBySlug(slug: $slug) {
+    _id
+    title
+    slug
+    description
+    status
+    sectionId {
+      _id
+      title
+      lessonId {
+        _id
+        title
+        content
+        videoUrl
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetEnrolledCourseContentBySlugQuery__
+ *
+ * To run a query within a React component, call `useGetEnrolledCourseContentBySlugQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetEnrolledCourseContentBySlugQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetEnrolledCourseContentBySlugQuery({
+ *   variables: {
+ *      slug: // value for 'slug'
+ *   },
+ * });
+ */
+export function useGetEnrolledCourseContentBySlugQuery(baseOptions: Apollo.QueryHookOptions<GetEnrolledCourseContentBySlugQuery, GetEnrolledCourseContentBySlugQueryVariables> & ({ variables: GetEnrolledCourseContentBySlugQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetEnrolledCourseContentBySlugQuery, GetEnrolledCourseContentBySlugQueryVariables>(GetEnrolledCourseContentBySlugDocument, options);
+      }
+export function useGetEnrolledCourseContentBySlugLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetEnrolledCourseContentBySlugQuery, GetEnrolledCourseContentBySlugQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetEnrolledCourseContentBySlugQuery, GetEnrolledCourseContentBySlugQueryVariables>(GetEnrolledCourseContentBySlugDocument, options);
+        }
+export function useGetEnrolledCourseContentBySlugSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetEnrolledCourseContentBySlugQuery, GetEnrolledCourseContentBySlugQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetEnrolledCourseContentBySlugQuery, GetEnrolledCourseContentBySlugQueryVariables>(GetEnrolledCourseContentBySlugDocument, options);
+        }
+export type GetEnrolledCourseContentBySlugQueryHookResult = ReturnType<typeof useGetEnrolledCourseContentBySlugQuery>;
+export type GetEnrolledCourseContentBySlugLazyQueryHookResult = ReturnType<typeof useGetEnrolledCourseContentBySlugLazyQuery>;
+export type GetEnrolledCourseContentBySlugSuspenseQueryHookResult = ReturnType<typeof useGetEnrolledCourseContentBySlugSuspenseQuery>;
+export type GetEnrolledCourseContentBySlugQueryResult = Apollo.QueryResult<GetEnrolledCourseContentBySlugQuery, GetEnrolledCourseContentBySlugQueryVariables>;
+export const GetCourseIdBySlugDocument = gql`
+    query GetCourseIdBySlug($slug: String) {
+  getCourseIdBySlug(slug: $slug) {
+    _id
+  }
+}
+    `;
+
+/**
+ * __useGetCourseIdBySlugQuery__
+ *
+ * To run a query within a React component, call `useGetCourseIdBySlugQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetCourseIdBySlugQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetCourseIdBySlugQuery({
+ *   variables: {
+ *      slug: // value for 'slug'
+ *   },
+ * });
+ */
+export function useGetCourseIdBySlugQuery(baseOptions?: Apollo.QueryHookOptions<GetCourseIdBySlugQuery, GetCourseIdBySlugQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetCourseIdBySlugQuery, GetCourseIdBySlugQueryVariables>(GetCourseIdBySlugDocument, options);
+      }
+export function useGetCourseIdBySlugLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCourseIdBySlugQuery, GetCourseIdBySlugQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetCourseIdBySlugQuery, GetCourseIdBySlugQueryVariables>(GetCourseIdBySlugDocument, options);
+        }
+export function useGetCourseIdBySlugSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetCourseIdBySlugQuery, GetCourseIdBySlugQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetCourseIdBySlugQuery, GetCourseIdBySlugQueryVariables>(GetCourseIdBySlugDocument, options);
+        }
+export type GetCourseIdBySlugQueryHookResult = ReturnType<typeof useGetCourseIdBySlugQuery>;
+export type GetCourseIdBySlugLazyQueryHookResult = ReturnType<typeof useGetCourseIdBySlugLazyQuery>;
+export type GetCourseIdBySlugSuspenseQueryHookResult = ReturnType<typeof useGetCourseIdBySlugSuspenseQuery>;
+export type GetCourseIdBySlugQueryResult = Apollo.QueryResult<GetCourseIdBySlugQuery, GetCourseIdBySlugQueryVariables>;
 export const MarkLessonAsCompletedDocument = gql`
     mutation MarkLessonAsCompleted($input: markLessonAsCompletedInput) {
   markLessonAsCompleted(input: $input) {

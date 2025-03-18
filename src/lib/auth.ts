@@ -10,7 +10,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 interface ExtendedJWT extends JWT {
-  id?: string;
+  _id?: string;
   role?: "STUDENT" | "INSTRUCTOR" | "ADMIN";
   studentId?: string;
   isVerified?: boolean;
@@ -120,7 +120,7 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }: { session: any; token: ExtendedJWT }) {
       if (token) {
         session.user = {
-          id: token.id,
+          _id: token.id,
           email: token.email,
           role: token.role,
           studentId: token.studentId,

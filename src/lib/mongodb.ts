@@ -15,7 +15,6 @@ let cached = (global as any).mongoose || { conn: null, promise: null };
 
 export const connectToDatabase = async () => {
   if (cached.conn) {
-    console.log("Already connected to database");
     return cached.conn;
   }
 
@@ -25,11 +24,9 @@ export const connectToDatabase = async () => {
         dbName: "test",
       })
       .then((mongoose) => {
-        console.log("Connected to database");
         return mongoose;
       })
-      .catch((error) => {
-        console.error("Error connecting to database", error.message);
+      .catch(() => {
         throw new Error("Database connection failed");
       });
   }

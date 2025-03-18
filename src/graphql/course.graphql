@@ -65,11 +65,31 @@ query GetCourseBySlug($slug: String!) {
       title
       description
     }
-    sections {
+  }
+}
+
+query GetEnrolledCourseContentBySlug($slug: String!) {
+  getEnrolledCourseContentBySlug(slug: $slug) {
+    _id
+    title
+    slug
+    description
+    status
+    sectionId {
       _id
       title
-      description
-      order
+      lessonId {
+        _id
+        title
+        content
+        videoUrl
+      }
     }
+  }
+}
+
+query GetCourseIdBySlug($slug: String) {
+  getCourseIdBySlug(slug: $slug) {
+    _id
   }
 }

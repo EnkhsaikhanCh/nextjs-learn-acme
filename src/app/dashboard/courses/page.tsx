@@ -1,8 +1,6 @@
 // src/app/dashboard/courses/page.tsx:
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 import ErrorFallback from "@/components/ErrorFallback";
 import { LoadingOverlay } from "@/components/LoadingOverlay";
 import { Button } from "@/components/ui/button";
@@ -16,7 +14,7 @@ import {
 } from "@/components/ui/card";
 import { useGetAllCourseQuery } from "@/generated/graphql";
 import Image from "next/image";
-import { LoaderCircle } from "lucide-react";
+import Link from "next/link";
 
 interface CourseCardProps {
   slug?: string;
@@ -31,16 +29,6 @@ function CourseCard({
   description,
   image = "/placeholder.svg?height=100&width=200",
 }: CourseCardProps) {
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleCourseOpen = () => {
-    setIsLoading(true);
-    setTimeout(() => {
-      router.push(`/dashboard/courses/${slug}`);
-    }, 1500); // 1.5 секундын дараа шилжүүлнэ
-  };
-
   return (
     <Card>
       <CardHeader className="p-0">
@@ -63,18 +51,14 @@ function CourseCard({
         )}
       </CardContent>
       <CardFooter className="p-4 pt-0">
-        <Button
-          className="w-full bg-yellow-400 font-semibold text-black hover:bg-yellow-300"
-          variant="default"
-          onClick={handleCourseOpen}
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <LoaderCircle className="animate-spin" />
-          ) : (
-            "Хичээл үзэх"
-          )}
-        </Button>
+        <Link href={`/dashboard/courses/${slug}`} className="w-full">
+          <Button
+            className="w-full bg-yellow-400 font-semibold text-black hover:bg-yellow-300"
+            variant="default"
+          >
+            Хичээл үзэх
+          </Button>
+        </Link>
       </CardFooter>
     </Card>
   );

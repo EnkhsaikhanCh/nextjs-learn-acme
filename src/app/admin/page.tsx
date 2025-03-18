@@ -11,11 +11,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 
 export default function Page() {
   const { data: session, status } = useSession();
 
-  const userId = session?.user?.id;
+  const userId = session?.user?._id;
 
   const { data, loading, error } = useGetUserByIdQuery({
     variables: { id: userId || "" },
@@ -59,7 +60,17 @@ export default function Page() {
             <TableCell className="font-medium">{user?.email}</TableCell>
             <TableCell>{user?.studentId}</TableCell>
             <TableCell>{user?.role}</TableCell>
-            <TableCell>{data?.getUserById.isVerified}</TableCell>
+            <TableCell>
+              {user?.isVerified ? (
+                <Badge className="bg-green-100 text-green-600 hover:bg-green-100">
+                  verified
+                </Badge>
+              ) : (
+                <Badge className="bg-red-100 text-red-600 hover:bg-red-100">
+                  Not verified
+                </Badge>
+              )}
+            </TableCell>
           </TableRow>
         </TableBody>
       </Table>

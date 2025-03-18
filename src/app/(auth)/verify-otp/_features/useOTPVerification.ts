@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { signIn, signOut } from "next-auth/react";
+import { getSession, signIn, signOut } from "next-auth/react";
 
 export const useOTPVerification = () => {
   const [email, setEmail] = useState<string | null>(null);
@@ -115,7 +115,15 @@ export const useOTPVerification = () => {
         } else {
           localStorage.removeItem("tempToken");
           localStorage.removeItem("resendExpiry");
-          setTimeout(() => router.push("/dashboard"), 2000);
+
+          const session = await getSession();
+          const userRole = session?.user.role;
+
+          if (userRole?.toUpperCase() === "ADMIN") {
+            router.push("/admin");
+          } else {
+            router.push("/dashboard/courses");
+          }
         }
       }
     } catch (error) {
