@@ -30,8 +30,8 @@ export default function CourseDetailPage() {
     loading: userLoading,
     error: userError,
   } = useGetUserByIdQuery({
-    variables: { id: session?.user?.id as string },
-    skip: !session?.user?.id,
+    variables: { id: session?.user?._id as string },
+    skip: !session?.user?._id,
     fetchPolicy: "cache-first",
   });
 

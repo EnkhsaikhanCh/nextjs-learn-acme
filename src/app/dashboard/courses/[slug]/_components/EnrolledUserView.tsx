@@ -39,7 +39,7 @@ export function EnrolledUserView({ courseData }: { courseData: Course }) {
   const [isLessonActionLoading, setLessonActionLoading] = useState(false);
   const { data: session } = useSession();
 
-  const userId = session?.user?.id;
+  const userId = session?.user?._id;
 
   const {
     data: enrollmentData,
