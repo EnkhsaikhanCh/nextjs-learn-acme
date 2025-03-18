@@ -42,11 +42,7 @@ export const getEnrolledCourseContentBySlug = async (
     });
 
     return populatedCourse;
-  } catch (error) {
-    if (error instanceof GraphQLError) {
-      throw error;
-    }
-
+  } catch {
     throw new GraphQLError("Failed to fetch enrolled course content", {
       extensions: {
         code: "INTERNAL_SERVER_ERROR",
