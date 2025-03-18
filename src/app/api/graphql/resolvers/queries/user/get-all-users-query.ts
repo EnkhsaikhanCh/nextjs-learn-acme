@@ -1,8 +1,8 @@
 // src/app/api/graphql/resolver/queries/user/get-all-users.ts
 import { User } from "@/generated/graphql";
 import { UserModel } from "../../../models";
-import { requireAuthAndRoles } from "../../../route";
 import { GraphQLError } from "graphql";
+import { requireAuthAndRoles } from "@/lib/auth-utils";
 
 export const getAllUser = async (
   _: unknown,

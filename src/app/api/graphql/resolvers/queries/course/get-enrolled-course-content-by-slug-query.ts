@@ -1,7 +1,7 @@
 import { GraphQLError } from "graphql";
 import { CourseModel } from "../../../models";
 import { User } from "@/generated/graphql";
-import { requireAuthAndRoles } from "../../../route";
+import { requireAuthAndRoles } from "@/lib/auth-utils";
 
 export const getEnrolledCourseContentBySlug = async (
   _: unknown,
