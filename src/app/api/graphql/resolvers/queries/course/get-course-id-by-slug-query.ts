@@ -18,7 +18,7 @@ export const getCourseIdBySlug = async (
 
     return course;
   } catch {
-    throw new GraphQLError("Failed to fetch user", {
+    throw new GraphQLError("Failed to fetch course", {
       extensions: {
         code: "INTERNAL_SERVER_ERROR",
         http: { status: 500 },

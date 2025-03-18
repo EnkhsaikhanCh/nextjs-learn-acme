@@ -123,11 +123,11 @@ export default function CourseDetailPage() {
     courseError ||
     enrolledCourseError
   ) {
-    return <div>Error fetching data!</div>;
+    return <CourseNotFound onRetry={() => window.location.reload()} />;
   }
 
   if (!isEnrolled && !courseData?.getCourseBySlug) {
-    return <CourseNotFound />;
+    return <CourseNotFound onRetry={() => window.location.reload()} />;
   }
 
   const handleScrollToPayment = () => {
