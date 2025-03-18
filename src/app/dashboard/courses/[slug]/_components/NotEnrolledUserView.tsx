@@ -80,8 +80,8 @@ export function NotEnrolledUserView({
                 <ul className="space-y-4">
                   <li>
                     <strong>Нийт хичээлүүд:</strong>{" "}
-                    {course?.sections?.map
-                      ? course.sections.reduce(
+                    {course?.sectionId?.map
+                      ? course.sectionId.reduce(
                           (total, section) =>
                             total + (section?.lessonId?.length || 0),
                           0,

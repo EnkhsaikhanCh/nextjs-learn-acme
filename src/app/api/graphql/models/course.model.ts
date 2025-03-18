@@ -20,7 +20,7 @@ export type Course = {
     price: string;
     details: string[];
   };
-  sectionId: string;
+  sectionId: string[];
   categories?: string[];
   tags?: string[];
   status?: "DRAFT" | "PUBLISHED" | "ARCHIVED";

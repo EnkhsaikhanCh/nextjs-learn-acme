@@ -17,7 +17,7 @@ import { Badge } from "@/components/ui/badge";
 export default function Page() {
   const { data: session, status } = useSession();
 
-  const userId = session?.user?.id;
+  const userId = session?.user._id;
 
   const { data, loading, error } = useGetUserByIdQuery({
     variables: { id: userId || "" },

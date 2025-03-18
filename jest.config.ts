@@ -120,6 +120,7 @@ const config: Config = {
     "src/app/api/email",
     "src/app/\\(auth\\)/forgot-password",
     "src/app/api/rate-limit.ts",
+    "app/api/graphql/resolvers/queries/user/get-all-users-query.ts",
   ],
 
   // Indicates which provider should be used to instrument code for coverage
