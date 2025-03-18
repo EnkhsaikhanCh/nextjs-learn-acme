@@ -1,22 +1,17 @@
 import { GraphQLError } from "graphql";
 import { CourseModel, EnrollmentModel } from "../../../models";
+import { User } from "@/generated/graphql";
+import { requireAuthAndRoles } from "../../../route";
 
 export const getEnrolledCourseContentBySlug = async (
   _: unknown,
   { slug }: { slug: string },
-  context: { user?: { id: string } },
+  context: {
+    user?: User;
+  },
 ) => {
   try {
     const { user } = context;
-
-    if (!user) {
-      throw new GraphQLError("Authentication required", {
-        extensions: {
-          code: "UNAUTHENTICATED",
-          http: { status: 401 },
-        },
-      });
-    }
 
     // Курсыг slug-аар хайна
     const course = await CourseModel.findOne({ slug });
@@ -28,20 +23,11 @@ export const getEnrolledCourseContentBySlug = async (
       });
     }
 
-    // Бүртгэлийг шалгана
-    const enrollment = await EnrollmentModel.findOne({
-      userId: user.id,
+    // Төвлөрсөн шалгалт хийнэ
+    await requireAuthAndRoles(user, ["STUDENT", "ADMIN"], {
+      requireEnrollment: true,
       courseId: course._id,
     });
-
-    if (!enrollment) {
-      throw new GraphQLError("You are not enrolled in this course", {
-        extensions: {
-          code: "FORBIDDEN",
-          http: { status: 403 },
-        },
-      });
-    }
 
     // Курсийн агуулгыг populate хийж буцаана
     const populatedCourse = await CourseModel.findOne({ slug }).populate({
