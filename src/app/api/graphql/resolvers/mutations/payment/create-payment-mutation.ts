@@ -1,6 +1,11 @@
 import { GraphQLError } from "graphql";
 import { CourseModel, PaymentModel, UserModel } from "../../../models";
 import { CreatePaymentInput } from "@/generated/graphql";
+import TelegramBot from "node-telegram-bot-api";
+
+const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN!, {
+  polling: false,
+});
 
 export const createPayment = async (
   _: unknown,
@@ -32,6 +37,7 @@ export const createPayment = async (
       });
     }
 
+    // Төлбөр үүсгэх
     const payment = new PaymentModel({
       userId,
       courseId,
@@ -43,15 +49,33 @@ export const createPayment = async (
 
     await payment.save();
 
-    return payment;
-  } catch (error) {
-    if (error instanceof GraphQLError) {
-      throw error;
+    // Telegram мэдэгдэл илгээх
+    const adminChatId = process.env.ADMIN_CHAT_ID;
+    if (adminChatId) {
+      const envLabel =
+        process.env.NODE_ENV === "development"
+          ? "[DEV] "
+          : process.env.VERCEL_ENV === "preview"
+            ? "[Preview] "
+            : "";
+
+      const message = `
+🚀 *${envLabel}Төлбөр шалгах хүсэлт*  
+
+👤 **Хэрэглэгч ID:** \`${userExists.studentId}\`  
+📚 **Сургалт:** *${courseExists.title}*  
+💰 **Гүйлгээний дүн:** \`${amount}₮\`  
+📝 **Төлбөрийн утга:** \`${transactionNote}\`  
+
+✅ *Системд нэвтрэн шалгаж баталгаажуулна уу.*
+      `;
+
+      await bot.sendMessage(adminChatId, message, { parse_mode: "Markdown" });
     }
 
-    const message = (error as Error).message;
-
-    throw new GraphQLError(`Internal server error: ${message}`, {
+    return payment;
+  } catch {
+    throw new GraphQLError("Internal server error", {
       extensions: { code: "INTERNAL_SERVER_ERROR" },
     });
   }
