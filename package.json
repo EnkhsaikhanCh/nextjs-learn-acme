@@ -10,7 +10,8 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "codegen": "graphql-codegen",
-    "seed:admin": "tsx src/scripts/seed-admin.ts"
+    "seed:admin": "tsx src/scripts/seed-admin.ts",
+    "start worker": "tsx src/workers/telegram-worker.ts"
   },
   "dependencies": {
     "@apollo/client": "^3.12.4",
@@ -40,6 +41,7 @@
     "@types/bcrypt": "^5.0.2",
     "@types/jest": "^29.5.14",
     "@types/jsonwebtoken": "^9.0.7",
+    "@types/node-telegram-bot-api": "^0.64.7",
     "@types/nodemailer": "^6.4.17",
     "@types/validator": "^13.12.2",
     "@typescript-eslint/eslint-plugin": "^8.18.2",
