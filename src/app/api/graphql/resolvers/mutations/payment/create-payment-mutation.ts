@@ -1,11 +1,8 @@
+// src/app/api/graphql/resolvers/mutations/payment/create-payment-mutation.ts
 import { GraphQLError } from "graphql";
 import { CourseModel, PaymentModel, UserModel } from "../../../models";
 import { CreatePaymentInput } from "@/generated/graphql";
-import TelegramBot from "node-telegram-bot-api";
-
-const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN!, {
-  polling: false,
-});
+import { bot } from "@/app/api/telegram/bot";
 
 export const createPayment = async (
   _: unknown,
@@ -62,19 +59,38 @@ export const createPayment = async (
       const message = `
 🚀 *${envLabel}Төлбөр шалгах хүсэлт*  
 
-👤 **Хэрэглэгч ID:** \`${userExists.studentId}\`  
+👤 **Хэрэглэгч ID:** *${userExists.studentId}*  
 📚 **Сургалт:** *${courseExists.title}*  
-💰 **Гүйлгээний дүн:** \`${amount}₮\`  
-📝 **Төлбөрийн утга:** \`${transactionNote}\`  
+💰 **Гүйлгээний дүн:** *${amount}₮*  
+📝 **Төлбөрийн утга:** *${transactionNote}* 
 
 ✅ *Системд нэвтрэн шалгаж баталгаажуулна уу.*
       `;
 
-      await bot.sendMessage(adminChatId, message, { parse_mode: "Markdown" });
+      await bot.sendMessage(adminChatId, message, {
+        parse_mode: "Markdown",
+        reply_markup: {
+          inline_keyboard: [
+            [
+              {
+                text: "✅ Баталгаажуулах",
+                callback_data: `approve_${payment._id}`,
+              },
+              {
+                text: "❌ Татгалзах",
+                callback_data: `reject_${payment._id}`,
+              },
+            ],
+          ],
+        },
+      });
+      console.log("✅ Telegram notification sent to admin");
     }
 
     return payment;
-  } catch {
+  } catch (error) {
+    const message = (error as Error).message;
+    console.error("❌ Error creating payment:", message);
     throw new GraphQLError("Internal server error", {
       extensions: { code: "INTERNAL_SERVER_ERROR" },
     });
