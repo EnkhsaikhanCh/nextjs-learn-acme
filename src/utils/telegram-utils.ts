@@ -27,8 +27,10 @@ export async function sendMessageWithRetry(
       await bot.sendMessage(chatId, message, { parse_mode: "Markdown" });
       return;
     } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       if ((error as any).response?.statusCode === 429) {
         const waitTime =
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (error as any).response.body.parameters.retry_after * 1000;
         await new Promise((resolve) => setTimeout(resolve, waitTime));
       } else if (i === retries - 1) {

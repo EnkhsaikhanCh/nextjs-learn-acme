@@ -7,6 +7,7 @@ const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN!, {
 });
 const QUEUE_KEY = "telegram_payment_queue";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function enqueuePaymentNotification(paymentData: any) {
   const dailyRequests = (await redis.get("daily_request_count")) || 0;
   if (Number(dailyRequests) > 50000) return; // Лимит
