@@ -10,8 +10,7 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "codegen": "graphql-codegen",
-    "seed:admin": "tsx src/scripts/seed-admin.ts",
-    "start worker": "tsx src/workers/telegram-worker.ts"
+    "seed:admin": "tsx src/scripts/seed-admin.ts"
   },
   "dependencies": {
     "@apollo/client": "^3.12.4",
