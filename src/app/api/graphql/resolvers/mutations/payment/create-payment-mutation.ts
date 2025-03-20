@@ -75,9 +75,7 @@ export const createPayment = async (
     }
 
     return payment;
-  } catch (error) {
-    const message = (error as Error).message;
-    console.error("❌ Error creating payment:", message);
+  } catch {
     throw new GraphQLError("Internal server error", {
       extensions: { code: "INTERNAL_SERVER_ERROR" },
     });
