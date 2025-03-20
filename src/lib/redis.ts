@@ -1,5 +1,7 @@
 // src/lib/redis.ts
 import { Redis as UpstashRedis } from "@upstash/redis";
+import dotenv from "dotenv";
+dotenv.config();
 
 // Орчин тодорхойлох
 const isProduction = process.env.VERCEL_ENV === "production";
