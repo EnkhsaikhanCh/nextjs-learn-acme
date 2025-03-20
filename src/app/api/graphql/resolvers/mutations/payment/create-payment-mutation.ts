@@ -2,7 +2,11 @@
 import { GraphQLError } from "graphql";
 import { CourseModel, PaymentModel, UserModel } from "../../../models";
 import { CreatePaymentInput } from "@/generated/graphql";
-import { bot } from "@/app/api/telegram/bot";
+import TelegramBot from "node-telegram-bot-api";
+
+const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN!, {
+  polling: false,
+});
 
 export const createPayment = async (
   _: unknown,
@@ -67,24 +71,7 @@ export const createPayment = async (
 ✅ *Системд нэвтрэн шалгаж баталгаажуулна уу.*
       `;
 
-      await bot.sendMessage(adminChatId, message, {
-        parse_mode: "Markdown",
-        reply_markup: {
-          inline_keyboard: [
-            [
-              {
-                text: "✅ Баталгаажуулах",
-                callback_data: `approve_${payment._id}`,
-              },
-              {
-                text: "❌ Татгалзах",
-                callback_data: `reject_${payment._id}`,
-              },
-            ],
-          ],
-        },
-      });
-      console.log("✅ Telegram notification sent to admin");
+      await bot.sendMessage(adminChatId, message, { parse_mode: "Markdown" });
     }
 
     return payment;
