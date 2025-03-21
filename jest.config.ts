@@ -50,8 +50,6 @@ const config: Config = {
     "src/app/dashboard",
     "src/hooks",
     "src/components/dashboard/sidebar/NavUser.tsx",
-    "src/common/index.ts",
-    "src/common/encryption/index.ts",
     "src/app/signup/page.tsx",
     "src/app/login/page.tsx",
     "src/components/dashboard",
@@ -77,9 +75,6 @@ const config: Config = {
     "src/app/api/graphql/apollo-client.ts",
     "src/app/api/graphql/ApolloWrappre.tsx",
     "src/generated",
-
-    // encryption
-    "src/common/encryption",
 
     // seed-admin
     "src/scripts/seed-admin.ts",
