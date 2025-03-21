@@ -1,12 +1,17 @@
 import { GraphQLError } from "graphql";
 import { LessonModel, SectionModel } from "../../../models";
-import { CreateLessonInput } from "@/generated/graphql";
+import { CreateLessonInput, User } from "@/generated/graphql";
+import { requireAuthAndRoles } from "@/lib/auth-utils";
 
 export const createLesson = async (
   _: unknown,
   { input }: { input: CreateLessonInput },
+  context: { user?: User },
 ) => {
+  const { user } = context;
   const { sectionId, title } = input;
+
+  await requireAuthAndRoles(user, ["ADMIN"]);
 
   if (!sectionId || !title) {
     throw new GraphQLError("Invalid input data", {
@@ -21,13 +26,10 @@ export const createLesson = async (
     });
   }
 
-  let maxOrder = 0;
-  if (sectionId) {
-    const lastLesson = await LessonModel.findOne({ sectionId })
-      .sort({ order: -1 }) // order-ийг буурахаар эрэмбэлж, хамгийн ихийг авах
-      .exec();
-    maxOrder = lastLesson ? lastLesson.order : 0;
-  }
+  const lastLesson = await LessonModel.findOne({ sectionId })
+    .sort({ order: -1 })
+    .exec();
+  const maxOrder = lastLesson ? lastLesson.order : 0;
 
   try {
     const newLesson = await LessonModel.create({
