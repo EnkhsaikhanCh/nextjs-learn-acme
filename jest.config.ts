@@ -120,6 +120,8 @@ const config: Config = {
     "src/app/\\(auth\\)/forgot-password",
     "src/app/api/rate-limit.ts",
     "app/api/graphql/resolvers/queries/user/get-all-users-query.ts",
+    "src/utils/validateLessonInput.ts",
+    "src/utils/sanitize.ts",
   ],
 
   // Indicates which provider should be used to instrument code for coverage
