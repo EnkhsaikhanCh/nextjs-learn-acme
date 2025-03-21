@@ -79,9 +79,6 @@ const config: Config = {
     // seed-admin
     "src/scripts/seed-admin.ts",
 
-    // auth provider
-    "src/context",
-
     // түр зуур
     "src/middleware.ts",
     "src/providers",
@@ -100,7 +97,6 @@ const config: Config = {
     "src/app/api/graphql/resolvers/mutations/enrollment",
     "src/app/api/graphql/resolvers/queries/enrollment/",
     "src/app/api/graphql/resolvers/mutations/course/update-course-mutation.ts",
-    "src/app/api/graphql/resolvers/mutations/payment",
     "src/components",
     "src/app/error.tsx",
     "src/app/loading.tsx",

@@ -1,16 +1,21 @@
 import { GraphQLError } from "graphql";
 import { CourseModel, PaymentModel, UserModel } from "../../../models";
-import { CreatePaymentInput } from "@/generated/graphql";
+import { CreatePaymentInput, User } from "@/generated/graphql";
+import { requireAuthAndRoles } from "@/lib/auth-utils";
 
 export const createPayment = async (
   _: unknown,
   { input }: { input: CreatePaymentInput },
+  context: { user?: User },
 ) => {
+  const { user } = context;
   const { userId, courseId, amount, paymentMethod, transactionNote } = input;
 
-  if (!userId || !courseId || !amount || !paymentMethod) {
+  await requireAuthAndRoles(user, ["STUDENT", "ADMIN"]);
+
+  if (!userId || !courseId || !amount || !paymentMethod || !transactionNote) {
     throw new GraphQLError(
-      "Missing required fields: userId, courseId, amount, paymentMethod",
+      "Missing required fields: userId, courseId, amount, paymentMethod, transactionNote",
       {
         extensions: { code: "BAD_USER_INPUT" },
       },
@@ -48,10 +53,7 @@ export const createPayment = async (
     if (error instanceof GraphQLError) {
       throw error;
     }
-
-    const message = (error as Error).message;
-
-    throw new GraphQLError(`Internal server error: ${message}`, {
+    throw new GraphQLError("Internal server error", {
       extensions: { code: "INTERNAL_SERVER_ERROR" },
     });
   }
