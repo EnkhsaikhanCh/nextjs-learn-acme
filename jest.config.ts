@@ -112,7 +112,6 @@ const config: Config = {
     "src/app/not-found.tsx",
     "src/app/api/graphql/resolvers/mutations/course",
     "src/app/api/graphql/resolvers/queries/section",
-    "src/app/api/graphql/resolvers/mutations/user/create-user-mutation.ts",
     "src/app/api/graphql/resolvers/queries/payment",
     "src/app/api/payment",
     "src/app/api/email",
@@ -121,6 +120,7 @@ const config: Config = {
     "app/api/graphql/resolvers/queries/user/get-all-users-query.ts",
     "src/utils/validateLessonInput.ts",
     "src/utils/sanitize.ts",
+    "src/utils/validation.ts",
   ],
 
   // Indicates which provider should be used to instrument code for coverage
