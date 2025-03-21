@@ -31,13 +31,14 @@ export const typeDefs = gql`
     user: User!
   }
 
-  input UpdateInput {
+  input UpdateUserInput {
     email: String
+    role: Role
   }
 
   type Mutation {
     createUser(input: RegisterInput!): RegisterResponse!
-    updateUser(input: UpdateInput!, _id: ID!): User!
+    updateUser(input: UpdateUserInput!, _id: ID!): User!
     deleteUser(id: ID!): User!
   }
 `;

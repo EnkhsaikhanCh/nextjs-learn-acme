@@ -270,7 +270,7 @@ export type MutationUpdateTestArgs = {
 
 export type MutationUpdateUserArgs = {
   _id: Scalars['ID']['input'];
-  input: UpdateInput;
+  input: UpdateUserInput;
 };
 
 export type Payment = {
@@ -492,10 +492,6 @@ export type UpdateEnrollmentInput = {
   status?: InputMaybe<EnrollmentStatus>;
 };
 
-export type UpdateInput = {
-  email?: InputMaybe<Scalars['String']['input']>;
-};
-
 export type UpdateLessonInput = {
   content?: InputMaybe<Scalars['String']['input']>;
   isPublished?: InputMaybe<Scalars['Boolean']['input']>;
@@ -508,6 +504,11 @@ export type UpdateSectionInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   order?: InputMaybe<Scalars['Int']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateUserInput = {
+  email?: InputMaybe<Scalars['String']['input']>;
+  role?: InputMaybe<Role>;
 };
 
 export type User = {
