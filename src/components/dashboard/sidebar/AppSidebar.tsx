@@ -11,7 +11,7 @@ import {
 import { NavUser } from "./NavUser";
 import { NavMain } from "./NavMain";
 
-export function AppSidebar({ email }: { email?: string }) {
+export function AppSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
@@ -34,7 +34,7 @@ export function AppSidebar({ email }: { email?: string }) {
         <NavMain />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser email={email} />
+        <NavUser />
       </SidebarFooter>
     </Sidebar>
   );
