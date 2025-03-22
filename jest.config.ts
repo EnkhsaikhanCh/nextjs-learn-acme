@@ -58,7 +58,6 @@ const config: Config = {
     "src/components/InfoRow.tsx",
     "src/components/LoadingOverlay.tsx",
     "src/components/PasswordInput.tsx",
-    "src/components/otp-input.tsx",
 
     // src/app
     "src/app/admin",
