@@ -1,12 +1,17 @@
 import { GraphQLError } from "graphql";
 import { CourseModel, SectionModel } from "../../../models";
-import { CreateSectionInput } from "@/generated/graphql";
+import { CreateSectionInput, User } from "@/generated/graphql";
+import { requireAuthAndRoles } from "@/lib/auth-utils";
 
 export const createSection = async (
   _: unknown,
   { input }: { input: CreateSectionInput },
+  context: { user?: User },
 ) => {
+  const { user } = context;
   const { courseId, title } = input;
+
+  await requireAuthAndRoles(user, ["ADMIN"]);
 
   if (!courseId || !title) {
     throw new GraphQLError("Invalid input data", {
@@ -57,8 +62,7 @@ export const createSection = async (
       throw error;
     }
 
-    const message = (error as Error).message;
-    throw new GraphQLError(`Internal server error: ${message}`, {
+    throw new GraphQLError("Internal server error", {
       extensions: { code: "INTERNAL_SERVER_ERROR" },
     });
   }

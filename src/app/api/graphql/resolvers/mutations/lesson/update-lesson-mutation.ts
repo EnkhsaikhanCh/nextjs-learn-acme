@@ -1,63 +1,65 @@
-import { sanitizeInput } from "@/utils/sanitize";
 import { LessonModel } from "../../../models";
 import { GraphQLError } from "graphql";
-import { UpdateLessonInput } from "@/generated/graphql";
+import { UpdateLessonInput, User } from "@/generated/graphql";
+import { requireAuthAndRoles } from "@/lib/auth-utils";
+import { validateLessonInput } from "@/utils/validateLessonInput";
 
 export const updateLesson = async (
   _: unknown,
   { _id, input }: { _id: string; input: UpdateLessonInput },
+  context: { user?: User },
 ) => {
-  const { title, content, videoUrl, order, isPublished } = input;
+  // Ensure the user is authenticated and has ADMIN role
+  await requireAuthAndRoles(context.user, ["ADMIN"]);
 
+  // Validate the lesson ID
   if (!_id) {
-    throw new Error("Lesson ID is required");
+    throw new GraphQLError("Invalid or missing Lesson ID", {
+      extensions: { code: "BAD_REQUEST" },
+    });
   }
 
-  const sanitizedTitle = sanitizeInput(title || "");
-  const sanitizedContent = sanitizeInput(content || "");
-  const sanitizedOrder = order !== undefined ? order : 0; // Default to 0 or another value
-  const sanitizedIsPublished = isPublished !== undefined ? isPublished : false; // Default to false or another value
+  // Validate and sanitize the input
+  const {
+    validatedTitle,
+    validatedContent,
+    validatedVideoUrl,
+    validatedOrder,
+    validatedIsPublished,
+  } = validateLessonInput(input);
 
   try {
-    const lesson = await LessonModel.findById(_id);
-
-    if (!lesson) {
+    // Find the existing lesson
+    const existingLesson = await LessonModel.findById(_id);
+    if (!existingLesson) {
       throw new GraphQLError("Lesson not found", {
         extensions: { code: "NOT_FOUND" },
       });
     }
 
-    if (title) {
-      lesson.title = sanitizedTitle;
-    }
+    // Update fields if they are provided
+    if (validatedTitle) existingLesson.title = validatedTitle;
+    if (validatedContent) existingLesson.content = validatedContent;
+    if (validatedVideoUrl) existingLesson.videoUrl = validatedVideoUrl;
+    if (validatedOrder !== undefined) existingLesson.order = validatedOrder;
+    if (validatedIsPublished !== undefined)
+      existingLesson.isPublished = validatedIsPublished;
 
-    if (content) {
-      lesson.content = sanitizedContent;
-    }
+    // Save the updated lesson
+    const updatedLesson = await existingLesson.save();
 
-    if (videoUrl) {
-      lesson.videoUrl = videoUrl;
+    if (!updatedLesson) {
+      throw new GraphQLError("Failed to update the lesson", {
+        extensions: { code: "DATABASE_ERROR" },
+      });
     }
-
-    if (order !== undefined) {
-      lesson.order = sanitizedOrder;
-    }
-
-    if (isPublished !== undefined) {
-      lesson.isPublished = sanitizedIsPublished;
-    }
-
-    const updatedLesson = await lesson.save();
 
     return updatedLesson;
   } catch (error) {
     if (error instanceof GraphQLError) {
       throw error;
     }
-
-    const message = (error as Error).message;
-
-    throw new GraphQLError(`Internal server error: ${message}`, {
+    throw new GraphQLError("Internal server error", {
       extensions: { code: "INTERNAL_SERVER_ERROR" },
     });
   }

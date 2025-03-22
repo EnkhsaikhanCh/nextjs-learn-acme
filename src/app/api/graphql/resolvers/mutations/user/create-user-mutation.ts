@@ -3,23 +3,34 @@ import { GraphQLError } from "graphql";
 import { UserModel } from "../../../models";
 import argon2 from "argon2";
 import {
-  sanitizeInput,
-  validationEmail,
+  normalizeEmail,
+  validateEmail,
   validatePassword,
 } from "@/utils/validation";
 import { RegisterInput } from "@/generated/graphql";
 import { generateUniqueStudentId } from "@/utils/generate-unique-student-id";
 
-const validationInputs = (email: string, password: string) => {
-  const sanitizedEmail = sanitizeInput(email);
+export const createUser = async (
+  _: unknown,
+  { input }: { input: RegisterInput },
+) => {
+  const { email, password } = input;
 
-  if (!sanitizedEmail || !password) {
+  if (!email || !password) {
     throw new GraphQLError("Email and password are required.", {
       extensions: { code: "BAD_USER_INPUT" },
     });
   }
 
-  if (!validationEmail(sanitizedEmail)) {
+  // Normalize email (trim and convert to lower case)
+  const normalizedEmail = normalizeEmail(email);
+  if (!normalizedEmail) {
+    throw new GraphQLError("Invalid email format.", {
+      extensions: { code: "BAD_USER_INPUT" },
+    });
+  }
+
+  if (!validateEmail(normalizedEmail)) {
     throw new GraphQLError("Invalid email format.", {
       extensions: { code: "BAD_USER_INPUT" },
     });
@@ -31,17 +42,8 @@ const validationInputs = (email: string, password: string) => {
     });
   }
 
-  return { sanitizedEmail };
-};
-
-export const createUser = async (
-  _: unknown,
-  { input }: { input: RegisterInput },
-) => {
   try {
-    const { sanitizedEmail } = validationInputs(input.email, input.password);
-
-    const existingUser = await UserModel.findOne({ email: sanitizedEmail });
+    const existingUser = await UserModel.findOne({ email: email });
     if (existingUser) {
       throw new GraphQLError("A user with this email already exists.", {
         extensions: { code: "CONFLICT" },
@@ -50,7 +52,7 @@ export const createUser = async (
 
     const studentId = await generateUniqueStudentId();
 
-    const hashedPassword = await argon2.hash(input.password, {
+    const hashedPassword = await argon2.hash(password, {
       type: argon2.argon2id,
       memoryCost: 65536,
       timeCost: 4,
@@ -59,7 +61,7 @@ export const createUser = async (
     });
 
     const newUser = await UserModel.create({
-      email: sanitizedEmail,
+      email: email,
       studentId: studentId,
       password: hashedPassword,
       isVerified: false,
@@ -79,16 +81,7 @@ export const createUser = async (
     if (error instanceof GraphQLError) {
       throw error;
     }
-
-    const message = (error as Error).message;
-
-    if (message.includes("Хэт олон хүсэлт")) {
-      throw new GraphQLError(message, {
-        extensions: { code: "TOO_MANY_REQUESTS" },
-      });
-    }
-
-    throw new GraphQLError(`Internal server error: ${message}`, {
+    throw new GraphQLError("Internal server error", {
       extensions: { code: "INTERNAL_SERVER_ERROR" },
     });
   }
