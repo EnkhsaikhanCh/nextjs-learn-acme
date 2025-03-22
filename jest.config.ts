@@ -59,7 +59,6 @@ const config: Config = {
     "src/components/LoadingOverlay.tsx",
     "src/components/PasswordInput.tsx",
     "src/components/otp-input.tsx",
-    "src/components/email-template.tsx",
 
     // src/app
     "src/app/admin",
