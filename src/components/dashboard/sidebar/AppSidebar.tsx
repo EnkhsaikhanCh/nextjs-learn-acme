@@ -1,4 +1,4 @@
-import { ArrowUpCircleIcon, Globe } from "lucide-react";
+import { Globe } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,

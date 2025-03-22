@@ -2,7 +2,6 @@
 "use client";
 
 import ErrorFallback from "@/components/ErrorFallback";
-import { LoadingOverlay } from "@/components/LoadingOverlay";
 import { Button } from "@/components/ui/button";
 import {
   Card,
