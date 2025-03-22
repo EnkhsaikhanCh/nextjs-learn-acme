@@ -8,6 +8,8 @@ export const typeDefs = gql`
     studentId: String!
     role: Role!
     isVerified: Boolean!
+    createdAt: String!
+    updatedAt: String!
   }
 
   enum Role {
@@ -16,9 +18,21 @@ export const typeDefs = gql`
     ADMIN
   }
 
+  type UserPaginationResult {
+    users: [User!]!
+    totalCount: Int!
+    hasNextPage: Boolean!
+  }
+
   type Query {
     getUserById(_id: ID!): User!
-    getAllUser: [User!]!
+    getAllUser(
+      limit: Int
+      offset: Int
+      search: String
+      sortBy: String
+      sortOrder: String
+    ): UserPaginationResult!
   }
 
   input RegisterInput {
