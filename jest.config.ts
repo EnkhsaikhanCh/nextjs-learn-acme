@@ -54,7 +54,6 @@ const config: Config = {
     "src/components/ui",
     "src/components/dashboard",
     "src/components/CourseNotFound.tsx",
-    "src/components/ErrorFallback.tsx",
     "src/components/InfoRow.tsx",
     "src/components/LoadingOverlay.tsx",
     "src/components/PasswordInput.tsx",
