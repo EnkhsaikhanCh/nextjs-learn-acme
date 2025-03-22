@@ -3,6 +3,8 @@
 import {
   BadgeCheck,
   Bell,
+  ChevronUp,
+  CircleUserRound,
   CreditCard,
   LogOut,
   MoreVerticalIcon,
@@ -35,16 +37,10 @@ export function NavUser() {
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <SidebarMenuButton
-              size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-            >
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">
-                  {session?.user.email}
-                </span>
-              </div>
-              <MoreVerticalIcon className="ml-auto size-4" />
+            <SidebarMenuButton>
+              <CircleUserRound />
+              {session?.user.email}
+              <ChevronUp className="ml-auto" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
