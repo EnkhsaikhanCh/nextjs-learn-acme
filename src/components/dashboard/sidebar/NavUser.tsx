@@ -37,7 +37,7 @@ export function NavUser() {
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <SidebarMenuButton>
+            <SidebarMenuButton tooltip={session?.user.email}>
               <CircleUserRound />
               {session?.user.email}
               <ChevronUp className="ml-auto" />
