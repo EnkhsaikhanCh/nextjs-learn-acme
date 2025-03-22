@@ -52,6 +52,7 @@ export default function Page() {
   const totalCount = data?.getAllUser?.totalCount ?? 0;
   const totalPages = Math.ceil(totalCount / pageSize);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const columns = useMemo<ColumnDef<any>[]>(
     () => [
       { header: "Email", accessorKey: "email" },
