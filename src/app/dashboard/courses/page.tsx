@@ -67,11 +67,18 @@ function CourseCard({
 export default function Courses() {
   const { data, loading, error, refetch } = useGetAllCourseQuery();
 
-  if (loading) return <LoadingOverlay />;
   if (error) return <ErrorFallback error={error} reset={refetch} />;
 
   return (
-    <div className="p-4">
+    <main className="p-4">
+      {loading && (
+        <div className="grid auto-rows-min gap-4 md:grid-cols-3">
+          <div className="aspect-video animate-pulse rounded-xl bg-muted" />
+          <div className="aspect-video animate-pulse rounded-xl bg-muted" />
+          <div className="aspect-video animate-pulse rounded-xl bg-muted" />
+        </div>
+      )}
+
       {data && (
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {data?.getAllCourse.map((course, index) => (
@@ -86,6 +93,6 @@ export default function Courses() {
           ))}
         </div>
       )}
-    </div>
+    </main>
   );
 }
