@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { AdminNavUser } from "./AdminNavUser";
+import { AdminNavSecondary } from "./AdminNavSecondary";
 
 const items = [
   {
@@ -105,6 +106,7 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
+        <AdminNavSecondary />
         <AdminNavUser />
       </SidebarFooter>
     </Sidebar>
