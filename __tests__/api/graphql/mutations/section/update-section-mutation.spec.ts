@@ -1,101 +1,312 @@
-import { SectionModel } from "@/app/api/graphql/models";
-import { updateSection } from "@/app/api/graphql/resolvers/mutations";
-import { UpdateSectionInput } from "@/app/api/graphql/schemas/section.schema";
+import { updateSection } from "../../../../../src/app/api/graphql/resolvers/mutations/section/update-section-mutation";
+import { SectionModel } from "../../../../../src/app/api/graphql/models/section.model";
+import { requireAuthAndRoles } from "../../../../../src/lib/auth-utils";
 import { GraphQLError } from "graphql";
+import { Role, User } from "../../../../../src/generated/graphql";
 
-jest.mock("../../../../../src/app/api/graphql/models/section.model");
+// Mock dependencies
+jest.mock("../../../../../src/lib/auth-utils", () => ({
+  requireAuthAndRoles: jest.fn(),
+}));
 
-describe("updateSection - Full Coverage", () => {
-  const mockFindById = SectionModel.findById as jest.Mock;
+jest.mock("../../../../../src/app/api/graphql/models/section.model", () => ({
+  SectionModel: {
+    findById: jest.fn(),
+  },
+}));
 
-  afterEach(() => {
+describe("updateSection", () => {
+  const mockUser: User = {
+    _id: "mock-id",
+    email: "mock@example.com",
+    role: Role.Admin,
+    studentId: "mock-student-id",
+    isVerified: true,
+  };
+
+  beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  // Test each optional field
-  const fields = [
-    { field: "title", value: "New Title" },
-    { field: "description", value: "New Description" },
-    { field: "order", value: 1 },
-  ];
+  // Authentication and Authorization Tests**
+  it("throws an error if user is not authenticated", async () => {
+    (requireAuthAndRoles as jest.Mock).mockRejectedValue(
+      new GraphQLError("Unauthenticated", {
+        extensions: { code: "UNAUTHENTICATED" },
+      }),
+    );
 
-  fields.forEach(({ field, value }) => {
-    it("should throw an error if the section ID is missing", async () => {
-      const input: Partial<UpdateSectionInput> = {
-        title: "New Title",
-      };
+    await expect(
+      updateSection(null, { _id: "some-id", input: {} }, { user: mockUser }),
+    ).rejects.toThrow(GraphQLError);
+    await expect(
+      updateSection(null, { _id: "some-id", input: {} }, { user: mockUser }),
+    ).rejects.toHaveProperty("message", "Unauthenticated");
+  });
 
-      await expect(
-        updateSection({}, { _id: "", input: input as UpdateSectionInput }),
-      ).rejects.toThrow("Section ID is required");
+  // Input Validation Tests**
+  it("throws BAD_REQUEST if _id is not provided", async () => {
+    (requireAuthAndRoles as jest.Mock).mockResolvedValue(undefined);
+
+    await expect(
+      updateSection(null, { _id: "", input: {} }, { user: mockUser }),
+    ).rejects.toThrow(GraphQLError);
+    await expect(
+      updateSection(null, { _id: "", input: {} }, { user: mockUser }),
+    ).rejects.toHaveProperty("message", "Section ID is required");
+  });
+
+  it("throws NOT_FOUND if section does not exist", async () => {
+    (requireAuthAndRoles as jest.Mock).mockResolvedValue(undefined);
+    (SectionModel.findById as jest.Mock).mockResolvedValue(null);
+
+    await expect(
+      updateSection(null, { _id: "some-id", input: {} }, { user: mockUser }),
+    ).rejects.toThrow(GraphQLError);
+    await expect(
+      updateSection(null, { _id: "some-id", input: {} }, { user: mockUser }),
+    ).rejects.toHaveProperty("message", "Section not found");
+  });
+
+  it("throws BAD_REQUEST if title is empty", async () => {
+    const mockSection = {
+      _id: "some-id",
+      title: "Original Title",
+      description: "Original Description",
+      order: 0,
+      save: jest.fn(),
+    };
+    mockSection.save.mockResolvedValue(mockSection); // avoid self-reference at declaration
+
+    (requireAuthAndRoles as jest.Mock).mockResolvedValue(undefined);
+    (SectionModel.findById as jest.Mock).mockResolvedValue(mockSection);
+
+    const input = { title: "" };
+
+    await expect(
+      updateSection(null, { _id: "some-id", input }, { user: mockUser }),
+    ).rejects.toThrow(GraphQLError);
+
+    await expect(
+      updateSection(null, { _id: "some-id", input }, { user: mockUser }),
+    ).rejects.toHaveProperty(
+      "message",
+      "Title must be a non-empty string and less than 100 characters",
+    );
+  });
+
+  it("throws BAD_REQUEST if description is not a string", async () => {
+    const mockSection = {
+      _id: "some-id",
+      title: "Original Title",
+      description: "Original Description",
+      order: 0,
+      save: jest.fn(),
+    };
+    mockSection.save.mockResolvedValue(mockSection);
+
+    (requireAuthAndRoles as jest.Mock).mockResolvedValue(undefined);
+    (SectionModel.findById as jest.Mock).mockResolvedValue(mockSection);
+
+    const input = { description: 123 };
+
+    await expect(
+      updateSection(
+        null,
+        { _id: "some-id", input: input as any },
+        { user: mockUser },
+      ),
+    ).rejects.toThrow(GraphQLError);
+
+    await expect(
+      updateSection(
+        null,
+        { _id: "some-id", input: input as any },
+        { user: mockUser },
+      ),
+    ).rejects.toHaveProperty("message", "Description must be a string");
+  });
+
+  it("updates description successfully when it's a valid string", async () => {
+    const mockSection = {
+      _id: "some-id",
+      title: "Original Title",
+      description: "Original Description",
+      order: 0,
+      save: jest.fn(),
+    };
+    mockSection.save.mockResolvedValue({
+      ...mockSection,
+      description: "Updated description",
     });
 
-    it("should throw an error if the section is not found", async () => {
-      mockFindById.mockResolvedValue(null);
+    (requireAuthAndRoles as jest.Mock).mockResolvedValue(undefined);
+    (SectionModel.findById as jest.Mock).mockResolvedValue(mockSection);
 
-      const input: UpdateSectionInput = {
-        title: "New Title",
-        description: "",
-        order: 0,
-      };
+    const input = { description: "Updated description" };
 
-      await expect(updateSection({}, { _id: "123", input })).rejects.toThrow(
-        "Section not found",
-      );
+    const result = await updateSection(
+      null,
+      { _id: "some-id", input },
+      { user: mockUser },
+    );
 
-      expect(mockFindById).toHaveBeenCalledWith("123");
+    expect(result.description).toBe("Updated description");
+    expect(mockSection.save).toHaveBeenCalled();
+  });
+
+  it("throws BAD_REQUEST if order is negative", async () => {
+    const mockSection = {
+      _id: "some-id",
+      title: "Original Title",
+      description: "Original Description",
+      order: 0,
+      save: jest.fn(),
+    };
+    mockSection.save.mockResolvedValue(mockSection);
+
+    (requireAuthAndRoles as jest.Mock).mockResolvedValue(undefined);
+    (SectionModel.findById as jest.Mock).mockResolvedValue(mockSection);
+
+    const input = { order: -1 };
+
+    await expect(
+      updateSection(null, { _id: "some-id", input }, { user: mockUser }),
+    ).rejects.toThrow(GraphQLError);
+
+    await expect(
+      updateSection(null, { _id: "some-id", input }, { user: mockUser }),
+    ).rejects.toHaveProperty("message", "Order must be a non-negative number");
+  });
+
+  it("throws BAD_REQUEST if order is not a number", async () => {
+    const mockSection = {
+      _id: "some-id",
+      title: "Original Title",
+      description: "Original Description",
+      order: 0,
+      save: jest.fn(),
+    };
+    mockSection.save.mockResolvedValue(mockSection);
+
+    (requireAuthAndRoles as jest.Mock).mockResolvedValue(undefined);
+    (SectionModel.findById as jest.Mock).mockResolvedValue(mockSection);
+
+    const input = { order: "not-a-number" };
+
+    await expect(
+      updateSection(
+        null,
+        { _id: "some-id", input: input as any },
+        { user: mockUser },
+      ),
+    ).rejects.toThrow(GraphQLError);
+
+    await expect(
+      updateSection(
+        null,
+        { _id: "some-id", input: input as any },
+        { user: mockUser },
+      ),
+    ).rejects.toHaveProperty("message", "Order must be a non-negative number");
+  });
+
+  it("updates order successfully when given a valid non-negative number", async () => {
+    const mockSection = {
+      _id: "some-id",
+      title: "Original Title",
+      description: "Original Description",
+      order: 0,
+      save: jest.fn(),
+    };
+    mockSection.save.mockResolvedValue({
+      ...mockSection,
+      order: 2,
     });
 
-    it("should rethrow a GraphQLError if caught", async () => {
-      const error = new GraphQLError("Test GraphQL error");
-      mockFindById.mockImplementation(() => {
-        throw error;
-      });
+    (requireAuthAndRoles as jest.Mock).mockResolvedValue(undefined);
+    (SectionModel.findById as jest.Mock).mockResolvedValue(mockSection);
 
-      const input = {
-        _id: "123",
-        title: "New Title",
-        description: "",
-        order: 0,
-      };
+    const input = { order: 2 };
 
-      await expect(updateSection({}, { _id: "123", input })).rejects.toThrow(
-        error,
-      );
+    const result = await updateSection(
+      null,
+      { _id: "some-id", input },
+      { user: mockUser },
+    );
 
-      expect(mockFindById).toHaveBeenCalledWith("123");
+    expect(result.order).toBe(2);
+    expect(mockSection.save).toHaveBeenCalled();
+  });
+
+  it("updates only the provided fields without affecting others", async () => {
+    const mockSection = {
+      _id: "some-id",
+      title: "Original Title",
+      description: "Original Description",
+      order: 0,
+      save: jest.fn(),
+    };
+    mockSection.save.mockResolvedValue({
+      ...mockSection,
+      title: "Updated Title",
     });
 
-    it(`should update the section's ${field}`, async () => {
-      const section: {
-        [key: string]: any;
-        _id: string;
-        title: string;
-        description: string;
-        order: number;
-        save: jest.Mock;
-      } = {
-        _id: "123",
-        title: "Old Title",
-        description: "Old Description",
-        order: 0,
-        save: jest.fn(),
-      };
+    (requireAuthAndRoles as jest.Mock).mockResolvedValue(undefined);
+    (SectionModel.findById as jest.Mock).mockResolvedValue(mockSection);
 
-      mockFindById.mockResolvedValue(section);
+    const input = { title: "Updated Title" };
 
-      const input: UpdateSectionInput = {
-        title: "Old Title",
-        description: "Old Description",
-        order: 0,
-        [field]: value,
-      };
+    const result = await updateSection(
+      null,
+      { _id: "some-id", input },
+      { user: mockUser },
+    );
 
-      await updateSection({}, { _id: "123", input });
+    expect(result.title).toBe("Updated Title");
+    expect(result.description).toBe("Original Description");
+    expect(result.order).toBe(0);
+    expect(mockSection.save).toHaveBeenCalled();
+  });
 
-      expect(mockFindById).toHaveBeenCalledWith("123");
-      expect(section[field]).toBe(value);
-      expect(section.save).toHaveBeenCalled();
-    });
+  // Successful Update Test**
+  it("updates section successfully with valid input", async () => {
+    const mockSection = {
+      _id: "some-id",
+      title: "Original Title",
+      description: "Original Description",
+      order: 0,
+      save: jest.fn(),
+    };
+    (requireAuthAndRoles as jest.Mock).mockResolvedValue(undefined);
+    (SectionModel.findById as jest.Mock).mockResolvedValue(mockSection);
+    mockSection.save.mockResolvedValue(mockSection);
+
+    const input = { title: "New Title" };
+    const result = await updateSection(
+      null,
+      { _id: "some-id", input },
+      { user: mockUser },
+    );
+
+    expect(result.title).toBe("New Title");
+    expect(result.description).toBe("Original Description");
+    expect(result.order).toBe(0);
+    expect(mockSection.save).toHaveBeenCalled();
+  });
+
+  // Error Handling Test**
+  it("throws INTERNAL_SERVER_ERROR on unexpected errors", async () => {
+    (requireAuthAndRoles as jest.Mock).mockResolvedValue(undefined);
+    (SectionModel.findById as jest.Mock).mockRejectedValue(
+      new Error("Database error"),
+    );
+
+    await expect(
+      updateSection(null, { _id: "some-id", input: {} }, { user: mockUser }),
+    ).rejects.toThrow(GraphQLError);
+    await expect(
+      updateSection(null, { _id: "some-id", input: {} }, { user: mockUser }),
+    ).rejects.toHaveProperty("message", "Internal server error");
   });
 });

@@ -270,7 +270,7 @@ export type MutationUpdateTestArgs = {
 
 export type MutationUpdateUserArgs = {
   _id: Scalars['ID']['input'];
-  input: UpdateInput;
+  input: UpdateUserInput;
 };
 
 export type Payment = {
@@ -335,7 +335,7 @@ export type Query = {
   getAllCourse: Array<Course>;
   getAllPayments?: Maybe<Array<Maybe<Payment>>>;
   getAllTest: Array<Test>;
-  getAllUser: Array<User>;
+  getAllUser: UserPaginationResult;
   getCourseById?: Maybe<Course>;
   getCourseBySlug?: Maybe<Course>;
   getCourseIdBySlug?: Maybe<Course>;
@@ -357,6 +357,15 @@ export type Query = {
 export type QueryCheckEnrollmentArgs = {
   courseId: Scalars['ID']['input'];
   userId: Scalars['ID']['input'];
+};
+
+
+export type QueryGetAllUserArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
+  sortBy?: InputMaybe<Scalars['String']['input']>;
+  sortOrder?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -492,10 +501,6 @@ export type UpdateEnrollmentInput = {
   status?: InputMaybe<EnrollmentStatus>;
 };
 
-export type UpdateInput = {
-  email?: InputMaybe<Scalars['String']['input']>;
-};
-
 export type UpdateLessonInput = {
   content?: InputMaybe<Scalars['String']['input']>;
   isPublished?: InputMaybe<Scalars['Boolean']['input']>;
@@ -510,13 +515,27 @@ export type UpdateSectionInput = {
   title?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type UpdateUserInput = {
+  email?: InputMaybe<Scalars['String']['input']>;
+  role?: InputMaybe<Role>;
+};
+
 export type User = {
   __typename?: 'User';
   _id: Scalars['ID']['output'];
+  createdAt: Scalars['String']['output'];
   email: Scalars['String']['output'];
   isVerified: Scalars['Boolean']['output'];
   role: Role;
   studentId: Scalars['String']['output'];
+  updatedAt: Scalars['String']['output'];
+};
+
+export type UserPaginationResult = {
+  __typename?: 'UserPaginationResult';
+  hasNextPage: Scalars['Boolean']['output'];
+  totalCount: Scalars['Int']['output'];
+  users: Array<User>;
 };
 
 export type WhyChoose = {
@@ -747,10 +766,16 @@ export type CreateUserMutationVariables = Exact<{
 
 export type CreateUserMutation = { __typename?: 'Mutation', createUser: { __typename?: 'RegisterResponse', message: string, user: { __typename?: 'User', _id: string, email: string, studentId: string, role: Role, isVerified: boolean } } };
 
-export type GetAllUserQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetAllUserQueryVariables = Exact<{
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
+  sortBy?: InputMaybe<Scalars['String']['input']>;
+  sortOrder?: InputMaybe<Scalars['String']['input']>;
+}>;
 
 
-export type GetAllUserQuery = { __typename?: 'Query', getAllUser: Array<{ __typename?: 'User', _id: string, email: string, studentId: string, role: Role, isVerified: boolean }> };
+export type GetAllUserQuery = { __typename?: 'Query', getAllUser: { __typename?: 'UserPaginationResult', totalCount: number, hasNextPage: boolean, users: Array<{ __typename?: 'User', _id: string, email: string, studentId: string, role: Role, isVerified: boolean, createdAt: string }> } };
 
 export type GetUserByIdQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -1940,13 +1965,24 @@ export type CreateUserMutationHookResult = ReturnType<typeof useCreateUserMutati
 export type CreateUserMutationResult = Apollo.MutationResult<CreateUserMutation>;
 export type CreateUserMutationOptions = Apollo.BaseMutationOptions<CreateUserMutation, CreateUserMutationVariables>;
 export const GetAllUserDocument = gql`
-    query GetAllUser {
-  getAllUser {
-    _id
-    email
-    studentId
-    role
-    isVerified
+    query GetAllUser($limit: Int, $offset: Int, $search: String, $sortBy: String, $sortOrder: String) {
+  getAllUser(
+    limit: $limit
+    offset: $offset
+    search: $search
+    sortBy: $sortBy
+    sortOrder: $sortOrder
+  ) {
+    users {
+      _id
+      email
+      studentId
+      role
+      isVerified
+      createdAt
+    }
+    totalCount
+    hasNextPage
   }
 }
     `;
@@ -1963,6 +1999,11 @@ export const GetAllUserDocument = gql`
  * @example
  * const { data, loading, error } = useGetAllUserQuery({
  *   variables: {
+ *      limit: // value for 'limit'
+ *      offset: // value for 'offset'
+ *      search: // value for 'search'
+ *      sortBy: // value for 'sortBy'
+ *      sortOrder: // value for 'sortOrder'
  *   },
  * });
  */

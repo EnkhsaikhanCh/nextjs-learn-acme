@@ -8,7 +8,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { Globe, Loader, MailCheck } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { OTPInput } from "@/components/otp-input";
+import { OTPInput } from "@/components/OTPInput";
 import { ResendSection } from "./_components/ResendSection";
 import { SuccessMessage } from "./_components/SuccessMessage";
 import { useOTPVerification } from "./_features/useOTPVerification";

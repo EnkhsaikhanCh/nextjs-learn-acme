@@ -1,22 +1,10 @@
 "use client";
 
 import {
-  BadgeCheck,
-  Bell,
-  ChevronUp,
-  CircleUserRound,
-  CreditCard,
-  LogOut,
-  Sparkles,
-} from "lucide-react";
-
-import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -25,9 +13,10 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { ChevronUp, CircleUserRound, LogOut, SquareUser } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 
-export function NavUser() {
+export function AdminNavUser() {
   const { isMobile } = useSidebar();
   const { data: session } = useSession();
 
@@ -36,7 +25,7 @@ export function NavUser() {
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <SidebarMenuButton tooltip={session?.user.email}>
+            <SidebarMenuButton>
               <CircleUserRound />
               {session?.user.email}
               <ChevronUp className="ml-auto" />
@@ -48,7 +37,7 @@ export function NavUser() {
             align="end"
             sideOffset={4}
           >
-            <DropdownMenuLabel className="p-0 font-normal">
+            <DropdownMenuLabel>
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate text-xs">
@@ -57,29 +46,10 @@ export function NavUser() {
                 </div>
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem disabled>
-                <Sparkles />
-                Upgrade to Pro
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem disabled>
-                <BadgeCheck />
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuItem disabled>
-                <CreditCard />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem disabled>
-                <Bell />
-                Notifications
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
+            <DropdownMenuItem>
+              <SquareUser />
+              <span>Account</span>
+            </DropdownMenuItem>
             <DropdownMenuItem
               onClick={async () => {
                 await signOut();

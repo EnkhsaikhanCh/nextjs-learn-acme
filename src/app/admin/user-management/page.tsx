@@ -6,10 +6,8 @@ import {
   useReactTable,
   ColumnDef,
   getCoreRowModel,
-  getPaginationRowModel,
 } from "@tanstack/react-table";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -29,28 +27,47 @@ import {
 } from "@/components/ui/pagination";
 import { useGetAllUserQuery } from "@/generated/graphql";
 import { Loader } from "lucide-react";
+import { useDebounce } from "use-debounce";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function Page() {
-  const { data, loading, error, refetch } = useGetAllUserQuery();
+  const pageSize = 10;
+  const [pageIndex, setPageIndex] = useState(0);
   const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState("createdAt");
+  const [sortOrder, setSortOrder] = useState("desc");
+  const [debouncedSearch] = useDebounce(search, 300);
 
-  // Define your table columns
+  const { data, loading, error } = useGetAllUserQuery({
+    variables: {
+      limit: pageSize,
+      offset: pageIndex * pageSize,
+      search: debouncedSearch,
+      sortBy,
+      sortOrder,
+    },
+  });
+
+  const users = data?.getAllUser?.users ?? [];
+  const totalCount = data?.getAllUser?.totalCount ?? 0;
+  const totalPages = Math.ceil(totalCount / pageSize);
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const columns = useMemo<ColumnDef<any>[]>(
     () => [
-      {
-        header: "Email",
-        accessorKey: "email",
-      },
-      {
-        header: "Student ID",
-        accessorKey: "studentId",
-      },
+      { header: "Email", accessorKey: "email" },
+      { header: "Student ID", accessorKey: "studentId" },
       {
         header: "Role",
         accessorKey: "role",
         cell: ({ getValue }) => {
-          const isAdmin = getValue() === "admin";
+          const isAdmin = getValue() === "ADMIN";
           return (
             <span
               className={isAdmin ? "font-bold text-blue-500" : "text-gray-500"}
@@ -74,80 +91,90 @@ export default function Page() {
     [],
   );
 
-  // Filter users client-side based on "search" value
-  const filteredUsers = useMemo(() => {
-    if (!data?.getAllUser) return [];
-    const searchLower = search.toLowerCase();
-    return data.getAllUser.filter((user) => {
-      return (
-        user.email.toLowerCase().includes(searchLower) ||
-        user.studentId.toLowerCase().includes(searchLower)
-      );
-    });
-  }, [data, search]);
-
-  // Initialize React Table
   const table = useReactTable({
-    data: filteredUsers,
+    data: users,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    initialState: {
-      pagination: { pageSize: 10, pageIndex: 0 },
+    manualPagination: true,
+    pageCount: totalPages,
+    state: {
+      pagination: {
+        pageIndex,
+        pageSize,
+      },
+    },
+    onPaginationChange: (updater) => {
+      const nextState =
+        typeof updater === "function"
+          ? updater({ pageIndex, pageSize })
+          : updater;
+      setPageIndex(nextState.pageIndex);
     },
   });
 
-  // Clear search handler
-  const handleClearSearch = () => {
-    setSearch("");
-  };
-
-  // Basic pagination range logic: show pages from currentPage-2 to currentPage+2
-  const totalPages = table.getPageCount();
-  const currentPage = table.getState().pagination.pageIndex;
-
   const pagesToShow = useMemo(() => {
-    const start = Math.max(0, currentPage - 2);
-    const end = Math.min(totalPages - 1, currentPage + 2);
-    const pages: number[] = [];
-
-    for (let i = start; i <= end; i++) {
-      pages.push(i);
-    }
-    return pages;
-  }, [currentPage, totalPages]);
+    const start = Math.max(0, pageIndex - 2);
+    const end = Math.min(totalPages - 1, pageIndex + 2);
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+  }, [pageIndex, totalPages]);
 
   return (
     <main className="container mx-auto p-4">
       <h1 className="mb-4 text-xl font-bold">User List</h1>
 
-      <p className="mb-4 text-gray-700">
-        Total Users:{" "}
-        <span className="font-semibold">{filteredUsers.length}</span>
-      </p>
-
-      <div className="mb-4 flex items-center gap-2">
+      <div className="mb-4 flex flex-wrap items-center gap-4">
         <Input
           type="text"
           placeholder="Search users..."
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPageIndex(0);
+          }}
         />
-        {search && (
-          <Button variant="outline" onClick={handleClearSearch}>
-            Clear
-          </Button>
-        )}
+
+        <div className="flex items-center gap-2">
+          <Select
+            onValueChange={(value) => {
+              setSortBy(value);
+              setPageIndex(0);
+            }}
+            value={sortBy}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="createdAt">Created Date</SelectItem>
+              <SelectItem value="role">Role</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select
+            value={sortOrder}
+            onValueChange={(value) => {
+              setSortOrder(value);
+              setPageIndex(0);
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Sort order" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="asc">Ascending</SelectItem>
+              <SelectItem value="desc">Descending</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
-      {/* Show loading state, error state, or table of users */}
       {loading ? (
         <div className="flex items-center justify-center py-4">
           <Loader className="animate-spin" />
         </div>
       ) : error ? (
         <p className="text-red-500">Failed to load users: {error.message}</p>
-      ) : filteredUsers.length === 0 ? (
+      ) : users.length === 0 ? (
         <p className="text-gray-500">No users found.</p>
       ) : (
         <>
@@ -183,59 +210,50 @@ export default function Page() {
               ))}
             </TableBody>
           </Table>
-
-          {/* Pagination using shadcn/ui components */}
-          <Pagination className="mt-4">
-            <PaginationContent>
-              {/* Previous button */}
-              <PaginationItem>
-                <PaginationPrevious
-                  onClick={() => table.previousPage()}
-                  className="cursor-pointer"
-                />
-              </PaginationItem>
-
-              {/* Ellipsis before if needed */}
-              {pagesToShow[0] > 0 && (
-                <PaginationItem>
-                  <PaginationEllipsis />
-                </PaginationItem>
-              )}
-
-              {/* Page number links */}
-              {pagesToShow.map((pageIndex) => (
-                <PaginationItem key={pageIndex}>
-                  <PaginationLink
-                    isActive={pageIndex === currentPage}
-                    onClick={() => table.setPageIndex(pageIndex)}
-                  >
-                    {pageIndex + 1}
-                  </PaginationLink>
-                </PaginationItem>
-              ))}
-
-              {/* Ellipsis after if needed */}
-              {pagesToShow[pagesToShow.length - 1] < totalPages - 1 && (
-                <PaginationItem>
-                  <PaginationEllipsis />
-                </PaginationItem>
-              )}
-
-              {/* Next button */}
-              <PaginationItem>
-                <PaginationNext
-                  onClick={() => table.nextPage()}
-                  className="cursor-pointer"
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
         </>
       )}
+      <Pagination className="mt-4">
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious
+              onClick={() => setPageIndex((prev) => Math.max(0, prev - 1))}
+              className="cursor-pointer"
+            />
+          </PaginationItem>
 
-      <Button onClick={() => refetch()} className="mt-4 bg-blue-500 text-white">
-        Refresh Users
-      </Button>
+          {pagesToShow[0] > 0 && (
+            <PaginationItem>
+              <PaginationEllipsis />
+            </PaginationItem>
+          )}
+
+          {pagesToShow.map((page) => (
+            <PaginationItem key={page}>
+              <PaginationLink
+                isActive={page === pageIndex}
+                onClick={() => setPageIndex(page)}
+              >
+                {page + 1}
+              </PaginationLink>
+            </PaginationItem>
+          ))}
+
+          {pagesToShow[pagesToShow.length - 1] < totalPages - 1 && (
+            <PaginationItem>
+              <PaginationEllipsis />
+            </PaginationItem>
+          )}
+
+          <PaginationItem>
+            <PaginationNext
+              onClick={() =>
+                setPageIndex((prev) => Math.min(totalPages - 1, prev + 1))
+              }
+              className="cursor-pointer"
+            />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </main>
   );
 }

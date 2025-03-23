@@ -1,15 +1,15 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-import { ReactNode, useEffect, useRef } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { AlertCircle } from "lucide-react";
 
 interface BaseInputProp {
   label: string;
   id?: string;
-  value?: string | number;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  error?: string | { [key: string]: string };
+  value: string; // Controlled компонент тул заавал байх ёстой
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  error?: string; // Зөвхөн string эсвэл undefined
   required?: boolean;
   placeholder?: string;
   autoComplete?: string;
@@ -17,6 +17,8 @@ interface BaseInputProp {
   labelExtra?: ReactNode;
   description?: string;
   tabIndex?: number;
+  className?: string; // Контейнерын стиль
+  inputClassName?: string; // Input-ийн стиль
 }
 
 export const BaseInput = ({
@@ -32,21 +34,27 @@ export const BaseInput = ({
   labelExtra,
   description,
   tabIndex,
+  className,
+  inputClassName,
 }: BaseInputProp) => {
   const inputId = id || `input-${label.replace(/\s+/g, "-").toLowerCase()}`;
   const inputRef = useRef<HTMLInputElement>(null);
+  const [hasFocused, setHasFocused] = useState(false); // Фокус хийгдсэн эсэхийг хянах
 
-  const errorMessage =
-    typeof error === "string" ? error : error?.[inputId || label];
-
+  // Анхны алдаанд фокус хийх логик
   useEffect(() => {
-    if (errorMessage && inputRef.current) {
+    if (error && !hasFocused && inputRef.current) {
       inputRef.current.focus();
+      setHasFocused(true); // Дараа нь дахин фокус хийхгүй
     }
-  }, [errorMessage]);
+  }, [error, hasFocused]);
+
+  const descriptionId = description ? `${inputId}-description` : undefined;
+  const errorId = error ? `${inputId}-error` : undefined;
+  const ariaDescribedBy = [descriptionId, errorId].filter(Boolean).join(" ");
 
   return (
-    <div className="grid gap-2">
+    <div className={`grid gap-2 ${className || ""}`}>
       <div className="flex items-center justify-between">
         <Label htmlFor={inputId} className="font-semibold">
           {label} {required && <span className="text-red-500">*</span>}
@@ -64,32 +72,33 @@ export const BaseInput = ({
         placeholder={placeholder}
         tabIndex={tabIndex}
         ref={inputRef}
-        aria-invalid={!!errorMessage}
-        aria-describedby={errorMessage ? `${inputId}-error` : undefined}
+        aria-invalid={!!error}
+        aria-describedby={ariaDescribedBy || undefined}
         className={`border bg-gray-50 ${
-          errorMessage ? "border-red-500" : "border-gray-300"
-        } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+          error ? "border-red-500" : "border-gray-300"
+        } focus:outline-none focus:ring-2 focus:ring-blue-500 ${inputClassName || ""}`}
       />
 
       {description && (
         <p
-          className={`-mt-1 text-xs text-gray-500 ${errorMessage ? "text-red-500" : ""}`}
+          id={descriptionId}
+          className={`-mt-1 text-xs text-gray-500 ${error ? "text-red-500" : ""}`}
         >
           {description}
         </p>
       )}
 
       <AnimatePresence>
-        {errorMessage && (
+        {error && (
           <motion.span
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            id={`${inputId}-error`}
+            id={errorId}
             className="flex items-center gap-2 font-semibold text-red-500"
             role="alert"
           >
             <AlertCircle size={16} />
-            <span className="text-sm">{errorMessage}</span>
+            <span className="text-sm">{error}</span>
           </motion.span>
         )}
       </AnimatePresence>
