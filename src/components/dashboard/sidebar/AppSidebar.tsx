@@ -23,7 +23,7 @@ export function AppSidebar() {
               className="data-[slot=sidebar-menu-button]:p-1.5!"
             >
               <a href="#">
-                <Globe className="h-5 w-5" />
+                <Globe className="!size-5" />
                 <span className="text-base font-semibold">Acme</span>
               </a>
             </SidebarMenuButton>
