@@ -20,9 +20,9 @@ export default function Courses() {
     <main className="p-4">
       {loading && (
         <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-          <div className="aspect-video animate-pulse rounded-xl bg-muted" />
-          <div className="aspect-video animate-pulse rounded-xl bg-muted" />
-          <div className="aspect-video animate-pulse rounded-xl bg-muted" />
+          <div className="bg-muted aspect-video animate-pulse rounded-xl" />
+          <div className="bg-muted aspect-video animate-pulse rounded-xl" />
+          <div className="bg-muted aspect-video animate-pulse rounded-xl" />
         </div>
       )}
 
@@ -41,12 +41,9 @@ export default function Courses() {
             <Link href={`/dashboard/courses/${course.slug}`} key={index}>
               <Card className="shadow-none">
                 <CardHeader className="p-0">
-                  <div className="relative w-full overflow-hidden rounded-t-md">
+                  <div className="relative w-full overflow-hidden">
                     <Image
-                      src={
-                        course.thumbnail ||
-                        "/placeholder.svg?height=100&width=200"
-                      }
+                      src={course.thumbnail || "/code.jpg?height=100&width=200"}
                       alt={course.title || "Course image"}
                       width={400}
                       height={200}

@@ -1,11 +1,11 @@
 "use client";
 
 import * as React from "react";
-import { IconBrightness, type Icon } from "@tabler/icons-react";
+import { IconBrightness } from "@tabler/icons-react";
 
 import {
-  SidebarGroup,
-  SidebarGroupContent,
+  // SidebarGroup,
+  // SidebarGroupContent,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
