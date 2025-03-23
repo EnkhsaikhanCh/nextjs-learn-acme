@@ -10,6 +10,7 @@ import {
 } from "../../ui/sidebar";
 import { NavUser } from "./NavUser";
 import { NavMain } from "./NavMain";
+import { NavSecondary } from "./NavSecondary";
 
 export function AppSidebar() {
   return (
@@ -34,6 +35,7 @@ export function AppSidebar() {
         <NavMain />
       </SidebarContent>
       <SidebarFooter>
+        <NavSecondary />
         <NavUser />
       </SidebarFooter>
     </Sidebar>

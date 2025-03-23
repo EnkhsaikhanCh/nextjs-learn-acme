@@ -20,7 +20,7 @@ const geistSans = GeistSans;
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="en" className={geistSans.variable}>
+    <html lang="en" className={geistSans.variable} suppressHydrationWarning>
       <body className={`font-sans antialiased`}>
         <SessionProviderWrapper>
           <ApolloWrapper>{children}</ApolloWrapper>
