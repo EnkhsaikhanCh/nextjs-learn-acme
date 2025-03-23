@@ -76,7 +76,7 @@ export const BaseInput = ({
         aria-describedby={ariaDescribedBy || undefined}
         className={`border bg-gray-50 ${
           error ? "border-red-500" : "border-gray-300"
-        } focus:outline-none focus:ring-2 focus:ring-blue-500 ${inputClassName || ""}`}
+        } focus:outline-hidden focus:ring-2 focus:ring-blue-500 ${inputClassName || ""}`}
       />
 
       {description && (

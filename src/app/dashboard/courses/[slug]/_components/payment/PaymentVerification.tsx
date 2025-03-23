@@ -88,7 +88,7 @@ export function PaymentVerification({
         </DialogHeader>
       </div>
 
-      <div className="space-y-3 rounded-lg border border-gray-200 bg-gray-50 p-4 shadow-sm">
+      <div className="space-y-3 rounded-lg border border-gray-200 bg-gray-50 p-4 shadow-xs">
         <InfoRow label="Төлбөрийн дүн" value={`₮${amount}`} />
         <InfoRow
           label="Төлбөрийн төлөв"
@@ -137,7 +137,7 @@ export function PaymentVerification({
         />
       </div>
 
-      <DialogFooter className="grid rounded-md border border-yellow-500 bg-yellow-100 p-4 text-center font-semibold text-yellow-800 shadow-sm">
+      <DialogFooter className="grid rounded-md border border-yellow-500 bg-yellow-100 p-4 text-center font-semibold text-yellow-800 shadow-xs">
         <div>Таны төлбөрийг баталгаажуулж байна...</div>
         <span className="mt-2 text-sm text-gray-700">
           Дуусмагц таны бүртгэлтэй и-мэйл хаяг руу мэдэгдэл илгээнэ. Түр хүлээнэ

@@ -10,6 +10,7 @@ import {
 } from "../../ui/sidebar";
 import { NavUser } from "./NavUser";
 import { NavMain } from "./NavMain";
+import { NavSecondary } from "./NavSecondary";
 
 export function AppSidebar() {
   return (
@@ -19,10 +20,10 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              className="data-[slot=sidebar-menu-button]:!p-1.5"
+              className="data-[slot=sidebar-menu-button]:p-1.5!"
             >
               <a href="#">
-                <Globe className="h-5 w-5" />
+                <Globe className="!size-5" />
                 <span className="text-base font-semibold">Acme</span>
               </a>
             </SidebarMenuButton>
@@ -34,6 +35,7 @@ export function AppSidebar() {
         <NavMain />
       </SidebarContent>
       <SidebarFooter>
+        <NavSecondary />
         <NavUser />
       </SidebarFooter>
     </Sidebar>

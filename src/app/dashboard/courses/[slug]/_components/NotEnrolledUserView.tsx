@@ -30,7 +30,7 @@ export function NotEnrolledUserView({
   return (
     <>
       {/* Курсийн танилцуулга хэсэг */}
-      <section className="m-4 rounded-xl bg-gradient-to-b from-zinc-900 to-zinc-900/90 py-20 text-primary-foreground">
+      <section className="m-4 rounded-xl bg-linear-to-b from-zinc-900 to-zinc-900/90 py-20 text-primary-foreground">
         <div className="container mx-auto px-4 text-center">
           <h1 className="mb-4 text-4xl font-bold md:text-5xl">
             {course?.title}

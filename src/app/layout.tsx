@@ -4,7 +4,6 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import ApolloWrapper from "./api/graphql/ApolloWrappre";
 import SessionProviderWrapper from "@/providers/SessionProviderWrapper";
-import { GeistSans } from "geist/font/sans";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -15,13 +14,10 @@ interface RootLayoutProps {
   children: React.ReactNode;
 }
 
-// Geist Sans-г ашиглах
-const geistSans = GeistSans;
-
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="en" className={geistSans.variable}>
-      <body className={`font-sans antialiased`}>
+    <html lang="en" suppressHydrationWarning>
+      <body>
         <SessionProviderWrapper>
           <ApolloWrapper>{children}</ApolloWrapper>
         </SessionProviderWrapper>

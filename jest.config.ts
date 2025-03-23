@@ -57,6 +57,8 @@ const config: Config = {
     "src/components/InfoRow.tsx",
     "src/components/LoadingOverlay.tsx",
     "src/components/PasswordInput.tsx",
+    "src/components/active-theme.tsx",
+    "src/components/providers/theme-provider.tsx",
 
     // src/app
     "src/app/admin",
@@ -71,6 +73,7 @@ const config: Config = {
     "src/app/api/auth",
     "src/app/api/payment",
     "src/app/api/email",
+    "src/app/api/health",
 
     // src/utils
     "src/utils/generate-unique-student-id",

@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { AdminNavUser } from "./AdminNavUser";
+import { AdminNavSecondary } from "./AdminNavSecondary";
 
 const items = [
   {
@@ -75,7 +76,7 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              className="data-[slot=sidebar-menu-button]:!p-1.5"
+              className="data-[slot=sidebar-menu-button]:p-1.5!"
             >
               <a href="#">
                 <Globe className="h-5 w-5" />
@@ -105,6 +106,7 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
+        <AdminNavSecondary />
         <AdminNavUser />
       </SidebarFooter>
     </Sidebar>
