@@ -5,6 +5,9 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import ApolloWrapper from "./api/graphql/ApolloWrappre";
 import SessionProviderWrapper from "@/providers/SessionProviderWrapper";
 import { GeistSans } from "geist/font/sans";
+import { ThemeProvider } from "@/components/providers/theme-provider";
+import { ActiveThemeProvider } from "@/components/active-theme";
+import { cookies } from "next/headers";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -18,13 +21,27 @@ interface RootLayoutProps {
 // Geist Sans-г ашиглах
 const geistSans = GeistSans;
 
-export default function RootLayout({ children }: RootLayoutProps) {
+export default async function RootLayout({ children }: RootLayoutProps) {
+  const cookieStore = await cookies();
+  const activeThemeValue = cookieStore.get("active_theme")?.value;
+  const isScaled = activeThemeValue?.endsWith("-scaled");
+
   return (
-    <html lang="en" className={geistSans.variable}>
+    <html lang="en" className={geistSans.variable} suppressHydrationWarning>
       <body className={`font-sans antialiased`}>
-        <SessionProviderWrapper>
-          <ApolloWrapper>{children}</ApolloWrapper>
-        </SessionProviderWrapper>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+          enableColorScheme
+        >
+          <ActiveThemeProvider initialTheme={activeThemeValue}>
+            <SessionProviderWrapper>
+              <ApolloWrapper>{children}</ApolloWrapper>
+            </SessionProviderWrapper>
+          </ActiveThemeProvider>
+        </ThemeProvider>
         <Analytics />
         <SpeedInsights />
       </body>
