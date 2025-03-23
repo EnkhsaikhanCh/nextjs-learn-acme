@@ -116,7 +116,7 @@ export const UpdatePaymentStatus: React.FC<UpdatePaymentStatusProps> = ({
             <DialogDescription>Шинэ төлөвийг сонгоно уу.</DialogDescription>
           </DialogHeader>
           {/* Payment details in a clean, minimal layout */}
-          <div className="rounded-md border bg-gray-50 p-4 shadow-sm">
+          <div className="rounded-md border bg-gray-50 p-4 shadow-xs">
             <div className="grid gap-3 sm:grid-cols-2">
               <InfoItem label="User Email" value={payment.userId.email} />
 
