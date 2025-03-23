@@ -177,7 +177,7 @@ export default function CourseDetailPage() {
     <div className="h-screen">
       {isMobile ? (
         <div>
-          <div className="rounded-md p-4 shadow">
+          <div className="rounded-md p-4 shadow-sm">
             <CourseInfo
               course={fetchedCourseData?.getCourseBySlug as Course}
               onEdit={handleEditCourse}
