@@ -81,7 +81,6 @@
     "resend": "^4.0.1",
     "sonner": "^1.7.1",
     "tailwind-merge": "^2.6.0",
-    "tailwindcss-animate": "^1.0.7",
     "ts-jest": "^29.2.5",
     "use-debounce": "^10.0.4",
     "uuid": "^11.0.3",
