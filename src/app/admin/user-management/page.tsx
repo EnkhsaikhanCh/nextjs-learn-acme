@@ -8,7 +8,6 @@ import {
   getCoreRowModel,
 } from "@tanstack/react-table";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -29,6 +28,13 @@ import {
 import { useGetAllUserQuery } from "@/generated/graphql";
 import { Loader } from "lucide-react";
 import { useDebounce } from "use-debounce";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function Page() {
   const pageSize = 10;
@@ -38,7 +44,7 @@ export default function Page() {
   const [sortOrder, setSortOrder] = useState("desc");
   const [debouncedSearch] = useDebounce(search, 300);
 
-  const { data, loading, error, refetch } = useGetAllUserQuery({
+  const { data, loading, error } = useGetAllUserQuery({
     variables: {
       limit: pageSize,
       offset: pageIndex * pageSize,
@@ -112,11 +118,6 @@ export default function Page() {
     return Array.from({ length: end - start + 1 }, (_, i) => start + i);
   }, [pageIndex, totalPages]);
 
-  const handleClearSearch = () => {
-    setSearch("");
-    setPageIndex(0);
-  };
-
   return (
     <main className="container mx-auto p-4">
       <h1 className="mb-4 text-xl font-bold">User List</h1>
@@ -131,37 +132,39 @@ export default function Page() {
             setPageIndex(0);
           }}
         />
-        {search && (
-          <Button variant="outline" onClick={handleClearSearch}>
-            Clear
-          </Button>
-        )}
 
         <div className="flex items-center gap-2">
-          <label>Sort By:</label>
-          <select
+          <Select
+            onValueChange={(value) => {
+              setSortBy(value);
+              setPageIndex(0);
+            }}
             value={sortBy}
-            onChange={(e) => {
-              setSortBy(e.target.value);
-              setPageIndex(0);
-            }}
-            className="rounded border p-2"
           >
-            <option value="createdAt">Created Date</option>
-            <option value="role">Role</option>
-          </select>
+            <SelectTrigger>
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="createdAt">Created Date</SelectItem>
+              <SelectItem value="role">Role</SelectItem>
+            </SelectContent>
+          </Select>
 
-          <select
+          <Select
             value={sortOrder}
-            onChange={(e) => {
-              setSortOrder(e.target.value);
+            onValueChange={(value) => {
+              setSortOrder(value);
               setPageIndex(0);
             }}
-            className="rounded border p-2"
           >
-            <option value="asc">Ascending</option>
-            <option value="desc">Descending</option>
-          </select>
+            <SelectTrigger>
+              <SelectValue placeholder="Sort order" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="asc">Ascending</SelectItem>
+              <SelectItem value="desc">Descending</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
@@ -207,66 +210,50 @@ export default function Page() {
               ))}
             </TableBody>
           </Table>
-
-          <Pagination className="mt-4">
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  onClick={() => setPageIndex((prev) => Math.max(0, prev - 1))}
-                  className="cursor-pointer"
-                />
-              </PaginationItem>
-
-              {pagesToShow[0] > 0 && (
-                <PaginationItem>
-                  <PaginationEllipsis />
-                </PaginationItem>
-              )}
-
-              {pagesToShow.map((page) => (
-                <PaginationItem key={page}>
-                  <PaginationLink
-                    isActive={page === pageIndex}
-                    onClick={() => setPageIndex(page)}
-                  >
-                    {page + 1}
-                  </PaginationLink>
-                </PaginationItem>
-              ))}
-
-              {pagesToShow[pagesToShow.length - 1] < totalPages - 1 && (
-                <PaginationItem>
-                  <PaginationEllipsis />
-                </PaginationItem>
-              )}
-
-              <PaginationItem>
-                <PaginationNext
-                  onClick={() =>
-                    setPageIndex((prev) => Math.min(totalPages - 1, prev + 1))
-                  }
-                  className="cursor-pointer"
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
         </>
       )}
+      <Pagination className="mt-4">
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious
+              onClick={() => setPageIndex((prev) => Math.max(0, prev - 1))}
+              className="cursor-pointer"
+            />
+          </PaginationItem>
 
-      <Button
-        onClick={() =>
-          refetch({
-            limit: pageSize,
-            offset: pageIndex * pageSize,
-            search: debouncedSearch,
-            sortBy,
-            sortOrder,
-          })
-        }
-        className="mt-4 bg-blue-500 text-white"
-      >
-        Refresh Users
-      </Button>
+          {pagesToShow[0] > 0 && (
+            <PaginationItem>
+              <PaginationEllipsis />
+            </PaginationItem>
+          )}
+
+          {pagesToShow.map((page) => (
+            <PaginationItem key={page}>
+              <PaginationLink
+                isActive={page === pageIndex}
+                onClick={() => setPageIndex(page)}
+              >
+                {page + 1}
+              </PaginationLink>
+            </PaginationItem>
+          ))}
+
+          {pagesToShow[pagesToShow.length - 1] < totalPages - 1 && (
+            <PaginationItem>
+              <PaginationEllipsis />
+            </PaginationItem>
+          )}
+
+          <PaginationItem>
+            <PaginationNext
+              onClick={() =>
+                setPageIndex((prev) => Math.min(totalPages - 1, prev + 1))
+              }
+              className="cursor-pointer"
+            />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </main>
   );
 }

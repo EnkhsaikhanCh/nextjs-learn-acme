@@ -7,7 +7,6 @@ import {
   CircleUserRound,
   CreditCard,
   LogOut,
-  MoreVerticalIcon,
   Sparkles,
 } from "lucide-react";
 
