@@ -82,6 +82,7 @@
     "sonner": "^1.7.1",
     "tailwind-merge": "^2.6.0",
     "ts-jest": "^29.2.5",
+    "tw-animate-css": "^1.2.4",
     "use-debounce": "^10.0.4",
     "uuid": "^11.0.3",
     "validator": "^13.12.0",
