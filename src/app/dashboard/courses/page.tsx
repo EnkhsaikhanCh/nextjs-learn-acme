@@ -20,9 +20,9 @@ export default function Courses() {
     <main className="p-4">
       {loading && (
         <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-          <div className="aspect-video animate-pulse rounded-xl bg-muted" />
-          <div className="aspect-video animate-pulse rounded-xl bg-muted" />
-          <div className="aspect-video animate-pulse rounded-xl bg-muted" />
+          <div className="bg-muted aspect-video animate-pulse rounded-xl" />
+          <div className="bg-muted aspect-video animate-pulse rounded-xl" />
+          <div className="bg-muted aspect-video animate-pulse rounded-xl" />
         </div>
       )}
 
