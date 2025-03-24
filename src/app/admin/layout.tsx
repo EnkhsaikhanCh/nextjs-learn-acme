@@ -17,23 +17,25 @@ export default async function AdminDashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ThemeProvider
-      attribute="class"
-      defaultTheme="system"
-      enableSystem
-      disableTransitionOnChange
-      enableColorScheme
-    >
-      <ActiveThemeProvider initialTheme={"mono-scaled"}>
-        <SidebarProvider>
-          <AppSidebar />
-          <SidebarInset>
-            <AdminSiteHeader />
-            <Toaster richColors position="top-center" />
-            {children}
-          </SidebarInset>
-        </SidebarProvider>
-      </ActiveThemeProvider>
-    </ThemeProvider>
+    <div className="bg-background overscroll-none font-mono antialiased">
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        enableSystem
+        disableTransitionOnChange
+        enableColorScheme
+      >
+        <ActiveThemeProvider initialTheme={"mono-scaled"}>
+          <SidebarProvider>
+            <AppSidebar />
+            <SidebarInset>
+              <AdminSiteHeader />
+              <Toaster richColors position="top-center" />
+              {children}
+            </SidebarInset>
+          </SidebarProvider>
+        </ActiveThemeProvider>
+      </ThemeProvider>
+    </div>
   );
 }

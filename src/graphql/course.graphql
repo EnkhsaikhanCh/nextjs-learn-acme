@@ -19,6 +19,7 @@ query GetAllCourse {
     _id
     title
     slug
+    courseCode
     status
     thumbnail
   }

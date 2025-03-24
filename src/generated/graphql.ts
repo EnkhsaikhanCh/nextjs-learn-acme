@@ -578,7 +578,7 @@ export type UpdateCourseMutation = { __typename?: 'Mutation', updateCourse: { __
 export type GetAllCourseQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAllCourseQuery = { __typename?: 'Query', getAllCourse: Array<{ __typename?: 'Course', _id: string, title: string, slug?: string | null, status?: CourseStatus | null, thumbnail?: string | null }> };
+export type GetAllCourseQuery = { __typename?: 'Query', getAllCourse: Array<{ __typename?: 'Course', _id: string, title: string, slug?: string | null, courseCode?: string | null, status?: CourseStatus | null, thumbnail?: string | null }> };
 
 export type GetCourseByIdQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -857,6 +857,7 @@ export const GetAllCourseDocument = gql`
     _id
     title
     slug
+    courseCode
     status
     thumbnail
   }
