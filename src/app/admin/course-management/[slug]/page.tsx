@@ -7,6 +7,9 @@ import {
   Course,
   Section,
   UpdateCourseInput,
+  useGetCourseBySlugQuery,
+  useGetLessonByIdQuery,
+  useGetSectionsByCourseIdQuery,
   useUpdateCourseMutation,
 } from "@/generated/graphql";
 import { Loader } from "lucide-react";
@@ -27,10 +30,7 @@ import {
   DrawerClose,
 } from "@/components/ui/drawer";
 import { LessonDetail } from "./_components/lesson/LessonDetail";
-import { useGetCourseBySlug } from "@/hooks/useGetCourseBySlug";
-import { useGetSectionsByCourseId } from "@/hooks/useGetSectionsByCourseId";
 import { LoadingOverlay } from "@/components/LoadingOverlay";
-import { useGetLessonById } from "@/hooks/useGetLessonById";
 
 export default function CourseDetailPage() {
   const [selectedLesson, setSelectedLesson] = useState<string | null>(null);
@@ -39,26 +39,40 @@ export default function CourseDetailPage() {
 
   const { slug } = useParams();
 
+  if (!slug) {
+    return <div>Error</div>;
+  }
+  if (typeof slug !== "string") return null;
+
   const {
-    fetchedCourseData,
-    fetchedCourseLoading,
-    fetchedCourseError,
-    fetchedCourseRefetch,
-  } = useGetCourseBySlug({
-    slug: typeof slug === "string" ? slug : "",
+    data: courseData,
+    loading: courseLoading,
+    error: courseError,
+    refetch: courseRefetch,
+  } = useGetCourseBySlugQuery({
+    variables: { slug: slug },
+  });
+
+  const courseId = courseData?.getCourseBySlug?._id as string;
+
+  const {
+    data: courseAllSectionsData,
+    loading: courseAllSectionsLoading,
+    // error: courseAllSectionsError,
+    refetch: courseAllSectionsRefetch,
+  } = useGetSectionsByCourseIdQuery({
+    variables: { courseId: courseId },
+    skip: !courseId,
   });
 
   const {
-    courseAllSectionsData,
-    courseAllSectionsLoading,
-    // courseAllSectionsError,
-    courseAllSectionsRefetch,
-  } = useGetSectionsByCourseId({
-    courseId: fetchedCourseData?.getCourseBySlug?._id || "",
+    data: fetchedLessonData,
+    loading: fetchedLessonLoading,
+    error: fetchedLessonError,
+    // refetch: fetchedLessonRefetch,
+  } = useGetLessonByIdQuery({
+    variables: { id: selectedLesson || "" },
   });
-
-  const { fetchedLessonData, fetchedLessonLoading, fetchedLessonError } =
-    useGetLessonById({ id: selectedLesson || "" });
 
   const [updateCourse] = useUpdateCourseMutation();
 
@@ -134,7 +148,7 @@ export default function CourseDetailPage() {
       });
 
       // Refresh course data
-      fetchedCourseRefetch();
+      courseRefetch();
       courseAllSectionsRefetch();
     } catch (error) {
       console.error("Error in handleEditCourse:", error);
@@ -150,19 +164,18 @@ export default function CourseDetailPage() {
     return () => window.removeEventListener("resize", checkViewport);
   }, []);
 
-  if (fetchedCourseLoading || courseAllSectionsLoading) {
+  if (courseLoading || courseAllSectionsLoading) {
     return <LoadingOverlay />;
   }
 
-  if (fetchedCourseError) {
-    const errorMessage =
-      fetchedCourseError?.message || "Error loading course data.";
+  if (courseError) {
+    const errorMessage = courseError?.message || "Error loading course data.";
 
     toast.error(errorMessage);
     return <div>Error loading course data: {errorMessage}</div>;
   }
 
-  if (!fetchedCourseData?.getCourseBySlug) {
+  if (!courseData?.getCourseBySlug) {
     return <div>No data found</div>;
   }
 
@@ -179,7 +192,7 @@ export default function CourseDetailPage() {
         <div>
           <div className="rounded-md p-4 shadow-sm">
             <CourseInfo
-              course={fetchedCourseData?.getCourseBySlug as Course}
+              course={courseData?.getCourseBySlug as Course}
               onEdit={handleEditCourse}
             />
 
@@ -194,7 +207,7 @@ export default function CourseDetailPage() {
 
             {/* Section нэмэх хэсэг */}
             <AddSectionForm
-              courseId={fetchedCourseData.getCourseBySlug._id}
+              courseId={courseData.getCourseBySlug._id}
               refetchCourse={courseAllSectionsRefetch}
             />
           </div>
@@ -205,13 +218,13 @@ export default function CourseDetailPage() {
               <DrawerHeader>
                 <DrawerTitle>Сонгогдсон Хичээл</DrawerTitle>
                 <DrawerClose asChild>
-                  <button className="absolute right-4 top-4">X</button>
+                  <button className="absolute top-4 right-4">X</button>
                 </DrawerClose>
               </DrawerHeader>
               <div>
                 {selectedLesson ? (
                   <LessonDetail
-                    refetchCourse={fetchedCourseRefetch}
+                    refetchCourse={courseRefetch}
                     lessonId={selectedLesson}
                     title={fetchedLessonData?.getLessonById?.title}
                     videoUrl={fetchedLessonData?.getLessonById?.videoUrl || ""}
@@ -234,7 +247,7 @@ export default function CourseDetailPage() {
           <ResizablePanel defaultSize={30} minSize={35} maxSize={45}>
             <div className="h-full overflow-y-auto p-4">
               <CourseInfo
-                course={fetchedCourseData?.getCourseBySlug as Course}
+                course={courseData?.getCourseBySlug as Course}
                 onEdit={handleEditCourse}
               />
 
@@ -250,7 +263,7 @@ export default function CourseDetailPage() {
 
               {/* Section нэмэх хэсэг */}
               <AddSectionForm
-                courseId={fetchedCourseData.getCourseBySlug._id}
+                courseId={courseData.getCourseBySlug._id}
                 refetchCourse={courseAllSectionsRefetch}
               />
             </div>
@@ -272,7 +285,7 @@ export default function CourseDetailPage() {
                   <p>Error loading lesson: {fetchedLessonError.message}</p>
                 ) : (
                   <LessonDetail
-                    refetchCourse={fetchedCourseRefetch}
+                    refetchCourse={courseRefetch}
                     lessonId={selectedLesson}
                     title={fetchedLessonData?.getLessonById?.title}
                     videoUrl={fetchedLessonData?.getLessonById?.videoUrl || ""}
