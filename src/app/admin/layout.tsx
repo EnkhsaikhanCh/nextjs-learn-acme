@@ -3,7 +3,7 @@ import { Toaster } from "sonner";
 import { AppSidebar } from "@/app/admin/_components/AppSidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AdminSiteHeader } from "./_components/AdminSiteHeader";
-import { ThemeProvider } from "@/components/providers/theme-provider";
+import { ThemeProvider } from "@/providers/theme-provider";
 import { ActiveThemeProvider } from "@/components/active-theme";
 
 export const metadata = {
