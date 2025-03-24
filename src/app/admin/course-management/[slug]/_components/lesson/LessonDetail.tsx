@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   useDeleteLessonMutation,
+  useGetLessonByIdQuery,
   useUpdateLessonMutation,
 } from "@/generated/graphql";
 import {
@@ -26,7 +27,6 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
-import { useGetLessonById } from "@/hooks/useGetLessonById";
 
 interface LessonDetailProps {
   lessonId: string;
@@ -53,7 +53,9 @@ export function LessonDetail({
     isPublished || false,
   );
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const { fetchedLessonRefetch } = useGetLessonById({ id: lessonId });
+  const { refetch: fetchedLessonRefetch } = useGetLessonByIdQuery({
+    variables: { id: lessonId },
+  });
 
   const getEmbedUrl = (url: string) => {
     const match = url.match(
@@ -183,7 +185,7 @@ export function LessonDetail({
           <Button
             size="sm"
             variant={isEditing ? "default" : "outline"}
-            className="ml-1 mt-2 font-semibold"
+            className="mt-2 ml-1 font-semibold"
             onClick={(e) => {
               e.stopPropagation(); // Prevents propagation if part of an accordion
               setIsEditing(!isEditing);
@@ -206,7 +208,7 @@ export function LessonDetail({
             <Button
               size="sm"
               variant="outline"
-              className="ml-1 mt-2 border-green-500 bg-green-100 font-semibold text-green-500 hover:bg-green-200 hover:text-green-600"
+              className="mt-2 ml-1 border-green-500 bg-green-100 font-semibold text-green-500 hover:bg-green-200 hover:text-green-600"
               onClick={handleSave}
             >
               Save
@@ -221,7 +223,7 @@ export function LessonDetail({
               <Button
                 variant="outline"
                 size="sm"
-                className="mt-2 font-semibold hover:border-destructive hover:bg-destructive/10 hover:text-destructive"
+                className="hover:border-destructive hover:bg-destructive/10 hover:text-destructive mt-2 font-semibold"
               >
                 Delete Lesson
                 <Trash2 />
@@ -229,7 +231,7 @@ export function LessonDetail({
             </DialogTrigger>
             <DialogContent className="p-0">
               <DialogHeader className="rounded-t-md border-b border-gray-200 bg-[#FAFAFA] p-4">
-                <DialogTitle className="flex items-center gap-2 text-lg text-destructive">
+                <DialogTitle className="text-destructive flex items-center gap-2 text-lg">
                   <AlertTriangle />
                   Confirm Deletion
                 </DialogTitle>
@@ -246,7 +248,7 @@ export function LessonDetail({
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 10 }}
                   transition={{ duration: 0.2 }}
-                  className="mt-4 rounded-md bg-destructive/10 p-4 text-destructive"
+                  className="bg-destructive/10 text-destructive mt-4 rounded-md p-4"
                 >
                   <p className="text-sm font-semibold">
                     This action cannot be undone.

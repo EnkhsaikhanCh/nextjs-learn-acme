@@ -39,21 +39,15 @@ export default function CourseDetailPage() {
 
   const { slug } = useParams();
 
-  if (!slug) {
-    return <div>Error</div>;
-  }
-  if (typeof slug !== "string") return null;
-
   const {
     data: courseData,
     loading: courseLoading,
     error: courseError,
     refetch: courseRefetch,
   } = useGetCourseBySlugQuery({
-    variables: { slug: slug },
+    variables: { slug: slug as string },
+    skip: !slug,
   });
-
-  const courseId = courseData?.getCourseBySlug?._id as string;
 
   const {
     data: courseAllSectionsData,
@@ -61,8 +55,10 @@ export default function CourseDetailPage() {
     // error: courseAllSectionsError,
     refetch: courseAllSectionsRefetch,
   } = useGetSectionsByCourseIdQuery({
-    variables: { courseId: courseId },
-    skip: !courseId,
+    variables: {
+      courseId: courseData?.getCourseBySlug?._id as string,
+    },
+    skip: !courseData?.getCourseBySlug?._id, // skip нь boolean байх ёстой!
   });
 
   const {
@@ -273,7 +269,7 @@ export default function CourseDetailPage() {
           <ResizableHandle />
 
           {/* Баруун талын панель */}
-          <ResizablePanel defaultSize={70} minSize={50} className="bg-gray-50">
+          <ResizablePanel defaultSize={70} minSize={50} className="">
             <div className="p-4">
               {selectedLesson ? (
                 fetchedLessonLoading ? (
