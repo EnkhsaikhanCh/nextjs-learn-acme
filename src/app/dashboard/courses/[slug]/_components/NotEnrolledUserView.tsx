@@ -30,7 +30,7 @@ export function NotEnrolledUserView({
   return (
     <>
       {/* Курсийн танилцуулга хэсэг */}
-      <section className="m-4 rounded-xl bg-linear-to-b from-zinc-900 to-zinc-900/90 py-20 text-primary-foreground">
+      <section className="text-primary-foreground m-4 rounded-xl bg-linear-to-b from-zinc-900 to-zinc-900/90 py-20">
         <div className="container mx-auto px-4 text-center">
           <h1 className="mb-4 text-4xl font-bold md:text-5xl">
             {course?.title}
@@ -39,7 +39,7 @@ export function NotEnrolledUserView({
           <Button
             size="lg"
             onClick={onScrollToPayment}
-            className="rounded-full bg-yellow-400 font-bold text-primary hover:bg-yellow-300"
+            className="rounded-full bg-yellow-400 font-bold hover:bg-yellow-300"
           >
             Сургалтанд бүртгүүлэх
           </Button>
@@ -136,7 +136,7 @@ export function NotEnrolledUserView({
       </section>
 
       {/* Яагаад манай сургалтыг сонгох вэ */}
-      <section className="bg-gray-100 py-20">
+      <section className="bg-gray-100 py-20 dark:bg-zinc-900">
         <div className="container mx-auto px-4">
           <h2 className="mb-12 text-center text-3xl font-bold">
             Яагаад манай сургалтыг сонгох вэ
