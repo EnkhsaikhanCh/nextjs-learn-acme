@@ -132,7 +132,7 @@ export function PaymentDialog({
       <DialogTrigger asChild>
         <Button
           size="lg"
-          className="w-full rounded-full bg-yellow-400 font-bold text-primary hover:bg-yellow-300"
+          className="w-full rounded-full bg-yellow-400 font-bold text-black hover:bg-yellow-300"
         >
           Сургалтанд бүртгүүлэх
         </Button>

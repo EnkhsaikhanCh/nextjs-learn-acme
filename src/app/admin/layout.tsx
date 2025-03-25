@@ -4,7 +4,7 @@ import { AppSidebar } from "@/app/admin/_components/AppSidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AdminSiteHeader } from "./_components/AdminSiteHeader";
 import { ThemeProvider } from "@/providers/theme-provider";
-import { ActiveThemeProvider } from "@/components/active-theme";
+// import { ActiveThemeProvider } from "@/components/active-theme";
 
 export const metadata = {
   title: "Admin Dashboard",
@@ -25,16 +25,16 @@ export default async function AdminDashboardLayout({
         disableTransitionOnChange
         enableColorScheme
       >
-        <ActiveThemeProvider initialTheme={"mono-scaled"}>
-          <SidebarProvider>
-            <AppSidebar />
-            <SidebarInset>
-              <AdminSiteHeader />
-              <Toaster richColors position="top-center" />
-              {children}
-            </SidebarInset>
-          </SidebarProvider>
-        </ActiveThemeProvider>
+        {/* <ActiveThemeProvider initialTheme={"default"}> */}
+        <SidebarProvider>
+          <AppSidebar />
+          <SidebarInset>
+            <AdminSiteHeader />
+            <Toaster richColors position="top-center" />
+            {children}
+          </SidebarInset>
+        </SidebarProvider>
+        {/* </ActiveThemeProvider> */}
       </ThemeProvider>
     </div>
   );

@@ -67,50 +67,6 @@ export default function Page() {
 
   return (
     <main className="flex flex-col gap-3 p-4">
-      <h1 className="text-3xl font-bold">Course Management</h1>
-
-      <Dialog
-        open={isDialogOpen}
-        onOpenChange={(open) => setIsDialogOpen(open)}
-      >
-        <DialogTrigger asChild>
-          <Button
-            onClick={() => setIsDialogOpen(true)}
-            variant="outline"
-            className="md:w-[200px]"
-          >
-            <CirclePlus /> Create Course
-          </Button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Create Course</DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleCreateCourse}>
-            <div className="grid gap-4 py-4">
-              <div>
-                <Label htmlFor="title" className="font-semibold">
-                  Title
-                </Label>
-                <Input
-                  id="title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  required
-                  placeholder="Course title"
-                  className="col-span-3"
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button type="submit" disabled={isCreating}>
-                {isCreating ? <Loader className="animate-spin" /> : "Create"}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
-
       {loading && (
         <div className="flex h-[calc(100vh-4rem)] items-center justify-center">
           <p className="mr-3 text-lg">Loading courses...</p>
@@ -125,34 +81,84 @@ export default function Page() {
         </div>
       )}
 
-      {data?.getAllCourse.map((course, index) => (
-        <Link
-          href={`/admin/course-management/${course.slug}`}
-          key={index}
-          className="md:w-[500px]"
-        >
-          <div className="group bg-accent/70 hover:bg-accent/100 text-accent-foreground flex px-4 py-2">
-            <h1 className="underline-offset-3 group-hover:text-blue-600 group-hover:underline dark:group-hover:text-blue-500">
-              {course.title}
-            </h1>
-            <div className="ml-auto flex items-center gap-2">
-              <Badge variant={"secondary"}>{course.courseCode}</Badge>
-              <Badge
-                className={cn({
-                  "bg-emerald-200 text-emerald-600 hover:bg-emerald-200 hover:text-emerald-600 dark:bg-emerald-700 dark:text-emerald-200 dark:hover:bg-emerald-700 dark:hover:text-emerald-200":
-                    course.status === "PUBLISHED",
-                  "bg-gray-500 text-white hover:bg-gray-500 hover:text-white":
-                    course.status === "ARCHIVED",
-                  "hover:bg-yello-200 hvoer:bg-yellow-600 bg-yellow-200 text-yellow-600 dark:bg-yellow-700 dark:text-yellow-200 dark:hover:bg-yellow-700 dark:hover:text-yellow-200":
-                    course.status === "DRAFT",
-                })}
+      {data && (
+        <>
+          <h1 className="text-3xl font-bold">Course Management</h1>
+          <Dialog
+            open={isDialogOpen}
+            onOpenChange={(open) => setIsDialogOpen(open)}
+          >
+            <DialogTrigger asChild>
+              <Button
+                onClick={() => setIsDialogOpen(true)}
+                variant="outline"
+                className="md:w-[200px]"
               >
-                {course.status}
-              </Badge>
-            </div>
-          </div>
-        </Link>
-      ))}
+                <CirclePlus /> Create Course
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Create Course</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleCreateCourse}>
+                <div className="grid gap-4 py-4">
+                  <div>
+                    <Label htmlFor="title" className="font-semibold">
+                      Title
+                    </Label>
+                    <Input
+                      id="title"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      required
+                      placeholder="Course title"
+                      className="col-span-3"
+                    />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button type="submit" disabled={isCreating}>
+                    {isCreating ? (
+                      <Loader className="animate-spin" />
+                    ) : (
+                      "Create"
+                    )}
+                  </Button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
+          {data?.getAllCourse.map((course, index) => (
+            <Link
+              href={`/admin/course-management/${course.slug}`}
+              key={index}
+              className="md:w-[500px]"
+            >
+              <div className="group bg-accent/70 hover:bg-accent/100 text-accent-foreground flex px-4 py-2">
+                <h1 className="underline-offset-3 group-hover:text-blue-600 group-hover:underline dark:group-hover:text-blue-500">
+                  {course.title}
+                </h1>
+                <div className="ml-auto flex items-center gap-2">
+                  <Badge variant={"secondary"}>{course.courseCode}</Badge>
+                  <Badge
+                    className={cn({
+                      "bg-emerald-200 text-emerald-600 hover:bg-emerald-200 hover:text-emerald-600 dark:bg-emerald-700 dark:text-emerald-200 dark:hover:bg-emerald-700 dark:hover:text-emerald-200":
+                        course.status === "PUBLISHED",
+                      "bg-gray-500 text-white hover:bg-gray-500 hover:text-white":
+                        course.status === "ARCHIVED",
+                      "hover:bg-yello-200 hvoer:bg-yellow-600 bg-yellow-200 text-yellow-600 dark:bg-yellow-700 dark:text-yellow-200 dark:hover:bg-yellow-700 dark:hover:text-yellow-200":
+                        course.status === "DRAFT",
+                    })}
+                  >
+                    {course.status}
+                  </Badge>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </>
+      )}
     </main>
   );
 }
