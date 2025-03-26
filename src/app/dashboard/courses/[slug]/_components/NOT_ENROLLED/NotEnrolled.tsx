@@ -55,15 +55,11 @@ export const NotEnrolled = ({ course }: { course: Course }) => {
 
   const [createPayment] = useCreatePaymentMutation();
 
-  const {
-    data: existingPaymentData,
-    loading: existingPaymentLoading,
-    error: existingPaymentError,
-    refetch: refetchExistingPayment,
-  } = useGetPaymentByUserAndCourseQuery({
-    variables: { courseId: course._id, userId: session?.user._id as string },
-    fetchPolicy: "network-only",
-  });
+  const { data: existingPaymentData, refetch: refetchExistingPayment } =
+    useGetPaymentByUserAndCourseQuery({
+      variables: { courseId: course._id, userId: session?.user._id as string },
+      fetchPolicy: "network-only",
+    });
 
   const payment = existingPaymentData?.getPaymentByUserAndCourse;
   const isPending = payment?.status === "PENDING";
