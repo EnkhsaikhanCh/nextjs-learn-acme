@@ -8,6 +8,7 @@ import {
   PaymentMethod,
   useCreatePaymentMutation,
   useGetPaymentByUserAndCourseQuery,
+  useGetUserByIdQuery,
   User,
 } from "@/generated/graphql";
 import { useState } from "react";
@@ -15,18 +16,23 @@ import { toast } from "sonner";
 import { PaymentInformation } from "./payment/PaymentInformation";
 import { PaymentVerification } from "./payment/PaymentVerification";
 import { ListChecks, Loader } from "lucide-react";
+import { useSession } from "next-auth/react";
 
-export function PaymentDialog({
-  user,
-  course,
-}: {
-  user: User;
-  course: Course;
-}) {
-  const [createPayment] = useCreatePaymentMutation();
+export function PaymentDialog({ course }: { course: Course }) {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  const transactionNote = `${user.studentId}-${course.courseCode}`;
+  const { data: session } = useSession();
+  const userId = session?.user._id;
+
+  const [createPayment] = useCreatePaymentMutation();
+
+  const { data: userData } = useGetUserByIdQuery({
+    variables: { id: userId as string },
+  });
+
+  const userStudentId = userData?.getUserById.studentId as string;
+
+  const transactionNote = `${userStudentId}-${course.courseCode}`;
 
   // Тухайн хэрэглэгчийн сүүлийн төлбөрийг авах
   const {
@@ -35,21 +41,17 @@ export function PaymentDialog({
     error: paymentError,
     refetch: refetchExistingPayment,
   } = useGetPaymentByUserAndCourseQuery({
-    variables: { userId: user._id, courseId: course._id },
-    skip: !user?._id || !course?._id,
+    variables: { userId: userStudentId, courseId: course._id },
+    skip: !userId || !course?._id,
     fetchPolicy: "network-only",
   });
 
-  const existingPayment =
-    existingPaymentData?.getPaymentByUserAndCourse || null;
-
-  const hasPendingPayment =
-    existingPayment && existingPayment.status === "PENDING";
-
-  const validPayment = hasPendingPayment ? existingPayment : null;
+  const payment = existingPaymentData?.getPaymentByUserAndCourse;
+  const isPending = payment?.status === "PENDING";
+  const validPayment = isPending ? payment : null;
 
   const handleCreatePayment = async () => {
-    if (!user.studentId || !course.courseCode) {
+    if (!userStudentId || !course.courseCode) {
       toast.error("Хэрэглэгч эсвэл хичээлийн мэдээлэл дутуу байна");
       return;
     }
@@ -65,7 +67,7 @@ export function PaymentDialog({
       const { data } = await createPayment({
         variables: {
           input: {
-            userId: user._id,
+            userId: userStudentId,
             courseId: course._id,
             amount: course.price?.amount ?? 0,
             paymentMethod: PaymentMethod.BankTransfer,
@@ -82,7 +84,7 @@ export function PaymentDialog({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             paymentId: data.createPayment._id,
-            userEmail: user.email,
+            userEmail: userData?.getUserById.email,
             courseTitle: course.title,
             transactionNote: transactionNote,
           }),
@@ -138,7 +140,7 @@ export function PaymentDialog({
         </Button>
       </DialogTrigger>
       <PaymentInformation
-        user={user}
+        user={userData?.getUserById as User}
         course={course}
         handleCreatePayment={handleCreatePayment}
         isSubmitting={isSubmitting}

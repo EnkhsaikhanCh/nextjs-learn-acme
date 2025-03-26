@@ -14,16 +14,14 @@ import { CircleCheck } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 import { LucideIcon } from "lucide-react";
 import { PaymentDialog } from "./PaymentDialog";
-import { Course, User } from "@/generated/graphql";
+import { Course } from "@/generated/graphql";
 
 interface NotEnrolledUserViewProps {
-  user: User;
   course: Course;
   onScrollToPayment: () => void;
 }
 
 export function NotEnrolledUserView({
-  user,
   course,
   onScrollToPayment,
 }: NotEnrolledUserViewProps) {
@@ -203,7 +201,7 @@ export function NotEnrolledUserView({
                 </ul>
               </CardContent>
               <CardFooter>
-                <PaymentDialog user={user} course={course} />
+                <PaymentDialog course={course} />
               </CardFooter>
             </Card>
           </div>
