@@ -9,12 +9,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useGetAllCourseQuery } from "@/generated/graphql";
+import { useGetAllCourseWithEnrollmentQuery } from "@/generated/graphql";
 import Image from "next/image";
 import Link from "next/link";
 
 export default function Courses() {
-  const { data, loading, error } = useGetAllCourseQuery();
+  const { data, loading, error } = useGetAllCourseWithEnrollmentQuery();
 
   return (
     <main className="p-4">
@@ -37,7 +37,7 @@ export default function Courses() {
 
       {data && (
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {data?.getAllCourse.map((course, index) => (
+          {data?.getAllCourseWithEnrollment.map((course, index) => (
             <Link href={`/dashboard/courses/${course.slug}`} key={index}>
               <Card className="shadow-none">
                 <CardHeader className="p-0">
@@ -47,7 +47,7 @@ export default function Courses() {
                       alt={course.title || "Course image"}
                       width={400}
                       height={200}
-                      className="h-48 w-full object-cover"
+                      className="h-48 w-full rounded-t-md object-cover"
                     />
                   </div>
                 </CardHeader>
@@ -57,7 +57,9 @@ export default function Courses() {
                   </CardTitle>
                 </CardContent>
                 <CardFooter className="p-4 pt-0">
-                  <Button className="w-full">Хичээл үзэх</Button>
+                  <Button className="w-full">
+                    {course.isEnrolled ? "Хичээл үзэх" : "Дэлгэрэнгүй"}
+                  </Button>
                 </CardFooter>
               </Card>
             </Link>
