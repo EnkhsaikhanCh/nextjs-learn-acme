@@ -4,11 +4,10 @@ import { CircleCheck } from "lucide-react";
 import { Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import { useGetLessonById } from "@/hooks/useGetLessonById";
+import { useGetLessonByIdQuery } from "@/generated/graphql";
 
 interface LessonViewerProps {
   lessonId?: string;
-  lessonTitle?: string;
   completedLessons: string[];
   onMarkComplete: () => void;
   onUndo: () => void;
@@ -17,14 +16,14 @@ interface LessonViewerProps {
 
 export function LessonViewer({
   lessonId,
-  lessonTitle,
   completedLessons,
   onMarkComplete,
   onUndo,
   isLessonActionLoading,
 }: LessonViewerProps) {
-  const { fetchedLessonData, fetchedLessonLoading, fetchedLessonError } =
-    useGetLessonById({ id: lessonId || "" });
+  const { data, loading, error } = useGetLessonByIdQuery({
+    variables: { id: lessonId || "" },
+  });
 
   const isCompleted = lessonId ? completedLessons.includes(lessonId) : false;
 
@@ -42,7 +41,7 @@ export function LessonViewer({
     return <p className="text-gray-500">No lesson selected</p>;
   }
 
-  if (fetchedLessonLoading) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center gap-2">
         <span>Хичээлийн дэлгэрэнгүй мэдээлэл ачаалж байна...</span>
@@ -51,10 +50,10 @@ export function LessonViewer({
     );
   }
 
-  if (fetchedLessonError) {
+  if (error) {
     return (
       <p className="text-red-500">
-        Хичээлийг ачааллахад алдаа гарлаа: {fetchedLessonError.message}
+        Хичээлийг ачааллахад алдаа гарлаа: {error.message}
       </p>
     );
   }
@@ -63,9 +62,7 @@ export function LessonViewer({
     <>
       <Card>
         <CardHeader className="flex flex-col items-center justify-between gap-2 md:flex-row">
-          <CardTitle>
-            {fetchedLessonData?.getLessonById?.title || lessonTitle}
-          </CardTitle>
+          <CardTitle>{data?.getLessonById.title}</CardTitle>
           <Button
             onClick={isCompleted ? onUndo : onMarkComplete}
             variant={"outline"}
@@ -98,7 +95,7 @@ export function LessonViewer({
       </Card>
 
       <iframe
-        src={getEmbedUrl(fetchedLessonData?.getLessonById?.videoUrl || "")}
+        src={getEmbedUrl(data?.getLessonById?.videoUrl || "")}
         className="mt-2 aspect-video w-full rounded-lg"
         allowFullScreen
         allow="autoplay; encrypted-media"

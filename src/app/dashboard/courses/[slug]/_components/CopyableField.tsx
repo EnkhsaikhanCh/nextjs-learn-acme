@@ -19,15 +19,15 @@ export const CopyableField = ({
 }: CopyableFieldProps) => {
   return (
     <div>
-      <span className="flex items-center gap-2 font-semibold text-gray-700">
+      <span className="flex items-center gap-2 font-semibold">
         {icon}
         {label}
       </span>
       <div
-        className={`mt-1 flex items-center justify-between rounded-md border p-2 px-3 shadow-sm transition-all ${
+        className={`mt-1 flex items-center justify-between rounded-md border p-2 px-3 transition-all ${
           copiedField === fieldName
-            ? "border-green-500 bg-green-100 text-green-500"
-            : "border-stone-300 bg-stone-100"
+            ? "border-green-500 bg-green-100 text-green-500 dark:bg-green-700 dark:text-green-200"
+            : "dark:bg-sidebar bg-stone-100"
         } ${onClick ? "cursor-pointer" : ""}`} // onClick байхгүй үед курсор заагч байхгүй
         onClick={onClick} // Зөвхөн onClick байгаа үед л хуулна
       >

@@ -40,7 +40,7 @@ export const typeDefs = gql`
     getEnrollmentsByUser(userId: ID!): [Enrollment!]!
     getEnrollmentsByCourse(courseId: ID!): [Enrollment!]!
     getEnrollmentByUserAndCourse(userId: ID!, courseId: ID!): Enrollment
-    checkEnrollment(courseId: ID!, userId: ID!): Enrollment
+    checkEnrollment(courseId: ID!): Enrollment
   }
 
   input CreateEnrollmentInput {

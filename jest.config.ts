@@ -57,8 +57,8 @@ const config: Config = {
     "src/components/InfoRow.tsx",
     "src/components/LoadingOverlay.tsx",
     "src/components/PasswordInput.tsx",
+    "src/components/LoadingScreen.tsx",
     "src/components/active-theme.tsx",
-    "src/components/providers/theme-provider.tsx",
 
     // src/app
     "src/app/admin",

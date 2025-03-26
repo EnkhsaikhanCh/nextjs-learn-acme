@@ -154,7 +154,7 @@ export function EnrolledUserView({ courseData }: { courseData: Course }) {
   function renderCourseInfo() {
     return (
       <section className="my-4 flex flex-col gap-2">
-        <div className="rounded-md border-b bg-zinc-900 text-primary-foreground">
+        <div className="text-primary-foreground rounded-md border-b bg-zinc-900">
           <h1 className="p-4 text-base font-bold md:text-xl lg:text-2xl">
             {courseData.title}
           </h1>
@@ -207,7 +207,6 @@ export function EnrolledUserView({ courseData }: { courseData: Course }) {
               <div className="px-4 pb-4">
                 <LessonViewer
                   lessonId={selectedLesson?._id}
-                  lessonTitle={selectedLesson?.title}
                   completedLessons={completedLessons}
                   onMarkComplete={() =>
                     selectedLesson?._id &&
@@ -248,7 +247,6 @@ export function EnrolledUserView({ courseData }: { courseData: Course }) {
             <div className="h-full overflow-y-auto p-4">
               <LessonViewer
                 lessonId={selectedLesson?._id}
-                lessonTitle={selectedLesson?.title}
                 completedLessons={completedLessons}
                 onMarkComplete={() =>
                   selectedLesson?._id &&

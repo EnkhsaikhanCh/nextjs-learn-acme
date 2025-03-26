@@ -3,8 +3,8 @@ import { Toaster } from "sonner";
 import { AppSidebar } from "@/app/admin/_components/AppSidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AdminSiteHeader } from "./_components/AdminSiteHeader";
-import { ThemeProvider } from "@/components/providers/theme-provider";
-import { ActiveThemeProvider } from "@/components/active-theme";
+import { ThemeProvider } from "@/providers/theme-provider";
+// import { ActiveThemeProvider } from "@/components/active-theme";
 
 export const metadata = {
   title: "Admin Dashboard",
@@ -17,14 +17,15 @@ export default async function AdminDashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ThemeProvider
-      attribute="class"
-      defaultTheme="system"
-      enableSystem
-      disableTransitionOnChange
-      enableColorScheme
-    >
-      <ActiveThemeProvider initialTheme={"mono-scaled"}>
+    <div className="bg-background overscroll-none font-mono antialiased">
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        enableSystem
+        disableTransitionOnChange
+        enableColorScheme
+      >
+        {/* <ActiveThemeProvider initialTheme={"default"}> */}
         <SidebarProvider>
           <AppSidebar />
           <SidebarInset>
@@ -33,7 +34,8 @@ export default async function AdminDashboardLayout({
             {children}
           </SidebarInset>
         </SidebarProvider>
-      </ActiveThemeProvider>
-    </ThemeProvider>
+        {/* </ActiveThemeProvider> */}
+      </ThemeProvider>
+    </div>
   );
 }

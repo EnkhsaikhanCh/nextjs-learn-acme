@@ -39,15 +39,15 @@ export function CourseInfo({ course, onEdit }: CourseInfoProps) {
   return (
     <div className="flex flex-col gap-1">
       <Image
-        src={course.thumbnail || "/placeholder.svg?height=100&width=200"}
+        src={course.thumbnail || "/code.jpg?height=100&width=200"}
         alt={course.title || "Course image"}
         width={1000}
         height={1000}
         className="h-[300px] w-full rounded-lg object-cover"
       />
 
-      <Card className="bg-zinc-800 text-white shadow-none">
-        <CardHeader className="text-2xl font-bold text-white">
+      <Card>
+        <CardHeader className="text-2xl font-bold">
           {isEditing ? (
             <Input
               type="text"
@@ -55,7 +55,7 @@ export function CourseInfo({ course, onEdit }: CourseInfoProps) {
               onChange={(e) =>
                 setEditValues({ ...editValues, title: e.target.value })
               }
-              className="w-full border-b-2 border-white bg-transparent text-white"
+              className="w-full border-b-2"
             />
           ) : (
             course.title || "Untitled Course"
@@ -68,7 +68,7 @@ export function CourseInfo({ course, onEdit }: CourseInfoProps) {
               onChange={(e) =>
                 setEditValues({ ...editValues, description: e.target.value })
               }
-              className="w-full rounded border border-gray-500 bg-transparent p-2 text-white"
+              className="w-full rounded bg-transparent p-2"
             />
           ) : (
             course.description || "No description available"

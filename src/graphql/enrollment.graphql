@@ -21,16 +21,16 @@ query GetEnrollmentByUserAndCourse($userId: ID!, $courseId: ID!) {
   }
 }
 
-query CheckEnrollment($courseId: ID!, $userId: ID!) {
-  checkEnrollment(courseId: $courseId, userId: $userId) {
+query CheckEnrollment($courseId: ID!) {
+  checkEnrollment(courseId: $courseId) {
     _id
-    expiryDate
-    userId {
-      _id
-    }
     courseId {
       _id
     }
+    userId {
+      _id
+    }
     status
+    expiryDate
   }
 }
