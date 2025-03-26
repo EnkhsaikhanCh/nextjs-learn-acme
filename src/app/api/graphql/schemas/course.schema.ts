@@ -19,6 +19,32 @@ export const typeDefs = gql`
     ARCHIVED
   }
 
+  """
+  Хэрэглэгч курсэд нэвтэрсэн байдал болон бусад төлөв:
+  GUEST         - Одоогоор нэвтрээгүй буюу бүртгэлгүй
+  NOT_ENROLLED  - Нэвтэрсэн боловч курсэд бүртгэлгүй (эсвэл хугацаа дууссан)
+  ENROLLED      - Курсэд бүрэн эрхтэй
+  EXPIRED       - Бүртгэл байсан ч хугацаа дууссан
+  """
+  enum CourseAccessStatus {
+    GUEST
+    NOT_ENROLLED
+    ENROLLED
+    EXPIRED
+  }
+
+  """
+  Нэг Query-д буцах нэгдсэн бүтэц
+    - status: Хэрэглэгчийн төлөв
+    - coursePreviewData: Хэрэв GUEST эсвэл NOT_ENROLLED бол үзүүлэх 'preview' талын мэдээлэл
+    - fullContent: Хэрэв ENROLLED бол үзүүлэх курсийн бүрэн агуулга
+  """
+  type CourseForUserPayload {
+    status: CourseAccessStatus!
+    coursePreviewData: Course
+    fullContent: Course
+  }
+
   type Course {
     _id: ID!
     title: String!
@@ -35,6 +61,7 @@ export const typeDefs = gql`
     status: CourseStatus
     whatYouWillLearn: [String]
     whyChooseOurCourse: [WhyChoose]
+    isEnrolled: Boolean
   }
 
   type PricingDetails {
@@ -59,9 +86,13 @@ export const typeDefs = gql`
   type Query {
     getCourseById(_id: ID!): Course
     getCourseBySlug(slug: String!): Course
+    getCourseDetails(slug: String!): Course
     getAllCourse: [Course!]!
+    getAllCourseWithEnrollment: [Course!]!
     getEnrolledCourseContentBySlug(slug: String!): Course
     getCourseIdBySlug(slug: String): Course
+
+    getCourseForUser(slug: String!): CourseForUserPayload!
   }
 
   input PriceInput {

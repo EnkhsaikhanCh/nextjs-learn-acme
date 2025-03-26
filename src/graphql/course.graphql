@@ -25,6 +25,16 @@ query GetAllCourse {
   }
 }
 
+query GetAllCourseWithEnrollment {
+  getAllCourseWithEnrollment {
+    _id
+    title
+    slug
+    thumbnail
+    isEnrolled
+  }
+}
+
 query GetCourseById($id: ID!) {
   getCourseById(_id: $id) {
     _id
@@ -92,5 +102,63 @@ query GetEnrolledCourseContentBySlug($slug: String!) {
 query GetCourseIdBySlug($slug: String) {
   getCourseIdBySlug(slug: $slug) {
     _id
+  }
+}
+
+query GetCourseForUser($slug: String!) {
+  getCourseForUser(slug: $slug) {
+    status
+    fullContent {
+      _id
+      title
+      slug
+      description
+      difficulty
+      thumbnail
+      sectionId {
+        _id
+        title
+        description
+        order
+        lessonId {
+          _id
+          title
+          content
+          videoUrl
+          order
+          isPublished
+        }
+      }
+      status
+    }
+    coursePreviewData {
+      _id
+      title
+      slug
+      description
+      courseCode
+      difficulty
+      thumbnail
+      price {
+        amount
+        currency
+        discount
+      }
+      pricingDetails {
+        planTitle
+        description
+        price
+        details
+      }
+      categories
+      tags
+      status
+      whatYouWillLearn
+      whyChooseOurCourse {
+        icon
+        title
+        description
+      }
+    }
   }
 }
