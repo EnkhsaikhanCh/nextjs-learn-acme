@@ -15,7 +15,7 @@ interface MetricCardProps {
   currentValue: number;
   targetValue: number;
   valueFormatter?: (value: number) => string;
-  indicatorColor?: string; // e.g. "blue", "green", "red"
+  indicatorColor?: "blue" | "green" | "red" | "yellow" | "purple" | "gray";
 }
 
 export const MetricCard = ({
@@ -27,7 +27,17 @@ export const MetricCard = ({
   indicatorColor = "blue",
 }: MetricCardProps) => {
   const percent = Math.min(100, (currentValue / targetValue) * 100);
-  const colorClass = `bg-${indicatorColor}-500`;
+
+  const colorMap: Record<string, string> = {
+    blue: "bg-blue-500",
+    green: "bg-green-500",
+    red: "bg-red-500",
+    yellow: "bg-yellow-500",
+    purple: "bg-purple-500",
+    gray: "bg-gray-500",
+  };
+
+  const indicatorClassName = colorMap[indicatorColor] || "bg-blue-500";
 
   return (
     <Card className="shadow-none">
@@ -42,7 +52,7 @@ export const MetricCard = ({
         <Progress
           value={percent}
           className="h-2"
-          indicatorClassName={colorClass}
+          indicatorClassName={indicatorClassName}
         />
         <div className="mt-1 flex justify-between text-sm font-semibold">
           <p className="text-foreground">{targetValue} target</p>
