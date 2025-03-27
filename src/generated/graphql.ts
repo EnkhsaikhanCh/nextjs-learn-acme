@@ -15,6 +15,7 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  DateTime: { input: Date; output: Date; }
 };
 
 export type Course = {
@@ -172,6 +173,7 @@ export type Mutation = {
   createLesson: Lesson;
   createPayment?: Maybe<Payment>;
   createSection?: Maybe<Section>;
+  createSubscriber: SubscribeResponse;
   createTest: Test;
   createUser: RegisterResponse;
   deleteCourse: Scalars['Boolean']['output'];
@@ -213,6 +215,11 @@ export type MutationCreatePaymentArgs = {
 
 export type MutationCreateSectionArgs = {
   input?: InputMaybe<CreateSectionInput>;
+};
+
+
+export type MutationCreateSubscriberArgs = {
+  input: SubscribeInput;
 };
 
 
@@ -514,6 +521,24 @@ export type Section = {
   updatedAt: Scalars['String']['output'];
 };
 
+export type SubscribeInput = {
+  email: Scalars['String']['input'];
+};
+
+export type SubscribeResponse = {
+  __typename?: 'SubscribeResponse';
+  message: Scalars['String']['output'];
+  subscriber?: Maybe<Subscriber>;
+  success: Scalars['Boolean']['output'];
+};
+
+export type Subscriber = {
+  __typename?: 'Subscriber';
+  _id: Scalars['ID']['output'];
+  email: Scalars['String']['output'];
+  subscribedAt: Scalars['DateTime']['output'];
+};
+
 export type Test = {
   __typename?: 'Test';
   _id: Scalars['ID']['output'];
@@ -782,6 +807,13 @@ export type GetSectionsByCourseIdQueryVariables = Exact<{
 
 
 export type GetSectionsByCourseIdQuery = { __typename?: 'Query', getSectionsByCourseId: Array<{ __typename?: 'Section', _id: string, title: string, order: number, lessonId?: Array<{ __typename?: 'Lesson', _id: string, title: string, content?: string | null, videoUrl?: string | null, order: number, isPublished: boolean } | null> | null }> };
+
+export type CreateSubscriberMutationVariables = Exact<{
+  input: SubscribeInput;
+}>;
+
+
+export type CreateSubscriberMutation = { __typename?: 'Mutation', createSubscriber: { __typename?: 'SubscribeResponse', success: boolean, message: string, subscriber?: { __typename?: 'Subscriber', email: string } | null } };
 
 export type GetAllTestQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1967,6 +1999,43 @@ export type GetSectionsByCourseIdQueryHookResult = ReturnType<typeof useGetSecti
 export type GetSectionsByCourseIdLazyQueryHookResult = ReturnType<typeof useGetSectionsByCourseIdLazyQuery>;
 export type GetSectionsByCourseIdSuspenseQueryHookResult = ReturnType<typeof useGetSectionsByCourseIdSuspenseQuery>;
 export type GetSectionsByCourseIdQueryResult = Apollo.QueryResult<GetSectionsByCourseIdQuery, GetSectionsByCourseIdQueryVariables>;
+export const CreateSubscriberDocument = gql`
+    mutation CreateSubscriber($input: SubscribeInput!) {
+  createSubscriber(input: $input) {
+    success
+    message
+    subscriber {
+      email
+    }
+  }
+}
+    `;
+export type CreateSubscriberMutationFn = Apollo.MutationFunction<CreateSubscriberMutation, CreateSubscriberMutationVariables>;
+
+/**
+ * __useCreateSubscriberMutation__
+ *
+ * To run a mutation, you first call `useCreateSubscriberMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateSubscriberMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createSubscriberMutation, { data, loading, error }] = useCreateSubscriberMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateSubscriberMutation(baseOptions?: Apollo.MutationHookOptions<CreateSubscriberMutation, CreateSubscriberMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateSubscriberMutation, CreateSubscriberMutationVariables>(CreateSubscriberDocument, options);
+      }
+export type CreateSubscriberMutationHookResult = ReturnType<typeof useCreateSubscriberMutation>;
+export type CreateSubscriberMutationResult = Apollo.MutationResult<CreateSubscriberMutation>;
+export type CreateSubscriberMutationOptions = Apollo.BaseMutationOptions<CreateSubscriberMutation, CreateSubscriberMutationVariables>;
 export const GetAllTestDocument = gql`
     query GetAllTest {
   getAllTest {

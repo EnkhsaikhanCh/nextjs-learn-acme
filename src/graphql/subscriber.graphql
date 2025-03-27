@@ -1,0 +1,10 @@
+# Mutations
+mutation CreateSubscriber($input: SubscribeInput!) {
+  createSubscriber(input: $input) {
+    success
+    message
+    subscriber {
+      email
+    }
+  }
+}
