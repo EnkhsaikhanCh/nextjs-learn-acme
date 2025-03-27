@@ -12,6 +12,7 @@ import { useGetAllSubscribersQuery } from "@/generated/graphql";
 import { useDebounce } from "use-debounce";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, SearchIcon } from "lucide-react";
+import { MetricCard } from "@/components/dashboard-widgets/MetricCard";
 
 interface Subscriber {
   email: string;
@@ -32,48 +33,11 @@ function getTimeAgo(date: Date): string {
   return `${diffDay} өдрийн өмнө`;
 }
 
-const columns: ColumnDef<Subscriber>[] = [
-  {
-    header: "Email",
-    accessorKey: "email",
-  },
-  {
-    header: "Subscribed At",
-    accessorKey: "subscribedAt",
-    cell: ({ getValue }) => {
-      const date = new Date(getValue() as string | number | Date);
-      return date
-        .toLocaleString("en-CA", {
-          timeZone: "Asia/Ulaanbaatar",
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: false,
-        })
-        .replace(",", "");
-    },
-  },
-  {
-    header: "Хэзээ бүртгүүлсэн?",
-    id: "timeAgo",
-    accessorKey: "subscribedAt",
-    cell: ({ getValue }) => {
-      const raw = new Date(getValue() as string | number | Date);
-      const ulaanbaatar = new Date(
-        raw.toLocaleString("en-US", { timeZone: "Asia/Ulaanbaatar" }),
-      );
-      return getTimeAgo(ulaanbaatar);
-    },
-  },
-];
-
 export default function Page() {
   const [search, setSearch] = useState("");
   const [offset, setOffset] = useState(0);
   const [debouncedSearch] = useDebounce(search, 400);
-  const limit = 10;
+  const limit = 15;
 
   const { data: subscribersData, loading } = useGetAllSubscribersQuery({
     variables: { limit, offset, search: debouncedSearch },
@@ -81,6 +45,48 @@ export default function Page() {
 
   const totalSub = subscribersData?.getAllSubscribers.totalCount || 0;
   const hasNextPage = subscribersData?.getAllSubscribers?.hasNextPage || false;
+
+  const columns: ColumnDef<Subscriber>[] = [
+    {
+      header: "#",
+      id: "rowNumber",
+      cell: ({ row }) => offset + row.index + 1,
+    },
+    {
+      header: "EMAIL",
+      accessorKey: "email",
+    },
+    {
+      header: "DATE",
+      accessorKey: "subscribedAt",
+      cell: ({ getValue }) => {
+        const date = new Date(getValue() as string | number | Date);
+        return date
+          .toLocaleString("en-CA", {
+            timeZone: "Asia/Ulaanbaatar",
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+          })
+          .replace(",", "");
+      },
+    },
+    {
+      header: "AGO",
+      id: "timeAgo",
+      accessorKey: "subscribedAt",
+      cell: ({ getValue }) => {
+        const raw = new Date(getValue() as string | number | Date);
+        const ulaanbaatar = new Date(
+          raw.toLocaleString("en-US", { timeZone: "Asia/Ulaanbaatar" }),
+        );
+        return getTimeAgo(ulaanbaatar);
+      },
+    },
+  ];
 
   const table = useReactTable({
     data: subscribersData?.getAllSubscribers.subscribers || [],
@@ -91,27 +97,40 @@ export default function Page() {
   });
 
   return (
-    <main className="m-4 pb-20">
+    <main className="pb-20">
       <div className="space-y-3">
-        <div className="relative max-w-[300px]">
-          <Input
-            className="peer h-8 ps-9 pe-9"
-            placeholder="Search..."
-            type="search"
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setOffset(0);
-            }}
+        <div className="mt-4 grid grid-cols-1 gap-4 px-4 sm:grid-cols-2 md:grid-cols-3">
+          <MetricCard
+            title="Subscribers"
+            description="Шинээр нэмэгдсэн захиалагчдын тоо"
+            currentValue={totalSub}
+            targetValue={1000}
+            unit="subscribers"
+            colorClass="bg-blue-500"
           />
-          <div className="text-muted-foreground/80 pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 peer-disabled:opacity-50">
-            <SearchIcon size={16} />
+        </div>
+
+        <div className="mt-4 px-4">
+          <div className="relative max-w-[300px]">
+            <Input
+              className="peer h-8 ps-9 pe-9"
+              placeholder="Search..."
+              type="search"
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setOffset(0);
+              }}
+            />
+            <div className="text-muted-foreground/80 pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 peer-disabled:opacity-50">
+              <SearchIcon size={16} />
+            </div>
           </div>
         </div>
 
-        <div className="overflow-x-auto rounded-md border">
+        <div className="overflow-x-auto border-y">
           <table className="min-w-full table-auto text-sm">
-            <thead className="bg-gray-100">
+            <thead className="bg-sidebar">
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (
@@ -162,7 +181,7 @@ export default function Page() {
           </table>
         </div>
 
-        <div className="w-full">
+        <div className="w-full px-4">
           <div className="flex w-full flex-col items-center justify-end gap-4 md:flex-row">
             <Button
               variant={"outline"}
