@@ -19,6 +19,20 @@ export const typeDefs = gql`
     email: String!
   }
 
+  type SubscriberPaginationResult {
+    subscribers: [Subscriber!]!
+    totalCount: Int!
+    hasNextPage: Boolean!
+  }
+
+  extend type Query {
+    getAllSubscribers(
+      limit: Int
+      offset: Int
+      search: String
+    ): SubscriberPaginationResult!
+  }
+
   extend type Mutation {
     createSubscriber(input: SubscribeInput!): SubscribeResponse!
   }
