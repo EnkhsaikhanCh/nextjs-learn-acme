@@ -15,9 +15,6 @@ export default function Home() {
           </div>
           <div className="w-full max-w-md">
             <SubscribeForm />
-            <p className="mt-3 text-xs text-gray-400">
-              Бид таны хувийн мэдээллийг хүндэтгэнэ. Спам илгээхгүй.
-            </p>
           </div>
           <div className="grid w-full max-w-md justify-center gap-2 text-gray-700 sm:grid-cols-2">
             <Link href={"#"} className="w-full">

@@ -1,12 +1,12 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { useState } from "react";
 import { useCreateSubscriberMutation } from "@/generated/graphql";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { AlertCircle, Loader } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
+import { toast } from "sonner";
 
 type FormData = {
   email: string;
@@ -15,9 +15,6 @@ type FormData = {
 export const SubscribeForm = () => {
   const { register, handleSubmit, formState, reset } = useForm<FormData>();
   const [createSubscriber] = useCreateSubscriberMutation();
-  const [message, setMessage] = useState<string | null>(null);
-  const [status, setStatus] = useState<"success" | "error" | null>(null);
-  const [subscribedEmail, setSubscribedEmail] = useState<string | null>(null);
 
   const onSubmit = async (data: FormData) => {
     try {
@@ -30,18 +27,26 @@ export const SubscribeForm = () => {
       });
 
       const result = res.data?.createSubscriber;
+
       if (result?.success) {
-        setStatus("success");
-        setMessage(result.message);
-        setSubscribedEmail(data.email);
+        toast.success("Амжилттай бүртгэгдлээ 🎉", {
+          description: result.message,
+        });
         reset();
       } else {
-        setStatus("error");
-        setMessage("⚠️ " + result?.message);
+        toast.warning("Бүртгэл амжилтгүй", {
+          description: result?.message ?? "Алдааны шалтгаан тодорхойгүй",
+        });
       }
-    } catch {
-      setStatus("error");
-      setMessage("🚨 Unexpected error occurred");
+    } catch (error) {
+      const errorMessage = (error as Error).message;
+      if (errorMessage === "This email is already subscribed") {
+        toast.warning("Энэ бүртгэлтэй имэйл хаяг байна.");
+      } else {
+        toast.error("Алдаа гарлаа", {
+          description: "Сервертэй холбогдоход алдаа гарлаа.",
+        });
+      }
     }
   };
 
@@ -63,19 +68,6 @@ export const SubscribeForm = () => {
           placeholder="Имайл хаяг"
           className="rouned-sm h-12"
         />
-        <AnimatePresence>
-          {formState.errors.email && (
-            <motion.span
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex items-center gap-2 font-semibold text-red-500"
-              role="alert"
-            >
-              <AlertCircle size={16} />
-              <span className="text-sm">{formState.errors.email.message}</span>
-            </motion.span>
-          )}
-        </AnimatePresence>
 
         <Button
           type="submit"
@@ -91,22 +83,23 @@ export const SubscribeForm = () => {
             "Бүртгүүлэх"
           )}
         </Button>
-
-        {subscribedEmail && status === "success" && (
-          <p className="text-xs text-gray-500">
-            Subscribed as: {subscribedEmail}
-          </p>
-        )}
-        {message && (
-          <div
-            className={`rounded p-2 text-sm ${
-              status === "success" ? "text-green-600" : "text-red-600"
-            }`}
-          >
-            {message}
-          </div>
-        )}
       </form>
+      <AnimatePresence>
+        {formState.errors.email && (
+          <motion.span
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-1.5 flex items-center gap-2 font-semibold text-red-500"
+            role="alert"
+          >
+            <AlertCircle size={16} />
+            <span className="text-sm">{formState.errors.email.message}</span>
+          </motion.span>
+        )}
+      </AnimatePresence>
+      <p className="mt-2 text-xs text-gray-400">
+        Бид таны хувийн мэдээллийг хүндэтгэнэ. Спам илгээхгүй.
+      </p>
     </div>
   );
 };

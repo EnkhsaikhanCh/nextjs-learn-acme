@@ -12,7 +12,6 @@ export async function middleware(request: NextRequest) {
 
   // Орчны хувьсагч ашиглан launch хийгдсэн эсэхийг шалгах
   const isSiteLaunched = process.env.SITE_LAUNCHED === "true";
-  console.log("SITE_LAUNCHED:", process.env.SITE_LAUNCHED);
 
   // Хэрэв сайт launch хийгдээгүй бол зөвхөн home page ажиллана
   if (!isSiteLaunched) {
