@@ -59,6 +59,7 @@ const config: Config = {
     "src/components/PasswordInput.tsx",
     "src/components/LoadingScreen.tsx",
     "src/components/active-theme.tsx",
+    "src/components/SubscribeForm.tsx",
 
     // src/app
     "src/app/admin",
@@ -80,6 +81,7 @@ const config: Config = {
     "src/utils/validateLessonInput.ts",
     "src/utils/sanitize.ts",
     "src/utils/validation.ts",
+    "src/utils/slug-to-label.ts",
 
     // src/app/(auth)
     "src/app/\\(auth\\)/forgot-password",

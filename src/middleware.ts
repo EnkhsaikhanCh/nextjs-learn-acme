@@ -10,6 +10,17 @@ export async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
+  // Орчны хувьсагч ашиглан launch хийгдсэн эсэхийг шалгах
+  const isSiteLaunched = process.env.SITE_LAUNCHED === "true";
+
+  // Хэрэв сайт launch хийгдээгүй бол зөвхөн home page ажиллана
+  if (!isSiteLaunched) {
+    if (pathname !== "/") {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+    return NextResponse.next(); // Home page-ийг үргэлжлүүлнэ
+  }
+
   // Нэвтрээгүй хэрэглэгчдийг `/login` руу чиглүүлэх
   if (!token) {
     if (pathname.startsWith("/admin") || pathname.startsWith("/dashboard")) {
@@ -47,5 +58,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/dashboard/:path*", "/login", "/signup"], // Middleware ажиллах замууд
+  matcher: ["/admin/:path*", "/dashboard/:path*", "/login", "/signup", "/"], // Middleware ажиллах замууд
 };

@@ -1,0 +1,23 @@
+# Mutations
+mutation CreateSubscriber($input: SubscribeInput!) {
+  createSubscriber(input: $input) {
+    success
+    message
+    subscriber {
+      email
+    }
+  }
+}
+
+# Queries
+query GetAllSubscribers($limit: Int, $offset: Int, $search: String) {
+  getAllSubscribers(limit: $limit, offset: $offset, search: $search) {
+    subscribers {
+      _id
+      email
+      subscribedAt
+    }
+    totalCount
+    hasNextPage
+  }
+}
