@@ -59,6 +59,7 @@ const config: Config = {
     "src/components/PasswordInput.tsx",
     "src/components/LoadingScreen.tsx",
     "src/components/active-theme.tsx",
+    "src/components/SubscribeForm.tsx",
 
     // src/app
     "src/app/admin",
