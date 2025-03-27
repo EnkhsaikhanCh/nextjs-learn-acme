@@ -105,8 +105,8 @@ export default function Page() {
             description="Шинээр нэмэгдсэн захиалагчдын тоо"
             currentValue={totalSub}
             targetValue={1000}
-            unit="subscribers"
-            colorClass="bg-blue-500"
+            valueFormatter={(v) => `${v} subscribers`}
+            indicatorColor="blue"
           />
         </div>
 
