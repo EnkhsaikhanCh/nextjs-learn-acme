@@ -81,6 +81,7 @@ const config: Config = {
     "src/utils/validateLessonInput.ts",
     "src/utils/sanitize.ts",
     "src/utils/validation.ts",
+    "src/utils/slug-to-label.ts",
 
     // src/app/(auth)
     "src/app/\\(auth\\)/forgot-password",
