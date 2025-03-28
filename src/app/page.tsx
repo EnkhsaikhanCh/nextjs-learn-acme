@@ -17,13 +17,23 @@ export default function Home() {
             <SubscribeForm />
           </div>
           <div className="grid w-full max-w-md justify-center gap-2 text-gray-700 sm:grid-cols-2">
-            <Link href={"#"} className="w-full">
+            <Link
+              href={"https://www.facebook.com/nomadtech.tips/"}
+              className="w-full"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <Button variant={"secondary"} className="w-full rounded-full">
                 <Facebook className="mr-2 h-4 w-4 text-blue-500" />
                 @nomadtech.tips
               </Button>
             </Link>
-            <Link href={"#"} className="w-full">
+            <Link
+              href={"https://www.instagram.com/nomadtech.tips"}
+              className="w-full"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <Button variant={"secondary"} className="w-full rounded-full">
                 <Instagram className="mr-2 h-4 w-4 text-[#E1306C]" />
                 @nomadtech.tips

@@ -71,7 +71,7 @@ export const SubscribeForm = () => {
 
         <Button
           type="submit"
-          className="h-12 rounded-sm"
+          className="text-foreground h-12 rounded-sm bg-yellow-400 hover:bg-yellow-300"
           disabled={formState.isSubmitting}
         >
           {formState.isSubmitting ? (
