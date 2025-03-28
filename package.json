@@ -17,6 +17,7 @@
     "@apollo/server": "^4.11.2",
     "@as-integrations/next": "^3.2.0",
     "@auth/mongodb-adapter": "^3.7.4",
+    "@faker-js/faker": "^9.6.0",
     "@graphql-codegen/cli": "^5.0.3",
     "@graphql-codegen/typescript": "^4.1.2",
     "@graphql-codegen/typescript-operations": "^4.4.0",

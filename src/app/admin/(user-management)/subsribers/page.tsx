@@ -96,6 +96,9 @@ export default function Page() {
     pageCount: Math.ceil(totalSub / limit),
   });
 
+  const formatNumber = (num: number) =>
+    new Intl.NumberFormat("en-US").format(num);
+
   return (
     <main className="pb-20">
       <div className="space-y-3">
@@ -105,7 +108,7 @@ export default function Page() {
             description="Шинээр нэмэгдсэн захиалагчдын тоо"
             currentValue={totalSub}
             targetValue={1000}
-            valueFormatter={(v) => `${v} subscribers`}
+            valueFormatter={(v) => `${formatNumber(v)} subscribers`}
             indicatorColor="blue"
           />
         </div>

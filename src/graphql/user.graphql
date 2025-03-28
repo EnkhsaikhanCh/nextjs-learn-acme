@@ -18,16 +18,16 @@ mutation CreateUser($input: RegisterInput!) {
 query GetAllUser(
   $limit: Int
   $offset: Int
-  $search: String
   $sortBy: String
   $sortOrder: String
+  $filter: UserFilterInput
 ) {
   getAllUser(
     limit: $limit
     offset: $offset
-    search: $search
     sortBy: $sortBy
     sortOrder: $sortOrder
+    filter: $filter
   ) {
     users {
       _id
@@ -36,6 +36,7 @@ query GetAllUser(
       role
       isVerified
       createdAt
+      updatedAt
     }
     totalCount
     hasNextPage

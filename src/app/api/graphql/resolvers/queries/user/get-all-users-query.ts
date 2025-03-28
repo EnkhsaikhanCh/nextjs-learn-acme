@@ -7,20 +7,35 @@ import { requireAuthAndRoles } from "@/lib/auth-utils";
 interface GetAllUserArgs {
   limit?: number;
   offset?: number;
-  search?: string;
   sortBy?: string;
   sortOrder?: string;
+  filter?: {
+    search?: string;
+    role?: string;
+    isVerified?: boolean;
+  };
 }
 
-const buildUserQuery = (search?: string) =>
-  search
-    ? {
-        $or: [
-          { email: { $regex: search, $options: "i" } },
-          { studentId: { $regex: search, $options: "i" } },
-        ],
-      }
-    : {};
+const buildUserQuery = (filter?: GetAllUserArgs["filter"]) => {
+  const query: any = {};
+
+  if (filter?.search) {
+    query.$or = [
+      { email: { $regex: filter.search, $options: "i" } },
+      { studentId: { $regex: filter.search, $options: "i" } },
+    ];
+  }
+
+  if (filter?.role) {
+    query.role = filter.role.toUpperCase();
+  }
+
+  if (typeof filter?.isVerified === "boolean") {
+    query.isVerified = filter.isVerified;
+  }
+
+  return query;
+};
 
 export const getAllUser = async (
   _: unknown,
@@ -33,9 +48,9 @@ export const getAllUser = async (
   const {
     limit = 10,
     offset = 0,
-    search,
     sortBy = "createdAt",
     sortOrder = "desc",
+    filter,
   } = args;
 
   const maxLimit = Math.min(limit, 100);
@@ -45,7 +60,7 @@ export const getAllUser = async (
     : "createdAt";
 
   try {
-    const query = buildUserQuery(search);
+    const query = buildUserQuery(filter);
     const sortDirection = sortOrder === "asc" ? 1 : -1;
 
     const [users, totalCount] = await Promise.all([
