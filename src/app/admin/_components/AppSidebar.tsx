@@ -49,8 +49,8 @@ const items = [
     url: "/admin/user-management",
     icon: BookUser,
     items: [
-      { title: "Users", url: "/admin/user-management" },
-      { title: "Subsribers", url: "/admin/user-management/subsribers" },
+      { title: "Users", url: "/admin/users" },
+      { title: "Subsribers", url: "/admin/subsribers" },
     ],
   },
   {

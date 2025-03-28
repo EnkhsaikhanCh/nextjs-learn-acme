@@ -7,12 +7,12 @@ import {
   getCoreRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import { Input } from "@/components/ui/input";
 import { useGetAllSubscribersQuery } from "@/generated/graphql";
 import { useDebounce } from "use-debounce";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight, SearchIcon } from "lucide-react";
+import { Loader } from "lucide-react";
 import { MetricCard } from "@/components/dashboard-widgets/MetricCard";
+import { SearchInput } from "@/components/SearchInput";
+import { TablePagination } from "@/components/TablePagination";
 
 interface Subscriber {
   email: string;
@@ -44,7 +44,6 @@ export default function Page() {
   });
 
   const totalSub = subscribersData?.getAllSubscribers.totalCount || 0;
-  const hasNextPage = subscribersData?.getAllSubscribers?.hasNextPage || false;
 
   const columns: ColumnDef<Subscriber>[] = [
     {
@@ -96,6 +95,9 @@ export default function Page() {
     pageCount: Math.ceil(totalSub / limit),
   });
 
+  const formatNumber = (num: number) =>
+    new Intl.NumberFormat("en-US").format(num);
+
   return (
     <main className="pb-20">
       <div className="space-y-3">
@@ -105,27 +107,20 @@ export default function Page() {
             description="Шинээр нэмэгдсэн захиалагчдын тоо"
             currentValue={totalSub}
             targetValue={1000}
-            valueFormatter={(v) => `${v} subscribers`}
+            valueFormatter={(v) => `${formatNumber(v)} subscribers`}
             indicatorColor="blue"
           />
         </div>
 
         <div className="mt-4 px-4">
-          <div className="relative max-w-[300px]">
-            <Input
-              className="peer h-8 ps-9 pe-9"
-              placeholder="Search..."
-              type="search"
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setOffset(0);
-              }}
-            />
-            <div className="text-muted-foreground/80 pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 peer-disabled:opacity-50">
-              <SearchIcon size={16} />
-            </div>
-          </div>
+          <SearchInput
+            value={search}
+            onChange={(value) => {
+              setSearch(value);
+              setOffset(0);
+            }}
+            placeholder="Search subscribers..."
+          />
         </div>
 
         <div className="overflow-x-auto border-y">
@@ -163,7 +158,10 @@ export default function Page() {
               {loading && (
                 <tr>
                   <td colSpan={columns.length} className="p-4 text-center">
-                    Loading...
+                    <div className="flex items-center justify-center gap-3">
+                      Loading...
+                      <Loader className="h-4 w-4 animate-spin" />
+                    </div>
                   </td>
                 </tr>
               )}
@@ -182,32 +180,12 @@ export default function Page() {
         </div>
 
         <div className="w-full px-4">
-          <div className="flex w-full flex-col items-center justify-end gap-4 md:flex-row">
-            <Button
-              variant={"outline"}
-              onClick={() => setOffset(Math.max(0, offset - limit))}
-              disabled={offset === 0}
-              className="disabled:opacity-50"
-              size={"sm"}
-            >
-              <ArrowLeft />
-            </Button>
-
-            <p className="text-center text-sm text-gray-500">
-              Showing {offset + 1}–{Math.min(offset + limit, totalSub)} of{" "}
-              {totalSub} subscribers
-            </p>
-
-            <Button
-              variant={"outline"}
-              onClick={() => setOffset(offset + limit)}
-              disabled={!hasNextPage}
-              className="disabled:opacity-50"
-              size={"sm"}
-            >
-              <ArrowRight />
-            </Button>
-          </div>
+          <TablePagination
+            offset={offset}
+            limit={limit}
+            totalCount={totalSub}
+            onPageChange={(newOffset) => setOffset(newOffset)}
+          />
         </div>
       </div>
     </main>

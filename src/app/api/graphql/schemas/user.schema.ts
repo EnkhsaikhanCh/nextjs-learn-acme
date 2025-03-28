@@ -5,11 +5,11 @@ export const typeDefs = gql`
   type User {
     _id: ID!
     email: String!
-    studentId: String!
+    studentId: String
     role: Role!
     isVerified: Boolean!
-    createdAt: String!
-    updatedAt: String!
+    createdAt: Date!
+    updatedAt: Date!
   }
 
   enum Role {
@@ -29,15 +29,21 @@ export const typeDefs = gql`
     getAllUser(
       limit: Int
       offset: Int
-      search: String
       sortBy: String
       sortOrder: String
+      filter: UserFilterInput
     ): UserPaginationResult!
   }
 
   input RegisterInput {
     email: String!
     password: String!
+  }
+
+  input UserFilterInput {
+    search: String
+    role: Role
+    isVerified: Boolean
   }
 
   type RegisterResponse {

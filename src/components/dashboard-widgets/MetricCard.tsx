@@ -55,7 +55,9 @@ export const MetricCard = ({
           indicatorClassName={indicatorClassName}
         />
         <div className="mt-1 flex justify-between text-sm font-semibold">
-          <p className="text-foreground">{targetValue} target</p>
+          <p className="text-foreground">
+            {valueFormatter(targetValue)} target
+          </p>
           <p className="text-muted-foreground">
             {percent.toFixed(1)}% complete
           </p>

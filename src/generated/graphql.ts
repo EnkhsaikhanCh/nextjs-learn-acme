@@ -406,9 +406,9 @@ export type QueryGetAllSubscribersArgs = {
 
 
 export type QueryGetAllUserArgs = {
+  filter?: InputMaybe<UserFilterInput>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  search?: InputMaybe<Scalars['String']['input']>;
   sortBy?: InputMaybe<Scalars['String']['input']>;
   sortOrder?: InputMaybe<Scalars['String']['input']>;
 };
@@ -603,12 +603,18 @@ export type UpdateUserInput = {
 export type User = {
   __typename?: 'User';
   _id: Scalars['ID']['output'];
-  createdAt: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
   email: Scalars['String']['output'];
   isVerified: Scalars['Boolean']['output'];
   role: Role;
-  studentId: Scalars['String']['output'];
-  updatedAt: Scalars['String']['output'];
+  studentId?: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type UserFilterInput = {
+  isVerified?: InputMaybe<Scalars['Boolean']['input']>;
+  role?: InputMaybe<Role>;
+  search?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UserPaginationResult = {
@@ -871,25 +877,25 @@ export type CreateUserMutationVariables = Exact<{
 }>;
 
 
-export type CreateUserMutation = { __typename?: 'Mutation', createUser: { __typename?: 'RegisterResponse', message: string, user: { __typename?: 'User', _id: string, email: string, studentId: string, role: Role, isVerified: boolean } } };
+export type CreateUserMutation = { __typename?: 'Mutation', createUser: { __typename?: 'RegisterResponse', message: string, user: { __typename?: 'User', _id: string, email: string, studentId?: string | null, role: Role, isVerified: boolean } } };
 
 export type GetAllUserQueryVariables = Exact<{
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  search?: InputMaybe<Scalars['String']['input']>;
   sortBy?: InputMaybe<Scalars['String']['input']>;
   sortOrder?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<UserFilterInput>;
 }>;
 
 
-export type GetAllUserQuery = { __typename?: 'Query', getAllUser: { __typename?: 'UserPaginationResult', totalCount: number, hasNextPage: boolean, users: Array<{ __typename?: 'User', _id: string, email: string, studentId: string, role: Role, isVerified: boolean, createdAt: string }> } };
+export type GetAllUserQuery = { __typename?: 'Query', getAllUser: { __typename?: 'UserPaginationResult', totalCount: number, hasNextPage: boolean, users: Array<{ __typename?: 'User', _id: string, email: string, studentId?: string | null, role: Role, isVerified: boolean, createdAt: Date, updatedAt: Date }> } };
 
 export type GetUserByIdQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
 
-export type GetUserByIdQuery = { __typename?: 'Query', getUserById: { __typename?: 'User', _id: string, email: string, studentId: string, role: Role, isVerified: boolean } };
+export type GetUserByIdQuery = { __typename?: 'Query', getUserById: { __typename?: 'User', _id: string, email: string, studentId?: string | null, role: Role, isVerified: boolean } };
 
 
 export const CreateCourseDocument = gql`
@@ -2292,13 +2298,13 @@ export type CreateUserMutationHookResult = ReturnType<typeof useCreateUserMutati
 export type CreateUserMutationResult = Apollo.MutationResult<CreateUserMutation>;
 export type CreateUserMutationOptions = Apollo.BaseMutationOptions<CreateUserMutation, CreateUserMutationVariables>;
 export const GetAllUserDocument = gql`
-    query GetAllUser($limit: Int, $offset: Int, $search: String, $sortBy: String, $sortOrder: String) {
+    query GetAllUser($limit: Int, $offset: Int, $sortBy: String, $sortOrder: String, $filter: UserFilterInput) {
   getAllUser(
     limit: $limit
     offset: $offset
-    search: $search
     sortBy: $sortBy
     sortOrder: $sortOrder
+    filter: $filter
   ) {
     users {
       _id
@@ -2307,6 +2313,7 @@ export const GetAllUserDocument = gql`
       role
       isVerified
       createdAt
+      updatedAt
     }
     totalCount
     hasNextPage
@@ -2328,9 +2335,9 @@ export const GetAllUserDocument = gql`
  *   variables: {
  *      limit: // value for 'limit'
  *      offset: // value for 'offset'
- *      search: // value for 'search'
  *      sortBy: // value for 'sortBy'
  *      sortOrder: // value for 'sortOrder'
+ *      filter: // value for 'filter'
  *   },
  * });
  */
