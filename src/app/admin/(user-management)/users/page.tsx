@@ -1,15 +1,10 @@
 "use client";
 
 import { MetricCard } from "@/components/dashboard-widgets/MetricCard";
+import { SearchInput } from "@/components/SearchInput";
+import { SortSelect } from "@/components/SortSelect";
+import { TablePagination } from "@/components/TablePagination";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Role, useGetAllUserQuery, User } from "@/generated/graphql";
 import {
   ColumnDef,
@@ -17,7 +12,7 @@ import {
   useReactTable,
   flexRender,
 } from "@tanstack/react-table";
-import { ArrowLeft, ArrowRight, SearchIcon } from "lucide-react";
+import { Inbox, Loader, TriangleAlert } from "lucide-react";
 import { useState } from "react";
 import { useDebounce } from "use-debounce";
 
@@ -111,7 +106,7 @@ export default function Page() {
   });
 
   return (
-    <main className="pb-20">
+    <main className="space-y-4 pb-20">
       <div className="mt-4 grid grid-cols-1 gap-4 px-4 sm:grid-cols-2 md:grid-cols-3">
         <MetricCard
           title="Total Users"
@@ -122,23 +117,17 @@ export default function Page() {
           indicatorColor="blue"
         />
       </div>
-      {/* Search input and refresh button */}
-      <div className="mb-4 flex w-full items-center justify-between gap-2 px-4 pt-4">
+      <div className="mb-3 flex w-full items-center justify-between gap-2 px-4">
+        {/* Search input and refresh button */}
         <div className="flex gap-2">
-          <div className="relative max-w-[300px]">
-            <Input
-              className="peer h-9 ps-9 pe-9"
-              placeholder="Search users..."
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setOffset(0); // Reset to first page on search
-              }}
-            />
-            <div className="text-muted-foreground/80 pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 peer-disabled:opacity-50">
-              <SearchIcon size={16} />
-            </div>
-          </div>
+          <SearchInput
+            value={search}
+            onChange={(value) => {
+              setSearch(value);
+              setOffset(0);
+            }}
+            placeholder="Search users..."
+          />
           <Button onClick={() => refetch()} variant="outline" size="sm">
             Refresh
           </Button>
@@ -146,60 +135,53 @@ export default function Page() {
 
         {/* Sorting and filter controls */}
         <div className="flex items-center gap-2">
-          <Select
-            onValueChange={(value) => {
+          <SortSelect
+            value={sortBy}
+            onChange={(value) => {
               setSortBy(value);
               setOffset(0); // Reset to first page on sort change
             }}
-            value={sortBy}
-          >
-            <SelectTrigger className="min-w-[180px]">
-              <SelectValue placeholder="Sort by" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="email">Email</SelectItem>
-              <SelectItem value="role">Role</SelectItem>
-              <SelectItem value="createdAt">Created Date</SelectItem>
-            </SelectContent>
-          </Select>
+            options={[
+              { value: "email", label: "Email" },
+              { value: "role", label: "Role" },
+              { value: "createdAt", label: "Created Date" },
+            ]}
+          />
 
-          <Select
+          <SortSelect
             value={roleFilter}
-            onValueChange={(value) => {
+            onChange={(value) => {
               setRoleFilter(value as Role | "ALL");
               setOffset(0);
             }}
-          >
-            <SelectTrigger className="min-w-[140px]">
-              <SelectValue placeholder="Filter role" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="ALL">All Roles</SelectItem>
-              <SelectItem value="STUDENT">Student</SelectItem>
-              <SelectItem value="INSTRUCTOR">Instructor</SelectItem>
-              <SelectItem value="ADMIN">Admin</SelectItem>
-            </SelectContent>
-          </Select>
+            options={[
+              { value: "ALL", label: "All Roles" },
+              { value: "STUDENT", label: "Student" },
+              { value: "INSTRUCTOR", label: "Instructor" },
+              { value: "ADMIN", label: "Admin" },
+            ]}
+          />
 
-          <Select
+          <SortSelect
             value={sortOrder}
-            onValueChange={(value) => {
+            onChange={(value) => {
               setSortOrder(value); // Update sort order without resetting offset
             }}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Sort order" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="asc">Ascending</SelectItem>
-              <SelectItem value="desc">Descending</SelectItem>
-            </SelectContent>
-          </Select>
+            options={[
+              { value: "asc", label: "Ascending" },
+              { value: "desc", label: "Descending" },
+            ]}
+          />
         </div>
       </div>
 
       {/* Error display */}
-      {error && <div className="p-4 text-red-500">Error: {error.message}</div>}
+      {error && (
+        <div className="flex items-center gap-3 px-4 text-red-500">
+          <TriangleAlert className="h-5 w-5" />
+          Error: {error.message}
+        </div>
+      )}
 
       {/* Table */}
       <div className="overflow-x-auto border-y">
@@ -236,7 +218,10 @@ export default function Page() {
             {loading && (
               <tr>
                 <td colSpan={columns.length} className="p-4 text-center">
-                  Loading...
+                  <div className="flex items-center justify-center gap-3">
+                    Loading...
+                    <Loader className="h-4 w-4 animate-spin" />
+                  </div>
                 </td>
               </tr>
             )}
@@ -246,7 +231,10 @@ export default function Page() {
                   colSpan={columns.length}
                   className="p-4 text-center text-gray-500"
                 >
-                  No users found.
+                  <div className="flex items-center justify-center gap-3">
+                    <Inbox className="h-4 w-4" />
+                    No users found.
+                  </div>
                 </td>
               </tr>
             )}
@@ -256,30 +244,12 @@ export default function Page() {
 
       {/* Pagination controls */}
       <div className="w-full px-4">
-        <div className="mt-4 flex w-full flex-row items-center justify-end gap-4">
-          <Button
-            variant="outline"
-            onClick={() => setOffset(Math.max(0, offset - limit))}
-            disabled={offset === 0}
-            size={"sm"}
-          >
-            <ArrowLeft size={16} />
-          </Button>
-
-          <span className="text-sm text-gray-600">
-            Showing {offset + 1}–{Math.min(offset + limit, totalUsers)} of{" "}
-            {totalUsers}
-          </span>
-
-          <Button
-            variant="outline"
-            onClick={() => setOffset(offset + limit)}
-            disabled={offset + limit >= totalUsers}
-            size={"sm"}
-          >
-            <ArrowRight size={16} />
-          </Button>
-        </div>
+        <TablePagination
+          offset={offset}
+          limit={limit}
+          totalCount={totalUsers}
+          onPageChange={(newOffset) => setOffset(newOffset)}
+        />
       </div>
     </main>
   );
