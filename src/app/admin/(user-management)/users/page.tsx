@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Role, useGetAllUserQuery } from "@/generated/graphql";
+import { Role, useGetAllUserQuery, User } from "@/generated/graphql";
 import {
   ColumnDef,
   getCoreRowModel,
@@ -49,7 +49,7 @@ export default function Page() {
   });
 
   // Define table columns
-  const columns: ColumnDef<any>[] = [
+  const columns: ColumnDef<User>[] = [
     {
       header: "#",
       id: "rowNumber",

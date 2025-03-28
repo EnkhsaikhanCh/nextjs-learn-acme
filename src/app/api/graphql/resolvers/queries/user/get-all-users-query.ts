@@ -3,6 +3,7 @@ import { User } from "@/generated/graphql";
 import { UserModel } from "../../../models";
 import { GraphQLError } from "graphql";
 import { requireAuthAndRoles } from "@/lib/auth-utils";
+import { FilterQuery } from "mongoose";
 
 interface GetAllUserArgs {
   limit?: number;
@@ -16,8 +17,10 @@ interface GetAllUserArgs {
   };
 }
 
-const buildUserQuery = (filter?: GetAllUserArgs["filter"]) => {
-  const query: any = {};
+const buildUserQuery = (
+  filter?: GetAllUserArgs["filter"],
+): FilterQuery<User> => {
+  const query: FilterQuery<User> = {};
 
   if (filter?.search) {
     query.$or = [
