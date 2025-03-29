@@ -21,7 +21,7 @@ import {
   PaymentStatus,
   useUpdatePaymentStatusMutation,
 } from "@/generated/graphql";
-import { EllipsisVertical, ListCheck, ListTodo, Loader } from "lucide-react";
+import { ListTodo, Loader } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { InfoItem } from "./InfoItem";
