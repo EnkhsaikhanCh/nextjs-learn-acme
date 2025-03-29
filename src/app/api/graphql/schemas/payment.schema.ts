@@ -11,8 +11,8 @@ export const typeDefs = gql`
     status: PaymentStatus!
     paymentMethod: PaymentMethod!
     refundReason: String
-    createdAt: String!
-    updatedAt: String!
+    createdAt: Date!
+    updatedAt: Date
   }
 
   enum PaymentStatus {
@@ -29,8 +29,19 @@ export const typeDefs = gql`
     OTHER
   }
 
+  type PaymentPaginationResult {
+    payments: [Payment!]!
+    totalCount: Int!
+    totalAmount: Float!
+    hasNextPage: Boolean!
+  }
+
   type Query {
-    getAllPayments: [Payment]
+    getAllPayments(
+      limit: Int
+      offset: Int
+      search: String
+    ): PaymentPaginationResult!
     getPaymentById(_id: ID!): Payment
     getPaymentsByUser(userId: ID!): [Payment]
     getPaymentByUserAndCourse(userId: ID!, courseId: ID!): Payment

@@ -8,8 +8,8 @@ export const typeDefs = gql`
     studentId: String
     role: Role!
     isVerified: Boolean!
-    createdAt: Date!
-    updatedAt: Date!
+    createdAt: Date
+    updatedAt: Date
   }
 
   enum Role {
