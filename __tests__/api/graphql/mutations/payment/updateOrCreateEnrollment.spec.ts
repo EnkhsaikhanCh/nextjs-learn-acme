@@ -1,9 +1,9 @@
 import { updateOrCreateEnrollment } from "../../../../../src/app/api/graphql/resolvers/mutations/payment/updateOrCreateEnrollment";
-import { EnrollmentModel } from "../../../../../src/app/api/graphql/models";
+import { EnrollmentModel } from "../../../../../src/app/api/graphql/models/enrollment.model";
 import { createEnrollment } from "../../../../../src/app/api/graphql/resolvers/mutations/enrollment/create-enrollment";
 
 // Mock EnrollmentModel and createEnrollment
-jest.mock("../../../../../src/app/api/graphql/models", () => ({
+jest.mock("../../../../../src/app/api/graphql/models/enrollment.model", () => ({
   EnrollmentModel: {
     findOne: jest.fn(),
   },
