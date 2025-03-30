@@ -23,8 +23,8 @@ describe("getAllSubscribers", () => {
     role: Role.Admin,
     studentId: "",
     isVerified: true,
-    createdAt: "",
-    updatedAt: "",
+    createdAt: new Date(),
+    updatedAt: new Date(),
   };
 
   beforeEach(() => {
