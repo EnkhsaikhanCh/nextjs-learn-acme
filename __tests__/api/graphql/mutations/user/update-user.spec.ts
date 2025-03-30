@@ -30,8 +30,8 @@ describe("updateUser mutation", () => {
     role: Role.Student,
     isVerified: true,
     studentId: "student-id-123",
-    createdAt: "",
-    updatedAt: "",
+    createdAt: new Date(),
+    updatedAt: new Date(),
   };
 
   const adminUser: User = {
@@ -40,8 +40,8 @@ describe("updateUser mutation", () => {
     role: Role.Admin,
     isVerified: true,
     studentId: "admin-id-123",
-    createdAt: "",
-    updatedAt: "",
+    createdAt: new Date(),
+    updatedAt: new Date(),
   };
 
   const contextStudent = { user: studentUser };

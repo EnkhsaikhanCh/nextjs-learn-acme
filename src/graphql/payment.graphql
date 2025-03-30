@@ -16,23 +16,28 @@ mutation UpdatePaymentStatus(
 }
 
 # Query
-query GetAllPayments {
-  getAllPayments {
-    _id
-    userId {
+query GetAllPayments($limit: Int, $offset: Int, $filter: PaymentFilterInput) {
+  getAllPayments(limit: $limit, offset: $offset, filter: $filter) {
+    payments {
       _id
-      email
+      userId {
+        _id
+        email
+      }
+      courseId {
+        _id
+        title
+      }
+      amount
+      transactionNote
+      status
+      paymentMethod
+      refundReason
+      createdAt
     }
-    courseId {
-      _id
-      title
-    }
-    amount
-    transactionNote
-    status
-    paymentMethod
-    refundReason
-    createdAt
+    totalCount
+    totalAmount
+    hasNextPage
   }
 }
 

@@ -10,11 +10,15 @@ interface InfoItemProps {
 export function InfoItem({ label, value, isBadge = false }: InfoItemProps) {
   return (
     <div>
-      <p className="text-xs font-medium uppercase text-gray-500">{label}</p>
+      <p className="dark:text- text-xs font-medium text-gray-500 uppercase">
+        {label}
+      </p>
       {isBadge ? (
         <Badge className={getBadgeColor(value)}>{value || "N/A"}</Badge>
       ) : (
-        <p className="text-sm font-semibold text-gray-800">{value || "N/A"}</p>
+        <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">
+          {value || "N/A"}
+        </p>
       )}
     </div>
   );

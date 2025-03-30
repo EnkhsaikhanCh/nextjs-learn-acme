@@ -1,217 +1,287 @@
 "use client";
 
-import * as React from "react";
+import { SearchInput } from "@/components/SearchInput";
+import { TablePagination } from "@/components/TablePagination";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Payment,
   PaymentStatus,
   useGetAllPaymentsQuery,
 } from "@/generated/graphql";
-import { useState, useMemo } from "react";
+import { formatTimeAgo } from "@/utils/format-time-ago";
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { LoadingOverlay } from "@/components/LoadingOverlay";
-import { Badge } from "@/components/ui/badge";
+  createColumnHelper,
+  flexRender,
+  getCoreRowModel,
+  Row,
+  useReactTable,
+} from "@tanstack/react-table";
+import { Inbox, LineChart, Loader, TriangleAlert } from "lucide-react";
+import { useState } from "react";
+import { useDebounce } from "use-debounce";
 import { UpdatePaymentStatus } from "./_components/UpdatePaymentStatus";
+import { SortSelect } from "@/components/SortSelect";
 
-// 1. Статусын жагсаалтыг централизовсон байдлаар зарлая.
-// (Хэрэв олон газар давтаж бичих шаардлагатай бол ийм байдлаар тодорхойлвол тохиромжтой.)
-const PAYMENT_STATUS_OPTIONS: { label: string; value: PaymentStatus }[] = [
-  { label: "Хүлээгдэж байна", value: PaymentStatus.Pending },
-  { label: "Амжилттай", value: PaymentStatus.Approved },
-  { label: "Амжилтгүй", value: PaymentStatus.Failed },
-  { label: "Буцаалт хийгдсэн", value: PaymentStatus.Refunded },
-];
+export default function Page() {
+  const [search, setSearch] = useState<string>("");
+  const [offset, setOffset] = useState<number>(0);
+  const [statusFilter, setStatusFilter] = useState<PaymentStatus | "ALL">(
+    "ALL",
+  );
+  const [debouncedSearch] = useDebounce(search, 400);
+  const limit = 15;
 
-// 2. Огнооны зөрүүг тооцох тусдаа функц
-function getTimeDiffDescription(createdAt?: string | number | null) {
-  if (!createdAt) return "Мэдээлэл байхгүй";
-
-  const ts = Number(createdAt);
-  if (isNaN(ts)) return "Мэдээлэл байхгүй";
-
-  const createdTime = new Date(ts);
-  const now = new Date();
-  const diffInMs = now.getTime() - createdTime.getTime();
-  const diffInMinutes = Math.floor(diffInMs / 60000);
-
-  if (diffInMinutes < 1) return "Дөнгөж сая";
-  if (diffInMinutes < 60) return `${diffInMinutes} минутын өмнө`;
-
-  const diffInHours = Math.floor(diffInMinutes / 60);
-  if (diffInHours < 24) return `${diffInHours} цагийн өмнө`;
-
-  const diffInDays = Math.floor(diffInHours / 24);
-  return `${diffInDays} өдрийн өмнө`;
-}
-
-// 3. Огноог "mn-MN" хэлбэрээр форматлах функц
-function formatMongolianDateString(dateValue?: string | number | null) {
-  if (!dateValue) return "Мэдээлэл байхгүй";
-
-  const ts = Number(dateValue);
-  if (isNaN(ts)) return "Мэдээлэл байхгүй";
-
-  return new Intl.DateTimeFormat("mn-MN", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    timeZone: "Asia/Ulaanbaatar",
-    timeZoneName: "short",
-  }).format(new Date(ts));
-}
-
-export default function PaymentManagement() {
-  const { data, loading, error, refetch } = useGetAllPaymentsQuery();
-  const [selectedStatus, setSelectedStatus] = useState<string>(() => {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem("selectedStatus") || "ALL"; // Persist state across refresh
-    }
-    return "ALL";
+  const {
+    data: allPaymentsData,
+    loading,
+    error,
+    refetch,
+  } = useGetAllPaymentsQuery({
+    variables: {
+      limit,
+      offset,
+      filter: {
+        search: debouncedSearch,
+        status: statusFilter !== "ALL" ? statusFilter : undefined,
+      },
+    },
   });
 
-  const payments = useMemo(
-    () => data?.getAllPayments || [],
-    [data?.getAllPayments],
-  );
+  const columnHelper = createColumnHelper<Payment>();
 
-  // useMemo ашиглаж, status-ээр шүүх хэсгээс илүү ашигтай болгож болно.
-  const filteredPayments = useMemo(() => {
-    if (selectedStatus === "ALL") {
-      return payments;
-    }
-    return payments.filter(
-      (payment) => payment && payment.status === selectedStatus,
-    );
-  }, [payments, selectedStatus]);
+  const columns = [
+    {
+      id: "rowNumber",
+      header: "#",
+      cell: ({ row }: { row: Row<Payment> }) => offset + row.index + 1,
+    },
+    columnHelper.accessor((row) => row.userId.email, {
+      header: "EMAIL",
+    }),
+    columnHelper.accessor((row) => row.courseId.title, {
+      header: "COURSE",
+    }),
+    columnHelper.accessor("amount", {
+      header: "AMOUNT",
+    }),
+    columnHelper.accessor("transactionNote", {
+      header: "TRANSACTION NOTE",
+    }),
+    columnHelper.accessor("status", {
+      header: "STATUS",
+      cell: ({ row, getValue }) => {
+        const payment = row.original;
+        const status = getValue()?.toUpperCase();
+        let colorClasses = "";
 
-  // Update localStorage whenever status changes
-  const handleStatusChange = (value: string) => {
-    setSelectedStatus(value);
-    localStorage.setItem("selectedStatus", value);
-  };
+        switch (status) {
+          case "SUCCESS":
+            colorClasses =
+              "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300";
+            break;
+          case "PENDING":
+            colorClasses =
+              "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300";
+            break;
+          case "FAILED":
+            colorClasses =
+              "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300";
+            break;
+          case "APPROVED":
+            colorClasses =
+              "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300";
+            break;
+          case "REFUNDED":
+            colorClasses =
+              "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300";
+            break;
+          default:
+            colorClasses =
+              "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300";
+        }
 
-  if (loading) return <LoadingOverlay />;
+        return (
+          <div className="flex items-center gap-2">
+            <span
+              className={`inline-block rounded-full px-3 text-xs font-semibold ${colorClasses}`}
+            >
+              {status}
+            </span>
+            <UpdatePaymentStatus
+              payment={payment}
+              paymentId={payment._id}
+              currentStatus={payment.status}
+              currentRefundReason={payment.refundReason || ""}
+              refetch={() => {
+                refetch();
+                setOffset((prev) => prev);
+              }}
+            />
+          </div>
+        );
+      },
+    }),
 
-  if (error) return <p>Мэдээлэл татахад алдаа гарлаа.</p>;
+    columnHelper.accessor("createdAt", {
+      header: "DATE",
+      cell: (info) => {
+        const date = new Date(info.getValue());
+        return date
+          .toLocaleString("en-CA", {
+            timeZone: "Asia/Ulaanbaatar",
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+          })
+          .replace(",", "");
+      },
+    }),
+    columnHelper.accessor("createdAt", {
+      id: "timeAgo",
+      header: "AGO",
+      cell: (info) => {
+        const raw = new Date(info.getValue());
+        const ulaanbaatar = new Date(
+          raw.toLocaleString("en-US", { timeZone: "Asia/Ulaanbaatar" }),
+        );
+        return formatTimeAgo(ulaanbaatar);
+      },
+    }),
+  ];
+
+  const totalPayments = allPaymentsData?.getAllPayments.totalCount || 0;
+  const totalAmount = allPaymentsData?.getAllPayments.totalAmount || 0;
+
+  const table = useReactTable({
+    data: (allPaymentsData?.getAllPayments.payments as Payment[]) || [],
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    manualPagination: true,
+    pageCount: Math.ceil(totalPayments / limit),
+  });
 
   return (
-    <main className="p-4">
-      <h2 className="mb-4 text-xl font-semibold">Төлбөрийн удирдлага</h2>
-
-      {/* Статус шүүлтүүр */}
-      <div className="mb-4">
-        <Select value={selectedStatus} onValueChange={handleStatusChange}>
-          <SelectTrigger className="flex w-[200px] items-center gap-2">
-            <SelectValue>
-              {PAYMENT_STATUS_OPTIONS.find(
-                (opt) => opt.value === selectedStatus,
-              )?.label || "Бүгд"}
-            </SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectItem value="ALL">Бүгд</SelectItem>
-              {PAYMENT_STATUS_OPTIONS.map((opt) => (
-                <SelectItem key={opt.value} value={opt.value}>
-                  {opt.label}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+    <main className="space-y-4 pb-20">
+      <div className="mt-4 grid grid-cols-1 gap-4 px-4 sm:grid-cols-2 md:grid-cols-3">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Нийт орлого</CardTitle>
+            <LineChart className="text-muted-foreground h-4 w-4" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              ₮{totalAmount.toLocaleString("mn-MN")}
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
-      {/* Төлбөрийн хүснэгт */}
-      <div className="overflow-x-auto">
-        <Table>
-          <TableCaption>Төлбөрийн гүйлгээний мэдээлэл</TableCaption>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Хэрэглэгчийн имэйл</TableHead>
-              <TableHead>Сургалт</TableHead>
-              <TableHead>Төлбөр</TableHead>
-              <TableHead>Гүйлгээний утга</TableHead>
-              <TableHead>Төлөв</TableHead>
-              <TableHead>Огноо</TableHead>
-              <TableHead>Цаг</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredPayments.map((payment) => {
-              if (!payment) return null; // safety check
-              const {
-                _id,
-                userId,
-                courseId,
-                amount,
-                transactionNote,
-                status,
-                refundReason,
-                createdAt,
-              } = payment;
+      <div className="mb-3 flex w-full items-center justify-between gap-2 px-4">
+        <SearchInput
+          value={search}
+          onChange={(value) => {
+            setSearch(value);
+            setOffset(0);
+          }}
+          placeholder="e.g: 101010-001"
+        />
 
-              return (
-                <TableRow key={_id}>
-                  <TableCell>{userId?.email || "Мэдээлэл байхгүй"}</TableCell>
-                  <TableCell>{courseId?.title || "Мэдээлэл байхгүй"}</TableCell>
-                  <TableCell>₮ {amount}</TableCell>
-                  <TableCell>{transactionNote || "Мэдээлэл байхгүй"}</TableCell>
+        <div className="flex items-center gap-2">
+          <SortSelect
+            value={statusFilter}
+            onChange={(value) => {
+              setStatusFilter(value as PaymentStatus | "ALL");
+              setOffset(0);
+            }}
+            options={[
+              { value: "ALL", label: "All Roles" },
+              { value: "APPROVED", label: "APPROVED" },
+              { value: "PENDING", label: "PENDING" },
+              { value: "REFUNDED", label: "REFUNDED" },
+              { value: "FAILED", label: "FAILED" },
+            ]}
+          />
+        </div>
+      </div>
 
-                  {/* Төлөв, буцаалтын шалтгаан */}
-                  <TableCell className="flex items-center gap-2">
-                    <Badge
-                      className={`border font-semibold ${
-                        status === "PENDING"
-                          ? "border-yellow-600 bg-yellow-200 text-yellow-800 hover:bg-yellow-200"
-                          : status === "APPROVED"
-                            ? "border-green-600 bg-green-200 text-green-800 hover:bg-green-200"
-                            : status === "FAILED"
-                              ? "border-red-600 bg-red-200 text-red-800 hover:bg-red-200"
-                              : status === "REFUNDED"
-                                ? "border-blue-600 bg-blue-200 text-blue-800 hover:bg-blue-200"
-                                : "bg-gray-100 text-gray-800"
-                      } `}
-                    >
-                      {status}
-                    </Badge>
+      {/* Error display */}
+      {error && (
+        <div className="flex items-center gap-3 px-4 text-red-500">
+          <TriangleAlert className="h-5 w-5" />
+          Error: {error.message}
+        </div>
+      )}
 
-                    {/* Төлөв шинэчлэх button & dialog */}
-                    <UpdatePaymentStatus
-                      payment={payment as Payment}
-                      paymentId={_id}
-                      currentStatus={status as PaymentStatus}
-                      currentRefundReason={refundReason || ""}
-                      refetch={refetch}
-                    />
-                  </TableCell>
+      {/* Table */}
+      <div className="overflow-x-auto border-y">
+        <table className="min-w-full table-auto text-sm">
+          <thead className="bg-sidebar">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <th
+                    key={header.id}
+                    className="px-4 py-2 text-left font-semibold"
+                  >
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            {table.getRowModel().rows.map((row) => (
+              <tr key={row.id} className="border-t">
+                {row.getVisibleCells().map((cell) => (
+                  <td key={cell.id} className="px-4 py-2">
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))}
+            {loading && (
+              <tr>
+                <td colSpan={columns.length} className="p-4 text-center">
+                  <div className="flex items-center justify-center gap-3">
+                    Loading...
+                    <Loader className="h-4 w-4 animate-spin" />
+                  </div>
+                </td>
+              </tr>
+            )}
+            {!loading && table.getRowModel().rows.length === 0 && (
+              <tr>
+                <td
+                  colSpan={columns.length}
+                  className="p-4 text-center text-gray-500"
+                >
+                  <div className="flex items-center justify-center gap-3">
+                    <Inbox className="h-4 w-4" />
+                    No payments found.
+                  </div>
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
 
-                  {/* Огноо */}
-                  <TableCell>{formatMongolianDateString(createdAt)}</TableCell>
-                  {/* Цагийн зөрүү */}
-                  <TableCell>{getTimeDiffDescription(createdAt)}</TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
+      {/* Pagination controls */}
+      <div className="w-full px-4">
+        <TablePagination
+          offset={offset}
+          limit={limit}
+          totalCount={totalPayments}
+          onPageChange={(newOffset) => setOffset(newOffset)}
+        />
       </div>
     </main>
   );

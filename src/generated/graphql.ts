@@ -313,13 +313,18 @@ export type Payment = {
   _id: Scalars['ID']['output'];
   amount: Scalars['Float']['output'];
   courseId: Course;
-  createdAt: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
   paymentMethod: PaymentMethod;
   refundReason?: Maybe<Scalars['String']['output']>;
   status: PaymentStatus;
   transactionNote: Scalars['String']['output'];
-  updatedAt: Scalars['String']['output'];
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
   userId: User;
+};
+
+export type PaymentFilterInput = {
+  search?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<PaymentStatus>;
 };
 
 export enum PaymentMethod {
@@ -328,6 +333,14 @@ export enum PaymentMethod {
   Other = 'OTHER',
   Qpay = 'QPAY'
 }
+
+export type PaymentPaginationResult = {
+  __typename?: 'PaymentPaginationResult';
+  hasNextPage: Scalars['Boolean']['output'];
+  payments: Array<Payment>;
+  totalAmount: Scalars['Float']['output'];
+  totalCount: Scalars['Int']['output'];
+};
 
 export enum PaymentStatus {
   Approved = 'APPROVED',
@@ -369,7 +382,7 @@ export type Query = {
   checkEnrollment?: Maybe<Enrollment>;
   getAllCourse: Array<Course>;
   getAllCourseWithEnrollment: Array<Course>;
-  getAllPayments?: Maybe<Array<Maybe<Payment>>>;
+  getAllPayments: PaymentPaginationResult;
   getAllSubscribers: SubscriberPaginationResult;
   getAllTest: Array<Test>;
   getAllUser: UserPaginationResult;
@@ -395,6 +408,13 @@ export type Query = {
 
 export type QueryCheckEnrollmentArgs = {
   courseId: Scalars['ID']['input'];
+};
+
+
+export type QueryGetAllPaymentsArgs = {
+  filter?: InputMaybe<PaymentFilterInput>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -603,12 +623,12 @@ export type UpdateUserInput = {
 export type User = {
   __typename?: 'User';
   _id: Scalars['ID']['output'];
-  createdAt: Scalars['DateTime']['output'];
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
   email: Scalars['String']['output'];
   isVerified: Scalars['Boolean']['output'];
   role: Role;
   studentId?: Maybe<Scalars['String']['output']>;
-  updatedAt: Scalars['DateTime']['output'];
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type UserFilterInput = {
@@ -780,10 +800,14 @@ export type UpdatePaymentStatusMutationVariables = Exact<{
 
 export type UpdatePaymentStatusMutation = { __typename?: 'Mutation', updatePaymentStatus?: { __typename?: 'Payment', _id: string } | null };
 
-export type GetAllPaymentsQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetAllPaymentsQueryVariables = Exact<{
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  filter?: InputMaybe<PaymentFilterInput>;
+}>;
 
 
-export type GetAllPaymentsQuery = { __typename?: 'Query', getAllPayments?: Array<{ __typename?: 'Payment', _id: string, amount: number, transactionNote: string, status: PaymentStatus, paymentMethod: PaymentMethod, refundReason?: string | null, createdAt: string, userId: { __typename?: 'User', _id: string, email: string }, courseId: { __typename?: 'Course', _id: string, title: string } } | null> | null };
+export type GetAllPaymentsQuery = { __typename?: 'Query', getAllPayments: { __typename?: 'PaymentPaginationResult', totalCount: number, totalAmount: number, hasNextPage: boolean, payments: Array<{ __typename?: 'Payment', _id: string, amount: number, transactionNote: string, status: PaymentStatus, paymentMethod: PaymentMethod, refundReason?: string | null, createdAt: Date, userId: { __typename?: 'User', _id: string, email: string }, courseId: { __typename?: 'Course', _id: string, title: string } }> } };
 
 export type GetPaymentByIdQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -798,7 +822,7 @@ export type GetPaymentByUserAndCourseQueryVariables = Exact<{
 }>;
 
 
-export type GetPaymentByUserAndCourseQuery = { __typename?: 'Query', getPaymentByUserAndCourse?: { __typename?: 'Payment', _id: string, amount: number, transactionNote: string, status: PaymentStatus, paymentMethod: PaymentMethod, refundReason?: string | null, createdAt: string, userId: { __typename?: 'User', _id: string, email: string }, courseId: { __typename?: 'Course', _id: string, title: string } } | null };
+export type GetPaymentByUserAndCourseQuery = { __typename?: 'Query', getPaymentByUserAndCourse?: { __typename?: 'Payment', _id: string, amount: number, transactionNote: string, status: PaymentStatus, paymentMethod: PaymentMethod, refundReason?: string | null, createdAt: Date, userId: { __typename?: 'User', _id: string, email: string }, courseId: { __typename?: 'Course', _id: string, title: string } } | null };
 
 export type CreateSectionMutationVariables = Exact<{
   input?: InputMaybe<CreateSectionInput>;
@@ -888,7 +912,7 @@ export type GetAllUserQueryVariables = Exact<{
 }>;
 
 
-export type GetAllUserQuery = { __typename?: 'Query', getAllUser: { __typename?: 'UserPaginationResult', totalCount: number, hasNextPage: boolean, users: Array<{ __typename?: 'User', _id: string, email: string, studentId?: string | null, role: Role, isVerified: boolean, createdAt: Date, updatedAt: Date }> } };
+export type GetAllUserQuery = { __typename?: 'Query', getAllUser: { __typename?: 'UserPaginationResult', totalCount: number, hasNextPage: boolean, users: Array<{ __typename?: 'User', _id: string, email: string, studentId?: string | null, role: Role, isVerified: boolean, createdAt?: Date | null, updatedAt?: Date | null }> } };
 
 export type GetUserByIdQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -1724,23 +1748,28 @@ export type UpdatePaymentStatusMutationHookResult = ReturnType<typeof useUpdateP
 export type UpdatePaymentStatusMutationResult = Apollo.MutationResult<UpdatePaymentStatusMutation>;
 export type UpdatePaymentStatusMutationOptions = Apollo.BaseMutationOptions<UpdatePaymentStatusMutation, UpdatePaymentStatusMutationVariables>;
 export const GetAllPaymentsDocument = gql`
-    query GetAllPayments {
-  getAllPayments {
-    _id
-    userId {
+    query GetAllPayments($limit: Int, $offset: Int, $filter: PaymentFilterInput) {
+  getAllPayments(limit: $limit, offset: $offset, filter: $filter) {
+    payments {
       _id
-      email
+      userId {
+        _id
+        email
+      }
+      courseId {
+        _id
+        title
+      }
+      amount
+      transactionNote
+      status
+      paymentMethod
+      refundReason
+      createdAt
     }
-    courseId {
-      _id
-      title
-    }
-    amount
-    transactionNote
-    status
-    paymentMethod
-    refundReason
-    createdAt
+    totalCount
+    totalAmount
+    hasNextPage
   }
 }
     `;
@@ -1757,6 +1786,9 @@ export const GetAllPaymentsDocument = gql`
  * @example
  * const { data, loading, error } = useGetAllPaymentsQuery({
  *   variables: {
+ *      limit: // value for 'limit'
+ *      offset: // value for 'offset'
+ *      filter: // value for 'filter'
  *   },
  * });
  */
