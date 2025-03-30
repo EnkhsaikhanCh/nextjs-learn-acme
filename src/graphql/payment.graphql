@@ -16,8 +16,8 @@ mutation UpdatePaymentStatus(
 }
 
 # Query
-query GetAllPayments($limit: Int, $offset: Int, $search: String) {
-  getAllPayments(limit: $limit, offset: $offset, search: $search) {
+query GetAllPayments($limit: Int, $offset: Int, $filter: PaymentFilterInput) {
+  getAllPayments(limit: $limit, offset: $offset, filter: $filter) {
     payments {
       _id
       userId {

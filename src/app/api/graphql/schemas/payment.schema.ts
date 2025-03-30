@@ -40,11 +40,16 @@ export const typeDefs = gql`
     getAllPayments(
       limit: Int
       offset: Int
-      search: String
+      filter: PaymentFilterInput
     ): PaymentPaginationResult!
     getPaymentById(_id: ID!): Payment
     getPaymentsByUser(userId: ID!): [Payment]
     getPaymentByUserAndCourse(userId: ID!, courseId: ID!): Payment
+  }
+
+  input PaymentFilterInput {
+    search: String
+    status: PaymentStatus
   }
 
   input CreatePaymentInput {

@@ -3,7 +3,11 @@
 import { SearchInput } from "@/components/SearchInput";
 import { TablePagination } from "@/components/TablePagination";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Payment, useGetAllPaymentsQuery } from "@/generated/graphql";
+import {
+  Payment,
+  PaymentStatus,
+  useGetAllPaymentsQuery,
+} from "@/generated/graphql";
 import { formatTimeAgo } from "@/utils/format-time-ago";
 import {
   createColumnHelper,
@@ -16,10 +20,14 @@ import { Inbox, LineChart, Loader, TriangleAlert } from "lucide-react";
 import { useState } from "react";
 import { useDebounce } from "use-debounce";
 import { UpdatePaymentStatus } from "./_components/UpdatePaymentStatus";
+import { SortSelect } from "@/components/SortSelect";
 
 export default function Page() {
   const [search, setSearch] = useState<string>("");
   const [offset, setOffset] = useState<number>(0);
+  const [statusFilter, setStatusFilter] = useState<PaymentStatus | "ALL">(
+    "ALL",
+  );
   const [debouncedSearch] = useDebounce(search, 400);
   const limit = 15;
 
@@ -32,7 +40,10 @@ export default function Page() {
     variables: {
       limit,
       offset,
-      search: debouncedSearch,
+      filter: {
+        search: debouncedSearch,
+        status: statusFilter !== "ALL" ? statusFilter : undefined,
+      },
     },
   });
 
@@ -168,7 +179,7 @@ export default function Page() {
         </Card>
       </div>
 
-      <div className="mt-4 px-4">
+      <div className="mb-3 flex w-full items-center justify-between gap-2 px-4">
         <SearchInput
           value={search}
           onChange={(value) => {
@@ -177,6 +188,23 @@ export default function Page() {
           }}
           placeholder="e.g: 101010-001"
         />
+
+        <div className="flex items-center gap-2">
+          <SortSelect
+            value={statusFilter}
+            onChange={(value) => {
+              setStatusFilter(value as PaymentStatus | "ALL");
+              setOffset(0);
+            }}
+            options={[
+              { value: "ALL", label: "All Roles" },
+              { value: "APPROVED", label: "APPROVED" },
+              { value: "PENDING", label: "PENDING" },
+              { value: "REFUNDED", label: "REFUNDED" },
+              { value: "FAILED", label: "FAILED" },
+            ]}
+          />
+        </div>
       </div>
 
       {/* Error display */}

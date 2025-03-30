@@ -322,6 +322,11 @@ export type Payment = {
   userId: User;
 };
 
+export type PaymentFilterInput = {
+  search?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<PaymentStatus>;
+};
+
 export enum PaymentMethod {
   BankTransfer = 'BANK_TRANSFER',
   CreditCard = 'CREDIT_CARD',
@@ -407,9 +412,9 @@ export type QueryCheckEnrollmentArgs = {
 
 
 export type QueryGetAllPaymentsArgs = {
+  filter?: InputMaybe<PaymentFilterInput>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  search?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -798,7 +803,7 @@ export type UpdatePaymentStatusMutation = { __typename?: 'Mutation', updatePayme
 export type GetAllPaymentsQueryVariables = Exact<{
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
-  search?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<PaymentFilterInput>;
 }>;
 
 
@@ -1743,8 +1748,8 @@ export type UpdatePaymentStatusMutationHookResult = ReturnType<typeof useUpdateP
 export type UpdatePaymentStatusMutationResult = Apollo.MutationResult<UpdatePaymentStatusMutation>;
 export type UpdatePaymentStatusMutationOptions = Apollo.BaseMutationOptions<UpdatePaymentStatusMutation, UpdatePaymentStatusMutationVariables>;
 export const GetAllPaymentsDocument = gql`
-    query GetAllPayments($limit: Int, $offset: Int, $search: String) {
-  getAllPayments(limit: $limit, offset: $offset, search: $search) {
+    query GetAllPayments($limit: Int, $offset: Int, $filter: PaymentFilterInput) {
+  getAllPayments(limit: $limit, offset: $offset, filter: $filter) {
     payments {
       _id
       userId {
@@ -1783,7 +1788,7 @@ export const GetAllPaymentsDocument = gql`
  *   variables: {
  *      limit: // value for 'limit'
  *      offset: // value for 'offset'
- *      search: // value for 'search'
+ *      filter: // value for 'filter'
  *   },
  * });
  */
