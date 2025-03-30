@@ -3,23 +3,34 @@ import { GraphQLError } from "graphql";
 import { UserModel } from "../../../models";
 import argon2 from "argon2";
 import {
-  sanitizeInput,
-  validationEmail,
+  normalizeEmail,
+  validateEmail,
   validatePassword,
 } from "@/utils/validation";
 import { RegisterInput } from "@/generated/graphql";
 import { generateUniqueStudentId } from "@/utils/generate-unique-student-id";
 
-const validationInputs = (email: string, password: string) => {
-  const sanitizedEmail = sanitizeInput(email);
+export const createUser = async (
+  _: unknown,
+  { input }: { input: RegisterInput },
+) => {
+  const { email, password } = input;
 
-  if (!sanitizedEmail || !password) {
+  if (!email || !password) {
     throw new GraphQLError("Email and password are required.", {
       extensions: { code: "BAD_USER_INPUT" },
     });
   }
 
-  if (!validationEmail(sanitizedEmail)) {
+  // Normalize email (trim and convert to lower case)
+  const normalizedEmail = normalizeEmail(email);
+  if (!normalizedEmail) {
+    throw new GraphQLError("Invalid email format.", {
+      extensions: { code: "BAD_USER_INPUT" },
+    });
+  }
+
+  if (!validateEmail(normalizedEmail)) {
     throw new GraphQLError("Invalid email format.", {
       extensions: { code: "BAD_USER_INPUT" },
     });
@@ -31,56 +42,8 @@ const validationInputs = (email: string, password: string) => {
     });
   }
 
-  return { sanitizedEmail };
-};
-
-export const createUser = async (
-  _: unknown,
-  { input }: { input: RegisterInput },
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  context: any,
-) => {
   try {
-    const { checkRateLimit, req } = context;
-
-    // Орчныг шалгах
-    const isProd = process.env.VERCEL_ENV === "production";
-    console.log("Current VERCEL_ENV:", process.env.VERCEL_ENV);
-    console.log("Current NODE_ENV:", process.env.NODE_ENV);
-
-    const MAX_REQUESTS = 5;
-    const WINDOW = 3600;
-    let rateLimitKey: string;
-
-    if (isProd) {
-      // Production-д IP дээр суурилсан rate limiting
-      console.log(
-        "Production environment detected. Using IP-based rate limiting.",
-      );
-      console.log("Headers:", Object.fromEntries(req.headers));
-      console.log("req.ip:", req.ip);
-
-      const ip =
-        req.headers["x-vercel-forwarded-for"]?.toString() ||
-        req.headers["x-forwarded-for"]?.toString() ||
-        req.ip ||
-        "unknown";
-      console.log("Final IP:", ip);
-
-      rateLimitKey = `createUser:${ip}`;
-      await checkRateLimit(rateLimitKey, MAX_REQUESTS, WINDOW);
-    } else {
-      // Preview/development-д email дээр суурилсан rate limiting
-      console.log(
-        "Preview or development environment detected. Using email-based rate limiting.",
-      );
-      rateLimitKey = `createUser:${input.email}`;
-      await checkRateLimit(rateLimitKey, MAX_REQUESTS, WINDOW);
-    }
-
-    const { sanitizedEmail } = validationInputs(input.email, input.password);
-
-    const existingUser = await UserModel.findOne({ email: sanitizedEmail });
+    const existingUser = await UserModel.findOne({ email: email });
     if (existingUser) {
       throw new GraphQLError("A user with this email already exists.", {
         extensions: { code: "CONFLICT" },
@@ -89,7 +52,7 @@ export const createUser = async (
 
     const studentId = await generateUniqueStudentId();
 
-    const hashedPassword = await argon2.hash(input.password, {
+    const hashedPassword = await argon2.hash(password, {
       type: argon2.argon2id,
       memoryCost: 65536,
       timeCost: 4,
@@ -98,7 +61,7 @@ export const createUser = async (
     });
 
     const newUser = await UserModel.create({
-      email: sanitizedEmail,
+      email: email,
       studentId: studentId,
       password: hashedPassword,
       isVerified: false,
@@ -118,16 +81,7 @@ export const createUser = async (
     if (error instanceof GraphQLError) {
       throw error;
     }
-
-    const message = (error as Error).message;
-
-    if (message.includes("Хэт олон хүсэлт")) {
-      throw new GraphQLError(message, {
-        extensions: { code: "TOO_MANY_REQUESTS" },
-      });
-    }
-
-    throw new GraphQLError(`Internal server error: ${message}`, {
+    throw new GraphQLError("Internal server error", {
       extensions: { code: "INTERNAL_SERVER_ERROR" },
     });
   }

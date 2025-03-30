@@ -24,9 +24,15 @@ export function PaymentVerification({
 }: PaymentVerificationProps) {
   if (isLoading) {
     return (
-      <DialogContent className="flex flex-col items-center p-6">
-        <Loader className="animate-spin text-gray-500" size={24} />
-        <p className="mt-2 text-sm text-gray-700" aria-live="polite">
+      <DialogContent className="flex flex-col items-center p-6 dark:bg-gray-800 dark:text-gray-200">
+        <Loader
+          className="animate-spin text-gray-500 dark:text-gray-400"
+          size={24}
+        />
+        <p
+          className="mt-2 text-sm text-gray-700 dark:text-gray-300"
+          aria-live="polite"
+        >
           Төлбөрийн мэдээлэл ачааллаж байна...
         </p>
       </DialogContent>
@@ -35,12 +41,12 @@ export function PaymentVerification({
 
   if (error) {
     return (
-      <DialogContent className="flex flex-col items-center p-6 text-center">
-        <AlertTriangle className="text-red-500" size={36} />
-        <p className="mt-2 text-lg font-semibold text-gray-800">
+      <DialogContent className="flex flex-col items-center p-6 text-center dark:bg-gray-800 dark:text-gray-200">
+        <AlertTriangle className="text-red-500 dark:text-red-400" size={36} />
+        <p className="mt-2 text-lg font-semibold text-gray-800 dark:text-gray-100">
           Төлбөрийн мэдээлэл олдсонгүй
         </p>
-        <p className="mt-1 text-sm text-gray-600">
+        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
           Та дахин шалгана уу эсвэл тусламж дэмжлэгтэй холбогдоно уу.
         </p>
       </DialogContent>
@@ -49,12 +55,12 @@ export function PaymentVerification({
 
   if (!payment) {
     return (
-      <DialogContent className="flex flex-col items-center p-6 text-center">
-        <AlertTriangle className="text-red-500" size={36} />
-        <p className="mt-2 text-lg font-semibold text-gray-800">
+      <DialogContent className="flex flex-col items-center p-6 text-center dark:bg-gray-800 dark:text-gray-200">
+        <AlertTriangle className="text-red-500 dark:text-red-400" size={36} />
+        <p className="mt-2 text-lg font-semibold text-gray-800 dark:text-gray-100">
           Төлбөрийн мэдээлэл олдсонгүй
         </p>
-        <p className="mt-1 text-sm text-gray-600">
+        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
           Та дахин шалгана уу эсвэл тусламж дэмжлэгтэй холбогдоно уу.
         </p>
       </DialogContent>
@@ -72,23 +78,23 @@ export function PaymentVerification({
   } = payment;
 
   return (
-    <DialogContent className="p-6">
+    <DialogContent className="p-6 dark:bg-gray-800 dark:text-gray-200">
       <div className="flex flex-col items-center justify-center gap-2">
         <div
-          className="flex h-14 w-14 items-center justify-center rounded-full border border-blue-300 bg-blue-100"
+          className="flex h-14 w-14 items-center justify-center rounded-full border border-blue-300 bg-blue-100 dark:border-blue-500 dark:bg-blue-900"
           aria-hidden="true"
         >
-          <MailCheck className="text-blue-600" />
+          <MailCheck className="text-blue-600 dark:text-blue-400" />
         </div>
 
         <DialogHeader className="mt-3">
-          <DialogTitle className="font-semibold text-gray-900">
+          <DialogTitle className="font-semibold text-gray-900 dark:text-gray-100">
             Таны төлбөрийг шалгаж байна...
           </DialogTitle>
         </DialogHeader>
       </div>
 
-      <div className="space-y-3 rounded-lg border border-gray-200 bg-gray-50 p-4 shadow-sm">
+      <div className="space-y-3 rounded-lg border border-gray-200 bg-gray-50 p-4 shadow-xs dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200">
         <InfoRow label="Төлбөрийн дүн" value={`₮${amount}`} />
         <InfoRow
           label="Төлбөрийн төлөв"
@@ -100,9 +106,9 @@ export function PaymentVerification({
                 : "Амжилтгүй"
           }
           valueClassName={clsx({
-            "text-yellow-500": status === "PENDING",
-            "text-green-500": status === "APPROVED",
-            "text-red-500": status === "FAILED",
+            "text-yellow-500 dark:text-yellow-400": status === "PENDING",
+            "text-green-500 dark:text-green-400": status === "APPROVED",
+            "text-red-500 dark:text-red-400": status === "FAILED",
           })}
           isBadge={true}
         />
@@ -128,7 +134,7 @@ export function PaymentVerification({
           }
         />
         <InfoRow
-          label="Төлбөр хийгдсэн огноо"
+          label="Хүсэлт илгээсэн огноо"
           value={
             createdAt
               ? format(new Date(Number(createdAt)), "dd-MM-yyyy")
@@ -137,9 +143,9 @@ export function PaymentVerification({
         />
       </div>
 
-      <DialogFooter className="grid rounded-md border border-yellow-500 bg-yellow-100 p-4 text-center font-semibold text-yellow-800 shadow-sm">
+      <DialogFooter className="grid rounded-lg border border-gray-200 bg-gray-50 p-4 text-center text-gray-700 shadow-xs dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300">
         <div>Таны төлбөрийг баталгаажуулж байна...</div>
-        <span className="mt-2 text-sm text-gray-700">
+        <span className="mt-2 text-sm text-gray-700 dark:text-gray-300">
           Дуусмагц таны бүртгэлтэй и-мэйл хаяг руу мэдэгдэл илгээнэ. Түр хүлээнэ
           үү, баярлалаа!
         </span>

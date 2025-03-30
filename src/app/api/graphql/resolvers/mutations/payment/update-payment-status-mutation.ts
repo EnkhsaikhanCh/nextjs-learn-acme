@@ -1,6 +1,8 @@
 import { GraphQLError } from "graphql";
-import { EnrollmentModel, PaymentModel } from "../../../models";
-import { createEnrollment } from "../enrollment/create-enrollment";
+import { PaymentModel } from "../../../models";
+import { PaymentStatus, User } from "@/generated/graphql";
+import { requireAuthAndRoles } from "@/lib/auth-utils";
+import { updateOrCreateEnrollment } from "./updateOrCreateEnrollment";
 
 export const updatePaymentStatus = async (
   _: unknown,
@@ -10,12 +12,26 @@ export const updatePaymentStatus = async (
     refundReason,
   }: {
     _id: string;
-    status: "PENDING" | "APPROVED" | "FAILED" | "REFUNDED";
+    status: PaymentStatus;
     refundReason?: string;
   },
+  context: { user?: User },
 ) => {
+  const { user } = context;
+
+  // Зөвхөн ADMIN хэрэглэгчдэд зөвшөөрнө
+  await requireAuthAndRoles(user, ["ADMIN"]);
+
+  // Payment ID шаардлагатай
   if (!_id) {
     throw new GraphQLError("Payment ID is required", {
+      extensions: { code: "BAD_USER_INPUT" },
+    });
+  }
+
+  // PaymentStatus enum-ийн утгыг шалгах
+  if (!Object.values(PaymentStatus).includes(status)) {
+    throw new GraphQLError("Invalid payment status", {
       extensions: { code: "BAD_USER_INPUT" },
     });
   }
@@ -28,49 +44,15 @@ export const updatePaymentStatus = async (
       });
     }
 
-    // Шинэчлэхээс өмнөх хуучин статус хадгалах
     const previousStatus = payment.status;
-
-    // Статус шинэчлэх
     payment.status = status;
 
-    // Хэрэв төлбөр `APPROVED` болсон бол, тухайн хэрэглэгчийн enrollment үүсгэх эсвэл сунгах
+    // APPROVED болсон бол enrollment-ийг шинэчлэх эсвэл үүсгэх
     if (status === "APPROVED" && previousStatus !== "APPROVED") {
-      let enrollment = await EnrollmentModel.findOne({
-        userId: payment.userId,
-        courseId: payment.courseId,
-      });
-
-      if (enrollment) {
-        // Хэрэв бүртгэл аль хэдийн байвал хугацааг сунгана
-        const now = new Date();
-        const currentExpiryDate = enrollment.expiryDate
-          ? new Date(enrollment.expiryDate)
-          : now;
-
-        const newExpiryDate = new Date(
-          Math.max(now.getTime(), currentExpiryDate.getTime()),
-        );
-        newExpiryDate.setMonth(newExpiryDate.getMonth() + 1);
-
-        enrollment.expiryDate = newExpiryDate;
-        enrollment.status = "ACTIVE"; // Хугацаа сунгасан тул `ACTIVE` болгоно.
-        await enrollment.save();
-      } else {
-        // Хэрэв бүртгэл байхгүй бол шинээр Enrollment үүсгэнэ.
-        enrollment = await createEnrollment(_, {
-          input: { userId: payment.userId, courseId: payment.courseId },
-        });
-
-        // Хугацааг 1 сар тохируулах
-        const now = new Date();
-        now.setMonth(now.getMonth() + 1);
-        enrollment.expiryDate = now;
-        await enrollment.save();
-      }
+      await updateOrCreateEnrollment(payment.userId, payment.courseId);
     }
 
-    // Хэрэв `REFUNDED` бол `refundReason` шаардлагатай
+    // REFUNDED бол refundReason шаардлагатай
     if (status === "REFUNDED") {
       if (!refundReason) {
         throw new GraphQLError(
@@ -89,12 +71,8 @@ export const updatePaymentStatus = async (
     if (error instanceof GraphQLError) {
       throw error;
     }
-
-    throw new GraphQLError(
-      `Internal server error: ${(error as Error).message}`,
-      {
-        extensions: { code: "INTERNAL_SERVER_ERROR" },
-      },
-    );
+    throw new GraphQLError("Internal server error", {
+      extensions: { code: "INTERNAL_SERVER_ERROR" },
+    });
   }
 };

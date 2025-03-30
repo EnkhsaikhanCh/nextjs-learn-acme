@@ -1,25 +1,39 @@
 import { GraphQLError } from "graphql";
-import { EnrollmentModel } from "../../../models";
+import { CourseModel, EnrollmentModel } from "../../../models";
+import { User } from "@/generated/graphql";
+import { requireAuthAndRoles } from "@/lib/auth-utils";
 
 export const checkEnrollment = async (
   _: unknown,
-  { courseId, userId }: { courseId: string; userId: string },
+  { courseId }: { courseId: string },
+  context: { user?: User },
 ) => {
-  try {
-    if (!courseId || !userId) {
-      throw new GraphQLError("Course ID and User ID are required", {
-        extensions: { code: "BAD_USER_INPUT" },
-      });
-    }
+  const { user } = context;
+  await requireAuthAndRoles(user, ["STUDENT", "ADMIN"]);
 
+  const currentUserId = user?._id;
+
+  if (!courseId) {
+    throw new GraphQLError("Course are required", {
+      extensions: { code: "BAD_USER_INPUT" },
+    });
+  }
+
+  const existingCourse = await CourseModel.findById(courseId);
+  if (!existingCourse) {
+    throw new GraphQLError("Course not found", {
+      extensions: { code: "BAD_USER_INPUT" },
+    });
+  }
+
+  try {
     // Fetch enrollment
-    const enrollment = await EnrollmentModel.findOne({ courseId, userId })
+    const enrollment = await EnrollmentModel.findOne({
+      courseId,
+      userId: currentUserId,
+    })
       .populate({ path: "courseId", model: "Course" })
       .populate({ path: "userId", model: "User" });
-
-    if (!enrollment) {
-      return null;
-    }
 
     if (
       enrollment.expiryDate &&
@@ -37,7 +51,6 @@ export const checkEnrollment = async (
     }
 
     const message = (error as Error).message;
-
     throw new GraphQLError(`Failed to check enrollment: ${message}`, {
       extensions: {
         code: "INTERNAL_SERVER_ERROR",

@@ -11,3 +11,5 @@ generates:
       withComponent: false
       withHOC: false
       skipTypename: false
+      scalars:
+        DateTime: Date

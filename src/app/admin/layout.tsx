@@ -1,7 +1,10 @@
 import React from "react";
-import { cookies } from "next/headers";
-import AdminClientLayout from "@/providers/admin/AdminClientLayout";
 import { Toaster } from "sonner";
+import { AppSidebar } from "@/app/admin/_components/AppSidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { AdminSiteHeader } from "./_components/AdminSiteHeader";
+import { ThemeProvider } from "@/providers/theme-provider";
+// import { ActiveThemeProvider } from "@/components/active-theme";
 
 export const metadata = {
   title: "Admin Dashboard",
@@ -13,13 +16,26 @@ export default async function AdminDashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const cookieStore = await cookies();
-  const defaultOpen = cookieStore.get("sidebar:state")?.value === "true";
-
   return (
-    <AdminClientLayout defaultOpen={defaultOpen}>
-      <Toaster richColors position="top-center" />
-      {children}
-    </AdminClientLayout>
+    <div className="bg-background overscroll-none font-mono antialiased">
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        enableSystem
+        disableTransitionOnChange
+        enableColorScheme
+      >
+        {/* <ActiveThemeProvider initialTheme={"default"}> */}
+        <SidebarProvider>
+          <AppSidebar />
+          <SidebarInset>
+            <AdminSiteHeader />
+            <Toaster richColors position="top-center" />
+            {children}
+          </SidebarInset>
+        </SidebarProvider>
+        {/* </ActiveThemeProvider> */}
+      </ThemeProvider>
+    </div>
   );
 }

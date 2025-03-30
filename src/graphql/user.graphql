@@ -15,13 +15,31 @@ mutation CreateUser($input: RegisterInput!) {
 }
 
 # Queries
-query GetAllUser {
-  getAllUser {
-    _id
-    email
-    studentId
-    role
-    isVerified
+query GetAllUser(
+  $limit: Int
+  $offset: Int
+  $sortBy: String
+  $sortOrder: String
+  $filter: UserFilterInput
+) {
+  getAllUser(
+    limit: $limit
+    offset: $offset
+    sortBy: $sortBy
+    sortOrder: $sortOrder
+    filter: $filter
+  ) {
+    users {
+      _id
+      email
+      studentId
+      role
+      isVerified
+      createdAt
+      updatedAt
+    }
+    totalCount
+    hasNextPage
   }
 }
 

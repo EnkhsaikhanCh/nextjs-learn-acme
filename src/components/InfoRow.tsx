@@ -15,10 +15,17 @@ export function InfoRow({
   isBadge = false,
 }: InfoRowProps) {
   return (
-    <div className="flex justify-between font-sans text-sm text-gray-800">
-      <span className="text-gray-700">{label}</span>
+    <div className="flex justify-between font-sans text-sm text-gray-800 dark:text-gray-200">
+      <span className="text-gray-700 dark:text-gray-300">{label}</span>
       {isBadge ? (
-        <Badge className="border-yellow-600 bg-yellow-200 text-yellow-800 hover:bg-yellow-200">
+        <Badge
+          className={clsx(
+            // Light mode
+            "border-yellow-500 bg-yellow-100 text-yellow-900 hover:bg-yellow-200",
+            // Dark mode
+            "dark:border-yellow-300 dark:bg-yellow-700 dark:text-yellow-100 dark:hover:bg-yellow-600",
+          )}
+        >
           {value}
         </Badge>
       ) : (

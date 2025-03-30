@@ -14,32 +14,32 @@ import { CircleCheck } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 import { LucideIcon } from "lucide-react";
 import { PaymentDialog } from "./PaymentDialog";
-import { Course, User } from "@/generated/graphql";
+import { Course } from "@/generated/graphql";
 
 interface NotEnrolledUserViewProps {
-  user: User;
   course: Course;
   onScrollToPayment: () => void;
 }
 
 export function NotEnrolledUserView({
-  user,
   course,
   onScrollToPayment,
 }: NotEnrolledUserViewProps) {
   return (
     <>
       {/* Курсийн танилцуулга хэсэг */}
-      <section className="m-4 rounded-xl bg-gradient-to-b from-zinc-900 to-zinc-900/90 py-20 text-primary-foreground">
+      <section className="text-accent m-4 rounded-xl bg-gradient-to-b from-zinc-900 to-zinc-900/90 py-20 dark:bg-gradient-to-b dark:from-gray-800 dark:to-gray-900 dark:text-white">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="mb-4 text-4xl font-bold md:text-5xl">
+          <h1 className="mb-4 text-4xl font-bold md:text-5xl dark:text-white">
             {course?.title}
           </h1>
-          <p className="mb-8 text-xl">{course?.description}</p>
+          <p className="mb-8 text-xl dark:text-gray-200">
+            {course?.description}
+          </p>
           <Button
             size="lg"
             onClick={onScrollToPayment}
-            className="rounded-full bg-yellow-400 font-bold text-primary hover:bg-yellow-300"
+            className="cursor-pointer rounded-full bg-yellow-400 font-bold text-black hover:bg-yellow-500 dark:bg-yellow-500 dark:text-black dark:hover:bg-yellow-600"
           >
             Сургалтанд бүртгүүлэх
           </Button>
@@ -55,7 +55,7 @@ export function NotEnrolledUserView({
 
           <div className="grid gap-8 md:grid-cols-2">
             {/* Та юу сурах вэ */}
-            <Card className="rounded-xl">
+            <Card className="bg-sidebar rounded-xl">
               <CardHeader>
                 <CardTitle>Та юу сурах вэ</CardTitle>
               </CardHeader>
@@ -72,7 +72,7 @@ export function NotEnrolledUserView({
             </Card>
 
             {/* Хичээлийн мэдээлэл */}
-            <Card className="rounded-xl">
+            <Card className="bg-sidebar rounded-xl">
               <CardHeader>
                 <CardTitle>Хичээлийн мэдээлэл</CardTitle>
               </CardHeader>
@@ -80,8 +80,8 @@ export function NotEnrolledUserView({
                 <ul className="space-y-4">
                   <li>
                     <strong>Нийт хичээлүүд:</strong>{" "}
-                    {course?.sections?.map
-                      ? course.sections.reduce(
+                    {course?.sectionId?.map
+                      ? course.sectionId.reduce(
                           (total, section) =>
                             total + (section?.lessonId?.length || 0),
                           0,
@@ -136,7 +136,7 @@ export function NotEnrolledUserView({
       </section>
 
       {/* Яагаад манай сургалтыг сонгох вэ */}
-      <section className="bg-gray-100 py-20">
+      <section className="py-20">
         <div className="container mx-auto px-4">
           <h2 className="mb-12 text-center text-3xl font-bold">
             Яагаад манай сургалтыг сонгох вэ
@@ -153,7 +153,7 @@ export function NotEnrolledUserView({
               return (
                 <Card
                   key={index}
-                  className="flex flex-col rounded-2xl p-2 shadow-none"
+                  className="bg-sidebar flex flex-col p-2 shadow-none"
                 >
                   <CardHeader>
                     <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-yellow-200">
@@ -174,7 +174,7 @@ export function NotEnrolledUserView({
       </section>
 
       {/* Төлбөрийн мэдээлэл */}
-      <section id="payment" className="py-20">
+      <section id="payment" className="pt-20 pb-20">
         <div className="container mx-auto px-4">
           <h2 className="mb-12 text-center text-3xl font-bold">
             Та хичээлээ үзэхэд бэлэн үү?
@@ -201,7 +201,7 @@ export function NotEnrolledUserView({
                 </ul>
               </CardContent>
               <CardFooter>
-                <PaymentDialog user={user} course={course} />
+                <PaymentDialog course={course} />
               </CardFooter>
             </Card>
           </div>

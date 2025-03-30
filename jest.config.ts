@@ -43,83 +43,77 @@ const config: Config = {
   // An array of regexp pattern strings used to skip coverage collection
   coveragePathIgnorePatterns: [
     "/node_modules/",
+    "src/hooks",
     "src/lib/utils.ts",
+    "src/middleware.ts",
+    "src/providers",
+    "src/handler.ts",
+    "src/scripts/seed-admin.ts",
+
+    // src/components
     "src/components/ui",
+    "src/components/dashboard",
+    "src/components/CourseNotFound.tsx",
+    "src/components/InfoRow.tsx",
+    "src/components/LoadingOverlay.tsx",
+    "src/components/PasswordInput.tsx",
+    "src/components/LoadingScreen.tsx",
+    "src/components/active-theme.tsx",
+    "src/components/SubscribeForm.tsx",
+
+    // src/app
+    "src/app/admin",
+    "src/app/dashboard",
+    "src/app/error.tsx",
+    "src/app/loading.tsx",
+    "src/app/not-found.tsx",
     "src/app/page.tsx",
     "src/app/layout.tsx",
-    "src/app/dashboard",
-    "src/hooks",
-    "src/components/dashboard/sidebar/NavUser.tsx",
-    "src/common/index.ts",
-    "src/common/encryption/index.ts",
-    "src/app/signup/page.tsx",
-    "src/app/login/page.tsx",
-    "src/components/dashboard",
 
-    // generate-id
+    // src/app/api (not graphql)
+    "src/app/api/auth",
+    "src/app/api/payment",
+    "src/app/api/email",
+    "src/app/api/health",
+
+    // src/utils
     "src/utils/generate-unique-student-id",
+    "src/utils/validateLessonInput.ts",
+    "src/utils/sanitize.ts",
+    "src/utils/validation.ts",
+    "src/utils/slug-to-label.ts",
 
-    // api
-    "src/handler.ts",
-    "src/app/api/graphql/route.ts",
-    "src/app/api/graphql/index.ts",
-    "src/app/api/graphql/models",
+    // src/app/(auth)
+    "src/app/\\(auth\\)/forgot-password",
+    "src/app/\\(auth\\)/reset-password",
+    "src/app/\\(auth\\)/verify-otp",
+    "src/app/\\(auth\\)/login",
+    "src/app/\\(auth\\)/signup",
+
+    // graphql index.ts
     "src/app/api/graphql/resolvers/index.ts",
-    "src/app/api/graphql/schemas/index.ts",
     "src/app/api/graphql/resolvers/mutations/index.ts",
     "src/app/api/graphql/resolvers/mutations/test/index.ts",
     "src/app/api/graphql/resolvers/mutations/test/index.ts",
     "src/app/api/graphql/resolvers/queries/index.ts",
     "src/app/api/graphql/resolvers/queries/test/index.ts",
-    "src/app/api/graphql/schemas",
 
     // graphQL
+    "src/generated",
+    "src/app/api/graphql/route.ts",
     "src/app/api/graphql/apollo-client.ts",
     "src/app/api/graphql/ApolloWrappre.tsx",
-    "src/generated",
 
-    // encryption
-    "src/common/encryption",
-
-    // seed-admin
-    "src/scripts/seed-admin.ts",
-
-    // auth provider
-    "src/context",
-
-    // түр зуур
-    "src/middleware.ts",
-    "src/providers",
-    "src/app/api/auth",
-    "src/app/\\(auth\\)/forgot-password/page\\.tsx",
-    "src/app/\\(auth\\)/reset-password/page\\.tsx",
-    "src/components/email-template.tsx",
-    "src/app/\\(auth\\)/reset-password",
-    "src/components/otp-input.tsx",
-    "src/app/\\(auth\\)/verify-otp",
-    "src/app/\\(auth\\)/login",
-    "src/app/\\(auth\\)/signup",
-    "src/app/api/graphql/resolvers/mutations/enrollment/create-enrollment.ts",
-    "src/app/admin",
-    "src/app/api/graphql/resolvers/mutations/section",
-    "src/app/api/graphql/resolvers/mutations/lesson/create-lesson-mutation.ts",
-    "src/app/api/graphql/resolvers/queries/course",
+    // src/app/api/graphql/
+    "src/app/api/graphql/models",
+    "src/app/api/graphql/schemas",
     "src/app/api/graphql/resolvers/mutations/enrollment",
-    "src/app/api/graphql/resolvers/queries/enrollment/",
-    "src/app/api/graphql/resolvers/mutations/course/update-course-mutation.ts",
-    "src/app/api/graphql/resolvers/mutations/payment",
-    "src/components",
-    "src/app/error.tsx",
-    "src/app/loading.tsx",
-    "src/app/not-found.tsx",
     "src/app/api/graphql/resolvers/mutations/course",
+    "src/app/api/graphql/resolvers/mutations/payment/updateOrCreateEnrollment.ts",
+    "src/app/api/graphql/resolvers/queries/course",
+    "src/app/api/graphql/resolvers/queries/enrollment/",
     "src/app/api/graphql/resolvers/queries/section",
-    "src/app/api/graphql/resolvers/mutations/user/create-user-mutation.ts",
     "src/app/api/graphql/resolvers/queries/payment",
-    "src/app/api/payment",
-    "src/app/api/email",
-    "src/app/\\(auth\\)/forgot-password",
-    "src/app/api/rate-limit.ts",
   ],
 
   // Indicates which provider should be used to instrument code for coverage

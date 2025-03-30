@@ -21,7 +21,7 @@ import {
   PaymentStatus,
   useUpdatePaymentStatusMutation,
 } from "@/generated/graphql";
-import { Loader } from "lucide-react";
+import { ListTodo, Loader } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { InfoItem } from "./InfoItem";
@@ -101,50 +101,48 @@ export const UpdatePaymentStatus: React.FC<UpdatePaymentStatusProps> = ({
   return (
     <>
       <Button
-        variant="ghost"
+        variant="outline"
         size="sm"
-        className="text-blue-600"
+        className="h-8 w-8"
         onClick={() => setIsOpen(true)}
       >
-        Шинэчлэх
+        <ListTodo />
       </Button>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent>
+        <DialogContent className="bg-white dark:bg-gray-900">
           <DialogHeader>
             <DialogTitle>Төлбөрийн төлөв шинэчлэх</DialogTitle>
             <DialogDescription>Шинэ төлөвийг сонгоно уу.</DialogDescription>
           </DialogHeader>
-          {/* Payment details in a clean, minimal layout */}
-          <div className="rounded-md border bg-gray-50 p-4 shadow-sm">
+
+          {/* Payment details container */}
+          <div className="rounded-md border bg-gray-50 p-4 shadow-xs dark:border-gray-700 dark:bg-gray-800">
             <div className="grid gap-3 sm:grid-cols-2">
               <InfoItem label="User Email" value={payment.userId.email} />
-
               <InfoItem label="Course Title" value={payment.courseId.title} />
               <InfoItem label="Amount" value={`₮ ${payment.amount}`} />
               <InfoItem label="Payment Method" value={payment.paymentMethod} />
-
               <InfoItem
                 label="Transaction Note"
                 value={payment.transactionNote}
                 isBadge={true}
               />
-
               {/* Status with Badge */}
               <InfoItem label="Status" value={payment.status} isBadge={true} />
             </div>
           </div>
 
           {/* Status Selection */}
-          <div className="space-y-3">
+          <div className="mt-4 space-y-3">
             <Select
               value={newStatus}
               onValueChange={(value) => setNewStatus(value)}
             >
-              <SelectTrigger className="w-[200px]">
+              <SelectTrigger className="w-[200px] dark:bg-gray-700 dark:text-white">
                 <SelectValue placeholder="Төлөв сонгох" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="dark:bg-gray-800 dark:text-white">
                 <SelectGroup>
                   {PAYMENT_STATUS_OPTIONS.map((opt) => (
                     <SelectItem key={opt.value} value={opt.value}>
@@ -156,12 +154,12 @@ export const UpdatePaymentStatus: React.FC<UpdatePaymentStatusProps> = ({
             </Select>
           </div>
 
-          {/* REFUNDED сонгосон үед л refundReason оролт гарч ирнэ */}
+          {/* Refund reason input - only when status is "REFUNDED" */}
           {newStatus === "REFUNDED" && (
-            <div>
+            <div className="mt-4">
               <Label
                 htmlFor="refundReason"
-                className="mb-1 text-sm font-semibold"
+                className="mb-1 text-sm font-semibold dark:text-gray-200"
               >
                 Буцаалтын шалтгаан
               </Label>
@@ -170,6 +168,7 @@ export const UpdatePaymentStatus: React.FC<UpdatePaymentStatusProps> = ({
                 placeholder="Буцаалтын шалтгааныг оруулна уу..."
                 value={refundReason}
                 onChange={(e) => setRefundReason(e.target.value)}
+                className="dark:bg-gray-700 dark:text-white"
               />
             </div>
           )}
@@ -183,9 +182,8 @@ export const UpdatePaymentStatus: React.FC<UpdatePaymentStatusProps> = ({
             >
               {loading ? <Loader className="animate-spin" /> : "Шинэчлэх"}
             </Button>
-
             {error && (
-              <p className="mt-2 text-sm text-red-600">
+              <p className="mt-2 text-sm text-red-600 dark:text-red-400">
                 Шинэчлэхэд алдаа гарлаа.
               </p>
             )}

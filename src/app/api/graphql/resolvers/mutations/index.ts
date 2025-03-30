@@ -6,3 +6,4 @@ export * from "./enrollment";
 export * from "./section";
 export * from "./lesson";
 export * from "./payment";
+export * from "./subscriber";

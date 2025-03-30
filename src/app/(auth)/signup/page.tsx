@@ -25,7 +25,7 @@ export default function SignUp() {
   return (
     <main className="grid h-screen grid-cols-1 lg:grid-cols-2">
       <div className="relative hidden lg:block">
-        <div className="absolute inset-0 bg-gradient-to-br from-stone-700 to-zinc-600" />
+        <div className="absolute inset-0 bg-linear-to-br from-stone-700 to-zinc-600" />
         <div className="absolute inset-0 bg-black/50" />
         <div className="relative z-20 flex h-full flex-col items-center justify-between p-8 text-white">
           <Link href="/" className="flex items-center gap-3 text-lg font-bold">
