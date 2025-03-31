@@ -30,11 +30,26 @@ export const getCourseForUser = async (
       });
     }
 
-    // 🔐 Хэрвээ ADMIN бол бүрэн эрхтэйгээр бүх датаг буцаана
+    // Admin enrollment check
     if (user?.role === "ADMIN") {
+      const enrollment = await EnrollmentModel.findOne({
+        courseId: course._id,
+        userId: user._id,
+      });
+
+      const isExpired = enrollmentExpired(enrollment?.expiryDate);
+
+      if (!enrollment || enrollment.status === "EXPIRED" || isExpired) {
+        return {
+          status: "ADMIN_NOT_ENROLLED",
+          coursePreviewData: await getCoursePreview(course._id),
+          fullContent: null,
+        };
+      }
+
       return {
-        status: "ADMIN",
-        coursePreviewData: await getCoursePreview(course._id),
+        status: "ADMIN_ENROLLED",
+        coursePreviewData: null,
         fullContent: await getFullCourseContent(course._id),
       };
     }

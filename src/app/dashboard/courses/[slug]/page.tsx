@@ -29,14 +29,16 @@ export default function CourseDetailPage() {
   if (!courseForUser) return <CourseNotFound />;
 
   switch (courseForUser.status) {
-    case "GUEST":
-    case "NOT_ENROLLED":
-      return <NotEnrolled course={courseForUser.coursePreviewData as Course} />;
-
+    case "ADMIN_ENROLLED":
     case "ENROLLED":
       return <Enrolled course={courseForUser.fullContent as Course} />;
 
+    case "ADMIN_NOT_ENROLLED":
+    case "NOT_ENROLLED":
+    case "GUEST":
+      return <NotEnrolled course={courseForUser.coursePreviewData as Course} />;
+
     default:
-      return <div>Unhandled status</div>;
+      return <div>Unhandled status: {courseForUser.status}</div>;
   }
 }

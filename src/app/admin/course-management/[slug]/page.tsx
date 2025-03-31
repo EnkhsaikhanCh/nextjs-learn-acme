@@ -161,7 +161,8 @@ export default function CourseDetailPage() {
   if (!courseForUser) return <CourseNotFound />;
 
   switch (data.getCourseForUser.status) {
-    case "ADMIN":
+    case "ADMIN_ENROLLED":
+    case "ADMIN_NOT_ENROLLED":
       return (
         <div className="h-screen">
           {isMobile ? (
