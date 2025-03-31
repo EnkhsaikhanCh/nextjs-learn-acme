@@ -197,7 +197,7 @@ export default function Page() {
               setOffset(0);
             }}
             options={[
-              { value: "ALL", label: "All Roles" },
+              { value: "ALL", label: "All Status" },
               { value: "APPROVED", label: "APPROVED" },
               { value: "PENDING", label: "PENDING" },
               { value: "REFUNDED", label: "REFUNDED" },

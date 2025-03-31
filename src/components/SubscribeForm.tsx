@@ -66,7 +66,7 @@ export const SubscribeForm = () => {
             },
           })}
           placeholder="Имайл хаяг"
-          className="rouned-sm h-12"
+          className="rouned-sm h-12 bg-gray-100"
         />
 
         <Button

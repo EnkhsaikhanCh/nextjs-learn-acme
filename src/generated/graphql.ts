@@ -46,6 +46,7 @@ export type Course = {
  * EXPIRED       - Бүртгэл байсан ч хугацаа дууссан
  */
 export enum CourseAccessStatus {
+  Admin = 'ADMIN',
   Enrolled = 'ENROLLED',
   Expired = 'EXPIRED',
   Guest = 'GUEST',
