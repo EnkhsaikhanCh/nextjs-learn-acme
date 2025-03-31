@@ -30,6 +30,15 @@ export const getCourseForUser = async (
       });
     }
 
+    // 🔐 Хэрвээ ADMIN бол бүрэн эрхтэйгээр бүх датаг буцаана
+    if (user?.role === "ADMIN") {
+      return {
+        status: "ADMIN",
+        coursePreviewData: await getCoursePreview(course._id),
+        fullContent: await getFullCourseContent(course._id),
+      };
+    }
+
     // 2. Хэрэглэгч нэвтэрсэн бол Enrollment-ийг шалгах
     const enrollment = await EnrollmentModel.findOne({
       courseId: course._id,

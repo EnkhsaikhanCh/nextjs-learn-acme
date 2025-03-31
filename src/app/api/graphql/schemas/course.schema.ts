@@ -27,6 +27,7 @@ export const typeDefs = gql`
   EXPIRED       - Бүртгэл байсан ч хугацаа дууссан
   """
   enum CourseAccessStatus {
+    ADMIN
     GUEST
     NOT_ENROLLED
     ENROLLED

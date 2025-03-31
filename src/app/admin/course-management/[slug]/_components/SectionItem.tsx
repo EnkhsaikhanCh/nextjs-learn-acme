@@ -9,13 +9,11 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { AddLessonForm } from "./AddLessonForm";
 import {
-  AlertTriangle,
   CircleCheck,
   CircleDot,
   CirclePlus,
   CircleX,
   FilePenLine,
-  Trash2,
 } from "lucide-react";
 import {
   Section,
@@ -24,15 +22,7 @@ import {
 } from "@/generated/graphql";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { motion } from "framer-motion";
+import { ConfirmDeleteDialog } from "@/app/admin/_components/ConfirmDeleteDialog";
 
 interface SectionItemProps {
   section: Section;
@@ -110,13 +100,13 @@ export function SectionItem({
                 />
               ) : (
                 <h2
-                  className="text-lg font-semibold text-gray-800"
+                  className="text-lg font-semibold"
                   onClick={(e) => e.stopPropagation()} // Prevents accordion toggle
                 >
                   {section?.title}
                 </h2>
               )}
-              <div className="flex h-7 w-7 items-center justify-center rounded-full border font-semibold text-gray-800">
+              <div className="flex h-7 w-7 items-center justify-center rounded-full border font-semibold">
                 {lessonCount}
               </div>
             </div>
@@ -141,8 +131,7 @@ export function SectionItem({
                   <Link href="#" className="cursor-pointer">
                     <Button
                       variant="link"
-                      effect="hoverUnderline"
-                      className="cursor-pointer text-base text-gray-700"
+                      className="cursor-pointer text-base"
                       onClick={() => lesson?._id && onLessonSelect(lesson._id)}
                     >
                       {lesson?.title}
@@ -151,7 +140,7 @@ export function SectionItem({
                 </div>
               ))
             ) : (
-              <p className="mb-2 italic text-gray-500">No lessons</p>
+              <p className="mb-2 italic">No lessons</p>
             )}
 
             {/* Add Lesson Form */}
@@ -162,126 +151,65 @@ export function SectionItem({
               />
             )}
 
-            <Button
-              variant="outline"
-              size="sm"
-              className="mt-2 font-semibold"
-              onClick={() => setShowAddLesson(!showAddLesson)}
-            >
-              {showAddLesson ? (
-                <>
-                  Cancel
-                  <CircleX />
-                </>
-              ) : (
-                <>
-                  Add Lesson
-                  <CirclePlus />
-                </>
-              )}
-            </Button>
-            <Button
-              size={"sm"}
-              variant={isEditing ? "destructive" : "outline"}
-              className="ml-1 mt-2 font-semibold"
-              onClick={(e) => {
-                e.stopPropagation(); // Prevents accordion toggle
-                setIsEditing(!isEditing);
-              }}
-            >
-              {isEditing ? (
-                <>
-                  Cancel
-                  <CircleX />
-                </>
-              ) : (
-                <>
-                  Edit Section
-                  <FilePenLine />
-                </>
-              )}
-            </Button>
-            {isEditing && (
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowAddLesson(!showAddLesson)}
+              >
+                {showAddLesson ? (
+                  <>
+                    Cancel
+                    <CircleX />
+                  </>
+                ) : (
+                  <>
+                    Add Lesson
+                    <CirclePlus />
+                  </>
+                )}
+              </Button>
               <Button
                 size={"sm"}
-                variant={"outline"}
-                className="ml-1 mt-2 border-green-500 bg-green-100 font-semibold text-green-500 hover:bg-green-200 hover:text-green-600"
-                onClick={handleSaveTitle}
+                variant={isEditing ? "destructive" : "outline"}
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevents accordion toggle
+                  setIsEditing(!isEditing);
+                }}
               >
-                Save
-              </Button>
-            )}
-            {/* Delete Section */}
-            <Dialog
-              open={isDeleteDialogOpen}
-              onOpenChange={(isOpen) => setIsDeleteDialogOpen(isOpen)}
-            >
-              <DialogTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="ml-1 mt-2 font-semibold"
-                >
-                  Delete Section
-                  <Trash2 />
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="p-0">
-                <DialogHeader className="rounded-t-md border-b border-gray-200 bg-[#FAFAFA] p-4">
-                  <DialogTitle className="flex items-center gap-2 text-lg font-semibold text-destructive">
-                    <AlertTriangle />
-                    Confirm Deletion
-                  </DialogTitle>
-                </DialogHeader>
-                <div className="p-4">
-                  <div className="flex gap-1">
-                    <div>Title:</div>
-                    <div>{section?.title}</div>
-                  </div>
-                  <div className="flex gap-1">
-                    <div>ID:</div>
-                    <div>{section?._id}</div>
-                  </div>
-                </div>
-                {/*  */}
-                <div className="px-4">
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 10 }}
-                    transition={{ duration: 0.2 }}
-                    className="mt-4 rounded-md bg-destructive/10 p-4 text-destructive"
-                  >
-                    <p className="text-sm font-semibold">
-                      This action cannot be undone.
-                    </p>
-                    <p className="mt-1 text-sm">
-                      All associated data will be permanently removed from our
-                      servers.
-                    </p>
-                  </motion.div>
-                </div>
-                <DialogFooter className="border-t border-gray-200 bg-[#FAFAFA] p-4">
-                  <Button
-                    variant="outline"
-                    onClick={() => setIsDeleteDialogOpen(false)}
-                    className="font-semibold"
-                    size={"sm"}
-                  >
+                {isEditing ? (
+                  <>
                     Cancel
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    onClick={handleDeleteSection}
-                    className="font-semibold"
-                    size={"sm"}
-                  >
-                    Delete Section
-                    <Trash2 />
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+                    <CircleX />
+                  </>
+                ) : (
+                  <>
+                    Edit Section
+                    <FilePenLine />
+                  </>
+                )}
+              </Button>
+              {isEditing && (
+                <Button
+                  size={"sm"}
+                  variant={"outline"}
+                  className="border-green-500 bg-green-100 font-semibold text-green-500 hover:bg-green-200 hover:text-green-600"
+                  onClick={handleSaveTitle}
+                >
+                  Save
+                </Button>
+              )}
+
+              {/* Delete Section */}
+              <ConfirmDeleteDialog
+                buttonLabel="Delete Section"
+                label="Section name"
+                name={section.title}
+                onConfirm={handleDeleteSection}
+                open={isDeleteDialogOpen}
+                onOpenChange={setIsDeleteDialogOpen}
+              />
+            </div>
           </div>
         </AccordionContent>
       </AccordionItem>
