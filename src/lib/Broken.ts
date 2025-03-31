@@ -1,2 +1,1 @@
-// lib/Broken.ts
-export const broken = ( )=>{ return <div>   badly formatted </div> }
+export const bad = ()=>{return <span>bad format </span>}
