@@ -114,6 +114,12 @@ const config: Config = {
     "src/app/api/graphql/resolvers/queries/enrollment/",
     "src/app/api/graphql/resolvers/queries/section",
     "src/app/api/graphql/resolvers/queries/payment",
+
+    // Sentry
+    "src/instrumentation-client.ts",
+    "src/instrumentation.ts",
+    "src/app/api/sentry-example-api/route.ts",
+    "src/app/sentry-example-page/page.tsx",
   ],
 
   // Indicates which provider should be used to instrument code for coverage
