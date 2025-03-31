@@ -283,10 +283,10 @@ export const NotEnrolled = ({ course }: { course: Course }) => {
                           value={
                             validPayment?.createdAt
                               ? format(
-                                  new Date(Number(validPayment?.createdAt)),
-                                  "dd-MM-yyyy",
+                                  new Date(validPayment.createdAt),
+                                  "yyyy-MM-dd HH:mm:ss",
                                 )
-                              : "Мэдээлэл байхгүй"
+                              : ""
                           }
                         />
                       </div>
