@@ -18,6 +18,7 @@ interface ActionButtonProps {
     | null
     | undefined;
   type?: "submit" | "reset" | "button" | undefined;
+  dataTestId?: string; // ✅ нэмэгдсэн
 }
 
 export const ActionButton = ({
@@ -29,12 +30,13 @@ export const ActionButton = ({
   disabled,
   variant,
   type,
+  dataTestId = "action-button", // default test ID
 }: ActionButtonProps) => {
   const content = (
     <>
       {label}
       {icon && (
-        <span data-testid="button-icon" aria-hidden="true">
+        <span data-testid={`${dataTestId}-icon`} aria-hidden="true">
           {icon}
         </span>
       )}
@@ -49,6 +51,7 @@ export const ActionButton = ({
           disabled={disabled}
           role="button"
           aria-label={label}
+          data-testid={dataTestId}
         >
           {content}
         </Button>
@@ -64,6 +67,7 @@ export const ActionButton = ({
       disabled={disabled}
       type={type}
       aria-label={label}
+      data-testid={dataTestId}
     >
       {content}
     </Button>

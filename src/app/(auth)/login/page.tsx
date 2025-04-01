@@ -24,14 +24,14 @@ export default function Login() {
   } = useHandleLogin();
 
   return (
-    <div className="flex min-h-svh flex-col items-center gap-6 bg-muted px-4 md:p-10">
+    <div className="bg-muted flex min-h-svh flex-col items-center gap-6 px-4 md:p-10">
       <Toaster position="top-center" expand={false} richColors />
       <div className="flex w-full max-w-sm flex-col gap-6 sm:mx-auto sm:w-full sm:max-w-md">
         <Link
           href="/"
-          className="flex items-center gap-2 self-center font-semibold text-foreground/90"
+          className="text-foreground/90 flex items-center gap-2 self-center font-semibold"
         >
-          <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
+          <div className="bg-primary text-primary-foreground flex h-6 w-6 items-center justify-center rounded-md">
             <Globe className="h-4 w-4" />
           </div>
           OXON
@@ -39,7 +39,7 @@ export default function Login() {
         <div className={cn("flex flex-col gap-3")}>
           <Card className="shadow-none">
             <CardHeader>
-              <CardTitle className="flex items-center gap-3 text-2xl font-bold text-foreground/80">
+              <CardTitle className="text-foreground/80 flex items-center gap-3 text-2xl font-bold">
                 <div className="flex h-10 w-10 items-center justify-center rounded-md border-2 border-blue-500 bg-blue-200">
                   <LogIn className="h-5 w-5 stroke-[2.5] text-blue-600" />
                   <span className="sr-only">Log in</span>
@@ -64,6 +64,7 @@ export default function Login() {
                     error={errors.email}
                     autoComplete="email"
                     tabIndex={1}
+                    dataTestId="login-email"
                   />
 
                   <PasswordInput
@@ -77,6 +78,7 @@ export default function Login() {
                       href: "/forgot-password",
                       label: "Нууц үгээ мартсан уу?",
                     }}
+                    dataTestId="login-password"
                   />
 
                   <ActionButton
@@ -88,6 +90,7 @@ export default function Login() {
                         <LoaderCircle className="animate-spin font-semibold" />
                       )
                     }
+                    dataTestId="login-button"
                   />
                 </div>
               </form>

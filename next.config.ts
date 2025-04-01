@@ -6,6 +6,31 @@ const nextConfig: NextConfig = {
   env: {
     NEXT_PUBLIC_APP_VERSION: require("./package.json").version,
   },
+
+  webpack(config, { dev, isServer }) {
+    // ✅ Istanbul plugin зөвхөн dev + client талд
+    if (dev && !isServer) {
+      const rules = config.module?.rules || [];
+
+      for (const rule of rules) {
+        if (typeof rule !== "string" && rule?.use && Array.isArray(rule.use)) {
+          for (const use of rule.use) {
+            if (
+              typeof use !== "string" &&
+              use?.loader?.includes("babel-loader")
+            ) {
+              use.options = {
+                ...use.options,
+                plugins: [...(use.options.plugins || []), "istanbul"],
+              };
+            }
+          }
+        }
+      }
+    }
+
+    return config;
+  },
 };
 
 export default withSentryConfig(nextConfig, {

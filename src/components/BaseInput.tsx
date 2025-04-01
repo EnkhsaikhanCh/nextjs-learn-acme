@@ -7,9 +7,9 @@ import { AlertCircle } from "lucide-react";
 interface BaseInputProp {
   label: string;
   id?: string;
-  value: string; // Controlled компонент тул заавал байх ёстой
+  value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  error?: string; // Зөвхөн string эсвэл undefined
+  error?: string;
   required?: boolean;
   placeholder?: string;
   autoComplete?: string;
@@ -17,8 +17,9 @@ interface BaseInputProp {
   labelExtra?: ReactNode;
   description?: string;
   tabIndex?: number;
-  className?: string; // Контейнерын стиль
-  inputClassName?: string; // Input-ийн стиль
+  className?: string;
+  inputClassName?: string;
+  dataTestId?: string; // ✅ шинээр нэмэгдсэн prop
 }
 
 export const BaseInput = ({
@@ -36,16 +37,16 @@ export const BaseInput = ({
   tabIndex,
   className,
   inputClassName,
+  dataTestId = "base-input", // ✅ default test ID
 }: BaseInputProp) => {
   const inputId = id || `input-${label.replace(/\s+/g, "-").toLowerCase()}`;
   const inputRef = useRef<HTMLInputElement>(null);
-  const [hasFocused, setHasFocused] = useState(false); // Фокус хийгдсэн эсэхийг хянах
+  const [hasFocused, setHasFocused] = useState(false);
 
-  // Анхны алдаанд фокус хийх логик
   useEffect(() => {
     if (error && !hasFocused && inputRef.current) {
       inputRef.current.focus();
-      setHasFocused(true); // Дараа нь дахин фокус хийхгүй
+      setHasFocused(true);
     }
   }, [error, hasFocused]);
 
@@ -54,9 +55,16 @@ export const BaseInput = ({
   const ariaDescribedBy = [descriptionId, errorId].filter(Boolean).join(" ");
 
   return (
-    <div className={`grid gap-2 ${className || ""}`}>
+    <div
+      className={`grid gap-2 ${className || ""}`}
+      data-testid={`${dataTestId}-container`}
+    >
       <div className="flex items-center justify-between">
-        <Label htmlFor={inputId} className="font-semibold">
+        <Label
+          htmlFor={inputId}
+          className="font-semibold"
+          data-testid={`${dataTestId}-label`}
+        >
           {label} {required && <span className="text-red-500">*</span>}
         </Label>
         {labelExtra && <div className="text-sm">{labelExtra}</div>}
@@ -76,13 +84,15 @@ export const BaseInput = ({
         aria-describedby={ariaDescribedBy || undefined}
         className={`border bg-gray-50 ${
           error ? "border-red-500" : "border-gray-300"
-        } focus:outline-hidden focus:ring-2 focus:ring-blue-500 ${inputClassName || ""}`}
+        } focus:ring-2 focus:ring-blue-500 focus:outline-hidden ${inputClassName || ""}`}
+        data-testid={`${dataTestId}-input`}
       />
 
       {description && (
         <p
           id={descriptionId}
           className={`-mt-1 text-xs text-gray-500 ${error ? "text-red-500" : ""}`}
+          data-testid={`${dataTestId}-description`}
         >
           {description}
         </p>
@@ -96,6 +106,7 @@ export const BaseInput = ({
             id={errorId}
             className="flex items-center gap-2 font-semibold text-red-500"
             role="alert"
+            data-testid={`${dataTestId}-error`}
           >
             <AlertCircle size={16} />
             <span className="text-sm">{error}</span>

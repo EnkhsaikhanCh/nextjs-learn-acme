@@ -37,6 +37,8 @@ interface PasswordInputProps {
   inputClassName?: string;
   /** Label дээр нэмэлт CSS класс */
   labelClassName?: string;
+  /** Cypress test */
+  dataTestId?: string;
 }
 
 export const PasswordInput = ({
@@ -52,15 +54,19 @@ export const PasswordInput = ({
   className,
   inputClassName,
   labelClassName,
-}: PasswordInputProps) => {
+  dataTestId = "password-input", // ✅ default test ID
+}: PasswordInputProps & { dataTestId?: string }) => {
   const [isVisible, setIsVisible] = useState(false);
-
   const toggleVisibility = () => setIsVisible((prev) => !prev);
 
   return (
-    <div className={className}>
+    <div className={className} data-testid={`${dataTestId}-container`}>
       <div className="mb-1 flex items-center justify-between">
-        <Label htmlFor={id} className={`font-semibold ${labelClassName || ""}`}>
+        <Label
+          htmlFor={id}
+          className={`font-semibold ${labelClassName || ""}`}
+          data-testid={`${dataTestId}-label`}
+        >
           {label}
         </Label>
         {actionLink && (
@@ -71,6 +77,7 @@ export const PasswordInput = ({
               className={`cursor-pointer text-sm font-semibold text-blue-600 hover:text-blue-500 ${
                 actionLink.className || ""
               }`}
+              data-testid={`${dataTestId}-action-link`}
             >
               {actionLink.label}
             </Link>
@@ -88,17 +95,19 @@ export const PasswordInput = ({
           value={value}
           onChange={onChange}
           autoComplete={autoComplete}
-          aria-invalid={errorMessage ? "true" : "false"}
+          aria-invalid={!!errorMessage}
           aria-describedby={errorMessage ? `${id}-error` : undefined}
+          data-testid={`${dataTestId}-input`}
         />
         {showToggleVisibility && (
           <button
-            className="absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-lg text-muted-foreground/80 outline-offset-2 transition-colors hover:text-foreground focus:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring/70 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
             type="button"
             onClick={toggleVisibility}
             aria-label={isVisible ? "Hide password" : "Show password"}
             aria-pressed={isVisible}
             aria-controls={id}
+            data-testid={`${dataTestId}-toggle`}
+            className="text-muted-foreground/80 hover:text-foreground focus-visible:outline-ring/70 absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-lg outline-offset-2 transition-colors focus:z-10 focus-visible:outline focus-visible:outline-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isVisible ? (
               <EyeOff size={16} strokeWidth={2} aria-hidden="true" />
@@ -115,6 +124,7 @@ export const PasswordInput = ({
             animate={{ opacity: 1, y: 0 }}
             className="mt-2 flex items-center gap-2 font-semibold text-red-500"
             role="alert"
+            data-testid={`${dataTestId}-error`}
           >
             <AlertCircle size={16} />
             <span className="text-sm">{errorMessage}</span>
