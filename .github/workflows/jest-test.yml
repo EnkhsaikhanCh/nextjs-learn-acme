@@ -6,8 +6,8 @@ jobs:
   test:
     runs-on: ubuntu-latest
     env:
-      REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
-      REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
+      UPSTASH_REDIS_REST_URLL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
+      UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
 
     steps:
       - name: Checkout code
