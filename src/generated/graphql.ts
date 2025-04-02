@@ -155,6 +155,11 @@ export enum EnrollmentStatus {
   Pending = 'PENDING'
 }
 
+export type GenerateTempTokenResponse = {
+  __typename?: 'GenerateTempTokenResponse';
+  token: Scalars['String']['output'];
+};
+
 export type Lesson = {
   __typename?: 'Lesson';
   _id: Scalars['ID']['output'];
@@ -183,6 +188,7 @@ export type Mutation = {
   deleteSection: DeleteSectionResponse;
   deleteTest: Test;
   deleteUser: User;
+  generateTempToken: GenerateTempTokenResponse;
   markLessonAsCompleted?: Maybe<Enrollment>;
   undoLessonCompletion?: Maybe<Enrollment>;
   updateCourse: Course;
@@ -257,6 +263,11 @@ export type MutationDeleteTestArgs = {
 
 export type MutationDeleteUserArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type MutationGenerateTempTokenArgs = {
+  email: Scalars['String']['input'];
 };
 
 
@@ -669,6 +680,13 @@ export type UndoLessonCompletionInput = {
   lessonId: Scalars['ID']['input'];
 };
 
+export type GenerateTempTokenMutationVariables = Exact<{
+  email: Scalars['String']['input'];
+}>;
+
+
+export type GenerateTempTokenMutation = { __typename?: 'Mutation', generateTempToken: { __typename?: 'GenerateTempTokenResponse', token: string } };
+
 export type CreateCourseMutationVariables = Exact<{
   input: CreateCourseInput;
 }>;
@@ -924,6 +942,39 @@ export type GetUserByIdQueryVariables = Exact<{
 export type GetUserByIdQuery = { __typename?: 'Query', getUserById: { __typename?: 'User', _id: string, email: string, studentId?: string | null, role: Role, isVerified: boolean } };
 
 
+export const GenerateTempTokenDocument = gql`
+    mutation GenerateTempToken($email: String!) {
+  generateTempToken(email: $email) {
+    token
+  }
+}
+    `;
+export type GenerateTempTokenMutationFn = Apollo.MutationFunction<GenerateTempTokenMutation, GenerateTempTokenMutationVariables>;
+
+/**
+ * __useGenerateTempTokenMutation__
+ *
+ * To run a mutation, you first call `useGenerateTempTokenMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useGenerateTempTokenMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [generateTempTokenMutation, { data, loading, error }] = useGenerateTempTokenMutation({
+ *   variables: {
+ *      email: // value for 'email'
+ *   },
+ * });
+ */
+export function useGenerateTempTokenMutation(baseOptions?: Apollo.MutationHookOptions<GenerateTempTokenMutation, GenerateTempTokenMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<GenerateTempTokenMutation, GenerateTempTokenMutationVariables>(GenerateTempTokenDocument, options);
+      }
+export type GenerateTempTokenMutationHookResult = ReturnType<typeof useGenerateTempTokenMutation>;
+export type GenerateTempTokenMutationResult = Apollo.MutationResult<GenerateTempTokenMutation>;
+export type GenerateTempTokenMutationOptions = Apollo.BaseMutationOptions<GenerateTempTokenMutation, GenerateTempTokenMutationVariables>;
 export const CreateCourseDocument = gql`
     mutation CreateCourse($input: CreateCourseInput!) {
   createCourse(input: $input) {

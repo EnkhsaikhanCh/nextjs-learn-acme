@@ -1,4 +1,7 @@
-import { useCreateUserMutation } from "@/generated/graphql";
+import {
+  useCreateUserMutation,
+  useGenerateTempTokenMutation,
+} from "@/generated/graphql";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -22,6 +25,7 @@ export const useHandleRegister = () => {
   const sanitizedEmail = sanitizeInput(email);
 
   const [createUser] = useCreateUserMutation();
+  const [generateTempToken] = useGenerateTempTokenMutation();
 
   const passwordRequirements = [
     { regex: /.{8,}/, text: "Нууц үг хамгийн багадаа 8 тэмдэгт байх ёстой" },
@@ -66,18 +70,14 @@ export const useHandleRegister = () => {
       });
 
       if (data?.createUser?.user) {
-        // Токен үүсгэх
-        const tokenResponse = await fetch("/api/auth/generate-temp-token", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: sanitizedEmail }),
+        const tempTokenResponse = await generateTempToken({
+          variables: { email: sanitizedEmail },
         });
 
-        if (!tokenResponse.ok) {
-          throw new Error("Токен үүсгэхэд алдаа гарлаа.");
+        const token = tempTokenResponse.data?.generateTempToken.token;
+        if (!token) {
+          throw new Error("Токен хүлээн авахад алдаа гарлаа.");
         }
-
-        const { token } = await tokenResponse.json();
 
         localStorage.setItem("tempToken", token);
 

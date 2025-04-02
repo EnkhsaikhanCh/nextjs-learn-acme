@@ -1,7 +1,6 @@
 "use client";
 
 import { CheckIcon, Globe, LoaderCircle, User, XIcon } from "lucide-react";
-import { Toaster } from "sonner";
 import { BaseInput } from "@/components/BaseInput";
 import { ActionButton } from "@/components/ActionButton";
 import Link from "next/link";
@@ -41,13 +40,11 @@ export default function SignUp() {
       </div>
 
       <div className="flex flex-col items-center justify-center gap-3 bg-gray-50 p-4 sm:p-8">
-        <Toaster position="top-right" richColors expand={false} />
-
         <Link
           href="/"
           className="mb-3 flex items-center justify-center gap-2 text-lg font-semibold"
         >
-          <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
+          <div className="bg-primary text-primary-foreground flex h-6 w-6 items-center justify-center rounded-md">
             <Globe className="h-4 w-4" />
           </div>
           OXON
@@ -55,14 +52,14 @@ export default function SignUp() {
 
         <Card className="w-full max-w-md shadow-none">
           <CardHeader>
-            <CardTitle className="flex items-center gap-3 text-2xl font-bold text-foreground/80">
+            <CardTitle className="text-foreground/80 flex items-center gap-3 text-2xl font-bold">
               <div className="flex h-10 w-10 items-center justify-center rounded-md border-2 border-green-500 bg-green-200">
                 <User className="h-6 w-6 stroke-[2.5] text-green-600" />
                 <span className="sr-only">Sing up</span>
               </div>
               <p>Шинэ бүртгэл үүсгэх</p>
             </CardTitle>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               Доорх мэдээллийг бөглөж бүртгэлээ үүсгэнэ үү
             </p>
           </CardHeader>

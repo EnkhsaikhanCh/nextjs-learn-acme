@@ -1,0 +1,6 @@
+# Mutations
+mutation GenerateTempToken($email: String!) {
+  generateTempToken(email: $email) {
+    token
+  }
+}
