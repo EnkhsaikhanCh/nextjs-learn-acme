@@ -1,6 +1,7 @@
 import {
   useCreateUserMutation,
   useGenerateTempTokenMutation,
+  useSendOtpMutation,
 } from "@/generated/graphql";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -26,6 +27,7 @@ export const useHandleRegister = () => {
 
   const [createUser] = useCreateUserMutation();
   const [generateTempToken] = useGenerateTempTokenMutation();
+  const [sendOTP] = useSendOtpMutation();
 
   const passwordRequirements = [
     { regex: /.{8,}/, text: "Нууц үг хамгийн багадаа 8 тэмдэгт байх ёстой" },
@@ -82,14 +84,11 @@ export const useHandleRegister = () => {
         localStorage.setItem("tempToken", token);
 
         // OTP илгээх
-        const otpResponse = await fetch("/api/auth/send-otp", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: sanitizedEmail }),
+        const otpResponse = await sendOTP({
+          variables: { email: sanitizedEmail },
         });
-
-        if (!otpResponse.ok) {
-          throw new Error("OTP илгээхэд алдаа гарлаа.");
+        if (!otpResponse) {
+          throw new Error("OTP илгээхэд алдаа гарлаа");
         }
 
         toast.success("OTP код амжилттай илгээгдлээ!");

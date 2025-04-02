@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { getSession, signIn, signOut } from "next-auth/react";
+import { useSendOtpMutation } from "@/generated/graphql";
 
 export const useOTPVerification = () => {
   const [email, setEmail] = useState<string | null>(null);
@@ -14,6 +15,8 @@ export const useOTPVerification = () => {
   const [success, setSuccess] = useState<boolean>(false);
   const [resendTimer, setResendTimer] = useState<number>(0);
   const router = useRouter();
+
+  const [sendOTP] = useSendOtpMutation();
 
   // Хэрэглэгчийг гаргах функц
   const handleSignOut = async () => {
@@ -145,13 +148,10 @@ export const useOTPVerification = () => {
     setResendTimer(60);
 
     try {
-      const response = await fetch("/api/auth/send-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+      const otpResponse = await sendOTP({
+        variables: { email: email as string },
       });
-
-      if (!response.ok) {
+      if (!otpResponse) {
         throw new Error(
           "И-мэйл баталгаажуулах кодыг дахин илгээж чадсангүй. Дахин оролдоно уу.",
         );
