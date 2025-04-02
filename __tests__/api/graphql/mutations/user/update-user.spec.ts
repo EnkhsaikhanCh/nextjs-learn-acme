@@ -1,13 +1,9 @@
 // src/app/api/graphql/resolver/mutation/user/update-user-mutation.test.ts
 import { GraphQLError } from "graphql";
-import { requireAuthAndRoles } from "../../../../../src/lib/auth-utils";
-import { UserModel } from "../../../../../src/app/api/graphql/models/user.model";
-import { updateUser } from "../../../../../src/app/api/graphql/resolvers/mutations";
-import {
-  Role,
-  User,
-  UpdateUserInput,
-} from "../../../../../src/generated/graphql";
+import { requireAuthAndRoles } from "@/lib/auth-utils";
+import { UserModel } from "@/app/api/graphql/models/user.model";
+import { updateUser } from "@/app/api/graphql/resolvers/mutations/user/update-user-mutation";
+import { Role, User, UpdateUserInput } from "@/generated/graphql";
 
 jest.mock("../../../../../src/lib/auth-utils", () => ({
   requireAuthAndRoles: jest.fn(),
