@@ -190,6 +190,7 @@ export type Mutation = {
   deleteUser: User;
   generateTempToken: GenerateTempTokenResponse;
   markLessonAsCompleted?: Maybe<Enrollment>;
+  sendOTP: SendOtpResponse;
   undoLessonCompletion?: Maybe<Enrollment>;
   updateCourse: Course;
   updateEnrollment?: Maybe<Enrollment>;
@@ -273,6 +274,11 @@ export type MutationGenerateTempTokenArgs = {
 
 export type MutationMarkLessonAsCompletedArgs = {
   input?: InputMaybe<MarkLessonAsCompletedInput>;
+};
+
+
+export type MutationSendOtpArgs = {
+  email: Scalars['String']['input'];
 };
 
 
@@ -562,6 +568,12 @@ export type Section = {
   updatedAt: Scalars['String']['output'];
 };
 
+export type SendOtpResponse = {
+  __typename?: 'SendOTPResponse';
+  message?: Maybe<Scalars['String']['output']>;
+  success: Scalars['Boolean']['output'];
+};
+
 export type SubscribeInput = {
   email: Scalars['String']['input'];
 };
@@ -686,6 +698,13 @@ export type GenerateTempTokenMutationVariables = Exact<{
 
 
 export type GenerateTempTokenMutation = { __typename?: 'Mutation', generateTempToken: { __typename?: 'GenerateTempTokenResponse', token: string } };
+
+export type SendOtpMutationVariables = Exact<{
+  email: Scalars['String']['input'];
+}>;
+
+
+export type SendOtpMutation = { __typename?: 'Mutation', sendOTP: { __typename?: 'SendOTPResponse', success: boolean, message?: string | null } };
 
 export type CreateCourseMutationVariables = Exact<{
   input: CreateCourseInput;
@@ -975,6 +994,40 @@ export function useGenerateTempTokenMutation(baseOptions?: Apollo.MutationHookOp
 export type GenerateTempTokenMutationHookResult = ReturnType<typeof useGenerateTempTokenMutation>;
 export type GenerateTempTokenMutationResult = Apollo.MutationResult<GenerateTempTokenMutation>;
 export type GenerateTempTokenMutationOptions = Apollo.BaseMutationOptions<GenerateTempTokenMutation, GenerateTempTokenMutationVariables>;
+export const SendOtpDocument = gql`
+    mutation SendOTP($email: String!) {
+  sendOTP(email: $email) {
+    success
+    message
+  }
+}
+    `;
+export type SendOtpMutationFn = Apollo.MutationFunction<SendOtpMutation, SendOtpMutationVariables>;
+
+/**
+ * __useSendOtpMutation__
+ *
+ * To run a mutation, you first call `useSendOtpMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSendOtpMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [sendOtpMutation, { data, loading, error }] = useSendOtpMutation({
+ *   variables: {
+ *      email: // value for 'email'
+ *   },
+ * });
+ */
+export function useSendOtpMutation(baseOptions?: Apollo.MutationHookOptions<SendOtpMutation, SendOtpMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SendOtpMutation, SendOtpMutationVariables>(SendOtpDocument, options);
+      }
+export type SendOtpMutationHookResult = ReturnType<typeof useSendOtpMutation>;
+export type SendOtpMutationResult = Apollo.MutationResult<SendOtpMutation>;
+export type SendOtpMutationOptions = Apollo.BaseMutationOptions<SendOtpMutation, SendOtpMutationVariables>;
 export const CreateCourseDocument = gql`
     mutation CreateCourse($input: CreateCourseInput!) {
   createCourse(input: $input) {
