@@ -1,4 +1,7 @@
-import { useGenerateTempTokenMutation } from "@/generated/graphql";
+import {
+  useGenerateTempTokenMutation,
+  useSendOtpMutation,
+} from "@/generated/graphql";
 import { getSession, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -32,6 +35,7 @@ export const useHandleLogin = () => {
   const [errors, setErrors] = useState<ErrorState>({});
 
   const [generateTempToken] = useGenerateTempTokenMutation();
+  const [sendOTP] = useSendOtpMutation();
 
   const router = useRouter();
 
@@ -79,14 +83,11 @@ export const useHandleLogin = () => {
           localStorage.setItem("tempToken", token);
 
           // OTP илгээх
-          const otpResponse = await fetch("/api/auth/send-otp", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email: email }),
+          const otpResponse = await sendOTP({
+            variables: { email: email },
           });
-
-          if (!otpResponse.ok) {
-            throw new Error("OTP илгээхэд алдаа гарлаа.");
+          if (!otpResponse) {
+            throw new Error("OTP илгээхэд алдаа гарлаа");
           }
 
           toast.success("OTP код амжилттай илгээгдлээ!");
