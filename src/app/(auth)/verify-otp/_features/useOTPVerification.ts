@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { getSession, signIn, signOut } from "next-auth/react";
-import { useSendOtpMutation } from "@/generated/graphql";
+import { useSendOtpMutation, useVerifyOtpMutation } from "@/generated/graphql";
 
 export const useOTPVerification = () => {
   const [email, setEmail] = useState<string | null>(null);
@@ -17,6 +17,7 @@ export const useOTPVerification = () => {
   const router = useRouter();
 
   const [sendOTP] = useSendOtpMutation();
+  const [verifyOTP] = useVerifyOtpMutation();
 
   // Хэрэглэгчийг гаргах функц
   const handleSignOut = async () => {
@@ -87,17 +88,15 @@ export const useOTPVerification = () => {
     }
 
     try {
-      const response = await fetch("/api/auth/verify-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp }),
+      const { data, errors } = await verifyOTP({
+        variables: { email: email as string, otp },
       });
 
-      const data = await response.json();
+      if (errors || !data?.verifyOTP?.signInToken) {
+        const errorMessage = errors ? errors[0].message : "Код буруу байна.";
 
-      if (!response.ok) {
-        setError(data.error || "Код буруу байна.");
-        toast.error(data.error || "Баталгаажуулалт амжилтгүй боллоо.");
+        setError(errorMessage);
+        toast.error(errorMessage || "Баталгаажуулалт амжилтгүй боллоо.");
       } else {
         setSuccess(true);
         setOtp("");
@@ -107,7 +106,7 @@ export const useOTPVerification = () => {
         const result = await signIn("credentials", {
           redirect: false,
           email,
-          signInToken: data.signInToken,
+          signInToken: data.verifyOTP.signInToken,
         });
 
         if (result?.error) {
