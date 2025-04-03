@@ -40,17 +40,34 @@ export const useOTPVerification = () => {
       handleSignOut();
       return;
     }
+
     setIsLoading(true);
-    fetchEmail({ variables: { token: tempToken } });
-  }, [fetchEmail]);
+
+    fetchEmail({ variables: { token: tempToken } }).finally(() => {
+      setIsLoading(false);
+    });
+  }, []);
 
   // When email query returns, update state or sign out if error
   useEffect(() => {
+    if (loading) return; // Query ажиллаж байгаа үед юу ч хийхгүй
+
+    // Зөв имэйл ирсэн бол
     if (data?.getEmailFromToken?.email) {
       setEmail(data.getEmailFromToken.email);
-    } else if (!loading && (getEmailError || !data?.getEmailFromToken?.email)) {
-      const errorMessage = getEmailError?.message || "Имэйл олдсонгүй";
-      toast.error(errorMessage);
+      return;
+    }
+
+    // Хэрэв fetch хийгдэж дууссан ч email ирээгүй бол sign out хийх
+    if (!loading && data && !data.getEmailFromToken?.email) {
+      toast.error("Имэйл олдсонгүй");
+      handleSignOut();
+      return;
+    }
+
+    // Хэрэв GraphQL error байвал
+    if (getEmailError) {
+      toast.error(getEmailError.message);
       handleSignOut();
     }
   }, [data, loading, getEmailError]);
@@ -83,14 +100,13 @@ export const useOTPVerification = () => {
     }
 
     try {
-      const verifyResult = await verifyOTP({
+      const { data } = await verifyOTP({
         variables: { email: email as string, otp },
       });
 
-      if (!verifyResult.data?.verifyOTP?.signInToken) {
-        const errorMessage = "Код буруу байна. Дахин оролдоно уу.";
-        setError(errorMessage);
-        toast.error(errorMessage);
+      if (!data?.verifyOTP?.success) {
+        toast.error(data?.verifyOTP?.message);
+        setError(data?.verifyOTP?.message || "Код буруу байна.");
         return;
       } else {
         setSuccess(true);
@@ -101,7 +117,7 @@ export const useOTPVerification = () => {
         const result = await signIn("credentials", {
           redirect: false,
           email,
-          signInToken: verifyResult.data.verifyOTP.signInToken,
+          signInToken: data?.verifyOTP.signInToken,
         });
 
         if (result?.error) {
@@ -121,8 +137,7 @@ export const useOTPVerification = () => {
           }
         }
       }
-    } catch (err) {
-      console.error(err);
+    } catch {
       setError("Баталгаажуулалт явцад алдаа гарлаа. Дахин оролдоно уу.");
       toast.error("Баталгаажуулалт амжилтгүй боллоо. Дахин оролдоно уу.");
     } finally {
@@ -152,8 +167,7 @@ export const useOTPVerification = () => {
       toast.success(
         "И-мэйл баталгаажуулах код таны имэйл рүү дахин илгээгдлээ.",
       );
-    } catch (error) {
-      console.error(error);
+    } catch {
       toast.error("И-мэйл баталгаажуулах код дахин илгээхэд алдаа гарлаа.");
     } finally {
       setIsResending(false);
