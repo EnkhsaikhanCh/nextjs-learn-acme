@@ -690,7 +690,8 @@ export type UserPaginationResult = {
 export type VerifyOtpResponse = {
   __typename?: 'VerifyOTPResponse';
   message: Scalars['String']['output'];
-  signInToken: Scalars['String']['output'];
+  signInToken?: Maybe<Scalars['String']['output']>;
+  success: Scalars['Boolean']['output'];
 };
 
 export type WhyChoose = {
@@ -736,7 +737,7 @@ export type VerifyOtpMutationVariables = Exact<{
 }>;
 
 
-export type VerifyOtpMutation = { __typename?: 'Mutation', verifyOTP: { __typename?: 'VerifyOTPResponse', message: string, signInToken: string } };
+export type VerifyOtpMutation = { __typename?: 'Mutation', verifyOTP: { __typename?: 'VerifyOTPResponse', success: boolean, message: string, signInToken?: string | null } };
 
 export type GetEmailFromTokenQueryVariables = Exact<{
   token: Scalars['String']['input'];
@@ -1070,6 +1071,7 @@ export type SendOtpMutationOptions = Apollo.BaseMutationOptions<SendOtpMutation,
 export const VerifyOtpDocument = gql`
     mutation VerifyOTP($email: String!, $otp: String!) {
   verifyOTP(email: $email, otp: $otp) {
+    success
     message
     signInToken
   }

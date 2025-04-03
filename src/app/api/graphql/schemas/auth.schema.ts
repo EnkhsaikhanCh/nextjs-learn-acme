@@ -22,8 +22,9 @@ export const typeDefs = gql`
   }
 
   type VerifyOTPResponse {
+    success: Boolean!
     message: String!
-    signInToken: String!
+    signInToken: String
   }
 
   type GetEmailFromTokenResponse {

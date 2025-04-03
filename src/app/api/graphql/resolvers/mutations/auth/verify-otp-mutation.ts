@@ -51,11 +51,12 @@ export const verifyOTP = async (
       });
     }
 
-    // Check if OTP matches
     if (String(storedOtp) !== String(otp)) {
-      throw new GraphQLError("OTP код буруу байна.", {
-        extensions: { code: "BAD_REQUEST" },
-      });
+      return {
+        success: false,
+        message: "OTP код буруу байна.",
+        signInToken: null,
+      };
     }
 
     // Update the user's verification status in the database
@@ -80,6 +81,7 @@ export const verifyOTP = async (
     }); // 5 minutes expiry
 
     return {
+      success: true,
       message: "И-мэйл амжилттай баталгаажлаа.",
       signInToken,
     };
