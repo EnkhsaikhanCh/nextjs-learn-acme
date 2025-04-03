@@ -1,7 +1,6 @@
 // src/app/(auth)/verify-otp/page.tsx
 "use client";
 
-import { Toaster } from "sonner";
 import { LoadingUI } from "./_components/LoadingUI";
 import { ErrorUI } from "./_components/ErrorUI";
 import { motion } from "framer-motion";

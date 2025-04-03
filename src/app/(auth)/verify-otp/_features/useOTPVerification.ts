@@ -46,7 +46,7 @@ export const useOTPVerification = () => {
     fetchEmail({ variables: { token: tempToken } }).finally(() => {
       setIsLoading(false);
     });
-  }, []);
+  }, [fetchEmail]);
 
   // When email query returns, update state or sign out if error
   useEffect(() => {
