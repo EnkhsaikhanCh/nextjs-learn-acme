@@ -11,3 +11,10 @@ mutation SendOTP($email: String!) {
     message
   }
 }
+
+mutation VerifyOTP($email: String!, $otp: String!) {
+  verifyOTP(email: $email, otp: $otp) {
+    message
+    signInToken
+  }
+}

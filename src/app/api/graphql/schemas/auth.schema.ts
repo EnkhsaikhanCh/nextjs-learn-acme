@@ -5,6 +5,7 @@ export const typeDefs = gql`
   type Mutation {
     generateTempToken(email: String!): GenerateTempTokenResponse!
     sendOTP(email: String!): SendOTPResponse!
+    verifyOTP(email: String!, otp: String!): VerifyOTPResponse!
   }
 
   type GenerateTempTokenResponse {
@@ -14,5 +15,10 @@ export const typeDefs = gql`
   type SendOTPResponse {
     success: Boolean!
     message: String
+  }
+
+  type VerifyOTPResponse {
+    message: String!
+    signInToken: String!
   }
 `;

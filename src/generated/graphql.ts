@@ -199,6 +199,7 @@ export type Mutation = {
   updateSection: Section;
   updateTest: Test;
   updateUser: User;
+  verifyOTP: VerifyOtpResponse;
 };
 
 
@@ -325,6 +326,12 @@ export type MutationUpdateTestArgs = {
 export type MutationUpdateUserArgs = {
   _id: Scalars['ID']['input'];
   input: UpdateUserInput;
+};
+
+
+export type MutationVerifyOtpArgs = {
+  email: Scalars['String']['input'];
+  otp: Scalars['String']['input'];
 };
 
 export type Payment = {
@@ -669,6 +676,12 @@ export type UserPaginationResult = {
   users: Array<User>;
 };
 
+export type VerifyOtpResponse = {
+  __typename?: 'VerifyOTPResponse';
+  message: Scalars['String']['output'];
+  signInToken: Scalars['String']['output'];
+};
+
 export type WhyChoose = {
   __typename?: 'WhyChoose';
   description?: Maybe<Scalars['String']['output']>;
@@ -705,6 +718,14 @@ export type SendOtpMutationVariables = Exact<{
 
 
 export type SendOtpMutation = { __typename?: 'Mutation', sendOTP: { __typename?: 'SendOTPResponse', success: boolean, message?: string | null } };
+
+export type VerifyOtpMutationVariables = Exact<{
+  email: Scalars['String']['input'];
+  otp: Scalars['String']['input'];
+}>;
+
+
+export type VerifyOtpMutation = { __typename?: 'Mutation', verifyOTP: { __typename?: 'VerifyOTPResponse', message: string, signInToken: string } };
 
 export type CreateCourseMutationVariables = Exact<{
   input: CreateCourseInput;
@@ -1028,6 +1049,41 @@ export function useSendOtpMutation(baseOptions?: Apollo.MutationHookOptions<Send
 export type SendOtpMutationHookResult = ReturnType<typeof useSendOtpMutation>;
 export type SendOtpMutationResult = Apollo.MutationResult<SendOtpMutation>;
 export type SendOtpMutationOptions = Apollo.BaseMutationOptions<SendOtpMutation, SendOtpMutationVariables>;
+export const VerifyOtpDocument = gql`
+    mutation VerifyOTP($email: String!, $otp: String!) {
+  verifyOTP(email: $email, otp: $otp) {
+    message
+    signInToken
+  }
+}
+    `;
+export type VerifyOtpMutationFn = Apollo.MutationFunction<VerifyOtpMutation, VerifyOtpMutationVariables>;
+
+/**
+ * __useVerifyOtpMutation__
+ *
+ * To run a mutation, you first call `useVerifyOtpMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useVerifyOtpMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [verifyOtpMutation, { data, loading, error }] = useVerifyOtpMutation({
+ *   variables: {
+ *      email: // value for 'email'
+ *      otp: // value for 'otp'
+ *   },
+ * });
+ */
+export function useVerifyOtpMutation(baseOptions?: Apollo.MutationHookOptions<VerifyOtpMutation, VerifyOtpMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<VerifyOtpMutation, VerifyOtpMutationVariables>(VerifyOtpDocument, options);
+      }
+export type VerifyOtpMutationHookResult = ReturnType<typeof useVerifyOtpMutation>;
+export type VerifyOtpMutationResult = Apollo.MutationResult<VerifyOtpMutation>;
+export type VerifyOtpMutationOptions = Apollo.BaseMutationOptions<VerifyOtpMutation, VerifyOtpMutationVariables>;
 export const CreateCourseDocument = gql`
     mutation CreateCourse($input: CreateCourseInput!) {
   createCourse(input: $input) {
