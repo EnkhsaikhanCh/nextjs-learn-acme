@@ -18,3 +18,10 @@ mutation VerifyOTP($email: String!, $otp: String!) {
     signInToken
   }
 }
+
+# Queries
+query GetEmailFromToken($token: String!) {
+  getEmailFromToken(token: $token) {
+    email
+  }
+}

@@ -2,6 +2,10 @@
 import gql from "graphql-tag";
 
 export const typeDefs = gql`
+  type Query {
+    getEmailFromToken(token: String!): GetEmailFromTokenResponse!
+  }
+
   type Mutation {
     generateTempToken(email: String!): GenerateTempTokenResponse!
     sendOTP(email: String!): SendOTPResponse!
@@ -20,5 +24,9 @@ export const typeDefs = gql`
   type VerifyOTPResponse {
     message: String!
     signInToken: String!
+  }
+
+  type GetEmailFromTokenResponse {
+    email: String!
   }
 `;
