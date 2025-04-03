@@ -14,7 +14,15 @@ mutation SendOTP($email: String!) {
 
 mutation VerifyOTP($email: String!, $otp: String!) {
   verifyOTP(email: $email, otp: $otp) {
+    success
     message
     signInToken
+  }
+}
+
+# Queries
+query GetEmailFromToken($token: String!) {
+  getEmailFromToken(token: $token) {
+    email
   }
 }

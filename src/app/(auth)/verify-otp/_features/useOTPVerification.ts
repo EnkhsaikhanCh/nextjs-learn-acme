@@ -3,7 +3,11 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { getSession, signIn, signOut } from "next-auth/react";
-import { useSendOtpMutation, useVerifyOtpMutation } from "@/generated/graphql";
+import {
+  useGetEmailFromTokenLazyQuery,
+  useSendOtpMutation,
+  useVerifyOtpMutation,
+} from "@/generated/graphql";
 
 export const useOTPVerification = () => {
   const [email, setEmail] = useState<string | null>(null);
@@ -27,38 +31,46 @@ export const useOTPVerification = () => {
   };
 
   // Имэйл авах
+  const [fetchEmail, { data, loading, error: getEmailError }] =
+    useGetEmailFromTokenLazyQuery();
+
   useEffect(() => {
-    const fetchEmail = async () => {
-      const tempToken = localStorage.getItem("tempToken");
-      if (!tempToken) {
-        await handleSignOut();
-        return;
-      }
+    const tempToken = localStorage.getItem("tempToken");
+    if (!tempToken) {
+      handleSignOut();
+      return;
+    }
 
-      setIsLoading(true);
-      try {
-        const response = await fetch("/api/auth/get-email-from-token", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ token: tempToken }),
-        });
-        const data = await response.json();
+    setIsLoading(true);
 
-        if (data.email) {
-          setEmail(data.email);
-        } else {
-          await handleSignOut(); // Имэйл байхгүй бол гаргана
-        }
-      } catch (error) {
-        console.error(error);
-        await handleSignOut();
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    fetchEmail({ variables: { token: tempToken } }).finally(() => {
+      setIsLoading(false);
+    });
+  }, [fetchEmail]);
 
-    fetchEmail();
-  }, []);
+  // When email query returns, update state or sign out if error
+  useEffect(() => {
+    if (loading) return; // Query ажиллаж байгаа үед юу ч хийхгүй
+
+    // Зөв имэйл ирсэн бол
+    if (data?.getEmailFromToken?.email) {
+      setEmail(data.getEmailFromToken.email);
+      return;
+    }
+
+    // Хэрэв fetch хийгдэж дууссан ч email ирээгүй бол sign out хийх
+    if (!loading && data && !data.getEmailFromToken?.email) {
+      toast.error("Имэйл олдсонгүй");
+      handleSignOut();
+      return;
+    }
+
+    // Хэрэв GraphQL error байвал
+    if (getEmailError) {
+      toast.error(getEmailError.message);
+      handleSignOut();
+    }
+  }, [data, loading, getEmailError]);
 
   // Таймер удирдах
   useEffect(() => {
@@ -76,7 +88,7 @@ export const useOTPVerification = () => {
     }
   }, [resendTimer]);
 
-  // OTP баталгаажуулах
+  // OTP verification
   const handleSubmit = async () => {
     setIsVerifying(true);
     setError("");
@@ -88,15 +100,14 @@ export const useOTPVerification = () => {
     }
 
     try {
-      const { data, errors } = await verifyOTP({
+      const { data } = await verifyOTP({
         variables: { email: email as string, otp },
       });
 
-      if (errors || !data?.verifyOTP?.signInToken) {
-        const errorMessage = errors ? errors[0].message : "Код буруу байна.";
-
-        setError(errorMessage);
-        toast.error(errorMessage || "Баталгаажуулалт амжилтгүй боллоо.");
+      if (!data?.verifyOTP?.success) {
+        toast.error(data?.verifyOTP?.message);
+        setError(data?.verifyOTP?.message || "Код буруу байна.");
+        return;
       } else {
         setSuccess(true);
         setOtp("");
@@ -106,13 +117,12 @@ export const useOTPVerification = () => {
         const result = await signIn("credentials", {
           redirect: false,
           email,
-          signInToken: data.verifyOTP.signInToken,
+          signInToken: data?.verifyOTP.signInToken,
         });
 
         if (result?.error) {
           toast.error("Нэвтрэхэд алдаа гарлаа. Дахин оролдоно уу.");
           router.push("/login");
-          setIsVerifying(false);
           return;
         } else {
           localStorage.removeItem("tempToken");
@@ -120,7 +130,6 @@ export const useOTPVerification = () => {
 
           const session = await getSession();
           const userRole = session?.user.role;
-
           if (userRole?.toUpperCase() === "ADMIN") {
             router.push("/admin");
           } else {
@@ -128,8 +137,7 @@ export const useOTPVerification = () => {
           }
         }
       }
-    } catch (error) {
-      console.error(error);
+    } catch {
       setError("Баталгаажуулалт явцад алдаа гарлаа. Дахин оролдоно уу.");
       toast.error("Баталгаажуулалт амжилтгүй боллоо. Дахин оролдоно уу.");
     } finally {
@@ -159,8 +167,7 @@ export const useOTPVerification = () => {
       toast.success(
         "И-мэйл баталгаажуулах код таны имэйл рүү дахин илгээгдлээ.",
       );
-    } catch (error) {
-      console.error(error);
+    } catch {
       toast.error("И-мэйл баталгаажуулах код дахин илгээхэд алдаа гарлаа.");
     } finally {
       setIsResending(false);

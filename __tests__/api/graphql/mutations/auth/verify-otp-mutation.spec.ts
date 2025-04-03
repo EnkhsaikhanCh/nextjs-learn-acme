@@ -41,8 +41,7 @@ describe("verifyOTP", () => {
     jest.clearAllMocks();
   });
 
-  // Existing tests…
-
+  // 1. Missing email or OTP
   it("throws BAD_USER_INPUT if email or otp is missing", async () => {
     await expect(verifyOTP(null, { email: "", otp: "123456" })).rejects.toThrow(
       "И-мэйл болон OTP код шаардлагатай",
@@ -52,6 +51,7 @@ describe("verifyOTP", () => {
     );
   });
 
+  // 2. Invalid email: normalization returns falsy
   it("throws BAD_USER_INPUT if normalized email is falsy", async () => {
     (normalizeEmail as jest.Mock).mockReturnValue(null);
     await expect(verifyOTP(null, { email, otp: "123456" })).rejects.toThrow(
@@ -59,6 +59,7 @@ describe("verifyOTP", () => {
     );
   });
 
+  // 3. Invalid email: validateEmail returns false
   it("throws BAD_USER_INPUT if validateEmail returns false", async () => {
     (normalizeEmail as jest.Mock).mockReturnValue(normalizedEmail);
     (validateEmail as jest.Mock).mockReturnValue(false);
@@ -67,6 +68,7 @@ describe("verifyOTP", () => {
     );
   });
 
+  // 4. Rate limit exceeded
   it("throws TOO_MANY_REQUESTS if rate limit is exceeded", async () => {
     (normalizeEmail as jest.Mock).mockReturnValue(normalizedEmail);
     (validateEmail as jest.Mock).mockReturnValue(true);
@@ -76,13 +78,14 @@ describe("verifyOTP", () => {
     );
   });
 
+  // 5. No stored OTP found
   it("throws BAD_REQUEST if no stored OTP is found", async () => {
     (normalizeEmail as jest.Mock).mockReturnValue(normalizedEmail);
     (validateEmail as jest.Mock).mockReturnValue(true);
-    // For rate limit key: simulate no current count, so key is set.
+    // For rate limit key, simulate no current count (will set key)
     (redis.get as jest.Mock)
       .mockResolvedValueOnce(null) // for rateLimitKey
-      .mockResolvedValueOnce(null); // for OTP key
+      .mockResolvedValueOnce(null); // for otp key
     (redis.set as jest.Mock).mockResolvedValue("OK");
 
     await expect(verifyOTP(null, { email, otp: "123456" })).rejects.toThrow(
@@ -90,26 +93,34 @@ describe("verifyOTP", () => {
     );
   });
 
-  it("throws BAD_REQUEST if provided OTP does not match stored OTP", async () => {
+  // 6. OTP mismatch returns failure object (doesn't throw)
+  it("returns failure object if provided OTP does not match stored OTP", async () => {
     (normalizeEmail as jest.Mock).mockReturnValue(normalizedEmail);
     (validateEmail as jest.Mock).mockReturnValue(true);
+    // For rate limit, simulate new key (no current count)
     (redis.get as jest.Mock)
-      .mockResolvedValueOnce(null) // for rateLimitKey
-      .mockResolvedValueOnce("111111"); // stored OTP
+      .mockResolvedValueOnce(null) // for rateLimitKey, so key is set
+      .mockResolvedValueOnce("111111"); // for otp key, stored OTP
     (redis.set as jest.Mock).mockResolvedValue("OK");
 
-    await expect(verifyOTP(null, { email, otp: "123456" })).rejects.toThrow(
-      "OTP код буруу байна.",
-    );
+    const result = await verifyOTP(null, { email, otp: "123456" });
+    expect(result).toEqual({
+      success: false,
+      message: "OTP код буруу байна.",
+      signInToken: null,
+    });
   });
 
+  // 7. User update failure
   it("throws BAD_USER_INPUT if user update does not modify any document", async () => {
     (normalizeEmail as jest.Mock).mockReturnValue(normalizedEmail);
     (validateEmail as jest.Mock).mockReturnValue(true);
+    // For rate limit: simulate no current count
     (redis.get as jest.Mock)
       .mockResolvedValueOnce(null) // for rateLimitKey
-      .mockResolvedValueOnce("123456"); // for OTP key
+      .mockResolvedValueOnce("123456"); // for otp key
     (redis.set as jest.Mock).mockResolvedValue("OK");
+    // Simulate update failure: modifiedCount equals 0
     (UserModel.updateOne as jest.Mock).mockResolvedValue({ modifiedCount: 0 });
 
     await expect(verifyOTP(null, { email, otp: "123456" })).rejects.toThrow(
@@ -117,10 +128,11 @@ describe("verifyOTP", () => {
     );
   });
 
+  // 8. Successful verification
   it("verifies OTP successfully and returns sign-in token", async () => {
     (normalizeEmail as jest.Mock).mockReturnValue(normalizedEmail);
     (validateEmail as jest.Mock).mockReturnValue(true);
-    // For rate limit: simulate no previous count (so branch: if (!currentCount) ...)
+    // For rate limit: simulate no previous count (so branch: if (!currentCount))
     (redis.get as jest.Mock)
       .mockResolvedValueOnce(null) // for rateLimitKey
       .mockResolvedValueOnce("123456"); // for OTP key
@@ -128,7 +140,7 @@ describe("verifyOTP", () => {
     (UserModel.updateOne as jest.Mock).mockResolvedValue({ modifiedCount: 1 });
     (redis.del as jest.Mock).mockResolvedValue("OK");
     (uuidv4 as jest.Mock).mockReturnValue("sign-token");
-    // Ensure setting sign-in token resolves
+    // Simulate setting the sign-in token resolves OK
     (redis.set as jest.Mock).mockResolvedValue("OK");
 
     const result = await verifyOTP(null, { email, otp: "123456" });
@@ -139,19 +151,21 @@ describe("verifyOTP", () => {
       { ex: 300 },
     );
     expect(result).toEqual({
+      success: true,
       message: "И-мэйл амжилттай баталгаажлаа.",
       signInToken: "sign-token",
     });
   });
 
+  // 9. Rate limit branch: increments count if current count exists but below MAX_REQUESTS
   it("increments rate limit if current count exists but is below MAX_REQUESTS", async () => {
     (normalizeEmail as jest.Mock).mockReturnValue(normalizedEmail);
     (validateEmail as jest.Mock).mockReturnValue(true);
-    // Simulate that a rate limit key exists: first call returns "1" for rateLimitKey
+    // Simulate existing count (e.g., "2")
     (redis.get as jest.Mock)
-      .mockResolvedValueOnce("1") // for rateLimitKey
+      .mockResolvedValueOnce("2") // for rateLimitKey
       .mockResolvedValueOnce("123456"); // for OTP key
-    (redis.incr as jest.Mock).mockResolvedValue("2");
+    (redis.incr as jest.Mock).mockResolvedValue("3");
     (redis.set as jest.Mock).mockResolvedValue("OK");
     (UserModel.updateOne as jest.Mock).mockResolvedValue({ modifiedCount: 1 });
     (redis.del as jest.Mock).mockResolvedValue("OK");
@@ -161,16 +175,17 @@ describe("verifyOTP", () => {
     const result = await verifyOTP(null, { email, otp: "123456" });
     expect(redis.incr).toHaveBeenCalledWith(rateLimitKeyForEmail);
     expect(result).toEqual({
+      success: true,
       message: "И-мэйл амжилттай баталгаажлаа.",
       signInToken: "sign-token",
     });
   });
 
+  // 10. Unexpected error handling
   it("throws INTERNAL_SERVER_ERROR on unexpected errors", async () => {
     (normalizeEmail as jest.Mock).mockReturnValue(normalizedEmail);
     (validateEmail as jest.Mock).mockReturnValue(true);
     (redis.get as jest.Mock).mockRejectedValue(new Error("Unexpected error"));
-
     await expect(verifyOTP(null, { email, otp: "123456" })).rejects.toThrow(
       "Internal server error",
     );
