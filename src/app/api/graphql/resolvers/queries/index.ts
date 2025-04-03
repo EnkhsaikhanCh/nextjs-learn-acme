@@ -7,3 +7,4 @@ export * from "./lesson";
 export * from "./enrollment";
 export * from "./payment";
 export * from "./subscriber";
+export * from "./auth";
