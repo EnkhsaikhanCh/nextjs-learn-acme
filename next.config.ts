@@ -17,7 +17,7 @@ const wrappedConfig = withBundleAnalyzer(nextConfig);
 
 module.exports = withSentryConfig(wrappedConfig, {
   org: "nomadtech",
-  project: "javascript-nextjs",
+  project: process.env.SENTRY_PROJECT,
   silent: !process.env.CI,
   widenClientFileUpload: true,
   disableLogger: true,

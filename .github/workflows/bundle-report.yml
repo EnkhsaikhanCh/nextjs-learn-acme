@@ -32,6 +32,7 @@ jobs:
 
       - name: Build production bundle
         env:
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_DSN: https://dummy@sentry.io/0
           SENTRY_ENVIRONMENT: ci
