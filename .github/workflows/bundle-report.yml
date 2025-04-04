@@ -17,6 +17,7 @@ jobs:
       UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
       MONGODB_URI: ${{ secrets.MONGODB_URI || 'mongodb://localhost:27017/dummy-db' }}
       MONGODB_NAME: ${{ secrets.MONGODB_NAME || 'dummy-db' }}
+      CI: true
 
     steps:
       - name: 📥 Checkout code
