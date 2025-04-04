@@ -1,5 +1,5 @@
 // next.config.js
-require("dotenv").config(); // 👈 энэ шугамыг хамгийн эхэнд нэм
+require("dotenv").config();
 
 const { withSentryConfig } = require("@sentry/nextjs");
 const withBundleAnalyzer = require("@next/bundle-analyzer")({
