@@ -7,6 +7,8 @@ jobs:
     name: Check Bundle Size
     runs-on: ubuntu-latest
 
+    environment: Preview
+
     # Global ENV (dummy or real values depending on your setup)
     env:
       SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
