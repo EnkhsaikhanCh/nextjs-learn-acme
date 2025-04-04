@@ -40,9 +40,6 @@ jobs:
       - name: 📦 Install dependencies
         run: bun install
 
-      - name: ⚙️ Create .env from .env.ci
-        run: cp .env.ci .env
-
       - name: 🏗️ Build production bundle
         run: bun run build
 
