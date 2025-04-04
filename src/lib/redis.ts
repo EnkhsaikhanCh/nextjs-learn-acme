@@ -1,24 +1,12 @@
 // src/lib/redis.ts
 import { Redis as UpstashRedis } from "@upstash/redis";
 
-// Орчин тодорхойлох
-const isProduction = process.env.VERCEL_ENV === "production";
+const redisUrl = process.env.UPSTASH_REDIS_REST_URL;
+const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN;
 
-// Redis URL болон токеныг орчноос хамааруулан сонгох
-const redisUrl = isProduction
-  ? process.env.REDIS_PROD_KV_REST_API_URL
-  : process.env.UPSTASH_REDIS_REST_URL;
-
-const redisToken = isProduction
-  ? process.env.REDIS_PROD_KV_REST_API_TOKEN
-  : process.env.UPSTASH_REDIS_REST_TOKEN;
-
-// Хэрэв URL эсвэл токен байхгүй бол алдаа шидэх
 if (!redisUrl || !redisToken) {
   throw new Error(
-    `Required Upstash Redis environment variables are missing for ${
-      isProduction ? "production" : "dev/preview"
-    } environment (URL or TOKEN)`,
+    `Required Upstash Redis environment variables are missing (URL or TOKEN)`,
   );
 }
 
