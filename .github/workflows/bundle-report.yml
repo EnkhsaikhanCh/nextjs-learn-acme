@@ -9,16 +9,14 @@ jobs:
 
     # Global ENV (dummy or real values depending on your setup)
     env:
-      SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT || 'dummy-project' }}
-      SENTRY_ORG: ${{ secrets.SENTRY_ORG || 'dummy-org' }}
-      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN || 'dummy-token' }}
-      SENTRY_DSN: ${{ secrets.SENTRY_DSN || 'https://dummy@sentry.io/0' }}
-      SENTRY_ENVIRONMENT: ci
-      UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL || 'https://dummy.upstash.io' }}
-      UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN || 'dummy' }}
+      SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN}}
+      SENTRY_ENVIRONMENT: ${{ secrets.SENTRY_ENVIRONMENT }}
+      UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
+      UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
       MONGODB_URI: ${{ secrets.MONGODB_URI || 'mongodb://localhost:27017/dummy-db' }}
       MONGODB_NAME: ${{ secrets.MONGODB_NAME || 'dummy-db' }}
-      CI: true
 
     steps:
       - name: 📥 Checkout code
