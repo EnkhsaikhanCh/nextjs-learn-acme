@@ -10,6 +10,18 @@ jobs:
     name: Check Bundle Size
     runs-on: ubuntu-latest
 
+    # GLOBAL ENVIRONMENT VARIABLES
+    # These variables are available to all jobs in the workflow
+    env:
+      SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      SENTRY_DSN: https://dummy@sentry.io/0
+      SENTRY_ENVIRONMENT: ci
+      UPSTASH_REDIS_REST_URL: https://dummy.upstash.io
+      UPSTASH_REDIS_REST_TOKEN: dummy
+      MONGODB_URI: mongodb://localhost:27017/dummy-db
+      MONGODB_NAME: dummy-db
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -31,14 +43,6 @@ jobs:
         run: bun install
 
       - name: Build production bundle
-        env:
-          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_DSN: https://dummy@sentry.io/0
-          SENTRY_ENVIRONMENT: ci
-          UPSTASH_REDIS_REST_URL: https://dummy.upstash.io
-          UPSTASH_REDIS_REST_TOKEN: dummy
-          MONGODB_URI: mongodb://localhost:27017/dummy-db
         run: bun run build
 
       - name: Check bundle size
