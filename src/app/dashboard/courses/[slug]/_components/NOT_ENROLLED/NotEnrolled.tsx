@@ -22,9 +22,17 @@ import {
   useCreatePaymentMutation,
   useGetPaymentByUserAndCourseQuery,
 } from "@/generated/graphql";
-import { CircleCheck } from "lucide-react";
-import { LucideIcon } from "lucide-react";
-import * as LucideIcons from "lucide-react";
+import {
+  Banknote,
+  CircleCheck,
+  CircleUserRound,
+  ClipboardCheck,
+  CreditCard,
+  ListChecks,
+  Loader2,
+  MailCheck,
+  Tag,
+} from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -135,44 +143,6 @@ export const NotEnrolled = ({ course }: { course: Course }) => {
 
       <CourseOverviewSection course={course} />
 
-      {/* Яагаад манай сургалтыг сонгох вэ */}
-      <section className="py-20">
-        <div className="container mx-auto px-4">
-          <h2 className="mb-12 text-center text-3xl font-bold">
-            Яагаад манай сургалтыг сонгох вэ
-          </h2>
-          <div className="grid gap-8 md:grid-cols-3">
-            {course?.whyChooseOurCourse?.map((item, index) => {
-              // item.icon-д тохирох Lucide icon-г динамикаар сонгох
-              const IconComponent: LucideIcon | undefined = item?.icon
-                ? (LucideIcons[
-                    item.icon as keyof typeof LucideIcons
-                  ] as LucideIcon)
-                : LucideIcons.Star;
-
-              return (
-                <Card
-                  key={index}
-                  className="bg-sidebar flex flex-col p-2 shadow-none"
-                >
-                  <CardHeader>
-                    <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-yellow-200">
-                      {IconComponent && (
-                        <IconComponent className="h-10 w-10 text-yellow-600" />
-                      )}
-                    </div>
-                    <CardTitle className="text-center">{item?.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="text-center">
-                    {item?.description}
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
       {/* Төлбөрийн мэдээлэл */}
       <section id="payment" className="pt-20 pb-20">
         <div className="container mx-auto px-4">
@@ -201,14 +171,12 @@ export const NotEnrolled = ({ course }: { course: Course }) => {
                 </ul>
               </CardContent>
               <CardFooter>
-                {/* <PaymentDialog course={course} /> */}
-
                 {validPayment ? (
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button className="w-full">
                         Шалгах
-                        <LucideIcons.ListChecks />
+                        <ListChecks />
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="p-6 dark:bg-gray-800 dark:text-gray-200">
@@ -217,7 +185,7 @@ export const NotEnrolled = ({ course }: { course: Course }) => {
                           className="flex h-14 w-14 items-center justify-center rounded-full border border-blue-300 bg-blue-100 dark:border-blue-500 dark:bg-blue-900"
                           aria-hidden="true"
                         >
-                          <LucideIcons.MailCheck className="text-blue-600 dark:text-blue-400" />
+                          <MailCheck className="text-blue-600 dark:text-blue-400" />
                         </div>
 
                         <DialogHeader className="mt-3">
@@ -327,9 +295,7 @@ export const NotEnrolled = ({ course }: { course: Course }) => {
                           value={BANK_DETAILS.bankName}
                           fieldName="bank"
                           copiedField={copiedField}
-                          icon={
-                            <LucideIcons.Banknote className="h-[18px] w-[18px]" />
-                          }
+                          icon={<Banknote className="h-[18px] w-[18px]" />}
                         />
 
                         <CopyableField
@@ -340,9 +306,7 @@ export const NotEnrolled = ({ course }: { course: Course }) => {
                           onClick={() =>
                             handleCopy(BANK_DETAILS.accountNumber, "account")
                           }
-                          icon={
-                            <LucideIcons.CreditCard className="h-[18px] w-[18px]" />
-                          }
+                          icon={<CreditCard className="h-[18px] w-[18px]" />}
                         />
 
                         <CopyableField
@@ -351,7 +315,7 @@ export const NotEnrolled = ({ course }: { course: Course }) => {
                           fieldName="name"
                           copiedField={copiedField}
                           icon={
-                            <LucideIcons.CircleUserRound className="h-[18px] w-[18px]" />
+                            <CircleUserRound className="h-[18px] w-[18px]" />
                           }
                         />
 
@@ -366,9 +330,7 @@ export const NotEnrolled = ({ course }: { course: Course }) => {
                               "price",
                             )
                           }
-                          icon={
-                            <LucideIcons.Tag className="h-[18px] w-[18px]" />
-                          }
+                          icon={<Tag className="h-[18px] w-[18px]" />}
                         />
 
                         <CopyableField
@@ -383,7 +345,7 @@ export const NotEnrolled = ({ course }: { course: Course }) => {
                             )
                           }
                           icon={
-                            <LucideIcons.ClipboardCheck className="h-[18px] w-[18px]" />
+                            <ClipboardCheck className="h-[18px] w-[18px]" />
                           }
                         />
                       </div>
@@ -396,7 +358,7 @@ export const NotEnrolled = ({ course }: { course: Course }) => {
                           className="w-full rounded-full bg-yellow-400 font-bold text-black hover:bg-yellow-300"
                         >
                           {isSubmitting ? (
-                            <LucideIcons.Loader2 className="animate-spin" />
+                            <Loader2 className="animate-spin" />
                           ) : (
                             "Би төлбөрөө хийсэн"
                           )}
