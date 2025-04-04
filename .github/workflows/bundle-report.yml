@@ -1,6 +1,9 @@
 name: Size Limit
 
-on: [push]
+on:
+  push:
+    branches: [main]
+  pull_request:
 
 jobs:
   size-limit:
@@ -28,7 +31,14 @@ jobs:
         run: bun install
 
       - name: Build production bundle
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          SENTRY_ENVIRONMENT: ci
+          UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
+          UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
         run: bun run build
 
       - name: Check bundle size
         run: bun run size-limit
+        continue-on-error: false
