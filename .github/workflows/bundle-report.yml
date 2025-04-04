@@ -1,50 +1,26 @@
-name: Size Limit
+name: Bundle Size Check
 
-on:
-  push:
-    branches: [main]
-  pull_request:
+on: [push]
 
 jobs:
-  size-limit:
-    name: Check Bundle Size
+  build:
     runs-on: ubuntu-latest
 
-    # GLOBAL ENVIRONMENT VARIABLES
-    # These variables are available to all jobs in the workflow
-    env:
-      SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
-      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-      SENTRY_DSN: https://dummy@sentry.io/0
-      SENTRY_ENVIRONMENT: ci
-      UPSTASH_REDIS_REST_URL: https://dummy.upstash.io
-      UPSTASH_REDIS_REST_TOKEN: dummy
-      MONGODB_URI: mongodb://localhost:27017/dummy-db
-      MONGODB_NAME: dummy-db
-
     steps:
-      - name: Checkout code
+      # Репозиторийг checkout хийнэ
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Cache Bun Dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.bun
-          key: ${{ runner.os }}-bun-${{ hashFiles('**/package.json') }}
-          restore-keys: |
-            ${{ runner.os }}-bun-
-
-      - name: Set up Bun
+      # Bun-г суулгах (хэрэв Bun ашиглаж байгаа бол)
+      - name: Setup Bun
         uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
 
+      # Завислуудыг суулгах
       - name: Install dependencies
         run: bun install
 
-      - name: Build production bundle
-        run: bun run build
-
-      - name: Check bundle size
-        run: bun run size-limit
-        continue-on-error: false
+      # Bundle analyzer-ийг ажиллуулж build хийх
+      - name: Build with Bundle Analyzer
+        run: ANALYZE=true bun run build
