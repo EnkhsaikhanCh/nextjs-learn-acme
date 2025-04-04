@@ -1,26 +1,50 @@
-name: Bundle Size Check
+name: 🔍 Check Bundle Size
 
 on: [push]
 
 jobs:
-  build:
+  size-limit:
+    name: Check Bundle Size
     runs-on: ubuntu-latest
 
+    # Global ENV (dummy or real values depending on your setup)
+    env:
+      SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT || 'dummy-project' }}
+      SENTRY_ORG: ${{ secrets.SENTRY_ORG || 'dummy-org' }}
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN || 'dummy-token' }}
+      SENTRY_DSN: ${{ secrets.SENTRY_DSN || 'https://dummy@sentry.io/0' }}
+      SENTRY_ENVIRONMENT: ci
+      UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL || 'https://dummy.upstash.io' }}
+      UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN || 'dummy' }}
+      MONGODB_URI: ${{ secrets.MONGODB_URI || 'mongodb://localhost:27017/dummy-db' }}
+      MONGODB_NAME: ${{ secrets.MONGODB_NAME || 'dummy-db' }}
+      CI: true
+
     steps:
-      # Репозиторийг checkout хийнэ
-      - name: Checkout repository
+      - name: 📥 Checkout code
         uses: actions/checkout@v3
 
-      # Bun-г суулгах (хэрэв Bun ашиглаж байгаа бол)
-      - name: Setup Bun
+      - name: 💾 Cache Bun dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.bun
+          key: ${{ runner.os }}-bun-${{ hashFiles('**/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
+      - name: 🧁 Set up Bun
         uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
 
-      # Завислуудыг суулгах
-      - name: Install dependencies
+      - name: 📦 Install dependencies
         run: bun install
 
-      # Bundle analyzer-ийг ажиллуулж build хийх
-      - name: Build with Bundle Analyzer
-        run: ANALYZE=true bun run build
+      - name: ⚙️ Create .env from .env.ci
+        run: cp .env.ci .env
+
+      - name: 🏗️ Build production bundle
+        run: bun run build
+
+      - name: 📏 Check bundle size
+        run: bun run size-limit
