@@ -154,11 +154,6 @@ query GetCourseForUser($slug: String!) {
       tags
       status
       whatYouWillLearn
-      whyChooseOurCourse {
-        icon
-        title
-        description
-      }
     }
   }
 }
