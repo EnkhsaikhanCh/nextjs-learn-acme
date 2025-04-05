@@ -41,7 +41,7 @@ describe("generateTempToken", () => {
   it("throws BAD_USER_INPUT if normalized email is falsy", async () => {
     (normalizeEmail as jest.Mock).mockReturnValue(null);
     await expect(generateTempToken(null, { email })).rejects.toThrow(
-      "Имэйл хаяг буруу байн",
+      "Имэйл хаяг буруу байна",
     );
   });
 
