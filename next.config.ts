@@ -1,23 +1,29 @@
-// next.config.js
-require("dotenv").config();
+import dotenv from "dotenv";
+import { withSentryConfig } from "@sentry/nextjs";
+import createWithBundleAnalyzer from "@next/bundle-analyzer";
+import { readFileSync } from "fs";
+import { join } from "path";
 
-const { withSentryConfig } = require("@sentry/nextjs");
-const withBundleAnalyzer = require("@next/bundle-analyzer")({
+dotenv.config();
+
+const withBundleAnalyzer = createWithBundleAnalyzer({
   enabled: process.env.ANALYZE === "true",
 });
 
-/** @type {import('next').NextConfig} */
+const packageJson = JSON.parse(
+  readFileSync(join(process.cwd(), "package.json"), "utf8"),
+);
+
 const nextConfig = {
   env: {
-    NEXT_PUBLIC_APP_VERSION: require("./package.json").version,
+    NEXT_PUBLIC_APP_VERSION: packageJson.version,
   },
   productionBrowserSourceMaps: true,
 };
 
-// Бүх config-уудыг wrapper дотор дарааллуулж нэгтгэнэ
 const wrappedConfig = withBundleAnalyzer(nextConfig);
 
-module.exports = withSentryConfig(wrappedConfig, {
+export default withSentryConfig(wrappedConfig, {
   org: "nomadtech",
   project: process.env.SENTRY_PROJECT,
   silent: !process.env.CI,
