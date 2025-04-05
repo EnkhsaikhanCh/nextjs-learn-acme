@@ -30,7 +30,7 @@ jobs:
         run: bun run lint
 
   test:
-    name: ✅ Jest Unit Tests
+    name: 🧪 Jest Unit Tests
     runs-on: ubuntu-latest
 
     steps:
