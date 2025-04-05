@@ -1,17 +1,11 @@
 name: 🚀 CI Workflow
 
-on:
-  pull_request:
-    types: [opened, synchronize, labeled, reopened, ready_for_review]
+on: [push]
 
 jobs:
   lint:
     name: 🧹 ESLint
     runs-on: ubuntu-latest
-    if: >
-      github.event_name != 'pull_request' ||
-      (github.event.action == 'labeled' && github.event.label.name == 'PR status: code ready') ||
-      contains(github.event.pull_request.labels.*.name, 'PR status: code ready')
     steps:
       - name: 🛎️ Checkout code
         uses: actions/checkout@v3
@@ -38,10 +32,7 @@ jobs:
   test:
     name: ✅ Jest Unit Tests
     runs-on: ubuntu-latest
-    if: >
-      github.event_name != 'pull_request' ||
-      (github.event.action == 'labeled' && github.event.label.name == 'PR status: code ready') ||
-      contains(github.event.pull_request.labels.*.name, 'PR status: code ready')
+
     steps:
       - name: 🛎️ Checkout code
         uses: actions/checkout@v3
@@ -70,10 +61,6 @@ jobs:
   bundle:
     name: 📦 Bundle Size Check
     runs-on: ubuntu-latest
-    if: >
-      github.event_name != 'pull_request' ||
-      (github.event.action == 'labeled' && github.event.label.name == 'PR status: code ready') ||
-      contains(github.event.pull_request.labels.*.name, 'PR status: code ready')
     environment: Preview
     env:
       CI: true
