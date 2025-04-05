@@ -2,10 +2,7 @@ name: CI Workflow
 
 on:
   pull_request:
-    types:
-      - "labeled"
-    branches:
-      - main
+    types: [opened, synchronize, labeled]
 
 jobs:
   lint:
