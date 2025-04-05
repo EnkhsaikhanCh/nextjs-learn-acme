@@ -9,8 +9,8 @@ import { Globe, Loader, MailCheck } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { OTPInput } from "@/components/OTPInput";
 import { ResendSection } from "./_components/ResendSection";
-import { SuccessMessage } from "./_components/SuccessMessage";
 import { useOTPVerification } from "./_features/useOTPVerification";
+import { SucessMessage } from "@/components/SuccessMessage";
 
 export default function VerifyOTP() {
   const {
@@ -72,40 +72,42 @@ export default function VerifyOTP() {
             </CardTitle>
           </CardHeader>
 
-          {!success ? (
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="flex flex-col items-center text-center">
-                  {!isVerifying ? (
-                    <OTPInput
-                      length={6}
-                      onComplete={(value) => {
-                        setOtp(value);
-                        handleSubmit();
-                      }}
-                      disabled={isVerifying}
-                      isError={!!error}
-                      onChange={(value) => {
-                        setOtp(value);
-                        setError("");
-                      }}
-                      value={otp}
-                    />
-                  ) : (
-                    <div className="flex h-14 items-center justify-center">
-                      <Loader className="h-8 w-8 animate-spin text-teal-600" />
-                    </div>
-                  )}
-                </div>
-              </form>
-              <p className="text-foreground/60 mt-4 text-center text-sm">
-                6 оронтой код таны <strong>{email}</strong> хаяг руу илгээгдсэн.
-                Код 5 минутын дотор хүчинтэй.
-              </p>
-            </CardContent>
-          ) : (
-            <SuccessMessage />
-          )}
+          <CardContent>
+            {success ? (
+              <SucessMessage description="Таны баталгаажуулалт амжилттай боллоо. Тун удахгүй таныг удирдлагын самбар руу шилжүүлнэ..." />
+            ) : (
+              <>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="flex flex-col items-center text-center">
+                    {!isVerifying ? (
+                      <OTPInput
+                        length={6}
+                        onComplete={(value) => {
+                          setOtp(value);
+                          handleSubmit();
+                        }}
+                        disabled={isVerifying}
+                        isError={!!error}
+                        onChange={(value) => {
+                          setOtp(value);
+                          setError("");
+                        }}
+                        value={otp}
+                      />
+                    ) : (
+                      <div className="flex h-14 items-center justify-center">
+                        <Loader className="h-8 w-8 animate-spin text-teal-600" />
+                      </div>
+                    )}
+                  </div>
+                </form>
+                <p className="text-foreground/60 mt-4 text-center text-sm">
+                  6 оронтой код таны <strong>{email}</strong> хаяг руу
+                  илгээгдсэн. Код 5 минутын дотор хүчинтэй.
+                </p>
+              </>
+            )}
+          </CardContent>
         </Card>
 
         {!success && (

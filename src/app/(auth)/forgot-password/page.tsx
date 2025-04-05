@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Toaster } from "sonner";
 import Link from "next/link";
 import { useSendPasswordResetToken } from "./features/useSendPasswordResetToken";
-import { SucessMessage } from "./components/SuccessMessage";
+import { SucessMessage } from "@/components/SuccessMessage";
 import { BaseInput } from "@/components/BaseInput";
 
 export default function ForgotPassword() {
@@ -29,7 +29,7 @@ export default function ForgotPassword() {
   } = useSendPasswordResetToken();
 
   return (
-    <main className="flex min-h-screen flex-col items-center gap-6 bg-muted px-4 md:p-10">
+    <main className="bg-muted flex min-h-screen flex-col items-center gap-6 px-4 md:p-10">
       <Toaster richColors position="top-center" />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -41,15 +41,15 @@ export default function ForgotPassword() {
           href="/"
           className="mb-6 flex items-center justify-center gap-2 text-lg font-semibold"
         >
-          <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
+          <div className="bg-primary text-primary-foreground flex h-6 w-6 items-center justify-center rounded-md">
             <Globe className="h-4 w-4" />
           </div>
           OXON
         </Link>
 
-        <Card className="min-w-full max-w-md">
+        <Card className="max-w-md min-w-full">
           <CardHeader>
-            <CardTitle className="flex items-center gap-3 text-2xl font-bold text-foreground/80">
+            <CardTitle className="text-foreground/80 flex items-center gap-3 text-2xl font-bold">
               <div className="flex h-10 w-10 items-center justify-center rounded-md border-2 border-amber-500 bg-amber-200">
                 <KeyRound className="h-6 w-6 stroke-[2.5] text-amber-600" />
                 <span className="sr-only">forgot password</span>
@@ -60,7 +60,7 @@ export default function ForgotPassword() {
 
           <CardContent className="pb-3">
             {success ? (
-              <SucessMessage />
+              <SucessMessage description="Таны и-мэйл хаяг руу холбоос амжилттай илгээгдлээ." />
             ) : (
               <form onSubmit={sendPasswordResetToken}>
                 <BaseInput
