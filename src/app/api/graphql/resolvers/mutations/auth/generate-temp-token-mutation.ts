@@ -20,7 +20,7 @@ export const generateTempToken = async (
 
   const normalizedEmail = normalizeEmail(email);
   if (!normalizedEmail) {
-    throw new GraphQLError("Имэйл хаяг буруу байн", {
+    throw new GraphQLError("Имэйл хаяг буруу байна", {
       extensions: { code: "BAD_USER_INPUT" },
     });
   }
