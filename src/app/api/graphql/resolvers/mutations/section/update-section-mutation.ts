@@ -80,7 +80,6 @@ export const updateSection = async (
     if (error instanceof GraphQLError) {
       throw error;
     }
-    console.error("Unexpected error:", error);
     throw new GraphQLError("Internal server error", {
       extensions: { code: "INTERNAL_SERVER_ERROR" },
     });

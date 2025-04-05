@@ -33,10 +33,8 @@ export const connectToDatabase = async () => {
 
   try {
     cached.conn = await cached.promise;
-    console.log("DB connected");
     return cached.conn;
-  } catch (error) {
-    console.error("❌ DB connection failed:", error);
+  } catch {
     throw new Error("DB connection failed");
   }
 };

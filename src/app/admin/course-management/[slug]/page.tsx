@@ -110,8 +110,6 @@ export default function CourseDetailPage() {
         loading: "Updating course...",
         success: (data) => `${data.name} has been updated successfully!`,
         error: (error) => {
-          console.error("GraphQL Update Course Error:", error);
-
           if (error.graphQLErrors?.length) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             return error.graphQLErrors.map((e: any) => e.message).join(", ");
@@ -127,7 +125,6 @@ export default function CourseDetailPage() {
 
       refetch();
     } catch (error) {
-      console.error("Error in handleEditCourse:", error);
       toast.error(`Error updating course: ${(error as Error).message}`);
     }
   };

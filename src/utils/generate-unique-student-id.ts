@@ -19,8 +19,7 @@ export const generateUniqueStudentId = async (): Promise<string> => {
       }
 
       retries++;
-    } catch (error) {
-      console.error("Database error while checking studentId:", error);
+    } catch {
       throw new Error("Database error occurred while generating student ID");
     }
   }

@@ -71,8 +71,7 @@ export function LessonDetail({
       if (updatedLesson.data) {
         toast.success("Lesson updated successfully!");
       }
-    } catch (error) {
-      console.error(error);
+    } catch {
       toast.error("Failed to update lesson");
     }
   };
@@ -90,7 +89,6 @@ export function LessonDetail({
         toast.success("Lesson deleted successfully!");
       }
     } catch (error) {
-      console.error(error);
       toast.error(`Failed to delete lesson, ${error}`);
     } finally {
       setIsDeleteDialogOpen(false);

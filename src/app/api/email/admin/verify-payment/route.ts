@@ -65,8 +65,7 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ message: "Админ руу имэйл илгээгдлээ." });
-  } catch (error) {
-    console.error("Админд имэйл илгээх алдаа:", error);
+  } catch {
     return NextResponse.json(
       { error: "Имэйл илгээхэд алдаа гарлаа." },
       { status: 500 },

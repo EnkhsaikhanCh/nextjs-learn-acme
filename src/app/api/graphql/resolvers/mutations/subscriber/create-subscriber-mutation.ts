@@ -50,7 +50,6 @@ export const createSubscriber = async (
       throw error;
     }
 
-    console.error("create subscriber error: ", (error as Error).message);
     throw new GraphQLError("Internal server error", {
       extensions: { code: "INTERNAL_SERVER_ERROR" },
     });

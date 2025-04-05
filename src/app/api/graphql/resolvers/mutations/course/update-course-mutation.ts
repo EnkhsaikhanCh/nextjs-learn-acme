@@ -58,8 +58,6 @@ export const updateCourse = async (
       throw error;
     }
 
-    console.error("Update course error:", error);
-
     throw new GraphQLError("Internal server error", {
       extensions: {
         code: "INTERNAL_SERVER_ERROR",

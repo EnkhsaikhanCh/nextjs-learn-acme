@@ -61,9 +61,8 @@ export function SectionItem({
       await refetchCourse(); // Update the UI
       setIsEditing(false); // Exit editing mode
       toast.success("Section title updated");
-    } catch (error) {
+    } catch {
       toast.error("Failed to update section title");
-      console.error("Failed to update section title:", error);
     }
   };
 
@@ -76,9 +75,8 @@ export function SectionItem({
       });
       await refetchCourse(); // Update the UI
       toast.success("Section deleted");
-    } catch (error) {
+    } catch {
       toast.error("Failed to delete section");
-      console.error("Failed to delete section:", error);
     } finally {
       setIsDeleteDialogOpen(false);
     }

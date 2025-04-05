@@ -66,8 +66,7 @@ export async function POST(request: NextRequest) {
     await redis.del(`reset-token:${token}`);
 
     return NextResponse.json({ message: "Нууц үг амжилттай шинэчлэгдлээ." });
-  } catch (error) {
-    console.error("Нууц үг шинэчлэхэд алдаа гарлаа:", error);
+  } catch {
     return NextResponse.json(
       { error: "Серверт алдаа гарлаа. Дахин оролдоно уу." },
       { status: 500 },

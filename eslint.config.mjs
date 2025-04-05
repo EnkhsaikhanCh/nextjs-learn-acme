@@ -1,8 +1,8 @@
-// eslint.config.cjs
-const js = require("@eslint/js");
-const tseslint = require("typescript-eslint");
+// eslint.config.mjs
+import js from "@eslint/js";
+import tseslint from "typescript-eslint";
 
-module.exports = [
+export default [
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
@@ -24,6 +24,7 @@ module.exports = [
       },
     },
     rules: {
+      "no-console": "warn",
       // "no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
       // complexity: ["warn", { max: 10 }],
       // "max-lines": ["warn", { max: 300 }],

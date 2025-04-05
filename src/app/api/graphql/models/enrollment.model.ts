@@ -113,17 +113,5 @@ EnrollmentSchema.set("toJSON", {
   },
 });
 
-/**
- * Pre-save hook to log updates
- */
-EnrollmentSchema.pre("save", function (next) {
-  if (this.isModified("completedLessons") || this.isModified("progress")) {
-    console.log(
-      `Enrollment updated: progress=${this.progress}, completedLessons=${this.completedLessons?.length}`,
-    );
-  }
-  next();
-});
-
 export const EnrollmentModel =
   models["Enrollment"] || model<Enrollment>("Enrollment", EnrollmentSchema);
