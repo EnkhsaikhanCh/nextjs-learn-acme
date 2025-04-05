@@ -1,11 +1,17 @@
 name: 🚀 Full CI Workflow
 
-on: [push, pull_request]
+on:
+  pull_request:
+    types:
+      - "labeled"
+    branches:
+      - main
 
 jobs:
   lint:
     name: 🧹 ESLint
     runs-on: ubuntu-latest
+    if: "${{ github.event.label.name == 'PR status: code ready' }}"
     steps:
       - name: 🛎️ Checkout code
         uses: actions/checkout@v3
@@ -32,6 +38,7 @@ jobs:
   test:
     name: ✅ Jest Unit Tests
     runs-on: ubuntu-latest
+    if: "${{ github.event.label.name == 'PR status: code ready' }}"
     steps:
       - name: 🛎️ Checkout code
         uses: actions/checkout@v3
@@ -60,6 +67,7 @@ jobs:
   bundle:
     name: 📦 Bundle Size Check
     runs-on: ubuntu-latest
+    if: "${{ github.event.label.name == 'PR status: code ready' }}"
     environment: Preview
     env:
       CI: true
