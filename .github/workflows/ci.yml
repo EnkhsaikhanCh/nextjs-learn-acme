@@ -27,7 +27,7 @@ jobs:
         run: bun install
 
       - name: 🔍 Run ESLint
-        run: bunx eslint . --format json --output-file lint-results.json --cache
+        run: bun run lint
 
   test:
     name: ✅ Jest Unit Tests
