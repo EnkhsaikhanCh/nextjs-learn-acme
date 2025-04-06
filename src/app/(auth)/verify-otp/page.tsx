@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Globe, Loader, MailCheck } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { OTPInput } from "@/components/OTPInput";
-import { useOTPVerification } from "./_features/useOTPVerification";
+import { useOTPVerification } from "./features/useOTPVerification";
 import { SuccessMessage } from "@/components/SuccessMessage";
 import { LoadingUI } from "@/components/LoadingUI";
 import { ErrorUI } from "@/components/ErrorUI";
