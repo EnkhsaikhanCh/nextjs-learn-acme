@@ -14,6 +14,7 @@ export default [
       "**/node_modules/**",
       ".next/**",
       ".eslintcache",
+      "src/components/ui",
     ],
     files: ["**/*.ts", "**/*.tsx"],
     languageOptions: {
@@ -27,6 +28,8 @@ export default [
       "no-console": "warn",
       "no-multiple-empty-lines": ["warn", { max: 1 }], // олон хоосон мөрийг хориглоно
       curly: ["warn", "all"],
+      eqeqeq: ["warn", "always"], // === ашиглахыг шаарддаг
+      semi: ["warn", "always"], // ; ашиглахыг шаарддаг
       // "no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
       // complexity: ["warn", { max: 10 }],
       // "max-lines": ["warn", { max: 300 }],
