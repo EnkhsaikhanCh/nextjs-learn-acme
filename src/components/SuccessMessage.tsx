@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 
-export const SucessMessage = ({ description }: { description: string }) => {
+export const SuccessMessage = ({ description }: { description: string }) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}

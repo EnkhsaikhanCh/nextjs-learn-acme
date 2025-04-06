@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { PasswordInput } from "@/components/PasswordInput";
 import { useHandlePasswordReset } from "./features/useHandlePasswordReset";
-import { SucessMessage } from "@/components/SuccessMessage";
+import { SuccessMessage } from "@/components/SuccessMessage";
 
 const CardLoader = () => {
   return (
@@ -75,7 +75,7 @@ export default function ResetPassword() {
           <CardContent className="pb-3">
             {success ? (
               <>
-                <SucessMessage description="Таны нууц үг амжилттай шинэчлэгдлээ. Одоо нэвтрэх боломжтой." />
+                <SuccessMessage description="Таны нууц үг амжилттай шинэчлэгдлээ. Одоо нэвтрэх боломжтой." />
               </>
             ) : (
               <form onSubmit={handlePasswordReset}>

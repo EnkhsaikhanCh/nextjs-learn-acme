@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Toaster } from "sonner";
 import Link from "next/link";
 import { useSendPasswordResetToken } from "./features/useSendPasswordResetToken";
-import { SucessMessage } from "@/components/SuccessMessage";
+import { SuccessMessage } from "@/components/SuccessMessage";
 import { BaseInput } from "@/components/BaseInput";
 
 export default function ForgotPassword() {
@@ -60,7 +60,7 @@ export default function ForgotPassword() {
 
           <CardContent className="pb-3">
             {success ? (
-              <SucessMessage description="Таны и-мэйл хаяг руу холбоос амжилттай илгээгдлээ." />
+              <SuccessMessage description="Таны и-мэйл хаяг руу холбоос амжилттай илгээгдлээ." />
             ) : (
               <form onSubmit={sendPasswordResetToken}>
                 <BaseInput

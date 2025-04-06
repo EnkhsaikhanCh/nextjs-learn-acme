@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { OTPInput } from "@/components/OTPInput";
 import { ResendSection } from "./_components/ResendSection";
 import { useOTPVerification } from "./_features/useOTPVerification";
-import { SucessMessage } from "@/components/SuccessMessage";
+import { SuccessMessage } from "@/components/SuccessMessage";
 
 export default function VerifyOTP() {
   const {
@@ -74,7 +74,7 @@ export default function VerifyOTP() {
 
           <CardContent>
             {success ? (
-              <SucessMessage description="Таны баталгаажуулалт амжилттай боллоо. Тун удахгүй таныг удирдлагын самбар руу шилжүүлнэ..." />
+              <SuccessMessage description="Таны баталгаажуулалт амжилттай боллоо. Тун удахгүй таныг удирдлагын самбар руу шилжүүлнэ..." />
             ) : (
               <>
                 <form onSubmit={handleSubmit} className="space-y-6">
