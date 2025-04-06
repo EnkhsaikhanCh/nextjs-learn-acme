@@ -88,7 +88,11 @@ const config: Config = {
     "src/app/\\(auth\\)/reset-password",
     "src/app/\\(auth\\)/verify-otp",
     "src/app/\\(auth\\)/login",
-    "src/app/\\(auth\\)/signup",
+    "src/app/\\(auth\\)/layout.tsx",
+
+    // src/app/(register)
+    "src/app/\\(register\\)/features",
+    "src/app/\\(register\\)/signup",
 
     // graphql index.ts
     "src/app/api/graphql/resolvers/index.ts",

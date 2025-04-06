@@ -6,7 +6,7 @@ import { ActionButton } from "@/components/ActionButton";
 import Link from "next/link";
 import { PasswordInput } from "@/components/PasswordInput";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useHandleRegister } from "./features/useHandleRegister";
+import { useHandleRegister } from "../features/useHandleRegister";
 
 export default function SignUp() {
   const {
