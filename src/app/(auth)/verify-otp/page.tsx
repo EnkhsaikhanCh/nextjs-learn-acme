@@ -1,16 +1,16 @@
 // src/app/(auth)/verify-otp/page.tsx
 "use client";
 
-import { LoadingUI } from "./_components/LoadingUI";
-import { ErrorUI } from "./_components/ErrorUI";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Globe, Loader, MailCheck } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { OTPInput } from "@/components/OTPInput";
-import { ResendSection } from "./_components/ResendSection";
 import { useOTPVerification } from "./_features/useOTPVerification";
 import { SuccessMessage } from "@/components/SuccessMessage";
+import { LoadingUI } from "@/components/LoadingUI";
+import { ErrorUI } from "@/components/ErrorUI";
+import { Button } from "@/components/ui/button";
 
 export default function VerifyOTP() {
   const {
@@ -111,11 +111,38 @@ export default function VerifyOTP() {
         </Card>
 
         {!success && (
-          <ResendSection
-            resendTimer={resendTimer}
-            onResend={handleResendOTP}
-            isResending={isResending}
-          />
+          <Card className="mt-4 text-center shadow-none">
+            <CardHeader className="py-4 pt-4 pb-0">
+              <CardTitle className="text-md text-foreground/80 font-semibold">
+                Баталгаажуулах код хүлээн аваагүй байна уу?
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="px-4 pb-4">
+              <Button
+                variant="link"
+                type="button"
+                size={"sm"}
+                className={`text-blue-600 transition-opacity hover:underline ${
+                  isResending || resendTimer > 0
+                    ? "cursor-not-allowed opacity-50"
+                    : ""
+                }`}
+                onClick={handleResendOTP}
+                disabled={isResending || resendTimer > 0}
+              >
+                {isResending ? (
+                  <>
+                    Код дахин илгээж байна...
+                    <Loader className="h-4 w-4 animate-spin" />
+                  </>
+                ) : resendTimer > 0 ? (
+                  <>Кодыг дахин илгээх ({resendTimer} сек)</>
+                ) : (
+                  <>Кодыг дахин илгээх</>
+                )}
+              </Button>
+            </CardContent>
+          </Card>
         )}
       </motion.div>
     </main>
