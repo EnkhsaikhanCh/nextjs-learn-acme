@@ -43,7 +43,7 @@ export const createUser = async (
   }
 
   try {
-    const existingUser = await UserModel.findOne({ email: email });
+    const existingUser = await UserModel.findOne({ email: normalizedEmail });
     if (existingUser) {
       throw new GraphQLError("A user with this email already exists.", {
         extensions: { code: "CONFLICT" },
@@ -61,7 +61,7 @@ export const createUser = async (
     });
 
     const newUser = await UserModel.create({
-      email: email,
+      email: normalizedEmail,
       studentId: studentId,
       password: hashedPassword,
       isVerified: false,

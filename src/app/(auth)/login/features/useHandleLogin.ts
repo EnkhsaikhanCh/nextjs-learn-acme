@@ -1,3 +1,7 @@
+import {
+  useGenerateTempTokenMutation,
+  useSendOtpMutation,
+} from "@/generated/graphql";
 import { getSession, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -29,6 +33,9 @@ export const useHandleLogin = () => {
   const [password, setPassword] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [errors, setErrors] = useState<ErrorState>({});
+
+  const [generateTempToken] = useGenerateTempTokenMutation();
+  const [sendOTP] = useSendOtpMutation();
 
   const router = useRouter();
 
@@ -64,28 +71,23 @@ export const useHandleLogin = () => {
         // Баталгаажаагүй эсэхийг шалгах
         if (!session.user.isVerified) {
           // Токен үүсгэх
-          const tokenResponse = await fetch("/api/auth/generate-temp-token", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email: email }),
+          const tempTokenResponse = await generateTempToken({
+            variables: { email: email },
           });
 
-          if (!tokenResponse.ok) {
-            throw new Error("Токен үүсгэхэд алдаа гарлаа.");
+          const token = tempTokenResponse.data?.generateTempToken.token;
+          if (!token) {
+            throw new Error("Токен хүлээн авахад алдаа гарлаа.");
           }
 
-          const { token } = await tokenResponse.json();
           localStorage.setItem("tempToken", token);
 
           // OTP илгээх
-          const otpResponse = await fetch("/api/auth/send-otp", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email: email }),
+          const otpResponse = await sendOTP({
+            variables: { email: email },
           });
-
-          if (!otpResponse.ok) {
-            throw new Error("OTP илгээхэд алдаа гарлаа.");
+          if (!otpResponse) {
+            throw new Error("OTP илгээхэд алдаа гарлаа");
           }
 
           toast.success("OTP код амжилттай илгээгдлээ!");

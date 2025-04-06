@@ -94,7 +94,9 @@ export function EnrolledUserView({ courseData }: { courseData: Course }) {
   }
 
   const handleMarkLessonAsCompleted = async (lessonId: string) => {
-    if (!enrollment._id || !lessonId) return; // enrollment._id-г шалгах
+    if (!enrollment._id || !lessonId) {
+      return; // enrollment._id-г шалгах
+    }
     setLessonActionLoading(true);
 
     try {
@@ -119,7 +121,9 @@ export function EnrolledUserView({ courseData }: { courseData: Course }) {
   };
 
   const handleUndoLessonCompletion = async (lessonId: string) => {
-    if (!enrollment._id || !lessonId) return; // enrollment._id-г шалгах
+    if (!enrollment._id || !lessonId) {
+      return; // enrollment._id-г шалгах
+    }
     setLessonActionLoading(true);
 
     try {

@@ -15,7 +15,9 @@ export default function CourseDetailPage() {
     variables: { slug: slug as string },
   });
 
-  if (loading) return <LoadingScreen label="Loading courses..." />;
+  if (loading) {
+    return <LoadingScreen label="Loading courses..." />;
+  }
   if (error?.graphQLErrors?.length) {
     const notFoundError = error.graphQLErrors.find((err) =>
       err.message.includes("Course not found"),
@@ -26,17 +28,21 @@ export default function CourseDetailPage() {
   }
 
   const courseForUser = data?.getCourseForUser;
-  if (!courseForUser) return <CourseNotFound />;
+  if (!courseForUser) {
+    return <CourseNotFound />;
+  }
 
   switch (courseForUser.status) {
-    case "GUEST":
-    case "NOT_ENROLLED":
-      return <NotEnrolled course={courseForUser.coursePreviewData as Course} />;
-
+    case "ADMIN_ENROLLED":
     case "ENROLLED":
       return <Enrolled course={courseForUser.fullContent as Course} />;
 
+    case "ADMIN_NOT_ENROLLED":
+    case "NOT_ENROLLED":
+    case "GUEST":
+      return <NotEnrolled course={courseForUser.coursePreviewData as Course} />;
+
     default:
-      return <div>Unhandled status</div>;
+      return <div>Unhandled status: {courseForUser.status}</div>;
   }
 }

@@ -59,7 +59,6 @@ export const updateUser = async (
 
     return updatedUser;
   } catch (error) {
-    console.error("Detailed error:", error); // Алдааны дэлгэрэнгүйг хэвлэх
     if (error instanceof GraphQLError) {
       throw error;
     }

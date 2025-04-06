@@ -30,6 +30,30 @@ export const getCourseForUser = async (
       });
     }
 
+    // Admin enrollment check
+    if (user?.role === "ADMIN") {
+      const enrollment = await EnrollmentModel.findOne({
+        courseId: course._id,
+        userId: user._id,
+      });
+
+      const isExpired = enrollmentExpired(enrollment?.expiryDate);
+
+      if (!enrollment || enrollment.status === "EXPIRED" || isExpired) {
+        return {
+          status: "ADMIN_NOT_ENROLLED",
+          coursePreviewData: await getCoursePreview(course._id),
+          fullContent: null,
+        };
+      }
+
+      return {
+        status: "ADMIN_ENROLLED",
+        coursePreviewData: null,
+        fullContent: await getFullCourseContent(course._id),
+      };
+    }
+
     // 2. Хэрэглэгч нэвтэрсэн бол Enrollment-ийг шалгах
     const enrollment = await EnrollmentModel.findOne({
       courseId: course._id,

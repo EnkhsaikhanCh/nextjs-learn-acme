@@ -1,4 +1,4 @@
-import { deleteTest } from "@/app/api/graphql/resolvers/mutations";
+import { deleteTest } from "@/app/api/graphql/resolvers/mutations/test/delete-test-mutation";
 
 const mockTest = {
   _id: "1",

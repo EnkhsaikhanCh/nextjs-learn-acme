@@ -88,7 +88,11 @@ const config: Config = {
     "src/app/\\(auth\\)/reset-password",
     "src/app/\\(auth\\)/verify-otp",
     "src/app/\\(auth\\)/login",
-    "src/app/\\(auth\\)/signup",
+    "src/app/\\(auth\\)/layout.tsx",
+
+    // src/app/(register)
+    "src/app/\\(register\\)/features",
+    "src/app/\\(register\\)/signup",
 
     // graphql index.ts
     "src/app/api/graphql/resolvers/index.ts",
@@ -114,6 +118,12 @@ const config: Config = {
     "src/app/api/graphql/resolvers/queries/enrollment/",
     "src/app/api/graphql/resolvers/queries/section",
     "src/app/api/graphql/resolvers/queries/payment",
+
+    // Sentry
+    "src/instrumentation-client.ts",
+    "src/instrumentation.ts",
+    "src/app/api/sentry-example-api/route.ts",
+    "src/app/sentry-example-page/page.tsx",
   ],
 
   // Indicates which provider should be used to instrument code for coverage

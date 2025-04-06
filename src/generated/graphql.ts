@@ -46,6 +46,8 @@ export type Course = {
  * EXPIRED       - Бүртгэл байсан ч хугацаа дууссан
  */
 export enum CourseAccessStatus {
+  AdminEnrolled = 'ADMIN_ENROLLED',
+  AdminNotEnrolled = 'ADMIN_NOT_ENROLLED',
   Enrolled = 'ENROLLED',
   Expired = 'EXPIRED',
   Guest = 'GUEST',
@@ -153,6 +155,16 @@ export enum EnrollmentStatus {
   Pending = 'PENDING'
 }
 
+export type GenerateTempTokenResponse = {
+  __typename?: 'GenerateTempTokenResponse';
+  token: Scalars['String']['output'];
+};
+
+export type GetEmailFromTokenResponse = {
+  __typename?: 'GetEmailFromTokenResponse';
+  email: Scalars['String']['output'];
+};
+
 export type Lesson = {
   __typename?: 'Lesson';
   _id: Scalars['ID']['output'];
@@ -181,7 +193,9 @@ export type Mutation = {
   deleteSection: DeleteSectionResponse;
   deleteTest: Test;
   deleteUser: User;
+  generateTempToken: GenerateTempTokenResponse;
   markLessonAsCompleted?: Maybe<Enrollment>;
+  sendOTP: SendOtpResponse;
   undoLessonCompletion?: Maybe<Enrollment>;
   updateCourse: Course;
   updateEnrollment?: Maybe<Enrollment>;
@@ -190,6 +204,7 @@ export type Mutation = {
   updateSection: Section;
   updateTest: Test;
   updateUser: User;
+  verifyOTP: VerifyOtpResponse;
 };
 
 
@@ -258,8 +273,18 @@ export type MutationDeleteUserArgs = {
 };
 
 
+export type MutationGenerateTempTokenArgs = {
+  email: Scalars['String']['input'];
+};
+
+
 export type MutationMarkLessonAsCompletedArgs = {
   input?: InputMaybe<MarkLessonAsCompletedInput>;
+};
+
+
+export type MutationSendOtpArgs = {
+  email: Scalars['String']['input'];
 };
 
 
@@ -306,6 +331,12 @@ export type MutationUpdateTestArgs = {
 export type MutationUpdateUserArgs = {
   _id: Scalars['ID']['input'];
   input: UpdateUserInput;
+};
+
+
+export type MutationVerifyOtpArgs = {
+  email: Scalars['String']['input'];
+  otp: Scalars['String']['input'];
 };
 
 export type Payment = {
@@ -391,6 +422,7 @@ export type Query = {
   getCourseDetails?: Maybe<Course>;
   getCourseForUser: CourseForUserPayload;
   getCourseIdBySlug?: Maybe<Course>;
+  getEmailFromToken: GetEmailFromTokenResponse;
   getEnrolledCourseContentBySlug?: Maybe<Course>;
   getEnrollmentByUserAndCourse?: Maybe<Enrollment>;
   getEnrollmentsByCourse: Array<Enrollment>;
@@ -456,6 +488,11 @@ export type QueryGetCourseForUserArgs = {
 
 export type QueryGetCourseIdBySlugArgs = {
   slug?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryGetEmailFromTokenArgs = {
+  token: Scalars['String']['input'];
 };
 
 
@@ -547,6 +584,12 @@ export type Section = {
   order: Scalars['Int']['output'];
   title: Scalars['String']['output'];
   updatedAt: Scalars['String']['output'];
+};
+
+export type SendOtpResponse = {
+  __typename?: 'SendOTPResponse';
+  message?: Maybe<Scalars['String']['output']>;
+  success: Scalars['Boolean']['output'];
 };
 
 export type SubscribeInput = {
@@ -644,6 +687,13 @@ export type UserPaginationResult = {
   users: Array<User>;
 };
 
+export type VerifyOtpResponse = {
+  __typename?: 'VerifyOTPResponse';
+  message: Scalars['String']['output'];
+  signInToken?: Maybe<Scalars['String']['output']>;
+  success: Scalars['Boolean']['output'];
+};
+
 export type WhyChoose = {
   __typename?: 'WhyChoose';
   description?: Maybe<Scalars['String']['output']>;
@@ -666,6 +716,35 @@ export type UndoLessonCompletionInput = {
   enrollmentId: Scalars['ID']['input'];
   lessonId: Scalars['ID']['input'];
 };
+
+export type GenerateTempTokenMutationVariables = Exact<{
+  email: Scalars['String']['input'];
+}>;
+
+
+export type GenerateTempTokenMutation = { __typename?: 'Mutation', generateTempToken: { __typename?: 'GenerateTempTokenResponse', token: string } };
+
+export type SendOtpMutationVariables = Exact<{
+  email: Scalars['String']['input'];
+}>;
+
+
+export type SendOtpMutation = { __typename?: 'Mutation', sendOTP: { __typename?: 'SendOTPResponse', success: boolean, message?: string | null } };
+
+export type VerifyOtpMutationVariables = Exact<{
+  email: Scalars['String']['input'];
+  otp: Scalars['String']['input'];
+}>;
+
+
+export type VerifyOtpMutation = { __typename?: 'Mutation', verifyOTP: { __typename?: 'VerifyOTPResponse', success: boolean, message: string, signInToken?: string | null } };
+
+export type GetEmailFromTokenQueryVariables = Exact<{
+  token: Scalars['String']['input'];
+}>;
+
+
+export type GetEmailFromTokenQuery = { __typename?: 'Query', getEmailFromToken: { __typename?: 'GetEmailFromTokenResponse', email: string } };
 
 export type CreateCourseMutationVariables = Exact<{
   input: CreateCourseInput;
@@ -724,7 +803,7 @@ export type GetCourseForUserQueryVariables = Exact<{
 }>;
 
 
-export type GetCourseForUserQuery = { __typename?: 'Query', getCourseForUser: { __typename?: 'CourseForUserPayload', status: CourseAccessStatus, fullContent?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, description?: string | null, difficulty?: Difficulty | null, thumbnail?: string | null, status?: CourseStatus | null, sectionId?: Array<{ __typename?: 'Section', _id: string, title: string, description?: string | null, order: number, lessonId?: Array<{ __typename?: 'Lesson', _id: string, title: string, content?: string | null, videoUrl?: string | null, order: number, isPublished: boolean } | null> | null } | null> | null } | null, coursePreviewData?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, description?: string | null, courseCode?: string | null, difficulty?: Difficulty | null, thumbnail?: string | null, categories?: Array<string | null> | null, tags?: Array<string | null> | null, status?: CourseStatus | null, whatYouWillLearn?: Array<string | null> | null, price?: { __typename?: 'Price', amount?: number | null, currency?: Currency | null, discount?: number | null } | null, pricingDetails?: { __typename?: 'PricingDetails', planTitle?: string | null, description?: string | null, price?: string | null, details?: Array<string | null> | null } | null, whyChooseOurCourse?: Array<{ __typename?: 'WhyChoose', icon?: string | null, title?: string | null, description?: string | null } | null> | null } | null } };
+export type GetCourseForUserQuery = { __typename?: 'Query', getCourseForUser: { __typename?: 'CourseForUserPayload', status: CourseAccessStatus, fullContent?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, description?: string | null, difficulty?: Difficulty | null, thumbnail?: string | null, status?: CourseStatus | null, sectionId?: Array<{ __typename?: 'Section', _id: string, title: string, description?: string | null, order: number, lessonId?: Array<{ __typename?: 'Lesson', _id: string, title: string, content?: string | null, videoUrl?: string | null, order: number, isPublished: boolean } | null> | null } | null> | null } | null, coursePreviewData?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, description?: string | null, courseCode?: string | null, difficulty?: Difficulty | null, thumbnail?: string | null, categories?: Array<string | null> | null, tags?: Array<string | null> | null, status?: CourseStatus | null, whatYouWillLearn?: Array<string | null> | null, price?: { __typename?: 'Price', amount?: number | null, currency?: Currency | null, discount?: number | null } | null, pricingDetails?: { __typename?: 'PricingDetails', planTitle?: string | null, description?: string | null, price?: string | null, details?: Array<string | null> | null } | null } | null } };
 
 export type MarkLessonAsCompletedMutationVariables = Exact<{
   input?: InputMaybe<MarkLessonAsCompletedInput>;
@@ -922,6 +1001,149 @@ export type GetUserByIdQueryVariables = Exact<{
 export type GetUserByIdQuery = { __typename?: 'Query', getUserById: { __typename?: 'User', _id: string, email: string, studentId?: string | null, role: Role, isVerified: boolean } };
 
 
+export const GenerateTempTokenDocument = gql`
+    mutation GenerateTempToken($email: String!) {
+  generateTempToken(email: $email) {
+    token
+  }
+}
+    `;
+export type GenerateTempTokenMutationFn = Apollo.MutationFunction<GenerateTempTokenMutation, GenerateTempTokenMutationVariables>;
+
+/**
+ * __useGenerateTempTokenMutation__
+ *
+ * To run a mutation, you first call `useGenerateTempTokenMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useGenerateTempTokenMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [generateTempTokenMutation, { data, loading, error }] = useGenerateTempTokenMutation({
+ *   variables: {
+ *      email: // value for 'email'
+ *   },
+ * });
+ */
+export function useGenerateTempTokenMutation(baseOptions?: Apollo.MutationHookOptions<GenerateTempTokenMutation, GenerateTempTokenMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<GenerateTempTokenMutation, GenerateTempTokenMutationVariables>(GenerateTempTokenDocument, options);
+      }
+export type GenerateTempTokenMutationHookResult = ReturnType<typeof useGenerateTempTokenMutation>;
+export type GenerateTempTokenMutationResult = Apollo.MutationResult<GenerateTempTokenMutation>;
+export type GenerateTempTokenMutationOptions = Apollo.BaseMutationOptions<GenerateTempTokenMutation, GenerateTempTokenMutationVariables>;
+export const SendOtpDocument = gql`
+    mutation SendOTP($email: String!) {
+  sendOTP(email: $email) {
+    success
+    message
+  }
+}
+    `;
+export type SendOtpMutationFn = Apollo.MutationFunction<SendOtpMutation, SendOtpMutationVariables>;
+
+/**
+ * __useSendOtpMutation__
+ *
+ * To run a mutation, you first call `useSendOtpMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSendOtpMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [sendOtpMutation, { data, loading, error }] = useSendOtpMutation({
+ *   variables: {
+ *      email: // value for 'email'
+ *   },
+ * });
+ */
+export function useSendOtpMutation(baseOptions?: Apollo.MutationHookOptions<SendOtpMutation, SendOtpMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SendOtpMutation, SendOtpMutationVariables>(SendOtpDocument, options);
+      }
+export type SendOtpMutationHookResult = ReturnType<typeof useSendOtpMutation>;
+export type SendOtpMutationResult = Apollo.MutationResult<SendOtpMutation>;
+export type SendOtpMutationOptions = Apollo.BaseMutationOptions<SendOtpMutation, SendOtpMutationVariables>;
+export const VerifyOtpDocument = gql`
+    mutation VerifyOTP($email: String!, $otp: String!) {
+  verifyOTP(email: $email, otp: $otp) {
+    success
+    message
+    signInToken
+  }
+}
+    `;
+export type VerifyOtpMutationFn = Apollo.MutationFunction<VerifyOtpMutation, VerifyOtpMutationVariables>;
+
+/**
+ * __useVerifyOtpMutation__
+ *
+ * To run a mutation, you first call `useVerifyOtpMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useVerifyOtpMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [verifyOtpMutation, { data, loading, error }] = useVerifyOtpMutation({
+ *   variables: {
+ *      email: // value for 'email'
+ *      otp: // value for 'otp'
+ *   },
+ * });
+ */
+export function useVerifyOtpMutation(baseOptions?: Apollo.MutationHookOptions<VerifyOtpMutation, VerifyOtpMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<VerifyOtpMutation, VerifyOtpMutationVariables>(VerifyOtpDocument, options);
+      }
+export type VerifyOtpMutationHookResult = ReturnType<typeof useVerifyOtpMutation>;
+export type VerifyOtpMutationResult = Apollo.MutationResult<VerifyOtpMutation>;
+export type VerifyOtpMutationOptions = Apollo.BaseMutationOptions<VerifyOtpMutation, VerifyOtpMutationVariables>;
+export const GetEmailFromTokenDocument = gql`
+    query GetEmailFromToken($token: String!) {
+  getEmailFromToken(token: $token) {
+    email
+  }
+}
+    `;
+
+/**
+ * __useGetEmailFromTokenQuery__
+ *
+ * To run a query within a React component, call `useGetEmailFromTokenQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetEmailFromTokenQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetEmailFromTokenQuery({
+ *   variables: {
+ *      token: // value for 'token'
+ *   },
+ * });
+ */
+export function useGetEmailFromTokenQuery(baseOptions: Apollo.QueryHookOptions<GetEmailFromTokenQuery, GetEmailFromTokenQueryVariables> & ({ variables: GetEmailFromTokenQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetEmailFromTokenQuery, GetEmailFromTokenQueryVariables>(GetEmailFromTokenDocument, options);
+      }
+export function useGetEmailFromTokenLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetEmailFromTokenQuery, GetEmailFromTokenQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetEmailFromTokenQuery, GetEmailFromTokenQueryVariables>(GetEmailFromTokenDocument, options);
+        }
+export function useGetEmailFromTokenSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetEmailFromTokenQuery, GetEmailFromTokenQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetEmailFromTokenQuery, GetEmailFromTokenQueryVariables>(GetEmailFromTokenDocument, options);
+        }
+export type GetEmailFromTokenQueryHookResult = ReturnType<typeof useGetEmailFromTokenQuery>;
+export type GetEmailFromTokenLazyQueryHookResult = ReturnType<typeof useGetEmailFromTokenLazyQuery>;
+export type GetEmailFromTokenSuspenseQueryHookResult = ReturnType<typeof useGetEmailFromTokenSuspenseQuery>;
+export type GetEmailFromTokenQueryResult = Apollo.QueryResult<GetEmailFromTokenQuery, GetEmailFromTokenQueryVariables>;
 export const CreateCourseDocument = gql`
     mutation CreateCourse($input: CreateCourseInput!) {
   createCourse(input: $input) {
@@ -1331,11 +1553,6 @@ export const GetCourseForUserDocument = gql`
       tags
       status
       whatYouWillLearn
-      whyChooseOurCourse {
-        icon
-        title
-        description
-      }
     }
   }
 }

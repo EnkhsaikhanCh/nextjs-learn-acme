@@ -6,7 +6,9 @@ export const sanitizeInput = (
   maxLength: number = 255,
 ): string => {
   // Хэрэв утга байхгүй бол хоосон тэмдэгт буцаана
-  if (!input) return "";
+  if (!input) {
+    return "";
+  }
 
   const trimmedInput = input.trim();
 

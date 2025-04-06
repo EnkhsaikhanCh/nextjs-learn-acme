@@ -33,8 +33,7 @@ export const getAllCourseWithEnrollment = async (
     }));
 
     return coursesWithEnrollment;
-  } catch (err) {
-    console.error("getAllCourseWithEnrollment error:", err);
+  } catch {
     throw new GraphQLError("Internal server error", {
       extensions: { code: "INTERNAL_SERVER_ERROR" },
     });

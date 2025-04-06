@@ -1,32 +1,16 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   useDeleteLessonMutation,
-  useGetLessonByIdQuery,
   useUpdateLessonMutation,
 } from "@/generated/graphql";
-import {
-  AlertTriangle,
-  CircleCheck,
-  CircleDot,
-  CircleX,
-  FilePenLine,
-  Trash2,
-} from "lucide-react";
+import { CircleCheck, CircleDot, CircleX, FilePenLine } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { motion } from "framer-motion";
+import { ConfirmDeleteDialog } from "@/app/admin/_components/ConfirmDeleteDialog";
 
 interface LessonDetailProps {
   lessonId: string;
@@ -44,8 +28,6 @@ export function LessonDetail({
   isPublished,
   refetchCourse,
 }: LessonDetailProps) {
-  const [updateLesson] = useUpdateLessonMutation();
-  const [deleteLesson] = useDeleteLessonMutation();
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editedTitle, setEditedTitle] = useState<string>(title || "");
   const [editedVideoUrl, setEditedVideoUrl] = useState<string>(videoUrl || "");
@@ -53,9 +35,9 @@ export function LessonDetail({
     isPublished || false,
   );
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const { refetch: fetchedLessonRefetch } = useGetLessonByIdQuery({
-    variables: { id: lessonId },
-  });
+
+  const [updateLesson] = useUpdateLessonMutation();
+  const [deleteLesson] = useDeleteLessonMutation();
 
   const getEmbedUrl = (url: string) => {
     const match = url.match(
@@ -84,13 +66,12 @@ export function LessonDetail({
         },
       });
 
-      await fetchedLessonRefetch();
+      await refetchCourse();
       setIsEditing(false);
       if (updatedLesson.data) {
         toast.success("Lesson updated successfully!");
       }
-    } catch (error) {
-      console.error(error);
+    } catch {
       toast.error("Failed to update lesson");
     }
   };
@@ -108,8 +89,7 @@ export function LessonDetail({
         toast.success("Lesson deleted successfully!");
       }
     } catch (error) {
-      console.error(error);
-      toast.error("Failed to delete lesson");
+      toast.error(`Failed to delete lesson, ${error}`);
     } finally {
       setIsDeleteDialogOpen(false);
     }
@@ -181,11 +161,10 @@ export function LessonDetail({
           </div>
         )}
 
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
           <Button
             size="sm"
             variant={isEditing ? "default" : "outline"}
-            className="mt-2 ml-1 font-semibold"
             onClick={(e) => {
               e.stopPropagation(); // Prevents propagation if part of an accordion
               setIsEditing(!isEditing);
@@ -208,78 +187,21 @@ export function LessonDetail({
             <Button
               size="sm"
               variant="outline"
-              className="mt-2 ml-1 border-green-500 bg-green-100 font-semibold text-green-500 hover:bg-green-200 hover:text-green-600"
+              className="border-green-500 bg-green-100 font-semibold text-green-500 hover:bg-green-200 hover:text-green-600"
               onClick={handleSave}
             >
               Save
             </Button>
           )}
 
-          <Dialog
+          <ConfirmDeleteDialog
+            buttonLabel="Delete Lesson"
+            label="Lesson title"
+            name={title || ""}
+            onConfirm={handleDelete}
             open={isDeleteDialogOpen}
             onOpenChange={setIsDeleteDialogOpen}
-          >
-            <DialogTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                className="hover:border-destructive hover:bg-destructive/10 hover:text-destructive mt-2 font-semibold"
-              >
-                Delete Lesson
-                <Trash2 />
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="p-0">
-              <DialogHeader className="rounded-t-md border-b border-gray-200 bg-[#FAFAFA] p-4">
-                <DialogTitle className="text-destructive flex items-center gap-2 text-lg">
-                  <AlertTriangle />
-                  Confirm Deletion
-                </DialogTitle>
-              </DialogHeader>
-              <div className="p-4">
-                <p>
-                  <strong>Title:</strong> {title}
-                </p>
-                <p>
-                  <strong>ID:</strong> {lessonId}
-                </p>
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 10 }}
-                  transition={{ duration: 0.2 }}
-                  className="bg-destructive/10 text-destructive mt-4 rounded-md p-4"
-                >
-                  <p className="text-sm font-semibold">
-                    This action cannot be undone.
-                  </p>
-                  <p className="mt-1 text-sm">
-                    All associated data will be permanently removed from our
-                    servers.
-                  </p>
-                </motion.div>
-              </div>
-              <DialogFooter className="border-t border-gray-200 bg-[#FAFAFA] p-4">
-                <Button
-                  variant="outline"
-                  onClick={() => setIsDeleteDialogOpen(false)}
-                  className="font-semibold"
-                  size="sm"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  variant="destructive"
-                  onClick={handleDelete}
-                  className="font-semibold"
-                  size="sm"
-                >
-                  Delete Lesson
-                  <Trash2 />
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          />
         </div>
       </div>
     </>

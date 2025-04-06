@@ -42,8 +42,6 @@ export async function POST(request: Request) {
       );
     }
 
-    console.log("Payment User Email:", payment.userId.email);
-
     const baseUrl = process.env.VERCEL_URL
       ? `https://${process.env.VERCEL_URL}`
       : "http://localhost:3000";
@@ -94,8 +92,7 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ message: "Имэйл амжилттай илгээгдлээ." });
-  } catch (error) {
-    console.error("Имэйл илгээхэд алдаа гарлаа:", error);
+  } catch {
     return NextResponse.json(
       { error: "Имэйл илгээхэд алдаа гарлаа." },
       { status: 500 },

@@ -68,8 +68,7 @@ export const UpdatePaymentStatus: React.FC<UpdatePaymentStatusProps> = ({
       } else {
         toast.error(`Имэйл илгээхэд алдаа гарлаа: ${data.error}`);
       }
-    } catch (error) {
-      console.error("Имэйл илгээхэд алдаа гарлаа:", error);
+    } catch {
       toast.error("Имэйл илгээхэд алдаа гарлаа.");
     }
   };
@@ -94,7 +93,6 @@ export const UpdatePaymentStatus: React.FC<UpdatePaymentStatusProps> = ({
       setIsOpen(false);
     } catch (error) {
       toast.error(`Алдаа гарлаа. Дахин оролдоно уу. ${error}`);
-      console.error("Төлөв шинэчлэхэд алдаа гарлаа:", error);
     }
   };
 

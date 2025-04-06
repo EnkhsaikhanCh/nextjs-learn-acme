@@ -7,9 +7,8 @@ import {
   Course,
   Section,
   UpdateCourseInput,
-  useGetCourseBySlugQuery,
+  useGetCourseForUserQuery,
   useGetLessonByIdQuery,
-  useGetSectionsByCourseIdQuery,
   useUpdateCourseMutation,
 } from "@/generated/graphql";
 import { Loader } from "lucide-react";
@@ -30,7 +29,8 @@ import {
   DrawerClose,
 } from "@/components/ui/drawer";
 import { LessonDetail } from "./_components/lesson/LessonDetail";
-import { LoadingOverlay } from "@/components/LoadingOverlay";
+import { LoadingScreen } from "@/components/LoadingScreen";
+import CourseNotFound from "@/components/CourseNotFound";
 
 export default function CourseDetailPage() {
   const [selectedLesson, setSelectedLesson] = useState<string | null>(null);
@@ -39,35 +39,17 @@ export default function CourseDetailPage() {
 
   const { slug } = useParams();
 
-  const {
-    data: courseData,
-    loading: courseLoading,
-    error: courseError,
-    refetch: courseRefetch,
-  } = useGetCourseBySlugQuery({
+  const { data, loading, error, refetch } = useGetCourseForUserQuery({
     variables: { slug: slug as string },
-    skip: !slug,
-  });
-
-  const {
-    data: courseAllSectionsData,
-    loading: courseAllSectionsLoading,
-    // error: courseAllSectionsError,
-    refetch: courseAllSectionsRefetch,
-  } = useGetSectionsByCourseIdQuery({
-    variables: {
-      courseId: courseData?.getCourseBySlug?._id as string,
-    },
-    skip: !courseData?.getCourseBySlug?._id, // skip нь boolean байх ёстой!
   });
 
   const {
     data: fetchedLessonData,
     loading: fetchedLessonLoading,
     error: fetchedLessonError,
-    // refetch: fetchedLessonRefetch,
   } = useGetLessonByIdQuery({
-    variables: { id: selectedLesson || "" },
+    variables: { id: selectedLesson as string },
+    skip: !selectedLesson,
   });
 
   const [updateCourse] = useUpdateCourseMutation();
@@ -128,8 +110,6 @@ export default function CourseDetailPage() {
         loading: "Updating course...",
         success: (data) => `${data.name} has been updated successfully!`,
         error: (error) => {
-          console.error("GraphQL Update Course Error:", error);
-
           if (error.graphQLErrors?.length) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             return error.graphQLErrors.map((e: any) => e.message).join(", ");
@@ -143,11 +123,8 @@ export default function CourseDetailPage() {
         },
       });
 
-      // Refresh course data
-      courseRefetch();
-      courseAllSectionsRefetch();
+      refetch();
     } catch (error) {
-      console.error("Error in handleEditCourse:", error);
       toast.error(`Error updating course: ${(error as Error).message}`);
     }
   };
@@ -160,21 +137,6 @@ export default function CourseDetailPage() {
     return () => window.removeEventListener("resize", checkViewport);
   }, []);
 
-  if (courseLoading || courseAllSectionsLoading) {
-    return <LoadingOverlay />;
-  }
-
-  if (courseError) {
-    const errorMessage = courseError?.message || "Error loading course data.";
-
-    toast.error(errorMessage);
-    return <div>Error loading course data: {errorMessage}</div>;
-  }
-
-  if (!courseData?.getCourseBySlug) {
-    return <div>No data found</div>;
-  }
-
   const handleLessonSelect = (lessonId: string) => {
     setSelectedLesson(lessonId);
     if (isMobile) {
@@ -182,122 +144,154 @@ export default function CourseDetailPage() {
     }
   };
 
-  return (
-    <div className="h-screen">
-      {isMobile ? (
-        <div>
-          <div className="rounded-md p-4 shadow-sm">
-            <CourseInfo
-              course={courseData?.getCourseBySlug as Course}
-              onEdit={handleEditCourse}
-            />
+  if (loading) {
+    return <LoadingScreen label="Loading course details..." />;
+  }
 
-            {/* Section-ууд болон хичээлүүд */}
-            <SectionList
-              sections={
-                courseAllSectionsData?.getSectionsByCourseId as Section[]
-              }
-              refetchCourse={courseAllSectionsRefetch}
-              onLessonSelect={handleLessonSelect}
-            />
+  if (error?.graphQLErrors?.length) {
+    const notFoundError = error.graphQLErrors.find((err) =>
+      err.message.includes("Course not found"),
+    );
+    if (notFoundError) {
+      return <CourseNotFound />;
+    }
+  }
 
-            {/* Section нэмэх хэсэг */}
-            <AddSectionForm
-              courseId={courseData.getCourseBySlug._id}
-              refetchCourse={courseAllSectionsRefetch}
-            />
-          </div>
+  const courseForUser = data?.getCourseForUser;
+  if (!courseForUser) {
+    return <CourseNotFound />;
+  }
 
-          {/* Drawer */}
-          <Drawer open={isDrawerOpen} onOpenChange={setDrawerOpen}>
-            <DrawerContent className="p-4">
-              <DrawerHeader>
-                <DrawerTitle>Сонгогдсон Хичээл</DrawerTitle>
-                <DrawerClose asChild>
-                  <button className="absolute top-4 right-4">X</button>
-                </DrawerClose>
-              </DrawerHeader>
-              <div>
-                {selectedLesson ? (
-                  <LessonDetail
-                    refetchCourse={courseRefetch}
-                    lessonId={selectedLesson}
-                    title={fetchedLessonData?.getLessonById?.title}
-                    videoUrl={fetchedLessonData?.getLessonById?.videoUrl || ""}
-                    content={fetchedLessonData?.getLessonById?.content || ""}
-                    isPublished={
-                      fetchedLessonData?.getLessonById?.isPublished || false
-                    }
-                  />
-                ) : (
-                  <p>Ямар нэг хичээл сонгогдоогүй байна.</p>
-                )}
+  switch (data.getCourseForUser.status) {
+    case "ADMIN_ENROLLED":
+    case "ADMIN_NOT_ENROLLED":
+      return (
+        <div className="h-screen">
+          {isMobile ? (
+            <div>
+              <div className="rounded-md p-4 shadow-sm">
+                <CourseInfo
+                  course={data?.getCourseForUser.fullContent as Course}
+                  onEdit={handleEditCourse}
+                />
+
+                {/* Section-ууд болон хичээлүүд */}
+                <SectionList
+                  sections={
+                    data.getCourseForUser.fullContent?.sectionId as Section[]
+                  }
+                  refetchCourse={refetch}
+                  onLessonSelect={handleLessonSelect}
+                />
+
+                {/* Section нэмэх хэсэг */}
+                <AddSectionForm
+                  courseId={data.getCourseForUser.fullContent?._id || ""}
+                  refetchCourse={refetch}
+                />
               </div>
-            </DrawerContent>
-          </Drawer>
-        </div>
-      ) : (
-        // Desktop: ResizablePanel ашиглана
-        <ResizablePanelGroup direction="horizontal" className="h-full">
-          {/* Зүүн талын панель */}
-          <ResizablePanel defaultSize={30} minSize={35} maxSize={45}>
-            <div className="h-full overflow-y-auto p-4">
-              <CourseInfo
-                course={courseData?.getCourseBySlug as Course}
-                onEdit={handleEditCourse}
-              />
 
-              {/* Section-ууд болон хичээлүүд */}
-              <SectionList
-                sections={
-                  (courseAllSectionsData?.getSectionsByCourseId as Section[]) ||
-                  []
-                }
-                refetchCourse={courseAllSectionsRefetch}
-                onLessonSelect={handleLessonSelect}
-              />
-
-              {/* Section нэмэх хэсэг */}
-              <AddSectionForm
-                courseId={courseData.getCourseBySlug._id}
-                refetchCourse={courseAllSectionsRefetch}
-              />
-            </div>
-          </ResizablePanel>
-
-          {/* Бариул */}
-          <ResizableHandle />
-
-          {/* Баруун талын панель */}
-          <ResizablePanel defaultSize={70} minSize={50} className="">
-            <div className="p-4">
-              {selectedLesson ? (
-                fetchedLessonLoading ? (
-                  <div className="flex items-center justify-center gap-2">
-                    <Loader className="h-4 w-4 animate-spin" />
-                    Loading lesson details...
+              {/* Drawer */}
+              <Drawer open={isDrawerOpen} onOpenChange={setDrawerOpen}>
+                <DrawerContent className="p-4">
+                  <DrawerHeader>
+                    <DrawerTitle>Сонгогдсон Хичээл</DrawerTitle>
+                    <DrawerClose asChild>
+                      <button className="absolute top-4 right-4">X</button>
+                    </DrawerClose>
+                  </DrawerHeader>
+                  <div>
+                    {selectedLesson ? (
+                      <LessonDetail
+                        refetchCourse={refetch}
+                        lessonId={selectedLesson}
+                        title={fetchedLessonData?.getLessonById?.title}
+                        videoUrl={
+                          fetchedLessonData?.getLessonById?.videoUrl || ""
+                        }
+                        content={
+                          fetchedLessonData?.getLessonById?.content || ""
+                        }
+                        isPublished={
+                          fetchedLessonData?.getLessonById?.isPublished || false
+                        }
+                      />
+                    ) : (
+                      <p>Ямар нэг хичээл сонгогдоогүй байна.</p>
+                    )}
                   </div>
-                ) : fetchedLessonError ? (
-                  <p>Error loading lesson: {fetchedLessonError.message}</p>
-                ) : (
-                  <LessonDetail
-                    refetchCourse={courseRefetch}
-                    lessonId={selectedLesson}
-                    title={fetchedLessonData?.getLessonById?.title}
-                    videoUrl={fetchedLessonData?.getLessonById?.videoUrl || ""}
-                    content={fetchedLessonData?.getLessonById?.content || ""}
-                    isPublished={
-                      fetchedLessonData?.getLessonById?.isPublished || false
-                    }
-                  />
-                )
-              ) : (
-                <p>Ямар нэг хичээл сонгогдоогүй байна.</p>
-              )}
+                </DrawerContent>
+              </Drawer>
             </div>
-          </ResizablePanel>
-        </ResizablePanelGroup>
-      )}
-    </div>
-  );
+          ) : (
+            // Desktop: ResizablePanel ашиглана
+            <ResizablePanelGroup direction="horizontal" className="h-full">
+              {/* Зүүн талын панель */}
+              <ResizablePanel defaultSize={30} minSize={35} maxSize={45}>
+                <div className="h-full overflow-y-auto p-4">
+                  <CourseInfo
+                    course={data?.getCourseForUser.fullContent as Course}
+                    onEdit={handleEditCourse}
+                  />
+
+                  {/* Section-ууд болон хичээлүүд */}
+                  <SectionList
+                    sections={
+                      data.getCourseForUser.fullContent?.sectionId as Section[]
+                    }
+                    refetchCourse={refetch}
+                    onLessonSelect={handleLessonSelect}
+                  />
+
+                  {/* Section нэмэх хэсэг */}
+                  <AddSectionForm
+                    courseId={data.getCourseForUser.fullContent?._id || ""}
+                    refetchCourse={refetch}
+                  />
+                </div>
+              </ResizablePanel>
+
+              {/* Бариул */}
+              <ResizableHandle />
+
+              {/* Баруун талын панель */}
+              <ResizablePanel defaultSize={70} minSize={50} className="">
+                <div className="p-4">
+                  {selectedLesson ? (
+                    fetchedLessonLoading ? (
+                      <div className="flex items-center justify-center gap-2">
+                        <Loader className="h-4 w-4 animate-spin" />
+                        Loading lesson details...
+                      </div>
+                    ) : fetchedLessonError ? (
+                      <p>Error loading lesson: {fetchedLessonError.message}</p>
+                    ) : (
+                      <LessonDetail
+                        refetchCourse={refetch}
+                        lessonId={selectedLesson}
+                        title={fetchedLessonData?.getLessonById?.title}
+                        videoUrl={
+                          fetchedLessonData?.getLessonById?.videoUrl || ""
+                        }
+                        content={
+                          fetchedLessonData?.getLessonById?.content || ""
+                        }
+                        isPublished={
+                          fetchedLessonData?.getLessonById?.isPublished || false
+                        }
+                      />
+                    )
+                  ) : (
+                    <p>Ямар нэг хичээл сонгогдоогүй байна.</p>
+                  )}
+                </div>
+              </ResizablePanel>
+            </ResizablePanelGroup>
+          )}
+        </div>
+      );
+
+    default:
+      return <div>Unhandled status</div>;
+  }
 }

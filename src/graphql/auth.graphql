@@ -1,0 +1,28 @@
+# Mutations
+mutation GenerateTempToken($email: String!) {
+  generateTempToken(email: $email) {
+    token
+  }
+}
+
+mutation SendOTP($email: String!) {
+  sendOTP(email: $email) {
+    success
+    message
+  }
+}
+
+mutation VerifyOTP($email: String!, $otp: String!) {
+  verifyOTP(email: $email, otp: $otp) {
+    success
+    message
+    signInToken
+  }
+}
+
+# Queries
+query GetEmailFromToken($token: String!) {
+  getEmailFromToken(token: $token) {
+    email
+  }
+}

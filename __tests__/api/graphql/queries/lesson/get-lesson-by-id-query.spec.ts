@@ -1,5 +1,5 @@
-import { LessonModel } from "@/app/api/graphql/models";
-import { getLessonById } from "@/app/api/graphql/resolvers/queries";
+import { LessonModel } from "@/app/api/graphql/models/lesson.model";
+import { getLessonById } from "@/app/api/graphql/resolvers/queries/lesson/get-lesson-by-id-query";
 import { GraphQLError } from "graphql";
 
 jest.mock("../../../../../src/app/api/graphql/models/lesson.model", () => ({

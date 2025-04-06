@@ -1,5 +1,4 @@
 import React from "react";
-import { Toaster } from "sonner";
 import { AppSidebar } from "@/app/admin/_components/AppSidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AdminSiteHeader } from "./_components/AdminSiteHeader";
@@ -30,7 +29,6 @@ export default async function AdminDashboardLayout({
           <AppSidebar />
           <SidebarInset>
             <AdminSiteHeader />
-            <Toaster richColors position="top-center" />
             {children}
           </SidebarInset>
         </SidebarProvider>
