@@ -32,7 +32,6 @@ export const undoLessonCompletion = async (
 
     // Check if the lesson is actually completed
     if (!enrollment.completedLessons.includes(lessonId)) {
-      console.log("Lesson is not marked as completed for enrollment");
       return enrollment;
     }
 
@@ -89,8 +88,6 @@ export const undoLessonCompletion = async (
     if (error instanceof GraphQLError) {
       throw error;
     }
-
-    console.error(`Unexpected error for enrollment and lesson: `, error);
 
     throw new GraphQLError("Internal server error", {
       extensions: {

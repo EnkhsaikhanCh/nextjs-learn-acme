@@ -110,8 +110,6 @@ export default function CourseDetailPage() {
         loading: "Updating course...",
         success: (data) => `${data.name} has been updated successfully!`,
         error: (error) => {
-          console.error("GraphQL Update Course Error:", error);
-
           if (error.graphQLErrors?.length) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             return error.graphQLErrors.map((e: any) => e.message).join(", ");
@@ -127,7 +125,6 @@ export default function CourseDetailPage() {
 
       refetch();
     } catch (error) {
-      console.error("Error in handleEditCourse:", error);
       toast.error(`Error updating course: ${(error as Error).message}`);
     }
   };
@@ -147,7 +144,10 @@ export default function CourseDetailPage() {
     }
   };
 
-  if (loading) return <LoadingScreen label="Loading course details..." />;
+  if (loading) {
+    return <LoadingScreen label="Loading course details..." />;
+  }
+
   if (error?.graphQLErrors?.length) {
     const notFoundError = error.graphQLErrors.find((err) =>
       err.message.includes("Course not found"),
@@ -158,7 +158,9 @@ export default function CourseDetailPage() {
   }
 
   const courseForUser = data?.getCourseForUser;
-  if (!courseForUser) return <CourseNotFound />;
+  if (!courseForUser) {
+    return <CourseNotFound />;
+  }
 
   switch (data.getCourseForUser.status) {
     case "ADMIN_ENROLLED":

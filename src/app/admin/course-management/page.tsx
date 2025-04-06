@@ -57,8 +57,7 @@ export default function Page() {
       setIsDialogOpen(false);
       setTitle("");
       refetch();
-    } catch (error) {
-      console.error(error);
+    } catch {
       toast.error("Failed to create course");
     } finally {
       setIsCreating(false);

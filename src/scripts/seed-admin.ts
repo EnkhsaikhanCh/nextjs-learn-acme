@@ -42,8 +42,6 @@ export const seedAdmin = async () => {
       message: "Admin user created successfully!",
     };
   } catch (error) {
-    console.error("Error creating admin:", error);
-
     if (error instanceof GraphQLError) {
       throw error;
     }
@@ -61,10 +59,8 @@ export const seedAdmin = async () => {
 
 seedAdmin()
   .then(() => {
-    console.log("Admin user created successfully!");
     process.exit(0); // Амжилттай дуусна
   })
-  .catch((err) => {
-    console.error("Error creating admin user:", err);
+  .catch(() => {
     process.exit(1); // Алдаатай дуусна
   });

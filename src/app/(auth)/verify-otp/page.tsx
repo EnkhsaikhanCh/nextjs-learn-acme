@@ -1,16 +1,16 @@
 // src/app/(auth)/verify-otp/page.tsx
 "use client";
 
-import { LoadingUI } from "./_components/LoadingUI";
-import { ErrorUI } from "./_components/ErrorUI";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Globe, Loader, MailCheck } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { OTPInput } from "@/components/OTPInput";
-import { ResendSection } from "./_components/ResendSection";
-import { SuccessMessage } from "./_components/SuccessMessage";
-import { useOTPVerification } from "./_features/useOTPVerification";
+import { useOTPVerification } from "./features/useOTPVerification";
+import { SuccessMessage } from "@/components/SuccessMessage";
+import { LoadingUI } from "@/components/LoadingUI";
+import { ErrorUI } from "@/components/ErrorUI";
+import { Button } from "@/components/ui/button";
 
 export default function VerifyOTP() {
   const {
@@ -72,48 +72,77 @@ export default function VerifyOTP() {
             </CardTitle>
           </CardHeader>
 
-          {!success ? (
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="flex flex-col items-center text-center">
-                  {!isVerifying ? (
-                    <OTPInput
-                      length={6}
-                      onComplete={(value) => {
-                        setOtp(value);
-                        handleSubmit();
-                      }}
-                      disabled={isVerifying}
-                      isError={!!error}
-                      onChange={(value) => {
-                        setOtp(value);
-                        setError("");
-                      }}
-                      value={otp}
-                    />
-                  ) : (
-                    <div className="flex h-14 items-center justify-center">
-                      <Loader className="h-8 w-8 animate-spin text-teal-600" />
-                    </div>
-                  )}
-                </div>
-              </form>
-              <p className="text-foreground/60 mt-4 text-center text-sm">
-                6 оронтой код таны <strong>{email}</strong> хаяг руу илгээгдсэн.
-                Код 5 минутын дотор хүчинтэй.
-              </p>
-            </CardContent>
-          ) : (
-            <SuccessMessage />
-          )}
+          <CardContent>
+            {success ? (
+              <SuccessMessage description="Таны баталгаажуулалт амжилттай боллоо. Тун удахгүй таныг удирдлагын самбар руу шилжүүлнэ..." />
+            ) : (
+              <>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="flex flex-col items-center text-center">
+                    {!isVerifying ? (
+                      <OTPInput
+                        length={6}
+                        onComplete={(value) => {
+                          setOtp(value);
+                          handleSubmit();
+                        }}
+                        disabled={isVerifying}
+                        isError={!!error}
+                        onChange={(value) => {
+                          setOtp(value);
+                          setError("");
+                        }}
+                        value={otp}
+                      />
+                    ) : (
+                      <div className="flex h-14 items-center justify-center">
+                        <Loader className="h-8 w-8 animate-spin text-teal-600" />
+                      </div>
+                    )}
+                  </div>
+                </form>
+                <p className="text-foreground/60 mt-4 text-center text-sm">
+                  6 оронтой код таны <strong>{email}</strong> хаяг руу
+                  илгээгдсэн. Код 5 минутын дотор хүчинтэй.
+                </p>
+              </>
+            )}
+          </CardContent>
         </Card>
 
         {!success && (
-          <ResendSection
-            resendTimer={resendTimer}
-            onResend={handleResendOTP}
-            isResending={isResending}
-          />
+          <Card className="mt-4 text-center shadow-none">
+            <CardHeader className="py-4 pt-4 pb-0">
+              <CardTitle className="text-md text-foreground/80 font-semibold">
+                Баталгаажуулах код хүлээн аваагүй байна уу?
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="px-4 pb-4">
+              <Button
+                variant="link"
+                type="button"
+                size={"sm"}
+                className={`text-blue-600 transition-opacity hover:underline ${
+                  isResending || resendTimer > 0
+                    ? "cursor-not-allowed opacity-50"
+                    : ""
+                }`}
+                onClick={handleResendOTP}
+                disabled={isResending || resendTimer > 0}
+              >
+                {isResending ? (
+                  <>
+                    Код дахин илгээж байна...
+                    <Loader className="h-4 w-4 animate-spin" />
+                  </>
+                ) : resendTimer > 0 ? (
+                  <>Кодыг дахин илгээх ({resendTimer} сек)</>
+                ) : (
+                  <>Кодыг дахин илгээх</>
+                )}
+              </Button>
+            </CardContent>
+          </Card>
         )}
       </motion.div>
     </main>

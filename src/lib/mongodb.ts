@@ -22,7 +22,9 @@ if (!dbName) {
 const cached = (global as any).mongoose || { conn: null, promise: null };
 
 export const connectToDatabase = async () => {
-  if (cached.conn) return cached.conn;
+  if (cached.conn) {
+    return cached.conn;
+  }
 
   if (!cached.promise) {
     cached.promise = mongoose.connect(uri, {
@@ -33,10 +35,8 @@ export const connectToDatabase = async () => {
 
   try {
     cached.conn = await cached.promise;
-    console.log("DB connected");
     return cached.conn;
-  } catch (error) {
-    console.error("❌ DB connection failed:", error);
+  } catch {
     throw new Error("DB connection failed");
   }
 };

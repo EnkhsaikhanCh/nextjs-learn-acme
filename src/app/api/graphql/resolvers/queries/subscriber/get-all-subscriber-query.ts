@@ -4,7 +4,10 @@ import { GraphQLError } from "graphql";
 import { SubscriberModel } from "../../../models";
 
 const buildSubscriberQuery = (search?: string) => {
-  if (!search) return {};
+  if (!search) {
+    return {};
+  }
+
   const regex = { $regex: search, $options: "i" };
 
   return {

@@ -19,23 +19,49 @@ export const updateCourse = async (
     // Оруулах утгуудыг зөвхөн дамжуулсан утгаар шинэчлэх
     const updateFields: Partial<UpdateCourseInput> = {};
 
-    if (input.title !== undefined) updateFields.title = input.title;
-    if (input.description !== undefined)
+    if (input.title !== undefined) {
+      updateFields.title = input.title;
+    }
+
+    if (input.description !== undefined) {
       updateFields.description = input.description;
-    if (input.price !== undefined) updateFields.price = input.price;
-    if (input.difficulty !== undefined)
+    }
+
+    if (input.price !== undefined) {
+      updateFields.price = input.price;
+    }
+
+    if (input.difficulty !== undefined) {
       updateFields.difficulty = input.difficulty;
-    if (input.thumbnail !== undefined) updateFields.thumbnail = input.thumbnail;
-    if (input.pricingDetails !== undefined)
+    }
+
+    if (input.thumbnail !== undefined) {
+      updateFields.thumbnail = input.thumbnail;
+    }
+
+    if (input.pricingDetails !== undefined) {
       updateFields.pricingDetails = input.pricingDetails;
-    if (input.categories !== undefined)
+    }
+
+    if (input.categories !== undefined) {
       updateFields.categories = input.categories;
-    if (input.tags !== undefined) updateFields.tags = input.tags;
-    if (input.status !== undefined) updateFields.status = input.status;
-    if (input.whatYouWillLearn !== undefined)
+    }
+
+    if (input.tags !== undefined) {
+      updateFields.tags = input.tags;
+    }
+
+    if (input.status !== undefined) {
+      updateFields.status = input.status;
+    }
+
+    if (input.whatYouWillLearn !== undefined) {
       updateFields.whatYouWillLearn = input.whatYouWillLearn;
-    if (input.whyChooseOurCourse !== undefined)
+    }
+
+    if (input.whyChooseOurCourse !== undefined) {
       updateFields.whyChooseOurCourse = input.whyChooseOurCourse;
+    }
 
     // findByIdAndUpdate ашиглан шинэчлэх
     const updatedCourse = await CourseModel.findByIdAndUpdate(
@@ -57,8 +83,6 @@ export const updateCourse = async (
     if (error instanceof GraphQLError) {
       throw error;
     }
-
-    console.error("Update course error:", error);
 
     throw new GraphQLError("Internal server error", {
       extensions: {

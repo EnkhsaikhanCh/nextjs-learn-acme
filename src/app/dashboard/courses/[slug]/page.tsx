@@ -15,7 +15,9 @@ export default function CourseDetailPage() {
     variables: { slug: slug as string },
   });
 
-  if (loading) return <LoadingScreen label="Loading courses..." />;
+  if (loading) {
+    return <LoadingScreen label="Loading courses..." />;
+  }
   if (error?.graphQLErrors?.length) {
     const notFoundError = error.graphQLErrors.find((err) =>
       err.message.includes("Course not found"),
@@ -26,7 +28,9 @@ export default function CourseDetailPage() {
   }
 
   const courseForUser = data?.getCourseForUser;
-  if (!courseForUser) return <CourseNotFound />;
+  if (!courseForUser) {
+    return <CourseNotFound />;
+  }
 
   switch (courseForUser.status) {
     case "ADMIN_ENROLLED":

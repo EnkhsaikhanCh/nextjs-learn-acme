@@ -93,7 +93,6 @@ export const useHandlePasswordReset = () => {
         setFormError(data.error || "Алдаа гарлаа. Дахин оролдоно уу.");
       } else {
         setSuccess(true);
-        toast.success("Нууц үг амжилттай шинэчлэгдсэн.");
       }
     } catch {
       setFormError("Сүлжээний алдаа гарлаа. Дахин оролдоно уу.");

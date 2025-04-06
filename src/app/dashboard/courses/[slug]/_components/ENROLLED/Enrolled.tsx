@@ -57,7 +57,9 @@ export const Enrolled = ({ course }: { course: Course }) => {
   }
 
   const handleMarkLessonAsCompleted = async (lessonId: string) => {
-    if (!enrollment?._id || !lessonId) return;
+    if (!enrollment?._id || !lessonId) {
+      return;
+    }
     setLessonActionLoading(true);
     try {
       const response = await markLessonAsCompleted({
@@ -80,7 +82,9 @@ export const Enrolled = ({ course }: { course: Course }) => {
   };
 
   const handleUndoLessonCompletion = async (lessonId: string) => {
-    if (!enrollment?._id || !lessonId) return;
+    if (!enrollment?._id || !lessonId) {
+      return;
+    }
     setLessonActionLoading(true);
     try {
       const response = await undoLessonCompletion({
@@ -108,7 +112,10 @@ export const Enrolled = ({ course }: { course: Course }) => {
   };
 
   const getNextLesson = () => {
-    if (!selectedLesson) return null;
+    if (!selectedLesson) {
+      return null;
+    }
+
     let foundCurrent = false;
     for (const section of course.sectionId || []) {
       for (const lesson of section?.lessonId || []) {

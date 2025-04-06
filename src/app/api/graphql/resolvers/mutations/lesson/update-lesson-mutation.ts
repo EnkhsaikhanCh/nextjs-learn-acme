@@ -38,12 +38,21 @@ export const updateLesson = async (
     }
 
     // Update fields if they are provided
-    if (validatedTitle) existingLesson.title = validatedTitle;
-    if (validatedContent) existingLesson.content = validatedContent;
-    if (validatedVideoUrl) existingLesson.videoUrl = validatedVideoUrl;
-    if (validatedOrder !== undefined) existingLesson.order = validatedOrder;
-    if (validatedIsPublished !== undefined)
+    if (validatedTitle) {
+      existingLesson.title = validatedTitle;
+    }
+    if (validatedContent) {
+      existingLesson.content = validatedContent;
+    }
+    if (validatedVideoUrl) {
+      existingLesson.videoUrl = validatedVideoUrl;
+    }
+    if (validatedOrder !== undefined) {
+      existingLesson.order = validatedOrder;
+    }
+    if (validatedIsPublished !== undefined) {
       existingLesson.isPublished = validatedIsPublished;
+    }
 
     // Save the updated lesson
     const updatedLesson = await existingLesson.save();

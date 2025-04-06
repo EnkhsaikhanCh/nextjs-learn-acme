@@ -92,8 +92,7 @@ export function PaymentDialog({ course }: { course: Course }) {
 
         toast.success("Төлбөрийн хүсэлт амжилттай үүслээ!");
       }
-    } catch (error) {
-      console.error("Create payment error: ", error);
+    } catch {
       toast.error("Алдаа гарлаа. Дахин оролдоно уу.");
     } finally {
       setIsSubmitting(false);
