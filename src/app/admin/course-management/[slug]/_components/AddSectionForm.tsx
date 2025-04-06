@@ -73,7 +73,9 @@ export function AddSectionForm({
           value={title}
           onChange={(e) => {
             setTitle(e.target.value);
-            if (error) setError(null);
+            if (error) {
+              setError(null);
+            }
           }}
         />
         <AnimatePresence>

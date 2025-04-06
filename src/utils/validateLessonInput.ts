@@ -8,7 +8,9 @@ export const sanitizeInput = (
   input: string | undefined | null,
   maxLength: number = 255,
 ): string => {
-  if (!input) return "";
+  if (!input) {
+    return "";
+  }
   const trimmedInput = input.trim();
   if (!isLength(trimmedInput, { max: maxLength })) {
     throw new Error(`Input exceeds maximum length of ${maxLength} characters`);

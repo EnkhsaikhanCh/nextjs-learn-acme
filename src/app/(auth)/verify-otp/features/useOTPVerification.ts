@@ -50,7 +50,9 @@ export const useOTPVerification = () => {
 
   // When email query returns, update state or sign out if error
   useEffect(() => {
-    if (loading) return; // Query ажиллаж байгаа үед юу ч хийхгүй
+    if (loading) {
+      return; // Query ажиллаж байгаа үед юу ч хийхгүй
+    }
 
     // Зөв имэйл ирсэн бол
     if (data?.getEmailFromToken?.email) {
@@ -147,7 +149,9 @@ export const useOTPVerification = () => {
 
   // Код дахин илгээх
   const handleResendOTP = async () => {
-    if (resendTimer > 0) return;
+    if (resendTimer > 0) {
+      return;
+    }
 
     setIsResending(true);
     const expiryTime = Date.now() + 60000;

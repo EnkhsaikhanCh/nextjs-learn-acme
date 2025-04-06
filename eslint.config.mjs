@@ -25,6 +25,8 @@ export default [
     },
     rules: {
       "no-console": "warn",
+      "no-multiple-empty-lines": ["warn", { max: 1 }], // олон хоосон мөрийг хориглоно
+      curly: ["warn", "all"],
       // "no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
       // complexity: ["warn", { max: 10 }],
       // "max-lines": ["warn", { max: 300 }],

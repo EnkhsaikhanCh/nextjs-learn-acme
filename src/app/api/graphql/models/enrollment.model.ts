@@ -82,7 +82,9 @@ EnrollmentSchema.virtual("totalLessons").get(async function () {
     populate: { path: "lessonId" },
   });
 
-  if (!course) return 0;
+  if (!course) {
+    return 0;
+  }
 
   // Calculate the total number of lessons across all sections
   return course.sectionId.reduce(
@@ -97,7 +99,9 @@ EnrollmentSchema.virtual("totalLessons").get(async function () {
  */
 EnrollmentSchema.virtual("calculatedProgress").get(function () {
   const totalLessons = this.get("totalLessons");
-  if (!totalLessons || totalLessons === 0) return 0;
+  if (!totalLessons || totalLessons === 0) {
+    return 0;
+  }
 
   const completedCount = this.get("completedLessons")?.length || 0;
   return Math.min((completedCount / totalLessons) * 100, 100);

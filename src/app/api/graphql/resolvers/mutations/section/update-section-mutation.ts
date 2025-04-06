@@ -69,9 +69,15 @@ export const updateSection = async (
 
     // Update fields only if provided
     const { title, description, order } = input;
-    if (title !== undefined) existingSection.title = title;
-    if (description !== undefined) existingSection.description = description;
-    if (order !== undefined) existingSection.order = order;
+    if (title !== undefined) {
+      existingSection.title = title;
+    }
+    if (description !== undefined) {
+      existingSection.description = description;
+    }
+    if (order !== undefined) {
+      existingSection.order = order;
+    }
 
     // Save the updated section
     const updatedSection = await existingSection.save();

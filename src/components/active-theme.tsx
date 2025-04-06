@@ -12,7 +12,9 @@ const COOKIE_NAME = "active_theme";
 const DEFAULT_THEME = "default";
 
 function setThemeCookie(theme: string) {
-  if (typeof window === "undefined") return;
+  if (typeof window === "undefined") {
+    return;
+  }
 
   document.cookie = `${COOKIE_NAME}=${theme}; path=/; max-age=31536000; SameSite=Lax; ${
     window.location.protocol === "https:" ? "Secure;" : ""
@@ -34,7 +36,7 @@ export function ActiveThemeProvider({
   initialTheme?: string;
 }) {
   const [activeTheme, setActiveTheme] = useState<string>(
-    () => initialTheme || DEFAULT_THEME
+    () => initialTheme || DEFAULT_THEME,
   );
 
   useEffect(() => {
@@ -62,7 +64,7 @@ export function useThemeConfig() {
   const context = useContext(ThemeContext);
   if (context === undefined) {
     throw new Error(
-      "useThemeConfig must be used within an ActiveThemeProvider"
+      "useThemeConfig must be used within an ActiveThemeProvider",
     );
   }
   return context;

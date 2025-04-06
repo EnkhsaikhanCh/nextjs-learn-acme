@@ -22,7 +22,9 @@ if (!dbName) {
 const cached = (global as any).mongoose || { conn: null, promise: null };
 
 export const connectToDatabase = async () => {
-  if (cached.conn) return cached.conn;
+  if (cached.conn) {
+    return cached.conn;
+  }
 
   if (!cached.promise) {
     cached.promise = mongoose.connect(uri, {

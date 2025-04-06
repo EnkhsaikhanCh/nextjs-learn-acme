@@ -86,7 +86,9 @@ export const verifyOTP = async (
       signInToken,
     };
   } catch (error) {
-    if (error instanceof GraphQLError) throw error;
+    if (error instanceof GraphQLError) {
+      throw error;
+    }
 
     throw new GraphQLError("Internal server error", {
       extensions: { code: "INTERNAL_SERVER_ERROR" },

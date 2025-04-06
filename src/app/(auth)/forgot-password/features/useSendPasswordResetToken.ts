@@ -48,7 +48,9 @@ export const useSendPasswordResetToken = () => {
       }
     } catch (error) {
       if (error instanceof Error) {
-        if (error.name === "AbortError") return;
+        if (error.name === "AbortError") {
+          return;
+        }
         setFormError("Сүлжээний алдаа гарлаа. Дахин оролдоно уу.");
       } else {
         const errorMessage = "Тодорхойгүй алдаа гарлаа.";

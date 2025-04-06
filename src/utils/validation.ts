@@ -13,7 +13,9 @@ export const validateEmail = (email: string): boolean => {
 };
 
 export const validatePassword = (password: string): boolean => {
-  if (password.length > 128) return false;
+  if (password.length > 128) {
+    return false;
+  }
   // Updated requirements to ensure a strong password.
   return validator.isStrongPassword(password, {
     minLength: 8,
