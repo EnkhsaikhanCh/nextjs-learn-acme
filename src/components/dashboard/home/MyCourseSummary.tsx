@@ -54,7 +54,7 @@ export function MyCourseSummary({ userId }: { userId?: string }) {
             <span className="text-2xl font-bold text-violet-600 dark:text-violet-300">
               {totalCourses}
             </span>
-            <span className="mt-1 text-center font-semibold text-violet-600/80 dark:text-violet-300/80">
+            <span className="mt-1 text-center text-sm font-semibold text-violet-600/80 dark:text-violet-300/80">
               Total Courses
             </span>
           </div>
@@ -63,7 +63,7 @@ export function MyCourseSummary({ userId }: { userId?: string }) {
             <span className="text-2xl font-bold text-green-600 dark:text-green-300">
               {completedCount}
             </span>
-            <span className="mt-1 text-center font-semibold text-green-600/80 dark:text-green-300/80">
+            <span className="mt-1 text-center text-sm font-semibold text-green-600/80 dark:text-green-300/80">
               Completed
             </span>
           </div>
@@ -72,7 +72,7 @@ export function MyCourseSummary({ userId }: { userId?: string }) {
             <span className="text-2xl font-bold text-amber-600 dark:text-amber-300">
               {inProgressCount}
             </span>
-            <span className="mt-1 text-center font-semibold text-amber-600/80 dark:text-amber-300/80">
+            <span className="mt-1 text-center text-sm font-semibold text-amber-600/80 dark:text-amber-300/80">
               In Progress
             </span>
           </div>
