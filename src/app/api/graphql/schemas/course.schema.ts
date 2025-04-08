@@ -85,6 +85,13 @@ export const typeDefs = gql`
     description: String
   }
 
+  type GetUserEnrolledCoursesCountResponse {
+    totalCourses: Int!
+    completedCount: Int!
+    inProgressCount: Int!
+    courseCompletionPercentage: Float!
+  }
+
   type Query {
     getCourseById(_id: ID!): Course
     getCourseBySlug(slug: String!): Course
@@ -95,6 +102,10 @@ export const typeDefs = gql`
     getCourseIdBySlug(slug: String): Course
 
     getCourseForUser(slug: String!): CourseForUserPayload!
+
+    getUserEnrolledCoursesCount(
+      userId: ID!
+    ): GetUserEnrolledCoursesCountResponse!
   }
 
   input PriceInput {

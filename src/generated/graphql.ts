@@ -165,6 +165,14 @@ export type GetEmailFromTokenResponse = {
   email: Scalars['String']['output'];
 };
 
+export type GetUserEnrolledCoursesCountResponse = {
+  __typename?: 'GetUserEnrolledCoursesCountResponse';
+  completedCount: Scalars['Int']['output'];
+  courseCompletionPercentage: Scalars['Float']['output'];
+  inProgressCount: Scalars['Int']['output'];
+  totalCourses: Scalars['Int']['output'];
+};
+
 export type Lesson = {
   __typename?: 'Lesson';
   _id: Scalars['ID']['output'];
@@ -435,6 +443,7 @@ export type Query = {
   getSectionById: Section;
   getSectionsByCourseId: Array<Section>;
   getUserById: User;
+  getUserEnrolledCoursesCount: GetUserEnrolledCoursesCountResponse;
 };
 
 
@@ -555,6 +564,11 @@ export type QueryGetSectionsByCourseIdArgs = {
 
 export type QueryGetUserByIdArgs = {
   _id: Scalars['ID']['input'];
+};
+
+
+export type QueryGetUserEnrolledCoursesCountArgs = {
+  userId: Scalars['ID']['input'];
 };
 
 export type RegisterInput = {
@@ -804,6 +818,13 @@ export type GetCourseForUserQueryVariables = Exact<{
 
 
 export type GetCourseForUserQuery = { __typename?: 'Query', getCourseForUser: { __typename?: 'CourseForUserPayload', status: CourseAccessStatus, fullContent?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, description?: string | null, difficulty?: Difficulty | null, thumbnail?: string | null, status?: CourseStatus | null, sectionId?: Array<{ __typename?: 'Section', _id: string, title: string, description?: string | null, order: number, lessonId?: Array<{ __typename?: 'Lesson', _id: string, title: string, content?: string | null, videoUrl?: string | null, order: number, isPublished: boolean } | null> | null } | null> | null } | null, coursePreviewData?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, description?: string | null, courseCode?: string | null, difficulty?: Difficulty | null, thumbnail?: string | null, categories?: Array<string | null> | null, tags?: Array<string | null> | null, status?: CourseStatus | null, whatYouWillLearn?: Array<string | null> | null, price?: { __typename?: 'Price', amount?: number | null, currency?: Currency | null, discount?: number | null } | null, pricingDetails?: { __typename?: 'PricingDetails', planTitle?: string | null, description?: string | null, price?: string | null, details?: Array<string | null> | null } | null } | null } };
+
+export type GetUserEnrolledCoursesCountQueryVariables = Exact<{
+  userId: Scalars['ID']['input'];
+}>;
+
+
+export type GetUserEnrolledCoursesCountQuery = { __typename?: 'Query', getUserEnrolledCoursesCount: { __typename?: 'GetUserEnrolledCoursesCountResponse', totalCourses: number, completedCount: number, inProgressCount: number, courseCompletionPercentage: number } };
 
 export type MarkLessonAsCompletedMutationVariables = Exact<{
   input?: InputMaybe<MarkLessonAsCompletedInput>;
@@ -1590,6 +1611,49 @@ export type GetCourseForUserQueryHookResult = ReturnType<typeof useGetCourseForU
 export type GetCourseForUserLazyQueryHookResult = ReturnType<typeof useGetCourseForUserLazyQuery>;
 export type GetCourseForUserSuspenseQueryHookResult = ReturnType<typeof useGetCourseForUserSuspenseQuery>;
 export type GetCourseForUserQueryResult = Apollo.QueryResult<GetCourseForUserQuery, GetCourseForUserQueryVariables>;
+export const GetUserEnrolledCoursesCountDocument = gql`
+    query GetUserEnrolledCoursesCount($userId: ID!) {
+  getUserEnrolledCoursesCount(userId: $userId) {
+    totalCourses
+    completedCount
+    inProgressCount
+    courseCompletionPercentage
+  }
+}
+    `;
+
+/**
+ * __useGetUserEnrolledCoursesCountQuery__
+ *
+ * To run a query within a React component, call `useGetUserEnrolledCoursesCountQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUserEnrolledCoursesCountQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetUserEnrolledCoursesCountQuery({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *   },
+ * });
+ */
+export function useGetUserEnrolledCoursesCountQuery(baseOptions: Apollo.QueryHookOptions<GetUserEnrolledCoursesCountQuery, GetUserEnrolledCoursesCountQueryVariables> & ({ variables: GetUserEnrolledCoursesCountQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetUserEnrolledCoursesCountQuery, GetUserEnrolledCoursesCountQueryVariables>(GetUserEnrolledCoursesCountDocument, options);
+      }
+export function useGetUserEnrolledCoursesCountLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUserEnrolledCoursesCountQuery, GetUserEnrolledCoursesCountQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetUserEnrolledCoursesCountQuery, GetUserEnrolledCoursesCountQueryVariables>(GetUserEnrolledCoursesCountDocument, options);
+        }
+export function useGetUserEnrolledCoursesCountSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetUserEnrolledCoursesCountQuery, GetUserEnrolledCoursesCountQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetUserEnrolledCoursesCountQuery, GetUserEnrolledCoursesCountQueryVariables>(GetUserEnrolledCoursesCountDocument, options);
+        }
+export type GetUserEnrolledCoursesCountQueryHookResult = ReturnType<typeof useGetUserEnrolledCoursesCountQuery>;
+export type GetUserEnrolledCoursesCountLazyQueryHookResult = ReturnType<typeof useGetUserEnrolledCoursesCountLazyQuery>;
+export type GetUserEnrolledCoursesCountSuspenseQueryHookResult = ReturnType<typeof useGetUserEnrolledCoursesCountSuspenseQuery>;
+export type GetUserEnrolledCoursesCountQueryResult = Apollo.QueryResult<GetUserEnrolledCoursesCountQuery, GetUserEnrolledCoursesCountQueryVariables>;
 export const MarkLessonAsCompletedDocument = gql`
     mutation MarkLessonAsCompleted($input: markLessonAsCompletedInput) {
   markLessonAsCompleted(input: $input) {
