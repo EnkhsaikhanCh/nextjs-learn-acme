@@ -50,7 +50,7 @@ export function MyCourseSummary({ userId }: { userId?: string }) {
 
       <CardContent className="pt-4">
         <div className="grid grid-cols-3 gap-4">
-          <div className="flex flex-col items-center rounded-lg bg-gradient-to-br from-violet-50 to-violet-100 p-4 transition-transform duration-300 hover:scale-105 dark:from-violet-900/20 dark:to-violet-900/30">
+          <div className="flex flex-col items-center rounded-lg bg-gradient-to-br from-violet-50 to-violet-100 p-4 dark:from-violet-900/20 dark:to-violet-900/30">
             <span className="text-2xl font-bold text-violet-600 dark:text-violet-300">
               {totalCourses}
             </span>
@@ -59,7 +59,7 @@ export function MyCourseSummary({ userId }: { userId?: string }) {
             </span>
           </div>
 
-          <div className="flex flex-col items-center rounded-lg bg-gradient-to-br from-green-50 to-green-100 p-4 transition-transform duration-300 hover:scale-105 dark:from-green-900/20 dark:to-green-900/30">
+          <div className="flex flex-col items-center rounded-lg bg-gradient-to-br from-green-50 to-green-100 p-4 dark:from-green-900/20 dark:to-green-900/30">
             <span className="text-2xl font-bold text-green-600 dark:text-green-300">
               {completedCount}
             </span>
@@ -68,7 +68,7 @@ export function MyCourseSummary({ userId }: { userId?: string }) {
             </span>
           </div>
 
-          <div className="flex flex-col items-center rounded-lg bg-gradient-to-br from-amber-50 to-amber-100 p-4 transition-transform duration-300 hover:scale-105 dark:from-amber-900/20 dark:to-amber-900/30">
+          <div className="flex flex-col items-center rounded-lg bg-gradient-to-br from-amber-50 to-amber-100 p-4 dark:from-amber-900/20 dark:to-amber-900/30">
             <span className="text-2xl font-bold text-amber-600 dark:text-amber-300">
               {inProgressCount}
             </span>
@@ -82,7 +82,7 @@ export function MyCourseSummary({ userId }: { userId?: string }) {
             <span>Course Completion</span>
             <span>{courseCompletionPercentage}%</span>
           </div>
-          <Progress value={courseCompletionPercentage} className="" />
+          <Progress value={courseCompletionPercentage} />
         </div>
       </CardContent>
     </Card>
