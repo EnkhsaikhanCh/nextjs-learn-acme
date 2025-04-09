@@ -24,7 +24,7 @@ export function MyCourseSummary({ userId }: { userId?: string }) {
     return <div>Error: {error.message}</div>;
   }
   if (!data) {
-    return <div>No data found</div>;
+    return <div>Мэдээлэл олдсонгүй</div>;
   }
 
   const {
@@ -39,8 +39,10 @@ export function MyCourseSummary({ userId }: { userId?: string }) {
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle>My Courses Summary</CardTitle>
-            <CardDescription>Overview of your learning journey</CardDescription>
+            <CardTitle>Миний сургалтын тойм</CardTitle>
+            <CardDescription>
+              Таны суралцах аяллын ерөнхий мэдээлэл
+            </CardDescription>
           </div>
           <div className="rounded-full border bg-gray-100 p-2 text-gray-600 dark:bg-gray-900/30 dark:text-gray-300">
             <BookOpen className="h-4 w-4" />
@@ -56,7 +58,7 @@ export function MyCourseSummary({ userId }: { userId?: string }) {
                 {totalCourses}
               </span>
               <span className="mt-1 text-center text-sm font-semibold text-violet-600/80 dark:text-violet-300/80">
-                Total Courses
+                Нийт сургалт
               </span>
             </div>
 
@@ -65,7 +67,7 @@ export function MyCourseSummary({ userId }: { userId?: string }) {
                 {inProgressCount}
               </span>
               <span className="mt-1 text-center text-sm font-semibold text-amber-600/80 dark:text-amber-300/80">
-                In Progress
+                Үргэлжилж буй
               </span>
             </div>
           </div>
@@ -75,14 +77,14 @@ export function MyCourseSummary({ userId }: { userId?: string }) {
               {completedCount}
             </span>
             <span className="mt-1 text-center text-sm font-semibold text-green-600/80 dark:text-green-300/80">
-              Completed
+              Дуусгасан
             </span>
           </div>
         </div>
 
         <div className="bg-accent mt-4 flex flex-col items-center gap-2 rounded-lg p-4">
           <div className="flex w-full justify-between font-semibold">
-            <span>Course Completion</span>
+            <span>Хичээл дууссан хувь</span>
             <span>{courseCompletionPercentage}%</span>
           </div>
           <Progress
