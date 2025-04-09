@@ -68,7 +68,7 @@
     "class-variance-authority": "^0.7.1",
     "cookie": "^1.0.2",
     "cors": "^2.8.5",
-    "create": "^0.1.0-alpha.8",
+    "create": "^0.5.4",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.5.0",
     "geist": "^1.3.1",
