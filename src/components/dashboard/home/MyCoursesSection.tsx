@@ -11,6 +11,7 @@ import { Clock, Play } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
+import { mn } from "date-fns/locale"; // <- make sure to install this if not already
 
 export const MyCoursesSection = ({ userId }: { userId?: string }) => {
   const { data, loading } = useGetUserEnrolledCoursesQuery({
@@ -26,7 +27,7 @@ export const MyCoursesSection = ({ userId }: { userId?: string }) => {
     <>
       {/* My Courses */}
       <section>
-        <h2 className="mb-4 text-xl font-bold md:text-2xl">My Courses</h2>
+        <h2 className="mb-4 text-xl font-bold md:text-2xl">Миний сургалтууд</h2>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {loading && <div>Loading...</div>}
           {data?.getUserEnrolledCourses?.map((course) => (
@@ -53,10 +54,12 @@ export const MyCoursesSection = ({ userId }: { userId?: string }) => {
                       <div className="mb-1 flex items-center gap-2">
                         <div className="rounded bg-white/20 px-2 py-0.5 text-xs font-medium text-white backdrop-blur-sm">
                           {(course?.progress ?? 0) < 30
-                            ? "Just Started"
+                            ? "Шинэ эхэлсэн"
                             : (course?.progress ?? 0) < 70
-                              ? "In Progress"
-                              : "Almost Done"}
+                              ? "Үргэлжилж байна"
+                              : (course?.progress ?? 0) < 99
+                                ? "Дуусах дөхсөн"
+                                : "Дууссан"}
                         </div>
                       </div>
                     </div>
@@ -69,7 +72,7 @@ export const MyCoursesSection = ({ userId }: { userId?: string }) => {
                   <div className="mt-4">
                     <div className="mb-1 flex items-center justify-between">
                       <span className="text-muted-foreground text-xs font-medium">
-                        Progress
+                        Явц
                       </span>
                       <span className="text-xs font-medium">
                         {(course?.progress ?? 0).toFixed()}%
@@ -92,12 +95,13 @@ export const MyCoursesSection = ({ userId }: { userId?: string }) => {
                     <div className="bg-muted rounded-full p-1">
                       <Clock className="h-4 w-4" />
                     </div>
-                    Last accessed:{" "}
+                    Сүүлийн хандалт:{" "}
                     {course?.lastAccessedAt
                       ? `${formatDistanceToNow(
                           new Date(course.lastAccessedAt),
                           {
                             addSuffix: true,
+                            locale: mn,
                           },
                         )}`
                       : "N/A"}
@@ -106,7 +110,7 @@ export const MyCoursesSection = ({ userId }: { userId?: string }) => {
                 <CardFooter className="flex justify-end p-5 pt-0">
                   <Button size="sm">
                     <Play />
-                    Continue
+                    Үргэлжлүүлэх
                   </Button>
                 </CardFooter>
               </Card>
