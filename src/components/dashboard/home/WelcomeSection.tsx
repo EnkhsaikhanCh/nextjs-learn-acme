@@ -12,7 +12,7 @@ export function WelcomeSection() {
               <GraduationCap className="h-6 w-6" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold md:text-3xl">Welcome back!</h1>
+              <h1 className="text-2xl font-bold md:text-3xl">Тавтай морил!</h1>
             </div>
           </div>
         </div>
