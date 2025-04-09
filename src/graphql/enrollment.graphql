@@ -45,5 +45,6 @@ query GetUserEnrolledCourses($userId: String!) {
       thumbnail
     }
     progress
+    lastAccessedAt
   }
 }

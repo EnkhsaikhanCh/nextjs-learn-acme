@@ -7,9 +7,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useGetUserEnrolledCoursesQuery } from "@/generated/graphql";
-import { Play } from "lucide-react";
+import { Clock, Play } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { formatDistanceToNow } from "date-fns";
 
 export const MyCoursesSection = ({ userId }: { userId?: string }) => {
   const { data, loading } = useGetUserEnrolledCoursesQuery({
@@ -34,7 +35,7 @@ export const MyCoursesSection = ({ userId }: { userId?: string }) => {
               key={course?._id}
               className="group"
             >
-              <Card className="group overflow-hidden transition-all duration-300 hover:shadow-md">
+              <Card className="group shadow-sm">
                 <CardHeader className="p-0">
                   <div className="relative h-40 w-full overflow-hidden">
                     <Image
@@ -71,7 +72,7 @@ export const MyCoursesSection = ({ userId }: { userId?: string }) => {
                         Progress
                       </span>
                       <span className="text-xs font-medium">
-                        {(course?.progress ?? 0).toFixed(2)}%
+                        {(course?.progress ?? 0).toFixed()}%
                       </span>
                     </div>
                     <div className="bg-muted h-2 w-full overflow-hidden rounded-full">
@@ -86,6 +87,20 @@ export const MyCoursesSection = ({ userId }: { userId?: string }) => {
                         style={{ width: `${course?.progress}%` }}
                       ></div>
                     </div>
+                  </div>
+                  <div className="text-muted-foreground mt-4 flex items-center gap-2 text-xs font-semibold">
+                    <div className="bg-muted rounded-full p-1">
+                      <Clock className="h-4 w-4" />
+                    </div>
+                    Last accessed:{" "}
+                    {course?.lastAccessedAt
+                      ? `${formatDistanceToNow(
+                          new Date(course.lastAccessedAt),
+                          {
+                            addSuffix: true,
+                          },
+                        )}`
+                      : "N/A"}
                   </div>
                 </CardContent>
                 <CardFooter className="flex justify-end p-5 pt-0">

@@ -133,7 +133,7 @@ export type Enrollment = {
   history?: Maybe<Array<Maybe<EnrollmentHistory>>>;
   isCompleted?: Maybe<Scalars['Boolean']['output']>;
   isDeleted?: Maybe<Scalars['Boolean']['output']>;
-  lastAccessedAt?: Maybe<Scalars['String']['output']>;
+  lastAccessedAt?: Maybe<Scalars['DateTime']['output']>;
   progress?: Maybe<Scalars['Float']['output']>;
   status?: Maybe<EnrollmentStatus>;
   updatedAt?: Maybe<Scalars['String']['output']>;
@@ -866,7 +866,7 @@ export type GetUserEnrolledCoursesQueryVariables = Exact<{
 }>;
 
 
-export type GetUserEnrolledCoursesQuery = { __typename?: 'Query', getUserEnrolledCourses?: Array<{ __typename?: 'Enrollment', _id: string, progress?: number | null, courseId?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, thumbnail?: string | null } | null } | null> | null };
+export type GetUserEnrolledCoursesQuery = { __typename?: 'Query', getUserEnrolledCourses?: Array<{ __typename?: 'Enrollment', _id: string, progress?: number | null, lastAccessedAt?: Date | null, courseId?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, thumbnail?: string | null } | null } | null> | null };
 
 export type CreateLessonMutationVariables = Exact<{
   input: CreateLessonInput;
@@ -1836,6 +1836,7 @@ export const GetUserEnrolledCoursesDocument = gql`
       thumbnail
     }
     progress
+    lastAccessedAt
   }
 }
     `;
