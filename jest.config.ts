@@ -63,6 +63,7 @@ const config: Config = {
 
     // src/app
     "src/app/admin",
+    "src/app/instructor",
     "src/app/dashboard",
     "src/app/error.tsx",
     "src/app/loading.tsx",
