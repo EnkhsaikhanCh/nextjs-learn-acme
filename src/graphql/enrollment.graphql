@@ -34,3 +34,17 @@ query CheckEnrollment($courseId: ID!) {
     expiryDate
   }
 }
+
+query GetUserEnrolledCourses($userId: String!) {
+  getUserEnrolledCourses(userId: $userId) {
+    _id
+    courseId {
+      _id
+      title
+      slug
+      thumbnail
+    }
+    progress
+    lastAccessedAt
+  }
+}

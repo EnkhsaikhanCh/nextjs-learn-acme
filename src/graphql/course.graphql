@@ -157,3 +157,25 @@ query GetCourseForUser($slug: String!) {
     }
   }
 }
+
+query GetUserEnrolledCoursesCount($userId: ID!) {
+  getUserEnrolledCoursesCount(userId: $userId) {
+    totalCourses
+    completedCount
+    inProgressCount
+    courseCompletionPercentage
+  }
+}
+
+query GetUserNotEnrolledCourses($userId: ID!) {
+  getUserNotEnrolledCourses(userId: $userId) {
+    _id
+    title
+    slug
+    thumbnail
+    price {
+      amount
+      currency
+    }
+  }
+}
