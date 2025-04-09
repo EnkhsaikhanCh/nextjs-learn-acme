@@ -108,10 +108,7 @@ export const MyCoursesSection = ({ userId }: { userId?: string }) => {
                   </div>
                 </CardContent>
                 <CardFooter className="flex justify-end p-5 pt-0">
-                  <Button
-                    size="sm"
-                    className="bg-violet-600 font-bold hover:bg-violet-700"
-                  >
+                  <Button className="bg-violet-600 font-semibold text-white hover:bg-violet-700">
                     <Play />
                     Үргэлжлүүлэх
                   </Button>

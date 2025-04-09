@@ -65,10 +65,7 @@ export const DiscoverCoursesSection = ({ userId }: { userId?: string }) => {
                   </CardTitle>
                 </CardContent>
                 <CardFooter className="p-5 pt-0">
-                  <Button
-                    size={"sm"}
-                    className="w-full gap-2 bg-violet-600 font-bold hover:bg-violet-700"
-                  >
+                  <Button className="w-full gap-2 bg-violet-600 font-semibold text-white hover:bg-violet-700">
                     <Plus />
                     Элсэх
                   </Button>
