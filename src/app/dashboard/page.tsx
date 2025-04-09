@@ -1,5 +1,6 @@
 "use client";
 
+import { DiscoverCoursesSection } from "@/components/dashboard/home/DiscoverCoursesSection";
 import { MyCoursesSection } from "@/components/dashboard/home/MyCoursesSection";
 import { MyCourseSummary } from "@/components/dashboard/home/MyCourseSummary";
 import { WelcomeSection } from "@/components/dashboard/home/WelcomeSection";
@@ -24,6 +25,7 @@ export default function Page() {
       </section>
 
       <MyCoursesSection userId={userId} />
+      <DiscoverCoursesSection userId={userId} />
     </main>
   );
 }

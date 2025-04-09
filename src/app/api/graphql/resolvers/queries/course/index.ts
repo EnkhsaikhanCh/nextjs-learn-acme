@@ -6,3 +6,4 @@ export * from "./get-course-id-by-slug-query";
 export * from "./get-all-course-with-enrollment-query";
 export * from "./get-course-for-user-query";
 export * from "./get-user-enrolled-courses-count";
+export * from "./get-user-not-enrolled-courses-query";

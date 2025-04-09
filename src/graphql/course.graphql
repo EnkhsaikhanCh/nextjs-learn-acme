@@ -166,3 +166,16 @@ query GetUserEnrolledCoursesCount($userId: ID!) {
     courseCompletionPercentage
   }
 }
+
+query GetUserNotEnrolledCourses($userId: ID!) {
+  getUserNotEnrolledCourses(userId: $userId) {
+    _id
+    title
+    slug
+    thumbnail
+    price {
+      amount
+      currency
+    }
+  }
+}
