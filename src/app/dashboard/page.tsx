@@ -10,7 +10,7 @@ export default function Page() {
   const userId = sessionData?.user._id;
 
   return (
-    <main className="p-8">
+    <main className="p-5 lg:p-8">
       <WelcomeSection />
 
       {/* Dashboard Overview */}

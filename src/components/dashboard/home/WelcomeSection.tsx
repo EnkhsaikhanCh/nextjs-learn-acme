@@ -1,13 +1,6 @@
 import { GraduationCap } from "lucide-react";
 
 export function WelcomeSection() {
-  const today = new Date().toLocaleDateString("mn-MN", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-
   return (
     <section className="mb-8">
       <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 p-6 text-white">
@@ -20,7 +13,6 @@ export function WelcomeSection() {
             </div>
             <div>
               <h1 className="text-2xl font-bold md:text-3xl">Welcome back!</h1>
-              <p className="text-sm text-white/80">{today}</p>
             </div>
           </div>
         </div>

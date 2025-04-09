@@ -49,17 +49,28 @@ export function MyCourseSummary({ userId }: { userId?: string }) {
       </CardHeader>
 
       <CardContent className="pt-4">
-        <div className="grid grid-cols-3 gap-4">
-          <div className="flex flex-col items-center rounded-lg bg-gradient-to-br from-violet-50 to-violet-100 p-4 dark:from-violet-900/20 dark:to-violet-900/30">
-            <span className="text-2xl font-bold text-violet-600 dark:text-violet-300">
-              {totalCourses}
-            </span>
-            <span className="mt-1 text-center text-sm font-semibold text-violet-600/80 dark:text-violet-300/80">
-              Total Courses
-            </span>
+        <div className="space-y-2">
+          <div className="grid grid-cols-2 gap-2">
+            <div className="flex flex-col items-center rounded-lg bg-gradient-to-br from-violet-50 to-violet-100 p-2 dark:from-violet-900/20 dark:to-violet-900/30">
+              <span className="text-2xl font-bold text-violet-600 dark:text-violet-300">
+                {totalCourses}
+              </span>
+              <span className="mt-1 text-center text-sm font-semibold text-violet-600/80 dark:text-violet-300/80">
+                Total Courses
+              </span>
+            </div>
+
+            <div className="flex flex-col items-center rounded-lg bg-gradient-to-br from-amber-50 to-amber-100 p-2 dark:from-amber-900/20 dark:to-amber-900/30">
+              <span className="text-2xl font-bold text-amber-600 dark:text-amber-300">
+                {inProgressCount}
+              </span>
+              <span className="mt-1 text-center text-sm font-semibold text-amber-600/80 dark:text-amber-300/80">
+                In Progress
+              </span>
+            </div>
           </div>
 
-          <div className="flex flex-col items-center rounded-lg bg-gradient-to-br from-green-50 to-green-100 p-4 dark:from-green-900/20 dark:to-green-900/30">
+          <div className="flex flex-col items-center rounded-lg bg-gradient-to-br from-green-50 to-green-100 p-2 dark:from-green-900/20 dark:to-green-900/30">
             <span className="text-2xl font-bold text-green-600 dark:text-green-300">
               {completedCount}
             </span>
@@ -67,17 +78,9 @@ export function MyCourseSummary({ userId }: { userId?: string }) {
               Completed
             </span>
           </div>
-
-          <div className="flex flex-col items-center rounded-lg bg-gradient-to-br from-amber-50 to-amber-100 p-4 dark:from-amber-900/20 dark:to-amber-900/30">
-            <span className="text-2xl font-bold text-amber-600 dark:text-amber-300">
-              {inProgressCount}
-            </span>
-            <span className="mt-1 text-center text-sm font-semibold text-amber-600/80 dark:text-amber-300/80">
-              In Progress
-            </span>
-          </div>
         </div>
-        <div className="bg-accent mt-6 flex flex-col items-center gap-2 rounded-lg p-4">
+
+        <div className="bg-accent mt-4 flex flex-col items-center gap-2 rounded-lg p-4">
           <div className="flex w-full justify-between font-semibold">
             <span>Course Completion</span>
             <span>{courseCompletionPercentage}%</span>
