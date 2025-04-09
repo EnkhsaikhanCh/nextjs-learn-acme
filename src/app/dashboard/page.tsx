@@ -1,5 +1,6 @@
 "use client";
 
+import { MyCoursesSection } from "@/components/dashboard/home/MyCoursesSection";
 import { MyCourseSummary } from "@/components/dashboard/home/MyCourseSummary";
 import { WelcomeSection } from "@/components/dashboard/home/WelcomeSection";
 import { useSession } from "next-auth/react";
@@ -9,7 +10,7 @@ export default function Page() {
   const userId = sessionData?.user._id;
 
   return (
-    <main className="p-4">
+    <main className="p-8">
       <WelcomeSection />
 
       {/* Dashboard Overview */}
@@ -21,6 +22,8 @@ export default function Page() {
           <MyCourseSummary userId={userId} />
         </div>
       </section>
+
+      <MyCoursesSection userId={userId} />
     </main>
   );
 }
