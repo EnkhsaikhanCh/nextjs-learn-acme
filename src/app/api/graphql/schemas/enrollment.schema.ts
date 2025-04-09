@@ -1,6 +1,8 @@
 import gql from "graphql-tag";
 
 export const typeDefs = gql`
+  scalar Date
+
   type Enrollment {
     # Essential fields
     _id: ID!
@@ -12,7 +14,7 @@ export const typeDefs = gql`
     # User experience-related fields
     isCompleted: Boolean
     completedLessons: [ID]
-    lastAccessedAt: String
+    lastAccessedAt: Date
 
     # System tracking fields
     expiryDate: String
@@ -41,6 +43,7 @@ export const typeDefs = gql`
     getEnrollmentsByCourse(courseId: ID!): [Enrollment!]!
     getEnrollmentByUserAndCourse(userId: ID!, courseId: ID!): Enrollment
     checkEnrollment(courseId: ID!): Enrollment
+    getUserEnrolledCourses(userId: String!): [Enrollment]
   }
 
   input CreateEnrollmentInput {
