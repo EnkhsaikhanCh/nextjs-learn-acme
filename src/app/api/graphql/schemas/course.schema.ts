@@ -100,12 +100,11 @@ export const typeDefs = gql`
     getAllCourseWithEnrollment: [Course!]!
     getEnrolledCourseContentBySlug(slug: String!): Course
     getCourseIdBySlug(slug: String): Course
-
     getCourseForUser(slug: String!): CourseForUserPayload!
-
     getUserEnrolledCoursesCount(
       userId: ID!
     ): GetUserEnrolledCoursesCountResponse!
+    getUserNotEnrolledCourses(userId: ID!): [Course]
   }
 
   input PriceInput {
