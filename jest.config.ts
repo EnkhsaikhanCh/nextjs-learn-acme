@@ -121,7 +121,8 @@ const config: Config = {
     "src/app/api/graphql/resolvers/queries/course/get-course-for-user-query.ts",
     "src/app/api/graphql/resolvers/queries/course/get-course-id-by-slug-query.ts",
     "src/app/api/graphql/resolvers/queries/course/get-enrolled-course-content-by-slug-query.ts",
-    "src/app/api/graphql/resolvers/queries/enrollment",
+    "src/app/api/graphql/resolvers/queries/enrollment/check-enrollment-query.ts",
+    "src/app/api/graphql/resolvers/queries/enrollment/get-enrollment-by-user-and-course.ts",
     "src/app/api/graphql/resolvers/queries/section",
     "src/app/api/graphql/resolvers/queries/payment",
 

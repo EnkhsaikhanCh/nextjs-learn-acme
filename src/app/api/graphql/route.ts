@@ -17,9 +17,13 @@ const server = new ApolloServer({
 
 const handler = startServerAndCreateNextHandler<NextRequest>(server, {
   context: async (req: NextRequest) => {
-    const session = await getServerSession({ req, ...authOptions });
-    const user = session?.user || null;
-    return { user };
+    try {
+      const session = await getServerSession({ req, ...authOptions });
+      const user = session?.user || null;
+      return { user };
+    } catch {
+      return { user: null, error: "auth_failed" };
+    }
   },
 });
 
@@ -31,6 +35,6 @@ export const GET = async (req: NextRequest) => {
 };
 
 export const POST = async (req: NextRequest) => {
-  const response = await handler(req);
-  return response;
+  const reqClone = req.clone();
+  return await handler(reqClone);
 };
