@@ -1,5 +1,5 @@
-import { EnrollmentModel } from "@/app/api/graphql/models";
-import { getUserEnrolledCourses } from "@/app/api/graphql/resolvers/queries";
+import { EnrollmentModel } from "@/app/api/graphql/models/enrollment.model";
+import { getUserEnrolledCourses } from "@/app/api/graphql/resolvers/queries/enrollment/get-user-enrolled-courses-query";
 import { Role, User } from "@/generated/graphql";
 import { requireAuthAndRoles } from "@/lib/auth-utils";
 import { GraphQLError } from "graphql";
@@ -9,7 +9,7 @@ jest.mock("../../../../../src/lib/auth-utils", () => ({
   requireAuthAndRoles: jest.fn(),
 }));
 
-jest.mock("../../../../../src/app/api/graphql/models", () => ({
+jest.mock("../../../../../src/app/api/graphql/models/enrollment.model", () => ({
   EnrollmentModel: {
     find: jest.fn(),
   },
