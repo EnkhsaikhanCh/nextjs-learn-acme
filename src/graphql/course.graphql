@@ -4,6 +4,13 @@
 mutation CreateCourse($input: CreateCourseInput!) {
   createCourse(input: $input) {
     _id
+    createdBy {
+      _id
+      email
+      role
+    }
+    title
+    slug
   }
 }
 
@@ -58,24 +65,14 @@ query GetCourseBySlug($slug: String!) {
     difficulty
     status
     price {
-      amount
-      currency
-      discount
-    }
-    pricingDetails {
       planTitle
       description
-      price
-      details
+      amount
+      currency
     }
     categories
     tags
     whatYouWillLearn
-    whyChooseOurCourse {
-      icon
-      title
-      description
-    }
   }
 }
 
@@ -140,15 +137,10 @@ query GetCourseForUser($slug: String!) {
       difficulty
       thumbnail
       price {
-        amount
-        currency
-        discount
-      }
-      pricingDetails {
         planTitle
         description
-        price
-        details
+        amount
+        currency
       }
       categories
       tags
@@ -174,6 +166,8 @@ query GetUserNotEnrolledCourses($userId: ID!) {
     slug
     thumbnail
     price {
+      planTitle
+      description
       amount
       currency
     }

@@ -111,12 +111,6 @@ export function CourseInfo({ course, onEdit }: CourseInfoProps) {
             </CardHeader>
           </Card>
         )}
-
-        <Card className="flex h-[45px] items-center justify-center bg-zinc-800 font-semibold text-white shadow-none">
-          <CardHeader className="text-center text-lg">
-            ₮{course.price?.amount || "0"}
-          </CardHeader>
-        </Card>
       </div>
 
       {error && <p className="text-sm text-red-500">{error}</p>}

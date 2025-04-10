@@ -2,72 +2,51 @@
 import { model, models, Schema } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 
+export type PricingPlan = {
+  planTitle: string; // "Basic", "Premium", "Lifetime" гэх мэт
+  description?: string; // UI-д товч тайлбар
+  amount: number; // үнэлгээ (₮)
+  currency: "MNT";
+};
+
 export type Course = {
   _id: string;
+  createdBy: string;
   title: string;
   description: string;
   slug: string;
   courseCode: string;
   difficulty: "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
-  price?: {
-    amount: number;
-    currency: "USD" | "MNT";
-    discount: number;
-  };
-  pricingDetails?: {
-    planTitle: string;
-    description: string;
-    price: string;
-    details: string[];
-  };
+  price?: PricingPlan;
   sectionId: string[];
+  thumbnail?: string;
   categories?: string[];
   tags?: string[];
   status?: "DRAFT" | "PUBLISHED" | "ARCHIVED";
-  thumbnail?: string;
   whatYouWillLearn?: string[];
-  whyChooseOurCourse?: {
-    icon: string;
-    title: string;
-    description: string;
-  }[];
 };
+
+const PricingPlanSchema = new Schema(
+  {
+    planTitle: { type: String, required: true },
+    description: { type: String },
+    amount: { type: Number, required: true },
+    currency: { type: String, enum: ["MNT"], required: true },
+  },
+  { _id: false },
+);
 
 const CourseSchema = new Schema<Course>(
   {
     _id: { type: String, default: () => uuidv4() },
+    createdBy: { type: Schema.Types.String, ref: "User", required: true },
     title: { type: String, required: true },
     description: { type: String },
     slug: { type: String },
     courseCode: { type: String, required: true, unique: true },
-    difficulty: {
-      type: String,
-      enum: ["BEGINNER", "INTERMEDIATE", "ADVANCED"],
-    },
-    price: {
-      type: new Schema(
-        {
-          amount: { type: Number, default: 0 },
-          currency: { type: String, enum: ["USD", "MNT"], default: "MNT" },
-          discount: { type: Number, default: 0 },
-        },
-        { _id: false },
-      ),
-      default: {},
-    },
-    pricingDetails: {
-      type: new Schema(
-        {
-          planTitle: { type: String, default: "" },
-          description: { type: String, default: "" },
-          price: { type: String, default: "" },
-          details: { type: [String], default: [] },
-        },
-        { _id: false },
-      ),
-      default: {},
-    },
+    price: { type: PricingPlanSchema },
     sectionId: [{ type: Schema.Types.String, ref: "Section", default: [] }],
+    thumbnail: { type: String },
     categories: { type: [String], default: [] },
     tags: { type: [String], default: [] },
     status: {
@@ -75,22 +54,7 @@ const CourseSchema = new Schema<Course>(
       enum: ["DRAFT", "PUBLISHED", "ARCHIVED"],
       default: "DRAFT",
     },
-    thumbnail: { type: String },
     whatYouWillLearn: { type: [String], default: [] },
-
-    whyChooseOurCourse: {
-      type: [
-        new Schema(
-          {
-            icon: { type: String },
-            title: { type: String },
-            description: { type: String },
-          },
-          { _id: false },
-        ),
-      ],
-      default: [],
-    },
   },
   { timestamps: true },
 );
