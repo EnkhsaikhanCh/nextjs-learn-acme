@@ -27,10 +27,6 @@ export const updateCourse = async (
       updateFields.description = input.description;
     }
 
-    if (input.price !== undefined) {
-      updateFields.price = input.price;
-    }
-
     if (input.difficulty !== undefined) {
       updateFields.difficulty = input.difficulty;
     }
@@ -39,8 +35,8 @@ export const updateCourse = async (
       updateFields.thumbnail = input.thumbnail;
     }
 
-    if (input.pricingDetails !== undefined) {
-      updateFields.pricingDetails = input.pricingDetails;
+    if (input.price !== undefined) {
+      updateFields.price = input.price;
     }
 
     if (input.categories !== undefined) {
@@ -59,23 +55,12 @@ export const updateCourse = async (
       updateFields.whatYouWillLearn = input.whatYouWillLearn;
     }
 
-    if (input.whyChooseOurCourse !== undefined) {
-      updateFields.whyChooseOurCourse = input.whyChooseOurCourse;
-    }
-
     // findByIdAndUpdate ашиглан шинэчлэх
     const updatedCourse = await CourseModel.findByIdAndUpdate(
       _id,
       updateFields,
       { new: true },
     );
-
-    // Олдсон эсэхийг шалгах
-    if (!updatedCourse) {
-      throw new GraphQLError("Course not found", {
-        extensions: { code: "NOT_FOUND" },
-      });
-    }
 
     // Амжилттай шинэчилсэн баримтыг буцаах
     return updatedCourse;

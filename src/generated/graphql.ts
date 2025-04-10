@@ -27,7 +27,7 @@ export type Course = {
   description?: Maybe<Scalars['String']['output']>;
   difficulty?: Maybe<Difficulty>;
   isEnrolled?: Maybe<Scalars['Boolean']['output']>;
-  pricingPlans?: Maybe<Array<Maybe<PricingPlan>>>;
+  price?: Maybe<PricingPlan>;
   sectionId?: Maybe<Array<Maybe<Section>>>;
   slug?: Maybe<Scalars['String']['output']>;
   status?: Maybe<CourseStatus>;
@@ -389,23 +389,17 @@ export enum PaymentStatus {
 
 export type PricingPlan = {
   __typename?: 'PricingPlan';
-  accessDurationDays?: Maybe<Scalars['Int']['output']>;
   amount?: Maybe<Scalars['Int']['output']>;
   currency?: Maybe<Currency>;
   description?: Maybe<Scalars['String']['output']>;
-  isPopular?: Maybe<Scalars['Boolean']['output']>;
   planTitle?: Maybe<Scalars['String']['output']>;
-  stripePriceId?: Maybe<Scalars['String']['output']>;
 };
 
 export type PricingPlanInput = {
-  accessDurationDays?: InputMaybe<Scalars['Int']['input']>;
   amount: Scalars['Int']['input'];
   currency: Currency;
   description?: InputMaybe<Scalars['String']['input']>;
-  isPopular?: InputMaybe<Scalars['Boolean']['input']>;
   planTitle: Scalars['String']['input'];
-  stripePriceId?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Query = {
@@ -647,7 +641,7 @@ export type UpdateCourseInput = {
   courseCode?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   difficulty?: InputMaybe<Difficulty>;
-  pricingPlans?: InputMaybe<Array<InputMaybe<PricingPlanInput>>>;
+  price?: InputMaybe<PricingPlanInput>;
   slug?: InputMaybe<Scalars['String']['input']>;
   status?: InputMaybe<CourseStatus>;
   tags?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
@@ -787,7 +781,7 @@ export type GetCourseBySlugQueryVariables = Exact<{
 }>;
 
 
-export type GetCourseBySlugQuery = { __typename?: 'Query', getCourseBySlug?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, description?: string | null, courseCode?: string | null, difficulty?: Difficulty | null, status?: CourseStatus | null, categories?: Array<string | null> | null, tags?: Array<string | null> | null, whatYouWillLearn?: Array<string | null> | null, pricingPlans?: Array<{ __typename?: 'PricingPlan', planTitle?: string | null, description?: string | null, amount?: number | null, currency?: Currency | null, accessDurationDays?: number | null, isPopular?: boolean | null, stripePriceId?: string | null } | null> | null } | null };
+export type GetCourseBySlugQuery = { __typename?: 'Query', getCourseBySlug?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, description?: string | null, courseCode?: string | null, difficulty?: Difficulty | null, status?: CourseStatus | null, categories?: Array<string | null> | null, tags?: Array<string | null> | null, whatYouWillLearn?: Array<string | null> | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: string | null, amount?: number | null, currency?: Currency | null } | null } | null };
 
 export type GetEnrolledCourseContentBySlugQueryVariables = Exact<{
   slug: Scalars['String']['input'];
@@ -808,7 +802,7 @@ export type GetCourseForUserQueryVariables = Exact<{
 }>;
 
 
-export type GetCourseForUserQuery = { __typename?: 'Query', getCourseForUser: { __typename?: 'CourseForUserPayload', status: CourseAccessStatus, fullContent?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, description?: string | null, difficulty?: Difficulty | null, thumbnail?: string | null, status?: CourseStatus | null, sectionId?: Array<{ __typename?: 'Section', _id: string, title: string, description?: string | null, order: number, lessonId?: Array<{ __typename?: 'Lesson', _id: string, title: string, content?: string | null, videoUrl?: string | null, order: number, isPublished: boolean } | null> | null } | null> | null } | null, coursePreviewData?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, description?: string | null, courseCode?: string | null, difficulty?: Difficulty | null, thumbnail?: string | null, categories?: Array<string | null> | null, tags?: Array<string | null> | null, status?: CourseStatus | null, whatYouWillLearn?: Array<string | null> | null, pricingPlans?: Array<{ __typename?: 'PricingPlan', planTitle?: string | null, description?: string | null, amount?: number | null, currency?: Currency | null, accessDurationDays?: number | null, isPopular?: boolean | null, stripePriceId?: string | null } | null> | null } | null } };
+export type GetCourseForUserQuery = { __typename?: 'Query', getCourseForUser: { __typename?: 'CourseForUserPayload', status: CourseAccessStatus, fullContent?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, description?: string | null, difficulty?: Difficulty | null, thumbnail?: string | null, status?: CourseStatus | null, sectionId?: Array<{ __typename?: 'Section', _id: string, title: string, description?: string | null, order: number, lessonId?: Array<{ __typename?: 'Lesson', _id: string, title: string, content?: string | null, videoUrl?: string | null, order: number, isPublished: boolean } | null> | null } | null> | null } | null, coursePreviewData?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, description?: string | null, courseCode?: string | null, difficulty?: Difficulty | null, thumbnail?: string | null, categories?: Array<string | null> | null, tags?: Array<string | null> | null, status?: CourseStatus | null, whatYouWillLearn?: Array<string | null> | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: string | null, amount?: number | null, currency?: Currency | null } | null } | null } };
 
 export type GetUserEnrolledCoursesCountQueryVariables = Exact<{
   userId: Scalars['ID']['input'];
@@ -822,7 +816,7 @@ export type GetUserNotEnrolledCoursesQueryVariables = Exact<{
 }>;
 
 
-export type GetUserNotEnrolledCoursesQuery = { __typename?: 'Query', getUserNotEnrolledCourses?: Array<{ __typename?: 'Course', _id: string, title: string, slug?: string | null, thumbnail?: string | null, pricingPlans?: Array<{ __typename?: 'PricingPlan', planTitle?: string | null, description?: string | null, amount?: number | null, currency?: Currency | null, accessDurationDays?: number | null, isPopular?: boolean | null, stripePriceId?: string | null } | null> | null } | null> | null };
+export type GetUserNotEnrolledCoursesQuery = { __typename?: 'Query', getUserNotEnrolledCourses?: Array<{ __typename?: 'Course', _id: string, title: string, slug?: string | null, thumbnail?: string | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: string | null, amount?: number | null, currency?: Currency | null } | null } | null> | null };
 
 export type MarkLessonAsCompletedMutationVariables = Exact<{
   input?: InputMaybe<MarkLessonAsCompletedInput>;
@@ -1387,14 +1381,11 @@ export const GetCourseBySlugDocument = gql`
     courseCode
     difficulty
     status
-    pricingPlans {
+    price {
       planTitle
       description
       amount
       currency
-      accessDurationDays
-      isPopular
-      stripePriceId
     }
     categories
     tags
@@ -1564,14 +1555,11 @@ export const GetCourseForUserDocument = gql`
       courseCode
       difficulty
       thumbnail
-      pricingPlans {
+      price {
         planTitle
         description
         amount
         currency
-        accessDurationDays
-        isPopular
-        stripePriceId
       }
       categories
       tags
@@ -1664,14 +1652,11 @@ export const GetUserNotEnrolledCoursesDocument = gql`
     title
     slug
     thumbnail
-    pricingPlans {
+    price {
       planTitle
       description
       amount
       currency
-      accessDurationDays
-      isPopular
-      stripePriceId
     }
   }
 }

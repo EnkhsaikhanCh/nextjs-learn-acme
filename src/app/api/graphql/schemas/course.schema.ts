@@ -55,7 +55,7 @@ export const typeDefs = gql`
     courseCode: String
     difficulty: Difficulty
     thumbnail: String
-    pricingPlans: [PricingPlan]
+    price: PricingPlan
     sectionId: [Section]
     categories: [String]
     tags: [String]
@@ -69,9 +69,6 @@ export const typeDefs = gql`
     description: String
     amount: Int
     currency: Currency
-    accessDurationDays: Int
-    isPopular: Boolean
-    stripePriceId: String
   }
 
   type GetUserEnrolledCoursesCountResponse {
@@ -106,9 +103,6 @@ export const typeDefs = gql`
     description: String
     amount: Int!
     currency: Currency!
-    accessDurationDays: Int
-    isPopular: Boolean
-    stripePriceId: String
   }
 
   input UpdateCourseInput {
@@ -119,7 +113,7 @@ export const typeDefs = gql`
     courseCode: String
     difficulty: Difficulty
     thumbnail: String
-    pricingPlans: [PricingPlanInput]
+    price: PricingPlanInput
     categories: [String]
     tags: [String]
     status: CourseStatus

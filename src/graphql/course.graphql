@@ -64,14 +64,11 @@ query GetCourseBySlug($slug: String!) {
     courseCode
     difficulty
     status
-    pricingPlans {
+    price {
       planTitle
       description
       amount
       currency
-      accessDurationDays
-      isPopular
-      stripePriceId
     }
     categories
     tags
@@ -139,14 +136,11 @@ query GetCourseForUser($slug: String!) {
       courseCode
       difficulty
       thumbnail
-      pricingPlans {
+      price {
         planTitle
         description
         amount
         currency
-        accessDurationDays
-        isPopular
-        stripePriceId
       }
       categories
       tags
@@ -171,14 +165,11 @@ query GetUserNotEnrolledCourses($userId: ID!) {
     title
     slug
     thumbnail
-    pricingPlans {
+    price {
       planTitle
       description
       amount
       currency
-      accessDurationDays
-      isPopular
-      stripePriceId
     }
   }
 }

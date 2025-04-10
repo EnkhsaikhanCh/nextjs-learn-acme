@@ -7,9 +7,6 @@ export type PricingPlan = {
   description?: string; // UI-д товч тайлбар
   amount: number; // үнэлгээ (₮)
   currency: "MNT";
-  accessDurationDays?: number; // 30 хоног, 365 хоног, насан турш гэх мэт
-  isPopular?: boolean; // UI-д онцлох
-  stripePriceId?: string; // Хэрвээ Stripe ашиглаж байвал
 };
 
 export type Course = {
@@ -20,7 +17,7 @@ export type Course = {
   slug: string;
   courseCode: string;
   difficulty: "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
-  pricingPlans?: PricingPlan[];
+  price?: PricingPlan;
   sectionId: string[];
   thumbnail?: string;
   categories?: string[];
@@ -35,9 +32,6 @@ const PricingPlanSchema = new Schema(
     description: { type: String },
     amount: { type: Number, required: true },
     currency: { type: String, enum: ["MNT"], required: true },
-    accessDurationDays: { type: Number }, // optional
-    isPopular: { type: Boolean, default: false },
-    stripePriceId: { type: String },
   },
   { _id: false },
 );
@@ -50,7 +44,7 @@ const CourseSchema = new Schema<Course>(
     description: { type: String },
     slug: { type: String },
     courseCode: { type: String, required: true, unique: true },
-    pricingPlans: { type: [PricingPlanSchema], default: [] },
+    price: { type: PricingPlanSchema },
     sectionId: [{ type: Schema.Types.String, ref: "Section", default: [] }],
     thumbnail: { type: String },
     categories: { type: [String], default: [] },
