@@ -1,6 +1,7 @@
 import { GraphQLError } from "graphql";
 import { CourseModel } from "../../../models";
-import { CreateCourseInput } from "@/generated/graphql";
+import { CreateCourseInput, User } from "@/generated/graphql";
+import { requireAuthAndRoles } from "@/lib/auth-utils";
 
 const slugify = (title: string): string => {
   return title
@@ -13,8 +14,12 @@ const slugify = (title: string): string => {
 export const createCourse = async (
   _: unknown,
   { input }: { input: CreateCourseInput },
+  context: { user?: User },
 ) => {
   try {
+    const { user } = context;
+    await requireAuthAndRoles(user, ["ADMIN", "INSTRUCTOR"]);
+
     if (!input.title) {
       throw new GraphQLError("Missing required title field", {
         extensions: { code: "BAD_USER_INPUT" },
@@ -41,21 +46,21 @@ export const createCourse = async (
 
     const newCourse = new CourseModel({
       ...input,
+      createdBy: user?._id,
       slug: uniqueSlug,
       courseCode: newCourseCode,
     });
 
     const savedCourse = await newCourse.save();
 
+    await savedCourse.populate({ path: "createdBy", model: "User" });
+
     return savedCourse;
   } catch (error) {
     if (error instanceof GraphQLError) {
       throw error;
     }
-
-    const message = (error as Error).message;
-
-    throw new GraphQLError(`Internal server error: ${message}`, {
+    throw new GraphQLError("Internal server error", {
       extensions: { code: "INTERNAL_SERVER_ERROR" },
     });
   }
