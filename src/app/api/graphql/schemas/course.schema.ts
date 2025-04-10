@@ -3,7 +3,6 @@ import gql from "graphql-tag";
 
 export const typeDefs = gql`
   enum Currency {
-    USD
     MNT
   }
 
@@ -49,40 +48,27 @@ export const typeDefs = gql`
 
   type Course {
     _id: ID!
+    createdBy: User!
     title: String!
     slug: String
     description: String
     courseCode: String
     difficulty: Difficulty
     thumbnail: String
-    price: Price
-    pricingDetails: PricingDetails
+    price: PricingPlan
     sectionId: [Section]
     categories: [String]
     tags: [String]
     status: CourseStatus
     whatYouWillLearn: [String]
-    whyChooseOurCourse: [WhyChoose]
     isEnrolled: Boolean
   }
 
-  type PricingDetails {
+  type PricingPlan {
     planTitle: String
     description: String
-    price: String
-    details: [String]
-  }
-
-  type Price {
-    amount: Float
+    amount: Int
     currency: Currency
-    discount: Float
-  }
-
-  type WhyChoose {
-    icon: String
-    title: String
-    description: String
   }
 
   type GetUserEnrolledCoursesCountResponse {
@@ -107,42 +93,29 @@ export const typeDefs = gql`
     getUserNotEnrolledCourses(userId: ID!): [Course]
   }
 
-  input PriceInput {
-    amount: Float
-    currency: Currency
-    discount: Float
-  }
-
-  input PricingDetailsInput {
-    planTitle: String
-    description: String
-    price: String
-    details: [String]
-  }
-
-  input WhyChooseInput {
-    icon: String
-    title: String
-    description: String
-  }
-
   input CreateCourseInput {
+    createdBy: String
     title: String
+  }
+
+  input PricingPlanInput {
+    planTitle: String!
+    description: String
+    amount: Int!
+    currency: Currency!
   }
 
   input UpdateCourseInput {
     _id: ID!
     title: String
     description: String
-    price: PriceInput
     difficulty: Difficulty
     thumbnail: String
-    pricingDetails: PricingDetailsInput
+    price: PricingPlanInput
     categories: [String]
     tags: [String]
     status: CourseStatus
     whatYouWillLearn: [String]
-    whyChooseOurCourse: [WhyChooseInput]
   }
 
   type Mutation {
