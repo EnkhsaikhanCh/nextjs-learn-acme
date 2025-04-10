@@ -109,8 +109,6 @@ export const typeDefs = gql`
     _id: ID!
     title: String
     description: String
-    slug: String
-    courseCode: String
     difficulty: Difficulty
     thumbnail: String
     price: PricingPlanInput

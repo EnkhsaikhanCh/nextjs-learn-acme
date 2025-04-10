@@ -638,11 +638,9 @@ export type Test = {
 export type UpdateCourseInput = {
   _id: Scalars['ID']['input'];
   categories?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  courseCode?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   difficulty?: InputMaybe<Difficulty>;
   price?: InputMaybe<PricingPlanInput>;
-  slug?: InputMaybe<Scalars['String']['input']>;
   status?: InputMaybe<CourseStatus>;
   tags?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   thumbnail?: InputMaybe<Scalars['String']['input']>;
