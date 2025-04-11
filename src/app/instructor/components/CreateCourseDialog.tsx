@@ -14,7 +14,7 @@ import { Loader, Plus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-export const CreateCourseDialog = () => {
+export const CreateCourseDialog = ({ refetch }: { refetch: () => void }) => {
   const [courseTitle, setCourseTitle] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [courseCreating, setCourseCreating] = useState(false);
@@ -43,6 +43,7 @@ export const CreateCourseDialog = () => {
       toast.success("Course created successfully");
       setCourseTitle("");
       setIsDialogOpen(false);
+      refetch();
     } catch {
       toast.error("Failed to create course");
     } finally {
@@ -54,7 +55,7 @@ export const CreateCourseDialog = () => {
     <>
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogTrigger asChild>
-          <Button className="self-center">
+          <Button className="self-center" size={"sm"}>
             <Plus />
             New Course
           </Button>
