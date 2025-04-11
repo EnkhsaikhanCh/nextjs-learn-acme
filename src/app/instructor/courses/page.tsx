@@ -60,7 +60,41 @@ export default function Page() {
     {
       header: "STATUS",
       accessorKey: "status",
-      cell: ({ row }) => row.original?.status || "Unknown",
+      cell: ({ row }) => {
+        const course = row.original;
+        const status = course?.status;
+        if (!status) {
+          return <span>Unknown</span>;
+        }
+
+        let statusClass = "";
+        switch (status) {
+          case "DRAFT":
+            statusClass =
+              "bg-gray-100 text-gray-800 border border-gray-300 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700";
+            break;
+          case "PUBLISHED":
+            statusClass =
+              "bg-green-100 text-green-800 border-green-500 dark:bg-green-800 dark:text-green-200";
+            break;
+          case "ARCHIVED":
+            statusClass =
+              "bg-blue-100 text-blue-800 border-blue-500 dark:bg-blue-800 dark:text-blue-200";
+            break;
+          default:
+            statusClass =
+              "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300";
+        }
+
+        return (
+          <Badge
+            variant="outline"
+            className={`text-xs font-medium ${statusClass}`}
+          >
+            {status}
+          </Badge>
+        );
+      },
     },
   ];
 
