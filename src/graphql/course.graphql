@@ -173,3 +173,13 @@ query GetUserNotEnrolledCourses($userId: ID!) {
     }
   }
 }
+
+query GetAllCoursesByInstructurId {
+  getAllCoursesByInstructurId {
+    _id
+    title
+    slug
+    courseCode
+    status
+  }
+}

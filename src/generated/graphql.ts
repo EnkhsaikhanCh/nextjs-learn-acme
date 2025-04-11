@@ -407,6 +407,7 @@ export type Query = {
   checkEnrollment?: Maybe<Enrollment>;
   getAllCourse: Array<Course>;
   getAllCourseWithEnrollment: Array<Course>;
+  getAllCoursesByInstructurId?: Maybe<Array<Maybe<Course>>>;
   getAllPayments: PaymentPaginationResult;
   getAllSubscribers: SubscriberPaginationResult;
   getAllTest: Array<Test>;
@@ -815,6 +816,11 @@ export type GetUserNotEnrolledCoursesQueryVariables = Exact<{
 
 
 export type GetUserNotEnrolledCoursesQuery = { __typename?: 'Query', getUserNotEnrolledCourses?: Array<{ __typename?: 'Course', _id: string, title: string, slug?: string | null, thumbnail?: string | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: string | null, amount?: number | null, currency?: Currency | null } | null } | null> | null };
+
+export type GetAllCoursesByInstructurIdQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllCoursesByInstructurIdQuery = { __typename?: 'Query', getAllCoursesByInstructurId?: Array<{ __typename?: 'Course', _id: string, title: string, slug?: string | null, courseCode?: string | null, status?: CourseStatus | null } | null> | null };
 
 export type MarkLessonAsCompletedMutationVariables = Exact<{
   input?: InputMaybe<MarkLessonAsCompletedInput>;
@@ -1692,6 +1698,49 @@ export type GetUserNotEnrolledCoursesQueryHookResult = ReturnType<typeof useGetU
 export type GetUserNotEnrolledCoursesLazyQueryHookResult = ReturnType<typeof useGetUserNotEnrolledCoursesLazyQuery>;
 export type GetUserNotEnrolledCoursesSuspenseQueryHookResult = ReturnType<typeof useGetUserNotEnrolledCoursesSuspenseQuery>;
 export type GetUserNotEnrolledCoursesQueryResult = Apollo.QueryResult<GetUserNotEnrolledCoursesQuery, GetUserNotEnrolledCoursesQueryVariables>;
+export const GetAllCoursesByInstructurIdDocument = gql`
+    query GetAllCoursesByInstructurId {
+  getAllCoursesByInstructurId {
+    _id
+    title
+    slug
+    courseCode
+    status
+  }
+}
+    `;
+
+/**
+ * __useGetAllCoursesByInstructurIdQuery__
+ *
+ * To run a query within a React component, call `useGetAllCoursesByInstructurIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAllCoursesByInstructurIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAllCoursesByInstructurIdQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetAllCoursesByInstructurIdQuery(baseOptions?: Apollo.QueryHookOptions<GetAllCoursesByInstructurIdQuery, GetAllCoursesByInstructurIdQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetAllCoursesByInstructurIdQuery, GetAllCoursesByInstructurIdQueryVariables>(GetAllCoursesByInstructurIdDocument, options);
+      }
+export function useGetAllCoursesByInstructurIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAllCoursesByInstructurIdQuery, GetAllCoursesByInstructurIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetAllCoursesByInstructurIdQuery, GetAllCoursesByInstructurIdQueryVariables>(GetAllCoursesByInstructurIdDocument, options);
+        }
+export function useGetAllCoursesByInstructurIdSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetAllCoursesByInstructurIdQuery, GetAllCoursesByInstructurIdQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetAllCoursesByInstructurIdQuery, GetAllCoursesByInstructurIdQueryVariables>(GetAllCoursesByInstructurIdDocument, options);
+        }
+export type GetAllCoursesByInstructurIdQueryHookResult = ReturnType<typeof useGetAllCoursesByInstructurIdQuery>;
+export type GetAllCoursesByInstructurIdLazyQueryHookResult = ReturnType<typeof useGetAllCoursesByInstructurIdLazyQuery>;
+export type GetAllCoursesByInstructurIdSuspenseQueryHookResult = ReturnType<typeof useGetAllCoursesByInstructurIdSuspenseQuery>;
+export type GetAllCoursesByInstructurIdQueryResult = Apollo.QueryResult<GetAllCoursesByInstructurIdQuery, GetAllCoursesByInstructurIdQueryVariables>;
 export const MarkLessonAsCompletedDocument = gql`
     mutation MarkLessonAsCompleted($input: markLessonAsCompletedInput) {
   markLessonAsCompleted(input: $input) {
