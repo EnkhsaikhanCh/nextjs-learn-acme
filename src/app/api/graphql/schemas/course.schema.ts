@@ -91,6 +91,8 @@ export const typeDefs = gql`
       userId: ID!
     ): GetUserEnrolledCoursesCountResponse!
     getUserNotEnrolledCourses(userId: ID!): [Course]
+
+    getAllCoursesByInstructurId: [Course]
   }
 
   input CreateCourseInput {
