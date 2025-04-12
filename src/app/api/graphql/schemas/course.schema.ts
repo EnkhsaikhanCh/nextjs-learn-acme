@@ -79,13 +79,9 @@ export const typeDefs = gql`
   }
 
   type Query {
-    getCourseById(_id: ID!): Course
-    getCourseBySlug(slug: String!): Course
     getCourseDetails(slug: String!): Course
     getAllCourse: [Course!]!
     getAllCourseWithEnrollment: [Course!]!
-    getEnrolledCourseContentBySlug(slug: String!): Course
-    getCourseIdBySlug(slug: String): Course
     getCourseForUser(slug: String!): CourseForUserPayload!
     getUserEnrolledCoursesCount(
       userId: ID!

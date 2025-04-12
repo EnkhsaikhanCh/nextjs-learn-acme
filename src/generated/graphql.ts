@@ -193,12 +193,10 @@ export type Mutation = {
   createPayment?: Maybe<Payment>;
   createSection?: Maybe<Section>;
   createSubscriber: SubscribeResponse;
-  createTest: Test;
   createUser: RegisterResponse;
   deleteCourse: Scalars['Boolean']['output'];
   deleteLesson: DeleteLessonReponse;
   deleteSection: DeleteSectionResponse;
-  deleteTest: Test;
   deleteUser: User;
   generateTempToken: GenerateTempTokenResponse;
   markLessonAsCompleted?: Maybe<Enrollment>;
@@ -209,7 +207,6 @@ export type Mutation = {
   updateLesson: Lesson;
   updatePaymentStatus?: Maybe<Payment>;
   updateSection: Section;
-  updateTest: Test;
   updateUser: User;
   verifyOTP: VerifyOtpResponse;
 };
@@ -245,11 +242,6 @@ export type MutationCreateSubscriberArgs = {
 };
 
 
-export type MutationCreateTestArgs = {
-  name: Scalars['String']['input'];
-};
-
-
 export type MutationCreateUserArgs = {
   input: RegisterInput;
 };
@@ -267,11 +259,6 @@ export type MutationDeleteLessonArgs = {
 
 export type MutationDeleteSectionArgs = {
   _id: Scalars['ID']['input'];
-};
-
-
-export type MutationDeleteTestArgs = {
-  id: Scalars['ID']['input'];
 };
 
 
@@ -326,12 +313,6 @@ export type MutationUpdatePaymentStatusArgs = {
 export type MutationUpdateSectionArgs = {
   _id: Scalars['ID']['input'];
   input: UpdateSectionInput;
-};
-
-
-export type MutationUpdateTestArgs = {
-  id: Scalars['ID']['input'];
-  name: Scalars['String']['input'];
 };
 
 
@@ -410,15 +391,10 @@ export type Query = {
   getAllCoursesByInstructurId?: Maybe<Array<Maybe<Course>>>;
   getAllPayments: PaymentPaginationResult;
   getAllSubscribers: SubscriberPaginationResult;
-  getAllTest: Array<Test>;
   getAllUser: UserPaginationResult;
-  getCourseById?: Maybe<Course>;
-  getCourseBySlug?: Maybe<Course>;
   getCourseDetails?: Maybe<Course>;
   getCourseForUser: CourseForUserPayload;
-  getCourseIdBySlug?: Maybe<Course>;
   getEmailFromToken: GetEmailFromTokenResponse;
-  getEnrolledCourseContentBySlug?: Maybe<Course>;
   getEnrollmentByUserAndCourse?: Maybe<Enrollment>;
   getEnrollmentsByCourse: Array<Enrollment>;
   getEnrollmentsByUser: Array<Enrollment>;
@@ -464,16 +440,6 @@ export type QueryGetAllUserArgs = {
 };
 
 
-export type QueryGetCourseByIdArgs = {
-  _id: Scalars['ID']['input'];
-};
-
-
-export type QueryGetCourseBySlugArgs = {
-  slug: Scalars['String']['input'];
-};
-
-
 export type QueryGetCourseDetailsArgs = {
   slug: Scalars['String']['input'];
 };
@@ -484,18 +450,8 @@ export type QueryGetCourseForUserArgs = {
 };
 
 
-export type QueryGetCourseIdBySlugArgs = {
-  slug?: InputMaybe<Scalars['String']['input']>;
-};
-
-
 export type QueryGetEmailFromTokenArgs = {
   token: Scalars['String']['input'];
-};
-
-
-export type QueryGetEnrolledCourseContentBySlugArgs = {
-  slug: Scalars['String']['input'];
 };
 
 
@@ -630,12 +586,6 @@ export type SubscriberPaginationResult = {
   totalCount: Scalars['Int']['output'];
 };
 
-export type Test = {
-  __typename?: 'Test';
-  _id: Scalars['ID']['output'];
-  name: Scalars['String']['output'];
-};
-
 export type UpdateCourseInput = {
   _id: Scalars['ID']['input'];
   categories?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
@@ -767,34 +717,6 @@ export type GetAllCourseWithEnrollmentQueryVariables = Exact<{ [key: string]: ne
 
 
 export type GetAllCourseWithEnrollmentQuery = { __typename?: 'Query', getAllCourseWithEnrollment: Array<{ __typename?: 'Course', _id: string, title: string, slug?: string | null, thumbnail?: string | null, isEnrolled?: boolean | null }> };
-
-export type GetCourseByIdQueryVariables = Exact<{
-  id: Scalars['ID']['input'];
-}>;
-
-
-export type GetCourseByIdQuery = { __typename?: 'Query', getCourseById?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, description?: string | null, courseCode?: string | null, difficulty?: Difficulty | null, thumbnail?: string | null, status?: CourseStatus | null } | null };
-
-export type GetCourseBySlugQueryVariables = Exact<{
-  slug: Scalars['String']['input'];
-}>;
-
-
-export type GetCourseBySlugQuery = { __typename?: 'Query', getCourseBySlug?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, description?: string | null, courseCode?: string | null, difficulty?: Difficulty | null, status?: CourseStatus | null, categories?: Array<string | null> | null, tags?: Array<string | null> | null, whatYouWillLearn?: Array<string | null> | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: string | null, amount?: number | null, currency?: Currency | null } | null } | null };
-
-export type GetEnrolledCourseContentBySlugQueryVariables = Exact<{
-  slug: Scalars['String']['input'];
-}>;
-
-
-export type GetEnrolledCourseContentBySlugQuery = { __typename?: 'Query', getEnrolledCourseContentBySlug?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, description?: string | null, status?: CourseStatus | null, sectionId?: Array<{ __typename?: 'Section', _id: string, title: string, lessonId?: Array<{ __typename?: 'Lesson', _id: string, title: string, content?: string | null, videoUrl?: string | null } | null> | null } | null> | null } | null };
-
-export type GetCourseIdBySlugQueryVariables = Exact<{
-  slug?: InputMaybe<Scalars['String']['input']>;
-}>;
-
-
-export type GetCourseIdBySlugQuery = { __typename?: 'Query', getCourseIdBySlug?: { __typename?: 'Course', _id: string } | null };
 
 export type GetCourseForUserQueryVariables = Exact<{
   slug: Scalars['String']['input'];
@@ -971,33 +893,6 @@ export type GetAllSubscribersQueryVariables = Exact<{
 
 
 export type GetAllSubscribersQuery = { __typename?: 'Query', getAllSubscribers: { __typename?: 'SubscriberPaginationResult', totalCount: number, hasNextPage: boolean, subscribers: Array<{ __typename?: 'Subscriber', _id: string, email: string, subscribedAt: Date }> } };
-
-export type GetAllTestQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetAllTestQuery = { __typename?: 'Query', getAllTest: Array<{ __typename?: 'Test', _id: string, name: string }> };
-
-export type CreateTestMutationVariables = Exact<{
-  name: Scalars['String']['input'];
-}>;
-
-
-export type CreateTestMutation = { __typename?: 'Mutation', createTest: { __typename?: 'Test', _id: string, name: string } };
-
-export type DeleteTestMutationVariables = Exact<{
-  deleteTestId: Scalars['ID']['input'];
-}>;
-
-
-export type DeleteTestMutation = { __typename?: 'Mutation', deleteTest: { __typename?: 'Test', _id: string, name: string } };
-
-export type UpdateTestMutationVariables = Exact<{
-  updateTestId: Scalars['ID']['input'];
-  name: Scalars['String']['input'];
-}>;
-
-
-export type UpdateTestMutation = { __typename?: 'Mutation', updateTest: { __typename?: 'Test', _id: string, name: string } };
 
 export type CreateUserMutationVariables = Exact<{
   input: RegisterInput;
@@ -1328,202 +1223,6 @@ export type GetAllCourseWithEnrollmentQueryHookResult = ReturnType<typeof useGet
 export type GetAllCourseWithEnrollmentLazyQueryHookResult = ReturnType<typeof useGetAllCourseWithEnrollmentLazyQuery>;
 export type GetAllCourseWithEnrollmentSuspenseQueryHookResult = ReturnType<typeof useGetAllCourseWithEnrollmentSuspenseQuery>;
 export type GetAllCourseWithEnrollmentQueryResult = Apollo.QueryResult<GetAllCourseWithEnrollmentQuery, GetAllCourseWithEnrollmentQueryVariables>;
-export const GetCourseByIdDocument = gql`
-    query GetCourseById($id: ID!) {
-  getCourseById(_id: $id) {
-    _id
-    title
-    slug
-    description
-    courseCode
-    difficulty
-    thumbnail
-    status
-  }
-}
-    `;
-
-/**
- * __useGetCourseByIdQuery__
- *
- * To run a query within a React component, call `useGetCourseByIdQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetCourseByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetCourseByIdQuery({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useGetCourseByIdQuery(baseOptions: Apollo.QueryHookOptions<GetCourseByIdQuery, GetCourseByIdQueryVariables> & ({ variables: GetCourseByIdQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetCourseByIdQuery, GetCourseByIdQueryVariables>(GetCourseByIdDocument, options);
-      }
-export function useGetCourseByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCourseByIdQuery, GetCourseByIdQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetCourseByIdQuery, GetCourseByIdQueryVariables>(GetCourseByIdDocument, options);
-        }
-export function useGetCourseByIdSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetCourseByIdQuery, GetCourseByIdQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetCourseByIdQuery, GetCourseByIdQueryVariables>(GetCourseByIdDocument, options);
-        }
-export type GetCourseByIdQueryHookResult = ReturnType<typeof useGetCourseByIdQuery>;
-export type GetCourseByIdLazyQueryHookResult = ReturnType<typeof useGetCourseByIdLazyQuery>;
-export type GetCourseByIdSuspenseQueryHookResult = ReturnType<typeof useGetCourseByIdSuspenseQuery>;
-export type GetCourseByIdQueryResult = Apollo.QueryResult<GetCourseByIdQuery, GetCourseByIdQueryVariables>;
-export const GetCourseBySlugDocument = gql`
-    query GetCourseBySlug($slug: String!) {
-  getCourseBySlug(slug: $slug) {
-    _id
-    title
-    slug
-    description
-    courseCode
-    difficulty
-    status
-    price {
-      planTitle
-      description
-      amount
-      currency
-    }
-    categories
-    tags
-    whatYouWillLearn
-  }
-}
-    `;
-
-/**
- * __useGetCourseBySlugQuery__
- *
- * To run a query within a React component, call `useGetCourseBySlugQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetCourseBySlugQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetCourseBySlugQuery({
- *   variables: {
- *      slug: // value for 'slug'
- *   },
- * });
- */
-export function useGetCourseBySlugQuery(baseOptions: Apollo.QueryHookOptions<GetCourseBySlugQuery, GetCourseBySlugQueryVariables> & ({ variables: GetCourseBySlugQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetCourseBySlugQuery, GetCourseBySlugQueryVariables>(GetCourseBySlugDocument, options);
-      }
-export function useGetCourseBySlugLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCourseBySlugQuery, GetCourseBySlugQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetCourseBySlugQuery, GetCourseBySlugQueryVariables>(GetCourseBySlugDocument, options);
-        }
-export function useGetCourseBySlugSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetCourseBySlugQuery, GetCourseBySlugQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetCourseBySlugQuery, GetCourseBySlugQueryVariables>(GetCourseBySlugDocument, options);
-        }
-export type GetCourseBySlugQueryHookResult = ReturnType<typeof useGetCourseBySlugQuery>;
-export type GetCourseBySlugLazyQueryHookResult = ReturnType<typeof useGetCourseBySlugLazyQuery>;
-export type GetCourseBySlugSuspenseQueryHookResult = ReturnType<typeof useGetCourseBySlugSuspenseQuery>;
-export type GetCourseBySlugQueryResult = Apollo.QueryResult<GetCourseBySlugQuery, GetCourseBySlugQueryVariables>;
-export const GetEnrolledCourseContentBySlugDocument = gql`
-    query GetEnrolledCourseContentBySlug($slug: String!) {
-  getEnrolledCourseContentBySlug(slug: $slug) {
-    _id
-    title
-    slug
-    description
-    status
-    sectionId {
-      _id
-      title
-      lessonId {
-        _id
-        title
-        content
-        videoUrl
-      }
-    }
-  }
-}
-    `;
-
-/**
- * __useGetEnrolledCourseContentBySlugQuery__
- *
- * To run a query within a React component, call `useGetEnrolledCourseContentBySlugQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetEnrolledCourseContentBySlugQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetEnrolledCourseContentBySlugQuery({
- *   variables: {
- *      slug: // value for 'slug'
- *   },
- * });
- */
-export function useGetEnrolledCourseContentBySlugQuery(baseOptions: Apollo.QueryHookOptions<GetEnrolledCourseContentBySlugQuery, GetEnrolledCourseContentBySlugQueryVariables> & ({ variables: GetEnrolledCourseContentBySlugQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetEnrolledCourseContentBySlugQuery, GetEnrolledCourseContentBySlugQueryVariables>(GetEnrolledCourseContentBySlugDocument, options);
-      }
-export function useGetEnrolledCourseContentBySlugLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetEnrolledCourseContentBySlugQuery, GetEnrolledCourseContentBySlugQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetEnrolledCourseContentBySlugQuery, GetEnrolledCourseContentBySlugQueryVariables>(GetEnrolledCourseContentBySlugDocument, options);
-        }
-export function useGetEnrolledCourseContentBySlugSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetEnrolledCourseContentBySlugQuery, GetEnrolledCourseContentBySlugQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetEnrolledCourseContentBySlugQuery, GetEnrolledCourseContentBySlugQueryVariables>(GetEnrolledCourseContentBySlugDocument, options);
-        }
-export type GetEnrolledCourseContentBySlugQueryHookResult = ReturnType<typeof useGetEnrolledCourseContentBySlugQuery>;
-export type GetEnrolledCourseContentBySlugLazyQueryHookResult = ReturnType<typeof useGetEnrolledCourseContentBySlugLazyQuery>;
-export type GetEnrolledCourseContentBySlugSuspenseQueryHookResult = ReturnType<typeof useGetEnrolledCourseContentBySlugSuspenseQuery>;
-export type GetEnrolledCourseContentBySlugQueryResult = Apollo.QueryResult<GetEnrolledCourseContentBySlugQuery, GetEnrolledCourseContentBySlugQueryVariables>;
-export const GetCourseIdBySlugDocument = gql`
-    query GetCourseIdBySlug($slug: String) {
-  getCourseIdBySlug(slug: $slug) {
-    _id
-  }
-}
-    `;
-
-/**
- * __useGetCourseIdBySlugQuery__
- *
- * To run a query within a React component, call `useGetCourseIdBySlugQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetCourseIdBySlugQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetCourseIdBySlugQuery({
- *   variables: {
- *      slug: // value for 'slug'
- *   },
- * });
- */
-export function useGetCourseIdBySlugQuery(baseOptions?: Apollo.QueryHookOptions<GetCourseIdBySlugQuery, GetCourseIdBySlugQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetCourseIdBySlugQuery, GetCourseIdBySlugQueryVariables>(GetCourseIdBySlugDocument, options);
-      }
-export function useGetCourseIdBySlugLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCourseIdBySlugQuery, GetCourseIdBySlugQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetCourseIdBySlugQuery, GetCourseIdBySlugQueryVariables>(GetCourseIdBySlugDocument, options);
-        }
-export function useGetCourseIdBySlugSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetCourseIdBySlugQuery, GetCourseIdBySlugQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetCourseIdBySlugQuery, GetCourseIdBySlugQueryVariables>(GetCourseIdBySlugDocument, options);
-        }
-export type GetCourseIdBySlugQueryHookResult = ReturnType<typeof useGetCourseIdBySlugQuery>;
-export type GetCourseIdBySlugLazyQueryHookResult = ReturnType<typeof useGetCourseIdBySlugLazyQuery>;
-export type GetCourseIdBySlugSuspenseQueryHookResult = ReturnType<typeof useGetCourseIdBySlugSuspenseQuery>;
-export type GetCourseIdBySlugQueryResult = Apollo.QueryResult<GetCourseIdBySlugQuery, GetCourseIdBySlugQueryVariables>;
 export const GetCourseForUserDocument = gql`
     query GetCourseForUser($slug: String!) {
   getCourseForUser(slug: $slug) {
@@ -2562,149 +2261,6 @@ export type GetAllSubscribersQueryHookResult = ReturnType<typeof useGetAllSubscr
 export type GetAllSubscribersLazyQueryHookResult = ReturnType<typeof useGetAllSubscribersLazyQuery>;
 export type GetAllSubscribersSuspenseQueryHookResult = ReturnType<typeof useGetAllSubscribersSuspenseQuery>;
 export type GetAllSubscribersQueryResult = Apollo.QueryResult<GetAllSubscribersQuery, GetAllSubscribersQueryVariables>;
-export const GetAllTestDocument = gql`
-    query GetAllTest {
-  getAllTest {
-    _id
-    name
-  }
-}
-    `;
-
-/**
- * __useGetAllTestQuery__
- *
- * To run a query within a React component, call `useGetAllTestQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetAllTestQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetAllTestQuery({
- *   variables: {
- *   },
- * });
- */
-export function useGetAllTestQuery(baseOptions?: Apollo.QueryHookOptions<GetAllTestQuery, GetAllTestQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetAllTestQuery, GetAllTestQueryVariables>(GetAllTestDocument, options);
-      }
-export function useGetAllTestLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAllTestQuery, GetAllTestQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetAllTestQuery, GetAllTestQueryVariables>(GetAllTestDocument, options);
-        }
-export function useGetAllTestSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetAllTestQuery, GetAllTestQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetAllTestQuery, GetAllTestQueryVariables>(GetAllTestDocument, options);
-        }
-export type GetAllTestQueryHookResult = ReturnType<typeof useGetAllTestQuery>;
-export type GetAllTestLazyQueryHookResult = ReturnType<typeof useGetAllTestLazyQuery>;
-export type GetAllTestSuspenseQueryHookResult = ReturnType<typeof useGetAllTestSuspenseQuery>;
-export type GetAllTestQueryResult = Apollo.QueryResult<GetAllTestQuery, GetAllTestQueryVariables>;
-export const CreateTestDocument = gql`
-    mutation CreateTest($name: String!) {
-  createTest(name: $name) {
-    _id
-    name
-  }
-}
-    `;
-export type CreateTestMutationFn = Apollo.MutationFunction<CreateTestMutation, CreateTestMutationVariables>;
-
-/**
- * __useCreateTestMutation__
- *
- * To run a mutation, you first call `useCreateTestMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useCreateTestMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [createTestMutation, { data, loading, error }] = useCreateTestMutation({
- *   variables: {
- *      name: // value for 'name'
- *   },
- * });
- */
-export function useCreateTestMutation(baseOptions?: Apollo.MutationHookOptions<CreateTestMutation, CreateTestMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreateTestMutation, CreateTestMutationVariables>(CreateTestDocument, options);
-      }
-export type CreateTestMutationHookResult = ReturnType<typeof useCreateTestMutation>;
-export type CreateTestMutationResult = Apollo.MutationResult<CreateTestMutation>;
-export type CreateTestMutationOptions = Apollo.BaseMutationOptions<CreateTestMutation, CreateTestMutationVariables>;
-export const DeleteTestDocument = gql`
-    mutation DeleteTest($deleteTestId: ID!) {
-  deleteTest(id: $deleteTestId) {
-    _id
-    name
-  }
-}
-    `;
-export type DeleteTestMutationFn = Apollo.MutationFunction<DeleteTestMutation, DeleteTestMutationVariables>;
-
-/**
- * __useDeleteTestMutation__
- *
- * To run a mutation, you first call `useDeleteTestMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useDeleteTestMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [deleteTestMutation, { data, loading, error }] = useDeleteTestMutation({
- *   variables: {
- *      deleteTestId: // value for 'deleteTestId'
- *   },
- * });
- */
-export function useDeleteTestMutation(baseOptions?: Apollo.MutationHookOptions<DeleteTestMutation, DeleteTestMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<DeleteTestMutation, DeleteTestMutationVariables>(DeleteTestDocument, options);
-      }
-export type DeleteTestMutationHookResult = ReturnType<typeof useDeleteTestMutation>;
-export type DeleteTestMutationResult = Apollo.MutationResult<DeleteTestMutation>;
-export type DeleteTestMutationOptions = Apollo.BaseMutationOptions<DeleteTestMutation, DeleteTestMutationVariables>;
-export const UpdateTestDocument = gql`
-    mutation updateTest($updateTestId: ID!, $name: String!) {
-  updateTest(id: $updateTestId, name: $name) {
-    _id
-    name
-  }
-}
-    `;
-export type UpdateTestMutationFn = Apollo.MutationFunction<UpdateTestMutation, UpdateTestMutationVariables>;
-
-/**
- * __useUpdateTestMutation__
- *
- * To run a mutation, you first call `useUpdateTestMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUpdateTestMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [updateTestMutation, { data, loading, error }] = useUpdateTestMutation({
- *   variables: {
- *      updateTestId: // value for 'updateTestId'
- *      name: // value for 'name'
- *   },
- * });
- */
-export function useUpdateTestMutation(baseOptions?: Apollo.MutationHookOptions<UpdateTestMutation, UpdateTestMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<UpdateTestMutation, UpdateTestMutationVariables>(UpdateTestDocument, options);
-      }
-export type UpdateTestMutationHookResult = ReturnType<typeof useUpdateTestMutation>;
-export type UpdateTestMutationResult = Apollo.MutationResult<UpdateTestMutation>;
-export type UpdateTestMutationOptions = Apollo.BaseMutationOptions<UpdateTestMutation, UpdateTestMutationVariables>;
 export const CreateUserDocument = gql`
     mutation CreateUser($input: RegisterInput!) {
   createUser(input: $input) {

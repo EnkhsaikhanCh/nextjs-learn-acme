@@ -2,7 +2,7 @@ import { GraphQLError } from "graphql";
 import { PaymentModel } from "../../../models";
 import { Payment, User } from "@/generated/graphql";
 import { requireAuthAndRoles } from "@/lib/auth-utils";
-import { FilterQuery } from "mongoose";
+import type { FilterQuery } from "mongoose";
 
 interface GetAllCourseArgs {
   limit?: number;
