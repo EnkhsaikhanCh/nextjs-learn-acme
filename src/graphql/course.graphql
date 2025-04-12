@@ -42,66 +42,6 @@ query GetAllCourseWithEnrollment {
   }
 }
 
-query GetCourseById($id: ID!) {
-  getCourseById(_id: $id) {
-    _id
-    title
-    slug
-    description
-    courseCode
-    difficulty
-    thumbnail
-    status
-  }
-}
-
-query GetCourseBySlug($slug: String!) {
-  getCourseBySlug(slug: $slug) {
-    _id
-    title
-    slug
-    description
-    courseCode
-    difficulty
-    status
-    price {
-      planTitle
-      description
-      amount
-      currency
-    }
-    categories
-    tags
-    whatYouWillLearn
-  }
-}
-
-query GetEnrolledCourseContentBySlug($slug: String!) {
-  getEnrolledCourseContentBySlug(slug: $slug) {
-    _id
-    title
-    slug
-    description
-    status
-    sectionId {
-      _id
-      title
-      lessonId {
-        _id
-        title
-        content
-        videoUrl
-      }
-    }
-  }
-}
-
-query GetCourseIdBySlug($slug: String) {
-  getCourseIdBySlug(slug: $slug) {
-    _id
-  }
-}
-
 query GetCourseForUser($slug: String!) {
   getCourseForUser(slug: $slug) {
     status
