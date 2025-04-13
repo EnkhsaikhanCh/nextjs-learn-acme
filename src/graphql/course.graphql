@@ -123,3 +123,19 @@ query GetAllCoursesByInstructurId {
     status
   }
 }
+
+query GetCourseDetailsForInstructor($slug: String!) {
+  getCourseDetailsForInstructor(slug: $slug) {
+    course {
+      _id
+      title
+      slug
+      courseCode
+      status
+      updatedAt
+    }
+    totalSections
+    totalLessons
+    totalEnrollment
+  }
+}
