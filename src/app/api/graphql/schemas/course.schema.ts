@@ -50,8 +50,9 @@ export const typeDefs = gql`
 
   type Course {
     _id: ID!
-    createdBy: User!
+    createdBy: User
     title: String!
+    subtitle: String
     slug: String
     description: String
     courseCode: String
@@ -59,7 +60,7 @@ export const typeDefs = gql`
     thumbnail: String
     price: PricingPlan
     sectionId: [Section]
-    categories: [String]
+    category: String
     tags: [String]
     status: CourseStatus
     whatYouWillLearn: [String]
@@ -88,7 +89,18 @@ export const typeDefs = gql`
     totalEnrollment: Int
   }
 
+  type CourseBasicInfo {
+    _id: ID!
+    createdBy: User
+    title: String
+    subtitle: String
+    description: String
+    category: String
+    difficulty: String
+  }
+
   type Query {
+    getCourseBasicInfoForEdit(slug: String!): CourseBasicInfo
     getCourseDetailsForInstructor(
       slug: String!
     ): getCourseDetailsForInstructorResponse
@@ -122,7 +134,7 @@ export const typeDefs = gql`
     difficulty: Difficulty
     thumbnail: String
     price: PricingPlanInput
-    categories: [String]
+    category: String
     tags: [String]
     status: CourseStatus
     whatYouWillLearn: [String]

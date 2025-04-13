@@ -21,9 +21,9 @@ export type Scalars = {
 export type Course = {
   __typename?: 'Course';
   _id: Scalars['ID']['output'];
-  categories?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  category?: Maybe<Scalars['String']['output']>;
   courseCode?: Maybe<Scalars['String']['output']>;
-  createdBy: User;
+  createdBy?: Maybe<User>;
   description?: Maybe<Scalars['String']['output']>;
   difficulty?: Maybe<Difficulty>;
   isEnrolled?: Maybe<Scalars['Boolean']['output']>;
@@ -31,6 +31,7 @@ export type Course = {
   sectionId?: Maybe<Array<Maybe<Section>>>;
   slug?: Maybe<Scalars['String']['output']>;
   status?: Maybe<CourseStatus>;
+  subtitle?: Maybe<Scalars['String']['output']>;
   tags?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   thumbnail?: Maybe<Scalars['String']['output']>;
   title: Scalars['String']['output'];
@@ -53,6 +54,16 @@ export enum CourseAccessStatus {
   Guest = 'GUEST',
   NotEnrolled = 'NOT_ENROLLED'
 }
+
+export type CourseBasicInfo = {
+  __typename?: 'CourseBasicInfo';
+  _id: Scalars['ID']['output'];
+  category?: Maybe<Scalars['String']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  difficulty?: Maybe<Scalars['String']['output']>;
+  subtitle?: Maybe<Scalars['String']['output']>;
+  title: Scalars['String']['output'];
+};
 
 /**
  * Нэг Query-д буцах нэгдсэн бүтэц
@@ -393,6 +404,7 @@ export type Query = {
   getAllPayments: PaymentPaginationResult;
   getAllSubscribers: SubscriberPaginationResult;
   getAllUser: UserPaginationResult;
+  getCourseBasicInfoForEdit?: Maybe<CourseBasicInfo>;
   getCourseDetailsForInstructor?: Maybe<GetCourseDetailsForInstructorResponse>;
   getCourseForUser: CourseForUserPayload;
   getEmailFromToken: GetEmailFromTokenResponse;
@@ -438,6 +450,11 @@ export type QueryGetAllUserArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   sortBy?: InputMaybe<Scalars['String']['input']>;
   sortOrder?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryGetCourseBasicInfoForEditArgs = {
+  slug: Scalars['String']['input'];
 };
 
 
@@ -589,7 +606,7 @@ export type SubscriberPaginationResult = {
 
 export type UpdateCourseInput = {
   _id: Scalars['ID']['input'];
-  categories?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  category?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   difficulty?: InputMaybe<Difficulty>;
   price?: InputMaybe<PricingPlanInput>;
@@ -708,7 +725,7 @@ export type CreateCourseMutationVariables = Exact<{
 }>;
 
 
-export type CreateCourseMutation = { __typename?: 'Mutation', createCourse: { __typename?: 'Course', _id: string, title: string, slug?: string | null, createdBy: { __typename?: 'User', _id: string, email: string, role: Role } } };
+export type CreateCourseMutation = { __typename?: 'Mutation', createCourse: { __typename?: 'Course', _id: string, title: string, slug?: string | null, createdBy?: { __typename?: 'User', _id: string, email: string, role: Role } | null } };
 
 export type UpdateCourseMutationVariables = Exact<{
   input: UpdateCourseInput;
@@ -732,7 +749,7 @@ export type GetCourseForUserQueryVariables = Exact<{
 }>;
 
 
-export type GetCourseForUserQuery = { __typename?: 'Query', getCourseForUser: { __typename?: 'CourseForUserPayload', status: CourseAccessStatus, fullContent?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, description?: string | null, difficulty?: Difficulty | null, thumbnail?: string | null, status?: CourseStatus | null, sectionId?: Array<{ __typename?: 'Section', _id: string, title: string, description?: string | null, order: number, lessonId?: Array<{ __typename?: 'Lesson', _id: string, title: string, content?: string | null, videoUrl?: string | null, order: number, isPublished: boolean } | null> | null } | null> | null } | null, coursePreviewData?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, description?: string | null, courseCode?: string | null, difficulty?: Difficulty | null, thumbnail?: string | null, categories?: Array<string | null> | null, tags?: Array<string | null> | null, status?: CourseStatus | null, whatYouWillLearn?: Array<string | null> | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: string | null, amount?: number | null, currency?: Currency | null } | null } | null } };
+export type GetCourseForUserQuery = { __typename?: 'Query', getCourseForUser: { __typename?: 'CourseForUserPayload', status: CourseAccessStatus, fullContent?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, description?: string | null, difficulty?: Difficulty | null, thumbnail?: string | null, status?: CourseStatus | null, sectionId?: Array<{ __typename?: 'Section', _id: string, title: string, description?: string | null, order: number, lessonId?: Array<{ __typename?: 'Lesson', _id: string, title: string, content?: string | null, videoUrl?: string | null, order: number, isPublished: boolean } | null> | null } | null> | null } | null, coursePreviewData?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, description?: string | null, courseCode?: string | null, difficulty?: Difficulty | null, thumbnail?: string | null, category?: string | null, tags?: Array<string | null> | null, status?: CourseStatus | null, whatYouWillLearn?: Array<string | null> | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: string | null, amount?: number | null, currency?: Currency | null } | null } | null } };
 
 export type GetUserEnrolledCoursesCountQueryVariables = Exact<{
   userId: Scalars['ID']['input'];
@@ -759,6 +776,13 @@ export type GetCourseDetailsForInstructorQueryVariables = Exact<{
 
 
 export type GetCourseDetailsForInstructorQuery = { __typename?: 'Query', getCourseDetailsForInstructor?: { __typename?: 'getCourseDetailsForInstructorResponse', totalSections?: number | null, totalLessons?: number | null, totalEnrollment?: number | null, course?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, courseCode?: string | null, status?: CourseStatus | null, updatedAt?: Date | null } | null } | null };
+
+export type GetCourseBasicInfoForEditQueryVariables = Exact<{
+  slug: Scalars['String']['input'];
+}>;
+
+
+export type GetCourseBasicInfoForEditQuery = { __typename?: 'Query', getCourseBasicInfoForEdit?: { __typename?: 'CourseBasicInfo', _id: string, title: string, subtitle?: string | null, description?: string | null, category?: string | null, difficulty?: string | null } | null };
 
 export type MarkLessonAsCompletedMutationVariables = Exact<{
   input?: InputMaybe<MarkLessonAsCompletedInput>;
@@ -1280,7 +1304,7 @@ export const GetCourseForUserDocument = gql`
         amount
         currency
       }
-      categories
+      category
       tags
       status
       whatYouWillLearn
@@ -1506,6 +1530,51 @@ export type GetCourseDetailsForInstructorQueryHookResult = ReturnType<typeof use
 export type GetCourseDetailsForInstructorLazyQueryHookResult = ReturnType<typeof useGetCourseDetailsForInstructorLazyQuery>;
 export type GetCourseDetailsForInstructorSuspenseQueryHookResult = ReturnType<typeof useGetCourseDetailsForInstructorSuspenseQuery>;
 export type GetCourseDetailsForInstructorQueryResult = Apollo.QueryResult<GetCourseDetailsForInstructorQuery, GetCourseDetailsForInstructorQueryVariables>;
+export const GetCourseBasicInfoForEditDocument = gql`
+    query GetCourseBasicInfoForEdit($slug: String!) {
+  getCourseBasicInfoForEdit(slug: $slug) {
+    _id
+    title
+    subtitle
+    description
+    category
+    difficulty
+  }
+}
+    `;
+
+/**
+ * __useGetCourseBasicInfoForEditQuery__
+ *
+ * To run a query within a React component, call `useGetCourseBasicInfoForEditQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetCourseBasicInfoForEditQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetCourseBasicInfoForEditQuery({
+ *   variables: {
+ *      slug: // value for 'slug'
+ *   },
+ * });
+ */
+export function useGetCourseBasicInfoForEditQuery(baseOptions: Apollo.QueryHookOptions<GetCourseBasicInfoForEditQuery, GetCourseBasicInfoForEditQueryVariables> & ({ variables: GetCourseBasicInfoForEditQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetCourseBasicInfoForEditQuery, GetCourseBasicInfoForEditQueryVariables>(GetCourseBasicInfoForEditDocument, options);
+      }
+export function useGetCourseBasicInfoForEditLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCourseBasicInfoForEditQuery, GetCourseBasicInfoForEditQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetCourseBasicInfoForEditQuery, GetCourseBasicInfoForEditQueryVariables>(GetCourseBasicInfoForEditDocument, options);
+        }
+export function useGetCourseBasicInfoForEditSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetCourseBasicInfoForEditQuery, GetCourseBasicInfoForEditQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetCourseBasicInfoForEditQuery, GetCourseBasicInfoForEditQueryVariables>(GetCourseBasicInfoForEditDocument, options);
+        }
+export type GetCourseBasicInfoForEditQueryHookResult = ReturnType<typeof useGetCourseBasicInfoForEditQuery>;
+export type GetCourseBasicInfoForEditLazyQueryHookResult = ReturnType<typeof useGetCourseBasicInfoForEditLazyQuery>;
+export type GetCourseBasicInfoForEditSuspenseQueryHookResult = ReturnType<typeof useGetCourseBasicInfoForEditSuspenseQuery>;
+export type GetCourseBasicInfoForEditQueryResult = Apollo.QueryResult<GetCourseBasicInfoForEditQuery, GetCourseBasicInfoForEditQueryVariables>;
 export const MarkLessonAsCompletedDocument = gql`
     mutation MarkLessonAsCompleted($input: markLessonAsCompletedInput) {
   markLessonAsCompleted(input: $input) {

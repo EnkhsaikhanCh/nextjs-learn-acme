@@ -82,7 +82,7 @@ query GetCourseForUser($slug: String!) {
         amount
         currency
       }
-      categories
+      category
       tags
       status
       whatYouWillLearn
@@ -137,5 +137,16 @@ query GetCourseDetailsForInstructor($slug: String!) {
     totalSections
     totalLessons
     totalEnrollment
+  }
+}
+
+query GetCourseBasicInfoForEdit($slug: String!) {
+  getCourseBasicInfoForEdit(slug: $slug) {
+    _id
+    title
+    subtitle
+    description
+    category
+    difficulty
   }
 }
