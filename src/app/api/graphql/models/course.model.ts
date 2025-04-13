@@ -13,6 +13,7 @@ export type Course = {
   _id: string;
   createdBy: string;
   title: string;
+  subtitle: string;
   description: string;
   slug: string;
   courseCode: string;
@@ -20,7 +21,7 @@ export type Course = {
   price?: PricingPlan;
   sectionId: string[];
   thumbnail?: string;
-  categories?: string[];
+  category?: string;
   tags?: string[];
   status?: "DRAFT" | "PUBLISHED" | "ARCHIVED";
   whatYouWillLearn?: string[];
@@ -41,13 +42,14 @@ const CourseSchema = new Schema<Course>(
     _id: { type: String, default: () => uuidv4() },
     createdBy: { type: Schema.Types.String, ref: "User", required: true },
     title: { type: String, required: true },
+    subtitle: { type: String },
     description: { type: String },
     slug: { type: String },
     courseCode: { type: String, required: true, unique: true },
     price: { type: PricingPlanSchema },
     sectionId: [{ type: Schema.Types.String, ref: "Section", default: [] }],
     thumbnail: { type: String },
-    categories: { type: [String], default: [] },
+    category: { type: String },
     tags: { type: [String], default: [] },
     status: {
       type: String,
