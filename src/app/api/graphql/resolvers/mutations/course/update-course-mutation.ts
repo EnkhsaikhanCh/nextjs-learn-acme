@@ -39,8 +39,8 @@ export const updateCourse = async (
       updateFields.price = input.price;
     }
 
-    if (input.categories !== undefined) {
-      updateFields.categories = input.categories;
+    if (input.category !== undefined) {
+      updateFields.category = input.category;
     }
 
     if (input.tags !== undefined) {

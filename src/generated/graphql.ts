@@ -59,10 +59,11 @@ export type CourseBasicInfo = {
   __typename?: 'CourseBasicInfo';
   _id: Scalars['ID']['output'];
   category?: Maybe<Scalars['String']['output']>;
+  createdBy?: Maybe<User>;
   description?: Maybe<Scalars['String']['output']>;
   difficulty?: Maybe<Scalars['String']['output']>;
   subtitle?: Maybe<Scalars['String']['output']>;
-  title: Scalars['String']['output'];
+  title?: Maybe<Scalars['String']['output']>;
 };
 
 /**
@@ -782,7 +783,7 @@ export type GetCourseBasicInfoForEditQueryVariables = Exact<{
 }>;
 
 
-export type GetCourseBasicInfoForEditQuery = { __typename?: 'Query', getCourseBasicInfoForEdit?: { __typename?: 'CourseBasicInfo', _id: string, title: string, subtitle?: string | null, description?: string | null, category?: string | null, difficulty?: string | null } | null };
+export type GetCourseBasicInfoForEditQuery = { __typename?: 'Query', getCourseBasicInfoForEdit?: { __typename?: 'CourseBasicInfo', _id: string, title?: string | null, subtitle?: string | null, description?: string | null, category?: string | null, difficulty?: string | null } | null };
 
 export type MarkLessonAsCompletedMutationVariables = Exact<{
   input?: InputMaybe<MarkLessonAsCompletedInput>;
