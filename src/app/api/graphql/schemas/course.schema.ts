@@ -2,6 +2,8 @@
 import gql from "graphql-tag";
 
 export const typeDefs = gql`
+  scalar Date
+
   enum Currency {
     MNT
   }
@@ -62,6 +64,7 @@ export const typeDefs = gql`
     status: CourseStatus
     whatYouWillLearn: [String]
     isEnrolled: Boolean
+    updatedAt: Date
   }
 
   type PricingPlan {
@@ -78,8 +81,17 @@ export const typeDefs = gql`
     courseCompletionPercentage: Float!
   }
 
+  type getCourseDetailsForInstructorResponse {
+    course: Course
+    totalSections: Int
+    totalLessons: Int
+    totalEnrollment: Int
+  }
+
   type Query {
-    getCourseDetails(slug: String!): Course
+    getCourseDetailsForInstructor(
+      slug: String!
+    ): getCourseDetailsForInstructorResponse
     getAllCourse: [Course!]!
     getAllCourseWithEnrollment: [Course!]!
     getCourseForUser(slug: String!): CourseForUserPayload!
