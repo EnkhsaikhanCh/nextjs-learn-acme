@@ -20,6 +20,12 @@ mutation UpdateCourse($input: UpdateCourseInput!) {
   }
 }
 
+mutation UpdateCourseBasicInfo($courseId: ID!, $input: CourseBasicInfoInput!) {
+  updateCourseBasicInfo(courseId: $courseId, input: $input) {
+    _id
+  }
+}
+
 # Queries
 query GetAllCourse {
   getAllCourse {

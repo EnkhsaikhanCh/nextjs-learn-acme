@@ -96,7 +96,7 @@ export const typeDefs = gql`
     subtitle: String
     description: String
     category: String
-    difficulty: String
+    difficulty: Difficulty
   }
 
   type Query {
@@ -140,7 +140,16 @@ export const typeDefs = gql`
     whatYouWillLearn: [String]
   }
 
+  input CourseBasicInfoInput {
+    title: String
+    subtitle: String
+    description: String
+    category: String
+    difficulty: Difficulty
+  }
+
   type Mutation {
+    updateCourseBasicInfo(courseId: ID!, input: CourseBasicInfoInput!): Course!
     createCourse(input: CreateCourseInput!): Course!
     updateCourse(input: UpdateCourseInput!): Course!
     deleteCourse(id: ID!): Boolean!
