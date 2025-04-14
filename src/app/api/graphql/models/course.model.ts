@@ -46,6 +46,10 @@ const CourseSchema = new Schema<Course>(
     description: { type: String },
     slug: { type: String },
     courseCode: { type: String, required: true, unique: true },
+    difficulty: {
+      type: String,
+      enum: ["BEGINNER", "INTERMEDIATE", "ADVANCED"],
+    },
     price: { type: PricingPlanSchema },
     sectionId: [{ type: Schema.Types.String, ref: "Section", default: [] }],
     thumbnail: { type: String },
