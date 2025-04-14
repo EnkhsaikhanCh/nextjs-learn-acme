@@ -55,17 +55,6 @@ export enum CourseAccessStatus {
   NotEnrolled = 'NOT_ENROLLED'
 }
 
-export type CourseBasicInfo = {
-  __typename?: 'CourseBasicInfo';
-  _id: Scalars['ID']['output'];
-  category?: Maybe<Scalars['String']['output']>;
-  createdBy?: Maybe<User>;
-  description?: Maybe<Scalars['String']['output']>;
-  difficulty?: Maybe<Difficulty>;
-  subtitle?: Maybe<Scalars['String']['output']>;
-  title?: Maybe<Scalars['String']['output']>;
-};
-
 export type CourseBasicInfoInput = {
   category?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
@@ -225,6 +214,7 @@ export type Mutation = {
   undoLessonCompletion?: Maybe<Enrollment>;
   updateCourse: Course;
   updateCourseBasicInfo: Course;
+  updateCoursePricing: Course;
   updateEnrollment?: Maybe<Enrollment>;
   updateLesson: Lesson;
   updatePaymentStatus?: Maybe<Payment>;
@@ -320,6 +310,12 @@ export type MutationUpdateCourseBasicInfoArgs = {
 };
 
 
+export type MutationUpdateCoursePricingArgs = {
+  courseId: Scalars['ID']['input'];
+  input: UpdateCoursePricingInput;
+};
+
+
 export type MutationUpdateEnrollmentArgs = {
   input?: InputMaybe<UpdateEnrollmentInput>;
 };
@@ -405,10 +401,10 @@ export type PricingPlan = {
 };
 
 export type PricingPlanInput = {
-  amount: Scalars['Int']['input'];
-  currency: Currency;
+  amount?: InputMaybe<Scalars['Int']['input']>;
+  currency?: InputMaybe<Currency>;
   description?: InputMaybe<Scalars['String']['input']>;
-  planTitle: Scalars['String']['input'];
+  planTitle?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Query = {
@@ -420,7 +416,7 @@ export type Query = {
   getAllPayments: PaymentPaginationResult;
   getAllSubscribers: SubscriberPaginationResult;
   getAllUser: UserPaginationResult;
-  getCourseBasicInfoForEdit?: Maybe<CourseBasicInfo>;
+  getCourseBasicInfoForEdit?: Maybe<Course>;
   getCourseDetailsForInstructor?: Maybe<GetCourseDetailsForInstructorResponse>;
   getCourseForUser: CourseForUserPayload;
   getEmailFromToken: GetEmailFromTokenResponse;
@@ -633,6 +629,13 @@ export type UpdateCourseInput = {
   whatYouWillLearn?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
+export type UpdateCoursePricingInput = {
+  amount?: InputMaybe<Scalars['Int']['input']>;
+  currency?: InputMaybe<Currency>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  planTitle?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type UpdateEnrollmentInput = {
   _id: Scalars['ID']['input'];
   progress?: InputMaybe<Scalars['Float']['input']>;
@@ -758,6 +761,14 @@ export type UpdateCourseBasicInfoMutationVariables = Exact<{
 
 export type UpdateCourseBasicInfoMutation = { __typename?: 'Mutation', updateCourseBasicInfo: { __typename?: 'Course', _id: string } };
 
+export type UpdateCoursePricingMutationVariables = Exact<{
+  courseId: Scalars['ID']['input'];
+  input: UpdateCoursePricingInput;
+}>;
+
+
+export type UpdateCoursePricingMutation = { __typename?: 'Mutation', updateCoursePricing: { __typename?: 'Course', _id: string } };
+
 export type GetAllCourseQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -806,7 +817,7 @@ export type GetCourseBasicInfoForEditQueryVariables = Exact<{
 }>;
 
 
-export type GetCourseBasicInfoForEditQuery = { __typename?: 'Query', getCourseBasicInfoForEdit?: { __typename?: 'CourseBasicInfo', _id: string, title?: string | null, subtitle?: string | null, description?: string | null, category?: string | null, difficulty?: Difficulty | null } | null };
+export type GetCourseBasicInfoForEditQuery = { __typename?: 'Query', getCourseBasicInfoForEdit?: { __typename?: 'Course', _id: string, title: string, subtitle?: string | null, description?: string | null, category?: string | null, difficulty?: Difficulty | null, createdBy?: { __typename?: 'User', _id: string, email: string } | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: string | null, amount?: number | null, currency?: Currency | null } | null } | null };
 
 export type MarkLessonAsCompletedMutationVariables = Exact<{
   input?: InputMaybe<MarkLessonAsCompletedInput>;
@@ -1234,6 +1245,40 @@ export function useUpdateCourseBasicInfoMutation(baseOptions?: Apollo.MutationHo
 export type UpdateCourseBasicInfoMutationHookResult = ReturnType<typeof useUpdateCourseBasicInfoMutation>;
 export type UpdateCourseBasicInfoMutationResult = Apollo.MutationResult<UpdateCourseBasicInfoMutation>;
 export type UpdateCourseBasicInfoMutationOptions = Apollo.BaseMutationOptions<UpdateCourseBasicInfoMutation, UpdateCourseBasicInfoMutationVariables>;
+export const UpdateCoursePricingDocument = gql`
+    mutation UpdateCoursePricing($courseId: ID!, $input: UpdateCoursePricingInput!) {
+  updateCoursePricing(courseId: $courseId, input: $input) {
+    _id
+  }
+}
+    `;
+export type UpdateCoursePricingMutationFn = Apollo.MutationFunction<UpdateCoursePricingMutation, UpdateCoursePricingMutationVariables>;
+
+/**
+ * __useUpdateCoursePricingMutation__
+ *
+ * To run a mutation, you first call `useUpdateCoursePricingMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateCoursePricingMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateCoursePricingMutation, { data, loading, error }] = useUpdateCoursePricingMutation({
+ *   variables: {
+ *      courseId: // value for 'courseId'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateCoursePricingMutation(baseOptions?: Apollo.MutationHookOptions<UpdateCoursePricingMutation, UpdateCoursePricingMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateCoursePricingMutation, UpdateCoursePricingMutationVariables>(UpdateCoursePricingDocument, options);
+      }
+export type UpdateCoursePricingMutationHookResult = ReturnType<typeof useUpdateCoursePricingMutation>;
+export type UpdateCoursePricingMutationResult = Apollo.MutationResult<UpdateCoursePricingMutation>;
+export type UpdateCoursePricingMutationOptions = Apollo.BaseMutationOptions<UpdateCoursePricingMutation, UpdateCoursePricingMutationVariables>;
 export const GetAllCourseDocument = gql`
     query GetAllCourse {
   getAllCourse {
@@ -1592,11 +1637,21 @@ export const GetCourseBasicInfoForEditDocument = gql`
     query GetCourseBasicInfoForEdit($slug: String!) {
   getCourseBasicInfoForEdit(slug: $slug) {
     _id
+    createdBy {
+      _id
+      email
+    }
     title
     subtitle
     description
     category
     difficulty
+    price {
+      planTitle
+      description
+      amount
+      currency
+    }
   }
 }
     `;

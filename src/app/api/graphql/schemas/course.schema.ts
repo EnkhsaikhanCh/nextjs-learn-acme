@@ -89,18 +89,8 @@ export const typeDefs = gql`
     totalEnrollment: Int
   }
 
-  type CourseBasicInfo {
-    _id: ID!
-    createdBy: User
-    title: String
-    subtitle: String
-    description: String
-    category: String
-    difficulty: Difficulty
-  }
-
   type Query {
-    getCourseBasicInfoForEdit(slug: String!): CourseBasicInfo
+    getCourseBasicInfoForEdit(slug: String!): Course
     getCourseDetailsForInstructor(
       slug: String!
     ): getCourseDetailsForInstructorResponse
@@ -121,10 +111,10 @@ export const typeDefs = gql`
   }
 
   input PricingPlanInput {
-    planTitle: String!
+    planTitle: String
     description: String
-    amount: Int!
-    currency: Currency!
+    amount: Int
+    currency: Currency
   }
 
   input UpdateCourseInput {
@@ -148,8 +138,19 @@ export const typeDefs = gql`
     difficulty: Difficulty
   }
 
+  input UpdateCoursePricingInput {
+    planTitle: String
+    description: String
+    amount: Int
+    currency: Currency
+  }
+
   type Mutation {
     updateCourseBasicInfo(courseId: ID!, input: CourseBasicInfoInput!): Course!
+    updateCoursePricing(
+      courseId: ID!
+      input: UpdateCoursePricingInput!
+    ): Course!
     createCourse(input: CreateCourseInput!): Course!
     updateCourse(input: UpdateCourseInput!): Course!
     deleteCourse(id: ID!): Boolean!

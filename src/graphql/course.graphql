@@ -26,6 +26,15 @@ mutation UpdateCourseBasicInfo($courseId: ID!, $input: CourseBasicInfoInput!) {
   }
 }
 
+mutation UpdateCoursePricing(
+  $courseId: ID!
+  $input: UpdateCoursePricingInput!
+) {
+  updateCoursePricing(courseId: $courseId, input: $input) {
+    _id
+  }
+}
+
 # Queries
 query GetAllCourse {
   getAllCourse {
@@ -149,10 +158,20 @@ query GetCourseDetailsForInstructor($slug: String!) {
 query GetCourseBasicInfoForEdit($slug: String!) {
   getCourseBasicInfoForEdit(slug: $slug) {
     _id
+    createdBy {
+      _id
+      email
+    }
     title
     subtitle
     description
     category
     difficulty
+    price {
+      planTitle
+      description
+      amount
+      currency
+    }
   }
 }
