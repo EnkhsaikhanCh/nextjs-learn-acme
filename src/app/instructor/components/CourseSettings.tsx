@@ -7,9 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-// import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -18,20 +16,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { HelpCircle, Info } from "lucide-react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { HelpCircle, Loader } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { BasicInformationCard } from "./InstructorCourseSettingsComponents/BasicInformationCard";
-import {
-  Difficulty,
-  useGetCourseBasicInfoForEditQuery,
-} from "@/generated/graphql";
+import { Course, useGetCourseBasicInfoForEditQuery } from "@/generated/graphql";
 import { useParams } from "next/navigation";
+import { BasicInformationCard } from "./InstructorCourseSettingsComponents/BasicInformationCard";
+import { CoursePricingCard } from "./InstructorCourseSettingsComponents/CoursePricingCard";
 
 export const CourseSettings = () => {
   const { slug } = useParams();
@@ -43,7 +33,10 @@ export const CourseSettings = () => {
 
   if (!slug || loading) {
     return (
-      <p className="text-muted-foreground text-sm">Loading basic info...</p>
+      <p className="text-muted-foreground flex items-center text-sm">
+        Loading course settings...
+        <Loader className="ml-2 h-4 w-4 animate-spin" />
+      </p>
     );
   }
 
@@ -59,16 +52,8 @@ export const CourseSettings = () => {
         <Button>Save All Changes</Button>
       </div>
 
-      {/* Basic Information Card */}
       <BasicInformationCard
-        initialValues={{
-          _id: data?.getCourseBasicInfoForEdit?._id ?? "",
-          title: data?.getCourseBasicInfoForEdit?.title ?? "",
-          subtitle: data?.getCourseBasicInfoForEdit?.subtitle ?? "",
-          description: data?.getCourseBasicInfoForEdit?.description ?? "",
-          category: data?.getCourseBasicInfoForEdit?.category ?? "",
-          difficulty: data?.getCourseBasicInfoForEdit?.difficulty as Difficulty,
-        }}
+        initialValues={data?.getCourseBasicInfoForEdit as Course}
         refetch={refetch}
       />
 
@@ -115,81 +100,10 @@ export const CourseSettings = () => {
           </CardContent>
         </Card>
 
-        {/* Pricing Card */}
-        <Card className="border-purple-100">
-          <CardHeader className="border-b border-purple-100 bg-purple-50/50">
-            <CardTitle className="text-purple-800">Pricing</CardTitle>
-            <CardDescription>Set your course pricing options</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6 pt-6">
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="price-type" className="text-base font-medium">
-                  Pricing Type
-                </Label>
-                <Select defaultValue="paid">
-                  <SelectTrigger id="price-type">
-                    <SelectValue placeholder="Select pricing type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="free">Free</SelectItem>
-                    <SelectItem value="paid">Paid</SelectItem>
-                    <SelectItem value="subscription">
-                      Subscription Only
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Label
-                    htmlFor="course-price"
-                    className="text-base font-medium"
-                  >
-                    Regular Price
-                  </Label>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Info className="h-4 w-4 text-gray-400" />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="max-w-xs">
-                          Consider market rates for similar courses when setting
-                          your price
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-                <div className="relative">
-                  <span className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-500">
-                    $
-                  </span>
-                  <Input
-                    id="course-price"
-                    type="number"
-                    defaultValue="49.99"
-                    className="pl-7"
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-2 pt-2">
-                <Switch id="sale-price" />
-                <div>
-                  <Label htmlFor="sale-price" className="font-medium">
-                    Enable promotional price
-                  </Label>
-                  <p className="text-xs text-gray-500">
-                    Offer a limited-time discount
-                  </p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <CoursePricingCard
+          initialValues={data?.getCourseBasicInfoForEdit as Course}
+          refetch={refetch}
+        />
       </div>
 
       {/* Visibility & Access Card */}
@@ -200,6 +114,7 @@ export const CourseSettings = () => {
             Control who can see and access your course
           </CardDescription>
         </CardHeader>
+
         <CardContent className="space-y-6 pt-6">
           <div className="grid gap-6 md:grid-cols-2">
             <div className="space-y-2">
@@ -309,6 +224,7 @@ export const CourseSettings = () => {
             </div>
           </div>
         </CardContent>
+
         <CardFooter className="flex justify-end border-t bg-gray-50/50 px-6 py-4">
           <Button>Save All Changes</Button>
         </CardFooter>
