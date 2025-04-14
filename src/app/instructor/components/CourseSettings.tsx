@@ -33,10 +33,10 @@ import {
 } from "@/generated/graphql";
 import { useParams } from "next/navigation";
 
-export function CourseSettings() {
+export const CourseSettings = () => {
   const { slug } = useParams();
 
-  const { data, loading } = useGetCourseBasicInfoForEditQuery({
+  const { data, loading, refetch } = useGetCourseBasicInfoForEditQuery({
     variables: { slug: slug as string },
     skip: !slug,
   });
@@ -69,6 +69,7 @@ export function CourseSettings() {
           category: data?.getCourseBasicInfoForEdit?.category ?? "",
           difficulty: data?.getCourseBasicInfoForEdit?.difficulty as Difficulty,
         }}
+        refetch={refetch}
       />
 
       <div className="grid gap-6 md:grid-cols-2">
@@ -314,4 +315,4 @@ export function CourseSettings() {
       </Card>
     </div>
   );
-}
+};
