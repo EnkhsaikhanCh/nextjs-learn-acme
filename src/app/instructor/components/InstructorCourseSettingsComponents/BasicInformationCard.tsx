@@ -24,32 +24,69 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Info } from "lucide-react";
+import { Info, Loader } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Course, Difficulty } from "@/generated/graphql";
+import {
+  Course,
+  Difficulty,
+  useUpdateCourseBasicInfoMutation,
+} from "@/generated/graphql";
+import { useEffect, useState } from "react";
 
 interface BasicInformationFormProps {
   initialValues: Course;
+  refetch: () => void;
 }
 
 export const BasicInformationCard = ({
   initialValues,
+  refetch,
 }: BasicInformationFormProps) => {
   const {
     register,
     handleSubmit,
     setValue,
-    formState: { isSubmitting },
+    reset,
+    watch,
+    formState: { isSubmitting, isDirty },
   } = useForm({
     defaultValues: initialValues,
   });
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [updateCourseBasicInfo] = useUpdateCourseBasicInfoMutation();
+
+  useEffect(() => {
+    reset(initialValues);
+  }, [initialValues, reset]);
 
   const onSubmit = async (values: typeof initialValues) => {
-    toast.success("Submitted!", {
-      description: JSON.stringify(values, null, 2),
-    });
+    setIsUpdating(true);
+    try {
+      await updateCourseBasicInfo({
+        variables: {
+          courseId: initialValues._id,
+          input: {
+            title: values.title,
+            subtitle: values.subtitle,
+            description: values.description,
+            category: values.category,
+            difficulty: values.difficulty,
+          },
+        },
+      });
+
+      await refetch();
+
+      toast.success("Course info updated successfully!");
+    } catch (error) {
+      toast.error("Failed to update course", {
+        description: (error as Error).message,
+      });
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   return (
@@ -63,8 +100,11 @@ export const BasicInformationCard = ({
             Essential details about your course
           </CardDescription>
         </CardHeader>
+
         <CardContent className="space-y-6 pt-6">
+          {/* Title & Subtitle */}
           <div className="space-y-4">
+            {/* Title */}
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <Label
@@ -81,7 +121,7 @@ export const BasicInformationCard = ({
                     <TooltipContent>
                       <p className="text-muted-foreground max-w-xs">
                         Choose a clear, specific title that accurately reflects
-                        your course content
+                        your course content.
                       </p>
                     </TooltipContent>
                   </Tooltip>
@@ -94,6 +134,7 @@ export const BasicInformationCard = ({
               />
             </div>
 
+            {/* Subtitle */}
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <Label
@@ -110,7 +151,7 @@ export const BasicInformationCard = ({
                     <TooltipContent>
                       <p className="text-muted-foreground max-w-xs">
                         A brief, compelling description that appears below your
-                        title
+                        title.
                       </p>
                     </TooltipContent>
                   </Tooltip>
@@ -126,30 +167,31 @@ export const BasicInformationCard = ({
 
           <Separator className="my-6 dark:bg-emerald-900" />
 
+          {/* Description */}
           <div className="space-y-4">
-            <div className="space-y-2">
-              <Label
-                htmlFor="course-description"
-                className="text-base font-medium dark:text-emerald-100"
-              >
-                Description
-              </Label>
-              <Textarea
-                id="course-description"
-                className="min-h-[150px] resize-y"
-                placeholder="Describe what students will learn..."
-                {...register("description")}
-              />
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                Use clear, concise language. Include key topics, learning
-                outcomes, and target audience.
-              </p>
-            </div>
+            <Label
+              htmlFor="course-description"
+              className="text-base font-medium dark:text-emerald-100"
+            >
+              Description
+            </Label>
+            <Textarea
+              id="course-description"
+              className="min-h-[150px] resize-y"
+              placeholder="Describe what students will learn..."
+              {...register("description")}
+            />
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              Use clear, concise language. Include key topics, learning
+              outcomes, and target audience.
+            </p>
           </div>
 
           <Separator className="my-6 dark:bg-emerald-900" />
 
+          {/* Category & Difficulty */}
           <div className="grid gap-6 md:grid-cols-2">
+            {/* Category */}
             <div className="space-y-2">
               <Label
                 htmlFor="course-category"
@@ -158,8 +200,10 @@ export const BasicInformationCard = ({
                 Category
               </Label>
               <Select
-                defaultValue={initialValues.category ?? ""}
-                onValueChange={(value) => setValue("category", value)}
+                value={watch("category") ?? ""}
+                onValueChange={(value) =>
+                  setValue("category", value, { shouldDirty: true })
+                }
               >
                 <SelectTrigger id="course-category">
                   <SelectValue placeholder="Select category" />
@@ -171,6 +215,8 @@ export const BasicInformationCard = ({
                 </SelectContent>
               </Select>
             </div>
+
+            {/* Difficulty */}
             <div className="space-y-2">
               <Label
                 htmlFor="course-level"
@@ -179,9 +225,11 @@ export const BasicInformationCard = ({
                 Level
               </Label>
               <Select
-                defaultValue={initialValues.difficulty ?? ""}
+                value={watch("difficulty") ?? ""}
                 onValueChange={(value) =>
-                  setValue("difficulty", value as Difficulty)
+                  setValue("difficulty", value as Difficulty, {
+                    shouldDirty: true,
+                  })
                 }
               >
                 <SelectTrigger id="course-level">
@@ -196,9 +244,17 @@ export const BasicInformationCard = ({
             </div>
           </div>
 
+          {/* Submit Button */}
           <div className="pt-6 text-right">
-            <Button type="submit" disabled={isSubmitting}>
-              Save Basic Information Changes
+            <Button
+              type="submit"
+              disabled={isUpdating || isSubmitting || !isDirty}
+            >
+              {isUpdating ? (
+                <Loader className="animate-spin" />
+              ) : (
+                "Save Basic Information Changes"
+              )}
             </Button>
           </div>
         </CardContent>
