@@ -35,6 +35,14 @@ mutation UpdateCourseThumbnail($courseId: ID!, $input: ThumbnailInput!) {
   }
 }
 
+mutation UpdateCourseVisibilityAndAccess(
+  $input: UpdateCourseVisibilityAndAccessInput!
+) {
+  updateCourseVisibilityAndAccess(input: $input) {
+    _id
+  }
+}
+
 # Queries
 query GetAllCourse {
   getAllCourse {
@@ -183,26 +191,26 @@ query GetCourseDetailsForInstructor($slug: String!) {
 query GetCourseBasicInfoForEdit($slug: String!) {
   getCourseBasicInfoForEdit(slug: $slug) {
     _id
-    createdBy {
-      _id
-      email
-    }
     title
     subtitle
+    slug
+    description
+    courseCode
+    difficulty
     thumbnail {
       publicId
       width
       height
       format
     }
-    description
-    category
-    difficulty
     price {
       planTitle
       description
       amount
       currency
     }
+    category
+    status
+    updatedAt
   }
 }

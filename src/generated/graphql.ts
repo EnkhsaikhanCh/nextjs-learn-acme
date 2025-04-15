@@ -215,6 +215,7 @@ export type Mutation = {
   updateCourseBasicInfo: Course;
   updateCoursePricing: Course;
   updateCourseThumbnail: Course;
+  updateCourseVisibilityAndAccess: Course;
   updateEnrollment?: Maybe<Enrollment>;
   updateLesson: Lesson;
   updatePaymentStatus?: Maybe<Payment>;
@@ -314,6 +315,11 @@ export type MutationUpdateCoursePricingArgs = {
 export type MutationUpdateCourseThumbnailArgs = {
   courseId: Scalars['ID']['input'];
   input: ThumbnailInput;
+};
+
+
+export type MutationUpdateCourseVisibilityAndAccessArgs = {
+  input: UpdateCourseVisibilityAndAccessInput;
 };
 
 
@@ -639,6 +645,11 @@ export type UpdateCoursePricingInput = {
   planTitle?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type UpdateCourseVisibilityAndAccessInput = {
+  courseId: Scalars['ID']['input'];
+  status: CourseStatus;
+};
+
 export type UpdateEnrollmentInput = {
   _id: Scalars['ID']['input'];
   progress?: InputMaybe<Scalars['Float']['input']>;
@@ -773,6 +784,13 @@ export type UpdateCourseThumbnailMutationVariables = Exact<{
 
 export type UpdateCourseThumbnailMutation = { __typename?: 'Mutation', updateCourseThumbnail: { __typename?: 'Course', _id: string } };
 
+export type UpdateCourseVisibilityAndAccessMutationVariables = Exact<{
+  input: UpdateCourseVisibilityAndAccessInput;
+}>;
+
+
+export type UpdateCourseVisibilityAndAccessMutation = { __typename?: 'Mutation', updateCourseVisibilityAndAccess: { __typename?: 'Course', _id: string } };
+
 export type GetAllCourseQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -821,7 +839,7 @@ export type GetCourseBasicInfoForEditQueryVariables = Exact<{
 }>;
 
 
-export type GetCourseBasicInfoForEditQuery = { __typename?: 'Query', getCourseBasicInfoForEdit?: { __typename?: 'Course', _id: string, title: string, subtitle?: string | null, description?: string | null, category?: string | null, difficulty?: Difficulty | null, createdBy?: { __typename?: 'User', _id: string, email: string } | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: string | null, amount?: number | null, currency?: Currency | null } | null } | null };
+export type GetCourseBasicInfoForEditQuery = { __typename?: 'Query', getCourseBasicInfoForEdit?: { __typename?: 'Course', _id: string, title: string, subtitle?: string | null, slug?: string | null, description?: string | null, courseCode?: string | null, difficulty?: Difficulty | null, category?: string | null, status?: CourseStatus | null, updatedAt?: Date | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: string | null, amount?: number | null, currency?: Currency | null } | null } | null };
 
 export type MarkLessonAsCompletedMutationVariables = Exact<{
   input?: InputMaybe<MarkLessonAsCompletedInput>;
@@ -1284,6 +1302,39 @@ export function useUpdateCourseThumbnailMutation(baseOptions?: Apollo.MutationHo
 export type UpdateCourseThumbnailMutationHookResult = ReturnType<typeof useUpdateCourseThumbnailMutation>;
 export type UpdateCourseThumbnailMutationResult = Apollo.MutationResult<UpdateCourseThumbnailMutation>;
 export type UpdateCourseThumbnailMutationOptions = Apollo.BaseMutationOptions<UpdateCourseThumbnailMutation, UpdateCourseThumbnailMutationVariables>;
+export const UpdateCourseVisibilityAndAccessDocument = gql`
+    mutation UpdateCourseVisibilityAndAccess($input: UpdateCourseVisibilityAndAccessInput!) {
+  updateCourseVisibilityAndAccess(input: $input) {
+    _id
+  }
+}
+    `;
+export type UpdateCourseVisibilityAndAccessMutationFn = Apollo.MutationFunction<UpdateCourseVisibilityAndAccessMutation, UpdateCourseVisibilityAndAccessMutationVariables>;
+
+/**
+ * __useUpdateCourseVisibilityAndAccessMutation__
+ *
+ * To run a mutation, you first call `useUpdateCourseVisibilityAndAccessMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateCourseVisibilityAndAccessMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateCourseVisibilityAndAccessMutation, { data, loading, error }] = useUpdateCourseVisibilityAndAccessMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateCourseVisibilityAndAccessMutation(baseOptions?: Apollo.MutationHookOptions<UpdateCourseVisibilityAndAccessMutation, UpdateCourseVisibilityAndAccessMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateCourseVisibilityAndAccessMutation, UpdateCourseVisibilityAndAccessMutationVariables>(UpdateCourseVisibilityAndAccessDocument, options);
+      }
+export type UpdateCourseVisibilityAndAccessMutationHookResult = ReturnType<typeof useUpdateCourseVisibilityAndAccessMutation>;
+export type UpdateCourseVisibilityAndAccessMutationResult = Apollo.MutationResult<UpdateCourseVisibilityAndAccessMutation>;
+export type UpdateCourseVisibilityAndAccessMutationOptions = Apollo.BaseMutationOptions<UpdateCourseVisibilityAndAccessMutation, UpdateCourseVisibilityAndAccessMutationVariables>;
 export const GetAllCourseDocument = gql`
     query GetAllCourse {
   getAllCourse {
@@ -1667,27 +1718,27 @@ export const GetCourseBasicInfoForEditDocument = gql`
     query GetCourseBasicInfoForEdit($slug: String!) {
   getCourseBasicInfoForEdit(slug: $slug) {
     _id
-    createdBy {
-      _id
-      email
-    }
     title
     subtitle
+    slug
+    description
+    courseCode
+    difficulty
     thumbnail {
       publicId
       width
       height
       format
     }
-    description
-    category
-    difficulty
     price {
       planTitle
       description
       amount
       currency
     }
+    category
+    status
+    updatedAt
   }
 }
     `;
