@@ -16,12 +16,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { HelpCircle, Loader } from "lucide-react";
+import { Loader } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Course, useGetCourseBasicInfoForEditQuery } from "@/generated/graphql";
 import { useParams } from "next/navigation";
 import { BasicInformationCard } from "./InstructorCourseSettingsComponents/BasicInformationCard";
 import { CoursePricingCard } from "./InstructorCourseSettingsComponents/CoursePricingCard";
+import { CourseThumbnailCard } from "./InstructorCourseSettingsComponents/CourseThumbnailCard";
 
 export const CourseSettings = () => {
   const { slug } = useParams();
@@ -58,47 +59,10 @@ export const CourseSettings = () => {
       />
 
       <div className="grid gap-6 md:grid-cols-2">
-        {/* Course Thumbnail Card */}
-        <Card className="border-amber-100">
-          <CardHeader className="border-b border-amber-100 bg-amber-50/50">
-            <CardTitle className="text-amber-800">Course Thumbnail</CardTitle>
-            <CardDescription>
-              Visual representation of your course
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="pt-6">
-            <div className="flex flex-col items-center space-y-4">
-              <div className="relative aspect-video w-full overflow-hidden rounded-lg border-2 border-dashed border-gray-300 bg-gray-50/50 transition-all hover:bg-gray-50">
-                <div className="flex h-full w-full flex-col items-center justify-center p-4 text-center">
-                  <div className="mb-2 rounded-full bg-amber-100 p-3">
-                    <HelpCircle className="h-6 w-6 text-amber-600" />
-                  </div>
-                  <p className="text-sm font-medium text-gray-600">
-                    Course thumbnail preview
-                  </p>
-                  <p className="mt-1 max-w-xs text-xs text-gray-500">
-                    A compelling thumbnail can increase enrollment by up to 40%
-                  </p>
-                </div>
-              </div>
-              <div className="flex w-full flex-col space-y-2">
-                <div className="flex gap-2">
-                  <Button variant="outline" className="flex-1">
-                    Upload Image
-                  </Button>
-                  <Button variant="outline" className="flex-1">
-                    Choose from Gallery
-                  </Button>
-                </div>
-                <div className="space-y-1 text-xs text-gray-500">
-                  <p>• Recommended size: 1280x720 pixels (16:9 ratio)</p>
-                  <p>• Maximum file size: 10MB</p>
-                  <p>• Supported formats: JPG, PNG</p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <CourseThumbnailCard
+          course={data?.getCourseBasicInfoForEdit as Course}
+          refetch={refetch}
+        />
 
         <CoursePricingCard
           initialValues={data?.getCourseBasicInfoForEdit as Course}
