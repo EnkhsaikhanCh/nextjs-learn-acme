@@ -124,18 +124,6 @@ export const typeDefs = gql`
     currency: Currency
   }
 
-  input UpdateCourseInput {
-    _id: ID!
-    title: String
-    description: String
-    difficulty: Difficulty
-    price: PricingPlanInput
-    category: String
-    tags: [String]
-    status: CourseStatus
-    whatYouWillLearn: [String]
-  }
-
   input CourseBasicInfoInput {
     title: String
     subtitle: String
@@ -166,7 +154,6 @@ export const typeDefs = gql`
     ): Course!
     updateCourseThumbnail(courseId: ID!, input: ThumbnailInput!): Course!
     createCourse(input: CreateCourseInput!): Course!
-    updateCourse(input: UpdateCourseInput!): Course!
     deleteCourse(id: ID!): Boolean!
   }
 `;

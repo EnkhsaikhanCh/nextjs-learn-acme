@@ -212,7 +212,6 @@ export type Mutation = {
   markLessonAsCompleted?: Maybe<Enrollment>;
   sendOTP: SendOtpResponse;
   undoLessonCompletion?: Maybe<Enrollment>;
-  updateCourse: Course;
   updateCourseBasicInfo: Course;
   updateCoursePricing: Course;
   updateCourseThumbnail: Course;
@@ -297,11 +296,6 @@ export type MutationSendOtpArgs = {
 
 export type MutationUndoLessonCompletionArgs = {
   input?: InputMaybe<UndoLessonCompletionInput>;
-};
-
-
-export type MutationUpdateCourseArgs = {
-  input: UpdateCourseInput;
 };
 
 
@@ -638,18 +632,6 @@ export type ThumbnailInput = {
   width?: InputMaybe<Scalars['Int']['input']>;
 };
 
-export type UpdateCourseInput = {
-  _id: Scalars['ID']['input'];
-  category?: InputMaybe<Scalars['String']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  difficulty?: InputMaybe<Difficulty>;
-  price?: InputMaybe<PricingPlanInput>;
-  status?: InputMaybe<CourseStatus>;
-  tags?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  title?: InputMaybe<Scalars['String']['input']>;
-  whatYouWillLearn?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-};
-
 export type UpdateCoursePricingInput = {
   amount?: InputMaybe<Scalars['Int']['input']>;
   currency?: InputMaybe<Currency>;
@@ -766,13 +748,6 @@ export type CreateCourseMutationVariables = Exact<{
 
 
 export type CreateCourseMutation = { __typename?: 'Mutation', createCourse: { __typename?: 'Course', _id: string, title: string, slug?: string | null, createdBy?: { __typename?: 'User', _id: string, email: string, role: Role } | null } };
-
-export type UpdateCourseMutationVariables = Exact<{
-  input: UpdateCourseInput;
-}>;
-
-
-export type UpdateCourseMutation = { __typename?: 'Mutation', updateCourse: { __typename?: 'Course', _id: string } };
 
 export type UpdateCourseBasicInfoMutationVariables = Exact<{
   courseId: Scalars['ID']['input'];
@@ -1207,39 +1182,6 @@ export function useCreateCourseMutation(baseOptions?: Apollo.MutationHookOptions
 export type CreateCourseMutationHookResult = ReturnType<typeof useCreateCourseMutation>;
 export type CreateCourseMutationResult = Apollo.MutationResult<CreateCourseMutation>;
 export type CreateCourseMutationOptions = Apollo.BaseMutationOptions<CreateCourseMutation, CreateCourseMutationVariables>;
-export const UpdateCourseDocument = gql`
-    mutation UpdateCourse($input: UpdateCourseInput!) {
-  updateCourse(input: $input) {
-    _id
-  }
-}
-    `;
-export type UpdateCourseMutationFn = Apollo.MutationFunction<UpdateCourseMutation, UpdateCourseMutationVariables>;
-
-/**
- * __useUpdateCourseMutation__
- *
- * To run a mutation, you first call `useUpdateCourseMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUpdateCourseMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [updateCourseMutation, { data, loading, error }] = useUpdateCourseMutation({
- *   variables: {
- *      input: // value for 'input'
- *   },
- * });
- */
-export function useUpdateCourseMutation(baseOptions?: Apollo.MutationHookOptions<UpdateCourseMutation, UpdateCourseMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<UpdateCourseMutation, UpdateCourseMutationVariables>(UpdateCourseDocument, options);
-      }
-export type UpdateCourseMutationHookResult = ReturnType<typeof useUpdateCourseMutation>;
-export type UpdateCourseMutationResult = Apollo.MutationResult<UpdateCourseMutation>;
-export type UpdateCourseMutationOptions = Apollo.BaseMutationOptions<UpdateCourseMutation, UpdateCourseMutationVariables>;
 export const UpdateCourseBasicInfoDocument = gql`
     mutation UpdateCourseBasicInfo($courseId: ID!, $input: CourseBasicInfoInput!) {
   updateCourseBasicInfo(courseId: $courseId, input: $input) {

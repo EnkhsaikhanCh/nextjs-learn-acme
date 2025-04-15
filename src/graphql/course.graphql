@@ -14,12 +14,6 @@ mutation CreateCourse($input: CreateCourseInput!) {
   }
 }
 
-mutation UpdateCourse($input: UpdateCourseInput!) {
-  updateCourse(input: $input) {
-    _id
-  }
-}
-
 mutation UpdateCourseBasicInfo($courseId: ID!, $input: CourseBasicInfoInput!) {
   updateCourseBasicInfo(courseId: $courseId, input: $input) {
     _id
