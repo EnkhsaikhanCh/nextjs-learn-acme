@@ -95,17 +95,38 @@ export const useHandleLogin = () => {
           return; // Эндээс гарах
         }
 
-        const userRole = session.user.role;
+        // User is verified. Determine redirection based on role.
+        const userRole = session.user.role.toUpperCase();
 
+        // Define role types for clarity.
+        type Role = "ADMIN" | "INSTRUCTOR" | "STUDENT";
+
+        // Map each allowed role to its default destination.
+        const roleRedirectMap: Record<Role, string> = {
+          ADMIN: "/admin",
+          INSTRUCTOR: "/instructor",
+          STUDENT: "/dashboard",
+        };
+
+        // Fallback destination in case of unknown role.
+        const fallbackRedirect = "/";
+
+        // Show a success message.
         toast.success("Амжилттай нэвтэрлээ", {
           description: "Таныг системд нэвтрүүлж байна...",
           duration: 3000,
         });
 
-        if (userRole.toUpperCase() === "ADMIN") {
-          router.push("/admin");
+        // Redirect based on role.
+        if (userRole === "ADMIN") {
+          router.push(roleRedirectMap.ADMIN);
+        } else if (userRole === "INSTRUCTOR") {
+          router.push(roleRedirectMap.INSTRUCTOR);
+        } else if (userRole === "STUDENT") {
+          router.push(roleRedirectMap.STUDENT);
         } else {
-          router.push("/dashboard/courses");
+          // In case of an unexpected role, use fallback.
+          router.push(fallbackRedirect);
         }
       }
     } catch {

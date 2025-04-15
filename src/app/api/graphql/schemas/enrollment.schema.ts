@@ -18,8 +18,8 @@ export const typeDefs = gql`
 
     # System tracking fields
     expiryDate: String
-    createdAt: String
-    updatedAt: String
+    createdAt: Date
+    updatedAt: Date
     history: [EnrollmentHistory]
     isDeleted: Boolean
   }

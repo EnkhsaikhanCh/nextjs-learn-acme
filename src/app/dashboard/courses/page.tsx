@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useGetAllCourseWithEnrollmentQuery } from "@/generated/graphql";
-import Image from "next/image";
+import { CldImage } from "next-cloudinary";
 import Link from "next/link";
 
 export default function Courses() {
@@ -42,12 +42,17 @@ export default function Courses() {
               <Card className="shadow-none">
                 <CardHeader className="p-0">
                   <div className="relative w-full overflow-hidden">
-                    <Image
-                      src={course.thumbnail || "/code.jpg?height=100&width=200"}
-                      alt={course.title || "Course image"}
-                      width={400}
-                      height={200}
-                      className="h-48 w-full rounded-t-md object-cover"
+                    <CldImage
+                      src={
+                        course.thumbnail?.publicId ||
+                        "/code.jpg?height=100&width=200"
+                      }
+                      width={1280}
+                      height={720}
+                      crop="fill"
+                      alt="Course Thumbnail"
+                      className={`aspect-video h-48 w-full rounded-t-md object-cover`}
+                      key={course.thumbnail?.publicId}
                     />
                   </div>
                 </CardHeader>
