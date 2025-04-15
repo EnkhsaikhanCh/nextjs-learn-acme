@@ -48,18 +48,26 @@ export const typeDefs = gql`
     fullContent: Course
   }
 
+  type Thumbnail {
+    publicId: String!
+    width: Int
+    height: Int
+    format: String
+  }
+
   type Course {
     _id: ID!
-    createdBy: User!
+    createdBy: User
     title: String!
+    subtitle: String
     slug: String
     description: String
     courseCode: String
     difficulty: Difficulty
-    thumbnail: String
+    thumbnail: Thumbnail
     price: PricingPlan
     sectionId: [Section]
-    categories: [String]
+    category: String
     tags: [String]
     status: CourseStatus
     whatYouWillLearn: [String]
@@ -89,6 +97,7 @@ export const typeDefs = gql`
   }
 
   type Query {
+    getCourseBasicInfoForEdit(slug: String!): Course
     getCourseDetailsForInstructor(
       slug: String!
     ): getCourseDetailsForInstructorResponse
@@ -109,28 +118,50 @@ export const typeDefs = gql`
   }
 
   input PricingPlanInput {
-    planTitle: String!
+    planTitle: String
     description: String
-    amount: Int!
-    currency: Currency!
+    amount: Int
+    currency: Currency
   }
 
-  input UpdateCourseInput {
-    _id: ID!
+  input CourseBasicInfoInput {
     title: String
+    subtitle: String
     description: String
+    category: String
     difficulty: Difficulty
-    thumbnail: String
-    price: PricingPlanInput
-    categories: [String]
-    tags: [String]
-    status: CourseStatus
-    whatYouWillLearn: [String]
+  }
+
+  input UpdateCoursePricingInput {
+    planTitle: String
+    description: String
+    amount: Int
+    currency: Currency
+  }
+
+  input ThumbnailInput {
+    publicId: String!
+    width: Int
+    height: Int
+    format: String
+  }
+
+  input UpdateCourseVisibilityAndAccessInput {
+    courseId: ID!
+    status: CourseStatus!
   }
 
   type Mutation {
+    updateCourseBasicInfo(courseId: ID!, input: CourseBasicInfoInput!): Course!
+    updateCoursePricing(
+      courseId: ID!
+      input: UpdateCoursePricingInput!
+    ): Course!
+    updateCourseThumbnail(courseId: ID!, input: ThumbnailInput!): Course!
+    updateCourseVisibilityAndAccess(
+      input: UpdateCourseVisibilityAndAccessInput!
+    ): Course!
     createCourse(input: CreateCourseInput!): Course!
-    updateCourse(input: UpdateCourseInput!): Course!
     deleteCourse(id: ID!): Boolean!
   }
 `;

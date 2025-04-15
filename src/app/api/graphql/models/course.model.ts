@@ -13,14 +13,20 @@ export type Course = {
   _id: string;
   createdBy: string;
   title: string;
+  subtitle: string;
   description: string;
   slug: string;
   courseCode: string;
   difficulty: "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
   price?: PricingPlan;
   sectionId: string[];
-  thumbnail?: string;
-  categories?: string[];
+  thumbnail?: {
+    publicId: string;
+    width?: number;
+    height?: number;
+    format?: string;
+  };
+  category?: string;
   tags?: string[];
   status?: "DRAFT" | "PUBLISHED" | "ARCHIVED";
   whatYouWillLearn?: string[];
@@ -36,18 +42,33 @@ const PricingPlanSchema = new Schema(
   { _id: false },
 );
 
+const ThumbnailSchema = new Schema(
+  {
+    publicId: { type: String, required: true },
+    width: { type: Number },
+    height: { type: Number },
+    format: { type: String },
+  },
+  { _id: false },
+);
+
 const CourseSchema = new Schema<Course>(
   {
     _id: { type: String, default: () => uuidv4() },
     createdBy: { type: Schema.Types.String, ref: "User", required: true },
     title: { type: String, required: true },
+    subtitle: { type: String },
     description: { type: String },
     slug: { type: String },
     courseCode: { type: String, required: true, unique: true },
+    difficulty: {
+      type: String,
+      enum: ["BEGINNER", "INTERMEDIATE", "ADVANCED"],
+    },
     price: { type: PricingPlanSchema },
     sectionId: [{ type: Schema.Types.String, ref: "Section", default: [] }],
-    thumbnail: { type: String },
-    categories: { type: [String], default: [] },
+    thumbnail: { type: ThumbnailSchema },
+    category: { type: String },
     tags: { type: [String], default: [] },
     status: {
       type: String,

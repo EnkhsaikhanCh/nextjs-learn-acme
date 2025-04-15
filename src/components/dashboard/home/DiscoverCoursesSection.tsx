@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/card";
 import { useGetUserNotEnrolledCoursesQuery } from "@/generated/graphql";
 import { Plus } from "lucide-react";
-import Image from "next/image";
+import { CldImage } from "next-cloudinary";
 import Link from "next/link";
 
 export const DiscoverCoursesSection = ({ userId }: { userId?: string }) => {
@@ -36,26 +36,21 @@ export const DiscoverCoursesSection = ({ userId }: { userId?: string }) => {
             <Link href={`/dashboard/courses/${course?.slug}`} key={course?._id}>
               <Card className="group shadow-sm">
                 <CardHeader className="p-0">
-                  <div className="relative h-40 w-full overflow-hidden">
-                    <Image
+                  <div className="relative w-full overflow-hidden">
+                    <CldImage
                       src={
-                        course?.thumbnail || "/code.jpg?height=100&width=200"
+                        course?.thumbnail?.publicId ||
+                        "/code.jpg?height=100&width=200"
                       }
-                      alt={course?.title || "Course image"}
-                      width={400}
-                      height={200}
-                      className="h-48 w-full rounded-t-md object-cover"
+                      width={1280}
+                      height={720}
+                      crop="fill"
+                      alt="Course Thumbnail"
+                      className="aspect-video h-48 w-full rounded-t-md object-cover"
+                      key={course?.thumbnail?.publicId}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
                     <div className="absolute top-3 right-3 rounded-full bg-black/70 px-3 py-1 text-sm font-bold text-white backdrop-blur-sm">
                       ₮{course?.price?.amount}
-                    </div>
-                    <div className="absolute right-3 bottom-3 left-3">
-                      <div className="mb-1 flex items-center gap-2">
-                        <div className="rounded bg-white/20 px-2 py-0.5 text-xs font-medium text-white backdrop-blur-sm">
-                          Шинэ сургалт
-                        </div>
-                      </div>
                     </div>
                   </div>
                 </CardHeader>

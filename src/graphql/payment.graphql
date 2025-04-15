@@ -41,19 +41,6 @@ query GetAllPayments($limit: Int, $offset: Int, $filter: PaymentFilterInput) {
   }
 }
 
-query GetPaymentById($id: ID!) {
-  getPaymentById(_id: $id) {
-    _id
-    userId {
-      _id
-    }
-    courseId {
-      _id
-    }
-    status
-  }
-}
-
 query GetPaymentByUserAndCourse($userId: ID!, $courseId: ID!) {
   getPaymentByUserAndCourse(userId: $userId, courseId: $courseId) {
     _id

@@ -21,9 +21,9 @@ export type Scalars = {
 export type Course = {
   __typename?: 'Course';
   _id: Scalars['ID']['output'];
-  categories?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  category?: Maybe<Scalars['String']['output']>;
   courseCode?: Maybe<Scalars['String']['output']>;
-  createdBy: User;
+  createdBy?: Maybe<User>;
   description?: Maybe<Scalars['String']['output']>;
   difficulty?: Maybe<Difficulty>;
   isEnrolled?: Maybe<Scalars['Boolean']['output']>;
@@ -31,8 +31,9 @@ export type Course = {
   sectionId?: Maybe<Array<Maybe<Section>>>;
   slug?: Maybe<Scalars['String']['output']>;
   status?: Maybe<CourseStatus>;
+  subtitle?: Maybe<Scalars['String']['output']>;
   tags?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  thumbnail?: Maybe<Scalars['String']['output']>;
+  thumbnail?: Maybe<Thumbnail>;
   title: Scalars['String']['output'];
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
   whatYouWillLearn?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
@@ -53,6 +54,14 @@ export enum CourseAccessStatus {
   Guest = 'GUEST',
   NotEnrolled = 'NOT_ENROLLED'
 }
+
+export type CourseBasicInfoInput = {
+  category?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  difficulty?: InputMaybe<Difficulty>;
+  subtitle?: InputMaybe<Scalars['String']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
+};
 
 /**
  * Нэг Query-д буцах нэгдсэн бүтэц
@@ -203,7 +212,10 @@ export type Mutation = {
   markLessonAsCompleted?: Maybe<Enrollment>;
   sendOTP: SendOtpResponse;
   undoLessonCompletion?: Maybe<Enrollment>;
-  updateCourse: Course;
+  updateCourseBasicInfo: Course;
+  updateCoursePricing: Course;
+  updateCourseThumbnail: Course;
+  updateCourseVisibilityAndAccess: Course;
   updateEnrollment?: Maybe<Enrollment>;
   updateLesson: Lesson;
   updatePaymentStatus?: Maybe<Payment>;
@@ -288,8 +300,26 @@ export type MutationUndoLessonCompletionArgs = {
 };
 
 
-export type MutationUpdateCourseArgs = {
-  input: UpdateCourseInput;
+export type MutationUpdateCourseBasicInfoArgs = {
+  courseId: Scalars['ID']['input'];
+  input: CourseBasicInfoInput;
+};
+
+
+export type MutationUpdateCoursePricingArgs = {
+  courseId: Scalars['ID']['input'];
+  input: UpdateCoursePricingInput;
+};
+
+
+export type MutationUpdateCourseThumbnailArgs = {
+  courseId: Scalars['ID']['input'];
+  input: ThumbnailInput;
+};
+
+
+export type MutationUpdateCourseVisibilityAndAccessArgs = {
+  input: UpdateCourseVisibilityAndAccessInput;
 };
 
 
@@ -378,10 +408,10 @@ export type PricingPlan = {
 };
 
 export type PricingPlanInput = {
-  amount: Scalars['Int']['input'];
-  currency: Currency;
+  amount?: InputMaybe<Scalars['Int']['input']>;
+  currency?: InputMaybe<Currency>;
   description?: InputMaybe<Scalars['String']['input']>;
-  planTitle: Scalars['String']['input'];
+  planTitle?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Query = {
@@ -393,6 +423,7 @@ export type Query = {
   getAllPayments: PaymentPaginationResult;
   getAllSubscribers: SubscriberPaginationResult;
   getAllUser: UserPaginationResult;
+  getCourseBasicInfoForEdit?: Maybe<Course>;
   getCourseDetailsForInstructor?: Maybe<GetCourseDetailsForInstructorResponse>;
   getCourseForUser: CourseForUserPayload;
   getEmailFromToken: GetEmailFromTokenResponse;
@@ -404,8 +435,6 @@ export type Query = {
   getPaymentById?: Maybe<Payment>;
   getPaymentByUserAndCourse?: Maybe<Payment>;
   getPaymentsByUser?: Maybe<Array<Maybe<Payment>>>;
-  getSectionById: Section;
-  getSectionsByCourseId: Array<Section>;
   getUserById: User;
   getUserEnrolledCourses?: Maybe<Array<Maybe<Enrollment>>>;
   getUserEnrolledCoursesCount: GetUserEnrolledCoursesCountResponse;
@@ -438,6 +467,11 @@ export type QueryGetAllUserArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   sortBy?: InputMaybe<Scalars['String']['input']>;
   sortOrder?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryGetCourseBasicInfoForEditArgs = {
+  slug: Scalars['String']['input'];
 };
 
 
@@ -495,16 +529,6 @@ export type QueryGetPaymentByUserAndCourseArgs = {
 
 export type QueryGetPaymentsByUserArgs = {
   userId: Scalars['ID']['input'];
-};
-
-
-export type QueryGetSectionByIdArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-export type QueryGetSectionsByCourseIdArgs = {
-  courseId: Scalars['ID']['input'];
 };
 
 
@@ -587,17 +611,31 @@ export type SubscriberPaginationResult = {
   totalCount: Scalars['Int']['output'];
 };
 
-export type UpdateCourseInput = {
-  _id: Scalars['ID']['input'];
-  categories?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+export type Thumbnail = {
+  __typename?: 'Thumbnail';
+  format?: Maybe<Scalars['String']['output']>;
+  height?: Maybe<Scalars['Int']['output']>;
+  publicId: Scalars['String']['output'];
+  width?: Maybe<Scalars['Int']['output']>;
+};
+
+export type ThumbnailInput = {
+  format?: InputMaybe<Scalars['String']['input']>;
+  height?: InputMaybe<Scalars['Int']['input']>;
+  publicId: Scalars['String']['input'];
+  width?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type UpdateCoursePricingInput = {
+  amount?: InputMaybe<Scalars['Int']['input']>;
+  currency?: InputMaybe<Currency>;
   description?: InputMaybe<Scalars['String']['input']>;
-  difficulty?: InputMaybe<Difficulty>;
-  price?: InputMaybe<PricingPlanInput>;
-  status?: InputMaybe<CourseStatus>;
-  tags?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  thumbnail?: InputMaybe<Scalars['String']['input']>;
-  title?: InputMaybe<Scalars['String']['input']>;
-  whatYouWillLearn?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  planTitle?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateCourseVisibilityAndAccessInput = {
+  courseId: Scalars['ID']['input'];
+  status: CourseStatus;
 };
 
 export type UpdateEnrollmentInput = {
@@ -708,31 +746,55 @@ export type CreateCourseMutationVariables = Exact<{
 }>;
 
 
-export type CreateCourseMutation = { __typename?: 'Mutation', createCourse: { __typename?: 'Course', _id: string, title: string, slug?: string | null, createdBy: { __typename?: 'User', _id: string, email: string, role: Role } } };
+export type CreateCourseMutation = { __typename?: 'Mutation', createCourse: { __typename?: 'Course', _id: string } };
 
-export type UpdateCourseMutationVariables = Exact<{
-  input: UpdateCourseInput;
+export type UpdateCourseBasicInfoMutationVariables = Exact<{
+  courseId: Scalars['ID']['input'];
+  input: CourseBasicInfoInput;
 }>;
 
 
-export type UpdateCourseMutation = { __typename?: 'Mutation', updateCourse: { __typename?: 'Course', _id: string } };
+export type UpdateCourseBasicInfoMutation = { __typename?: 'Mutation', updateCourseBasicInfo: { __typename?: 'Course', _id: string } };
+
+export type UpdateCoursePricingMutationVariables = Exact<{
+  courseId: Scalars['ID']['input'];
+  input: UpdateCoursePricingInput;
+}>;
+
+
+export type UpdateCoursePricingMutation = { __typename?: 'Mutation', updateCoursePricing: { __typename?: 'Course', _id: string } };
+
+export type UpdateCourseThumbnailMutationVariables = Exact<{
+  courseId: Scalars['ID']['input'];
+  input: ThumbnailInput;
+}>;
+
+
+export type UpdateCourseThumbnailMutation = { __typename?: 'Mutation', updateCourseThumbnail: { __typename?: 'Course', _id: string } };
+
+export type UpdateCourseVisibilityAndAccessMutationVariables = Exact<{
+  input: UpdateCourseVisibilityAndAccessInput;
+}>;
+
+
+export type UpdateCourseVisibilityAndAccessMutation = { __typename?: 'Mutation', updateCourseVisibilityAndAccess: { __typename?: 'Course', _id: string } };
 
 export type GetAllCourseQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAllCourseQuery = { __typename?: 'Query', getAllCourse: Array<{ __typename?: 'Course', _id: string, title: string, slug?: string | null, courseCode?: string | null, status?: CourseStatus | null, thumbnail?: string | null }> };
+export type GetAllCourseQuery = { __typename?: 'Query', getAllCourse: Array<{ __typename?: 'Course', _id: string, title: string, slug?: string | null, courseCode?: string | null, status?: CourseStatus | null }> };
 
 export type GetAllCourseWithEnrollmentQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAllCourseWithEnrollmentQuery = { __typename?: 'Query', getAllCourseWithEnrollment: Array<{ __typename?: 'Course', _id: string, title: string, slug?: string | null, thumbnail?: string | null, isEnrolled?: boolean | null }> };
+export type GetAllCourseWithEnrollmentQuery = { __typename?: 'Query', getAllCourseWithEnrollment: Array<{ __typename?: 'Course', _id: string, title: string, slug?: string | null, isEnrolled?: boolean | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null }> };
 
 export type GetCourseForUserQueryVariables = Exact<{
   slug: Scalars['String']['input'];
 }>;
 
 
-export type GetCourseForUserQuery = { __typename?: 'Query', getCourseForUser: { __typename?: 'CourseForUserPayload', status: CourseAccessStatus, fullContent?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, description?: string | null, difficulty?: Difficulty | null, thumbnail?: string | null, status?: CourseStatus | null, sectionId?: Array<{ __typename?: 'Section', _id: string, title: string, description?: string | null, order: number, lessonId?: Array<{ __typename?: 'Lesson', _id: string, title: string, content?: string | null, videoUrl?: string | null, order: number, isPublished: boolean } | null> | null } | null> | null } | null, coursePreviewData?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, description?: string | null, courseCode?: string | null, difficulty?: Difficulty | null, thumbnail?: string | null, categories?: Array<string | null> | null, tags?: Array<string | null> | null, status?: CourseStatus | null, whatYouWillLearn?: Array<string | null> | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: string | null, amount?: number | null, currency?: Currency | null } | null } | null } };
+export type GetCourseForUserQuery = { __typename?: 'Query', getCourseForUser: { __typename?: 'CourseForUserPayload', status: CourseAccessStatus, fullContent?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, description?: string | null, difficulty?: Difficulty | null, status?: CourseStatus | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null, sectionId?: Array<{ __typename?: 'Section', _id: string, title: string, description?: string | null, order: number, lessonId?: Array<{ __typename?: 'Lesson', _id: string, title: string, content?: string | null, videoUrl?: string | null, order: number, isPublished: boolean } | null> | null } | null> | null } | null, coursePreviewData?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, description?: string | null, courseCode?: string | null, difficulty?: Difficulty | null, category?: string | null, tags?: Array<string | null> | null, status?: CourseStatus | null, whatYouWillLearn?: Array<string | null> | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: string | null, amount?: number | null, currency?: Currency | null } | null } | null } };
 
 export type GetUserEnrolledCoursesCountQueryVariables = Exact<{
   userId: Scalars['ID']['input'];
@@ -746,7 +808,7 @@ export type GetUserNotEnrolledCoursesQueryVariables = Exact<{
 }>;
 
 
-export type GetUserNotEnrolledCoursesQuery = { __typename?: 'Query', getUserNotEnrolledCourses?: Array<{ __typename?: 'Course', _id: string, title: string, slug?: string | null, thumbnail?: string | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: string | null, amount?: number | null, currency?: Currency | null } | null } | null> | null };
+export type GetUserNotEnrolledCoursesQuery = { __typename?: 'Query', getUserNotEnrolledCourses?: Array<{ __typename?: 'Course', _id: string, title: string, slug?: string | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: string | null, amount?: number | null, currency?: Currency | null } | null } | null> | null };
 
 export type GetAllCoursesByInstructurIdQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -759,6 +821,13 @@ export type GetCourseDetailsForInstructorQueryVariables = Exact<{
 
 
 export type GetCourseDetailsForInstructorQuery = { __typename?: 'Query', getCourseDetailsForInstructor?: { __typename?: 'getCourseDetailsForInstructorResponse', totalSections?: number | null, totalLessons?: number | null, totalEnrollment?: number | null, course?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, courseCode?: string | null, status?: CourseStatus | null, updatedAt?: Date | null } | null } | null };
+
+export type GetCourseBasicInfoForEditQueryVariables = Exact<{
+  slug: Scalars['String']['input'];
+}>;
+
+
+export type GetCourseBasicInfoForEditQuery = { __typename?: 'Query', getCourseBasicInfoForEdit?: { __typename?: 'Course', _id: string, title: string, subtitle?: string | null, slug?: string | null, description?: string | null, courseCode?: string | null, difficulty?: Difficulty | null, category?: string | null, status?: CourseStatus | null, updatedAt?: Date | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: string | null, amount?: number | null, currency?: Currency | null } | null } | null };
 
 export type MarkLessonAsCompletedMutationVariables = Exact<{
   input?: InputMaybe<MarkLessonAsCompletedInput>;
@@ -794,7 +863,7 @@ export type GetUserEnrolledCoursesQueryVariables = Exact<{
 }>;
 
 
-export type GetUserEnrolledCoursesQuery = { __typename?: 'Query', getUserEnrolledCourses?: Array<{ __typename?: 'Enrollment', _id: string, progress?: number | null, lastAccessedAt?: Date | null, courseId?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, thumbnail?: string | null } | null } | null> | null };
+export type GetUserEnrolledCoursesQuery = { __typename?: 'Query', getUserEnrolledCourses?: Array<{ __typename?: 'Enrollment', _id: string, progress?: number | null, lastAccessedAt?: Date | null, courseId?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null } | null } | null> | null };
 
 export type CreateLessonMutationVariables = Exact<{
   input: CreateLessonInput;
@@ -850,13 +919,6 @@ export type GetAllPaymentsQueryVariables = Exact<{
 
 export type GetAllPaymentsQuery = { __typename?: 'Query', getAllPayments: { __typename?: 'PaymentPaginationResult', totalCount: number, totalAmount: number, hasNextPage: boolean, payments: Array<{ __typename?: 'Payment', _id: string, amount: number, transactionNote: string, status: PaymentStatus, paymentMethod: PaymentMethod, refundReason?: string | null, createdAt: Date, userId: { __typename?: 'User', _id: string, email: string }, courseId: { __typename?: 'Course', _id: string, title: string } }> } };
 
-export type GetPaymentByIdQueryVariables = Exact<{
-  id: Scalars['ID']['input'];
-}>;
-
-
-export type GetPaymentByIdQuery = { __typename?: 'Query', getPaymentById?: { __typename?: 'Payment', _id: string, status: PaymentStatus, userId: { __typename?: 'User', _id: string }, courseId: { __typename?: 'Course', _id: string } } | null };
-
 export type GetPaymentByUserAndCourseQueryVariables = Exact<{
   userId: Scalars['ID']['input'];
   courseId: Scalars['ID']['input'];
@@ -886,13 +948,6 @@ export type DeleteSectionMutationVariables = Exact<{
 
 
 export type DeleteSectionMutation = { __typename?: 'Mutation', deleteSection: { __typename?: 'DeleteSectionResponse', success: boolean, message?: string | null } };
-
-export type GetSectionsByCourseIdQueryVariables = Exact<{
-  courseId: Scalars['ID']['input'];
-}>;
-
-
-export type GetSectionsByCourseIdQuery = { __typename?: 'Query', getSectionsByCourseId: Array<{ __typename?: 'Section', _id: string, title: string, order: number, lessonId?: Array<{ __typename?: 'Lesson', _id: string, title: string, content?: string | null, videoUrl?: string | null, order: number, isPublished: boolean } | null> | null }> };
 
 export type CreateSubscriberMutationVariables = Exact<{
   input: SubscribeInput;
@@ -1083,13 +1138,6 @@ export const CreateCourseDocument = gql`
     mutation CreateCourse($input: CreateCourseInput!) {
   createCourse(input: $input) {
     _id
-    createdBy {
-      _id
-      email
-      role
-    }
-    title
-    slug
   }
 }
     `;
@@ -1119,39 +1167,141 @@ export function useCreateCourseMutation(baseOptions?: Apollo.MutationHookOptions
 export type CreateCourseMutationHookResult = ReturnType<typeof useCreateCourseMutation>;
 export type CreateCourseMutationResult = Apollo.MutationResult<CreateCourseMutation>;
 export type CreateCourseMutationOptions = Apollo.BaseMutationOptions<CreateCourseMutation, CreateCourseMutationVariables>;
-export const UpdateCourseDocument = gql`
-    mutation UpdateCourse($input: UpdateCourseInput!) {
-  updateCourse(input: $input) {
+export const UpdateCourseBasicInfoDocument = gql`
+    mutation UpdateCourseBasicInfo($courseId: ID!, $input: CourseBasicInfoInput!) {
+  updateCourseBasicInfo(courseId: $courseId, input: $input) {
     _id
   }
 }
     `;
-export type UpdateCourseMutationFn = Apollo.MutationFunction<UpdateCourseMutation, UpdateCourseMutationVariables>;
+export type UpdateCourseBasicInfoMutationFn = Apollo.MutationFunction<UpdateCourseBasicInfoMutation, UpdateCourseBasicInfoMutationVariables>;
 
 /**
- * __useUpdateCourseMutation__
+ * __useUpdateCourseBasicInfoMutation__
  *
- * To run a mutation, you first call `useUpdateCourseMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUpdateCourseMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useUpdateCourseBasicInfoMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateCourseBasicInfoMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [updateCourseMutation, { data, loading, error }] = useUpdateCourseMutation({
+ * const [updateCourseBasicInfoMutation, { data, loading, error }] = useUpdateCourseBasicInfoMutation({
+ *   variables: {
+ *      courseId: // value for 'courseId'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateCourseBasicInfoMutation(baseOptions?: Apollo.MutationHookOptions<UpdateCourseBasicInfoMutation, UpdateCourseBasicInfoMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateCourseBasicInfoMutation, UpdateCourseBasicInfoMutationVariables>(UpdateCourseBasicInfoDocument, options);
+      }
+export type UpdateCourseBasicInfoMutationHookResult = ReturnType<typeof useUpdateCourseBasicInfoMutation>;
+export type UpdateCourseBasicInfoMutationResult = Apollo.MutationResult<UpdateCourseBasicInfoMutation>;
+export type UpdateCourseBasicInfoMutationOptions = Apollo.BaseMutationOptions<UpdateCourseBasicInfoMutation, UpdateCourseBasicInfoMutationVariables>;
+export const UpdateCoursePricingDocument = gql`
+    mutation UpdateCoursePricing($courseId: ID!, $input: UpdateCoursePricingInput!) {
+  updateCoursePricing(courseId: $courseId, input: $input) {
+    _id
+  }
+}
+    `;
+export type UpdateCoursePricingMutationFn = Apollo.MutationFunction<UpdateCoursePricingMutation, UpdateCoursePricingMutationVariables>;
+
+/**
+ * __useUpdateCoursePricingMutation__
+ *
+ * To run a mutation, you first call `useUpdateCoursePricingMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateCoursePricingMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateCoursePricingMutation, { data, loading, error }] = useUpdateCoursePricingMutation({
+ *   variables: {
+ *      courseId: // value for 'courseId'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateCoursePricingMutation(baseOptions?: Apollo.MutationHookOptions<UpdateCoursePricingMutation, UpdateCoursePricingMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateCoursePricingMutation, UpdateCoursePricingMutationVariables>(UpdateCoursePricingDocument, options);
+      }
+export type UpdateCoursePricingMutationHookResult = ReturnType<typeof useUpdateCoursePricingMutation>;
+export type UpdateCoursePricingMutationResult = Apollo.MutationResult<UpdateCoursePricingMutation>;
+export type UpdateCoursePricingMutationOptions = Apollo.BaseMutationOptions<UpdateCoursePricingMutation, UpdateCoursePricingMutationVariables>;
+export const UpdateCourseThumbnailDocument = gql`
+    mutation UpdateCourseThumbnail($courseId: ID!, $input: ThumbnailInput!) {
+  updateCourseThumbnail(courseId: $courseId, input: $input) {
+    _id
+  }
+}
+    `;
+export type UpdateCourseThumbnailMutationFn = Apollo.MutationFunction<UpdateCourseThumbnailMutation, UpdateCourseThumbnailMutationVariables>;
+
+/**
+ * __useUpdateCourseThumbnailMutation__
+ *
+ * To run a mutation, you first call `useUpdateCourseThumbnailMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateCourseThumbnailMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateCourseThumbnailMutation, { data, loading, error }] = useUpdateCourseThumbnailMutation({
+ *   variables: {
+ *      courseId: // value for 'courseId'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateCourseThumbnailMutation(baseOptions?: Apollo.MutationHookOptions<UpdateCourseThumbnailMutation, UpdateCourseThumbnailMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateCourseThumbnailMutation, UpdateCourseThumbnailMutationVariables>(UpdateCourseThumbnailDocument, options);
+      }
+export type UpdateCourseThumbnailMutationHookResult = ReturnType<typeof useUpdateCourseThumbnailMutation>;
+export type UpdateCourseThumbnailMutationResult = Apollo.MutationResult<UpdateCourseThumbnailMutation>;
+export type UpdateCourseThumbnailMutationOptions = Apollo.BaseMutationOptions<UpdateCourseThumbnailMutation, UpdateCourseThumbnailMutationVariables>;
+export const UpdateCourseVisibilityAndAccessDocument = gql`
+    mutation UpdateCourseVisibilityAndAccess($input: UpdateCourseVisibilityAndAccessInput!) {
+  updateCourseVisibilityAndAccess(input: $input) {
+    _id
+  }
+}
+    `;
+export type UpdateCourseVisibilityAndAccessMutationFn = Apollo.MutationFunction<UpdateCourseVisibilityAndAccessMutation, UpdateCourseVisibilityAndAccessMutationVariables>;
+
+/**
+ * __useUpdateCourseVisibilityAndAccessMutation__
+ *
+ * To run a mutation, you first call `useUpdateCourseVisibilityAndAccessMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateCourseVisibilityAndAccessMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateCourseVisibilityAndAccessMutation, { data, loading, error }] = useUpdateCourseVisibilityAndAccessMutation({
  *   variables: {
  *      input: // value for 'input'
  *   },
  * });
  */
-export function useUpdateCourseMutation(baseOptions?: Apollo.MutationHookOptions<UpdateCourseMutation, UpdateCourseMutationVariables>) {
+export function useUpdateCourseVisibilityAndAccessMutation(baseOptions?: Apollo.MutationHookOptions<UpdateCourseVisibilityAndAccessMutation, UpdateCourseVisibilityAndAccessMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<UpdateCourseMutation, UpdateCourseMutationVariables>(UpdateCourseDocument, options);
+        return Apollo.useMutation<UpdateCourseVisibilityAndAccessMutation, UpdateCourseVisibilityAndAccessMutationVariables>(UpdateCourseVisibilityAndAccessDocument, options);
       }
-export type UpdateCourseMutationHookResult = ReturnType<typeof useUpdateCourseMutation>;
-export type UpdateCourseMutationResult = Apollo.MutationResult<UpdateCourseMutation>;
-export type UpdateCourseMutationOptions = Apollo.BaseMutationOptions<UpdateCourseMutation, UpdateCourseMutationVariables>;
+export type UpdateCourseVisibilityAndAccessMutationHookResult = ReturnType<typeof useUpdateCourseVisibilityAndAccessMutation>;
+export type UpdateCourseVisibilityAndAccessMutationResult = Apollo.MutationResult<UpdateCourseVisibilityAndAccessMutation>;
+export type UpdateCourseVisibilityAndAccessMutationOptions = Apollo.BaseMutationOptions<UpdateCourseVisibilityAndAccessMutation, UpdateCourseVisibilityAndAccessMutationVariables>;
 export const GetAllCourseDocument = gql`
     query GetAllCourse {
   getAllCourse {
@@ -1160,7 +1310,6 @@ export const GetAllCourseDocument = gql`
     slug
     courseCode
     status
-    thumbnail
   }
 }
     `;
@@ -1202,7 +1351,12 @@ export const GetAllCourseWithEnrollmentDocument = gql`
     _id
     title
     slug
-    thumbnail
+    thumbnail {
+      publicId
+      width
+      height
+      format
+    }
     isEnrolled
   }
 }
@@ -1249,7 +1403,12 @@ export const GetCourseForUserDocument = gql`
       slug
       description
       difficulty
-      thumbnail
+      thumbnail {
+        publicId
+        width
+        height
+        format
+      }
       sectionId {
         _id
         title
@@ -1273,14 +1432,19 @@ export const GetCourseForUserDocument = gql`
       description
       courseCode
       difficulty
-      thumbnail
+      thumbnail {
+        publicId
+        width
+        height
+        format
+      }
       price {
         planTitle
         description
         amount
         currency
       }
-      categories
+      category
       tags
       status
       whatYouWillLearn
@@ -1370,7 +1534,12 @@ export const GetUserNotEnrolledCoursesDocument = gql`
     _id
     title
     slug
-    thumbnail
+    thumbnail {
+      publicId
+      width
+      height
+      format
+    }
     price {
       planTitle
       description
@@ -1506,6 +1675,67 @@ export type GetCourseDetailsForInstructorQueryHookResult = ReturnType<typeof use
 export type GetCourseDetailsForInstructorLazyQueryHookResult = ReturnType<typeof useGetCourseDetailsForInstructorLazyQuery>;
 export type GetCourseDetailsForInstructorSuspenseQueryHookResult = ReturnType<typeof useGetCourseDetailsForInstructorSuspenseQuery>;
 export type GetCourseDetailsForInstructorQueryResult = Apollo.QueryResult<GetCourseDetailsForInstructorQuery, GetCourseDetailsForInstructorQueryVariables>;
+export const GetCourseBasicInfoForEditDocument = gql`
+    query GetCourseBasicInfoForEdit($slug: String!) {
+  getCourseBasicInfoForEdit(slug: $slug) {
+    _id
+    title
+    subtitle
+    slug
+    description
+    courseCode
+    difficulty
+    thumbnail {
+      publicId
+      width
+      height
+      format
+    }
+    price {
+      planTitle
+      description
+      amount
+      currency
+    }
+    category
+    status
+    updatedAt
+  }
+}
+    `;
+
+/**
+ * __useGetCourseBasicInfoForEditQuery__
+ *
+ * To run a query within a React component, call `useGetCourseBasicInfoForEditQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetCourseBasicInfoForEditQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetCourseBasicInfoForEditQuery({
+ *   variables: {
+ *      slug: // value for 'slug'
+ *   },
+ * });
+ */
+export function useGetCourseBasicInfoForEditQuery(baseOptions: Apollo.QueryHookOptions<GetCourseBasicInfoForEditQuery, GetCourseBasicInfoForEditQueryVariables> & ({ variables: GetCourseBasicInfoForEditQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetCourseBasicInfoForEditQuery, GetCourseBasicInfoForEditQueryVariables>(GetCourseBasicInfoForEditDocument, options);
+      }
+export function useGetCourseBasicInfoForEditLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCourseBasicInfoForEditQuery, GetCourseBasicInfoForEditQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetCourseBasicInfoForEditQuery, GetCourseBasicInfoForEditQueryVariables>(GetCourseBasicInfoForEditDocument, options);
+        }
+export function useGetCourseBasicInfoForEditSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetCourseBasicInfoForEditQuery, GetCourseBasicInfoForEditQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetCourseBasicInfoForEditQuery, GetCourseBasicInfoForEditQueryVariables>(GetCourseBasicInfoForEditDocument, options);
+        }
+export type GetCourseBasicInfoForEditQueryHookResult = ReturnType<typeof useGetCourseBasicInfoForEditQuery>;
+export type GetCourseBasicInfoForEditLazyQueryHookResult = ReturnType<typeof useGetCourseBasicInfoForEditLazyQuery>;
+export type GetCourseBasicInfoForEditSuspenseQueryHookResult = ReturnType<typeof useGetCourseBasicInfoForEditSuspenseQuery>;
+export type GetCourseBasicInfoForEditQueryResult = Apollo.QueryResult<GetCourseBasicInfoForEditQuery, GetCourseBasicInfoForEditQueryVariables>;
 export const MarkLessonAsCompletedDocument = gql`
     mutation MarkLessonAsCompleted($input: markLessonAsCompletedInput) {
   markLessonAsCompleted(input: $input) {
@@ -1672,7 +1902,12 @@ export const GetUserEnrolledCoursesDocument = gql`
       _id
       title
       slug
-      thumbnail
+      thumbnail {
+        publicId
+        width
+        height
+        format
+      }
     }
     progress
     lastAccessedAt
@@ -1989,53 +2224,6 @@ export type GetAllPaymentsQueryHookResult = ReturnType<typeof useGetAllPaymentsQ
 export type GetAllPaymentsLazyQueryHookResult = ReturnType<typeof useGetAllPaymentsLazyQuery>;
 export type GetAllPaymentsSuspenseQueryHookResult = ReturnType<typeof useGetAllPaymentsSuspenseQuery>;
 export type GetAllPaymentsQueryResult = Apollo.QueryResult<GetAllPaymentsQuery, GetAllPaymentsQueryVariables>;
-export const GetPaymentByIdDocument = gql`
-    query GetPaymentById($id: ID!) {
-  getPaymentById(_id: $id) {
-    _id
-    userId {
-      _id
-    }
-    courseId {
-      _id
-    }
-    status
-  }
-}
-    `;
-
-/**
- * __useGetPaymentByIdQuery__
- *
- * To run a query within a React component, call `useGetPaymentByIdQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetPaymentByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetPaymentByIdQuery({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useGetPaymentByIdQuery(baseOptions: Apollo.QueryHookOptions<GetPaymentByIdQuery, GetPaymentByIdQueryVariables> & ({ variables: GetPaymentByIdQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetPaymentByIdQuery, GetPaymentByIdQueryVariables>(GetPaymentByIdDocument, options);
-      }
-export function useGetPaymentByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetPaymentByIdQuery, GetPaymentByIdQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetPaymentByIdQuery, GetPaymentByIdQueryVariables>(GetPaymentByIdDocument, options);
-        }
-export function useGetPaymentByIdSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetPaymentByIdQuery, GetPaymentByIdQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetPaymentByIdQuery, GetPaymentByIdQueryVariables>(GetPaymentByIdDocument, options);
-        }
-export type GetPaymentByIdQueryHookResult = ReturnType<typeof useGetPaymentByIdQuery>;
-export type GetPaymentByIdLazyQueryHookResult = ReturnType<typeof useGetPaymentByIdLazyQuery>;
-export type GetPaymentByIdSuspenseQueryHookResult = ReturnType<typeof useGetPaymentByIdSuspenseQuery>;
-export type GetPaymentByIdQueryResult = Apollo.QueryResult<GetPaymentByIdQuery, GetPaymentByIdQueryVariables>;
 export const GetPaymentByUserAndCourseDocument = gql`
     query GetPaymentByUserAndCourse($userId: ID!, $courseId: ID!) {
   getPaymentByUserAndCourse(userId: $userId, courseId: $courseId) {
@@ -2192,56 +2380,6 @@ export function useDeleteSectionMutation(baseOptions?: Apollo.MutationHookOption
 export type DeleteSectionMutationHookResult = ReturnType<typeof useDeleteSectionMutation>;
 export type DeleteSectionMutationResult = Apollo.MutationResult<DeleteSectionMutation>;
 export type DeleteSectionMutationOptions = Apollo.BaseMutationOptions<DeleteSectionMutation, DeleteSectionMutationVariables>;
-export const GetSectionsByCourseIdDocument = gql`
-    query GetSectionsByCourseId($courseId: ID!) {
-  getSectionsByCourseId(courseId: $courseId) {
-    _id
-    title
-    order
-    lessonId {
-      _id
-      title
-      content
-      videoUrl
-      order
-      isPublished
-    }
-  }
-}
-    `;
-
-/**
- * __useGetSectionsByCourseIdQuery__
- *
- * To run a query within a React component, call `useGetSectionsByCourseIdQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetSectionsByCourseIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetSectionsByCourseIdQuery({
- *   variables: {
- *      courseId: // value for 'courseId'
- *   },
- * });
- */
-export function useGetSectionsByCourseIdQuery(baseOptions: Apollo.QueryHookOptions<GetSectionsByCourseIdQuery, GetSectionsByCourseIdQueryVariables> & ({ variables: GetSectionsByCourseIdQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetSectionsByCourseIdQuery, GetSectionsByCourseIdQueryVariables>(GetSectionsByCourseIdDocument, options);
-      }
-export function useGetSectionsByCourseIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetSectionsByCourseIdQuery, GetSectionsByCourseIdQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetSectionsByCourseIdQuery, GetSectionsByCourseIdQueryVariables>(GetSectionsByCourseIdDocument, options);
-        }
-export function useGetSectionsByCourseIdSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetSectionsByCourseIdQuery, GetSectionsByCourseIdQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetSectionsByCourseIdQuery, GetSectionsByCourseIdQueryVariables>(GetSectionsByCourseIdDocument, options);
-        }
-export type GetSectionsByCourseIdQueryHookResult = ReturnType<typeof useGetSectionsByCourseIdQuery>;
-export type GetSectionsByCourseIdLazyQueryHookResult = ReturnType<typeof useGetSectionsByCourseIdLazyQuery>;
-export type GetSectionsByCourseIdSuspenseQueryHookResult = ReturnType<typeof useGetSectionsByCourseIdSuspenseQuery>;
-export type GetSectionsByCourseIdQueryResult = Apollo.QueryResult<GetSectionsByCourseIdQuery, GetSectionsByCourseIdQueryVariables>;
 export const CreateSubscriberDocument = gql`
     mutation CreateSubscriber($input: SubscribeInput!) {
   createSubscriber(input: $input) {

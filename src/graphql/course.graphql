@@ -4,18 +4,34 @@
 mutation CreateCourse($input: CreateCourseInput!) {
   createCourse(input: $input) {
     _id
-    createdBy {
-      _id
-      email
-      role
-    }
-    title
-    slug
   }
 }
 
-mutation UpdateCourse($input: UpdateCourseInput!) {
-  updateCourse(input: $input) {
+mutation UpdateCourseBasicInfo($courseId: ID!, $input: CourseBasicInfoInput!) {
+  updateCourseBasicInfo(courseId: $courseId, input: $input) {
+    _id
+  }
+}
+
+mutation UpdateCoursePricing(
+  $courseId: ID!
+  $input: UpdateCoursePricingInput!
+) {
+  updateCoursePricing(courseId: $courseId, input: $input) {
+    _id
+  }
+}
+
+mutation UpdateCourseThumbnail($courseId: ID!, $input: ThumbnailInput!) {
+  updateCourseThumbnail(courseId: $courseId, input: $input) {
+    _id
+  }
+}
+
+mutation UpdateCourseVisibilityAndAccess(
+  $input: UpdateCourseVisibilityAndAccessInput!
+) {
+  updateCourseVisibilityAndAccess(input: $input) {
     _id
   }
 }
@@ -28,7 +44,6 @@ query GetAllCourse {
     slug
     courseCode
     status
-    thumbnail
   }
 }
 
@@ -37,7 +52,12 @@ query GetAllCourseWithEnrollment {
     _id
     title
     slug
-    thumbnail
+    thumbnail {
+      publicId
+      width
+      height
+      format
+    }
     isEnrolled
   }
 }
@@ -51,7 +71,12 @@ query GetCourseForUser($slug: String!) {
       slug
       description
       difficulty
-      thumbnail
+      thumbnail {
+        publicId
+        width
+        height
+        format
+      }
       sectionId {
         _id
         title
@@ -75,14 +100,19 @@ query GetCourseForUser($slug: String!) {
       description
       courseCode
       difficulty
-      thumbnail
+      thumbnail {
+        publicId
+        width
+        height
+        format
+      }
       price {
         planTitle
         description
         amount
         currency
       }
-      categories
+      category
       tags
       status
       whatYouWillLearn
@@ -104,7 +134,12 @@ query GetUserNotEnrolledCourses($userId: ID!) {
     _id
     title
     slug
-    thumbnail
+    thumbnail {
+      publicId
+      width
+      height
+      format
+    }
     price {
       planTitle
       description
@@ -137,5 +172,32 @@ query GetCourseDetailsForInstructor($slug: String!) {
     totalSections
     totalLessons
     totalEnrollment
+  }
+}
+
+query GetCourseBasicInfoForEdit($slug: String!) {
+  getCourseBasicInfoForEdit(slug: $slug) {
+    _id
+    title
+    subtitle
+    slug
+    description
+    courseCode
+    difficulty
+    thumbnail {
+      publicId
+      width
+      height
+      format
+    }
+    price {
+      planTitle
+      description
+      amount
+      currency
+    }
+    category
+    status
+    updatedAt
   }
 }

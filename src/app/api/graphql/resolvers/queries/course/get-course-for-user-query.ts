@@ -102,7 +102,7 @@ function enrollmentExpired(expiryDate: Date | undefined): boolean {
 //  Танилцуулга болон бусад хураангуй дата (preview) татах
 async function getCoursePreview(courseId: string) {
   const previewCourse = await CourseModel.findById(courseId).select(
-    "title slug description thumbnail price courseCode difficulty categories tags status whatYouWillLearn whyChooseOurCourse",
+    "title slug description thumbnail price courseCode difficulty category tags status whatYouWillLearn whyChooseOurCourse",
   );
   return previewCourse;
 }

@@ -19,20 +19,3 @@ mutation DeleteSection($id: ID!) {
     message
   }
 }
-
-# Queries
-query GetSectionsByCourseId($courseId: ID!) {
-  getSectionsByCourseId(courseId: $courseId) {
-    _id
-    title
-    order
-    lessonId {
-      _id
-      title
-      content
-      videoUrl
-      order
-      isPublished
-    }
-  }
-}

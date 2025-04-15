@@ -42,7 +42,12 @@ query GetUserEnrolledCourses($userId: String!) {
       _id
       title
       slug
-      thumbnail
+      thumbnail {
+        publicId
+        width
+        height
+        format
+      }
     }
     progress
     lastAccessedAt
