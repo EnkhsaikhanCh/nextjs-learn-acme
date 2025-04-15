@@ -1,11 +1,10 @@
-import { Button } from "@/components/ui/button";
 import { Loader } from "lucide-react";
 import { Course, useGetCourseBasicInfoForEditQuery } from "@/generated/graphql";
 import { useParams } from "next/navigation";
 import { BasicInformationCard } from "./InstructorCourseSettingsComponents/BasicInformationCard";
 import { CoursePricingCard } from "./InstructorCourseSettingsComponents/CoursePricingCard";
 import { CourseThumbnailCard } from "./InstructorCourseSettingsComponents/CourseThumbnailCard";
-import { VisibilityAndAcessCard } from "./InstructorCourseSettingsComponents/VisibilityAndAccessCard";
+import { VisibilityAndAccessCard } from "./InstructorCourseSettingsComponents/VisibilityAndAccessCard";
 
 export const CourseSettings = () => {
   const { slug } = useParams();
@@ -33,7 +32,6 @@ export const CourseSettings = () => {
             Configure your course details and preferences
           </p>
         </div>
-        <Button>Save All Changes</Button>
       </div>
 
       <BasicInformationCard
@@ -53,7 +51,10 @@ export const CourseSettings = () => {
         />
       </div>
 
-      <VisibilityAndAcessCard />
+      <VisibilityAndAccessCard
+        initialValues={data?.getCourseBasicInfoForEdit as Course}
+        refetch={refetch}
+      />
     </div>
   );
 };
