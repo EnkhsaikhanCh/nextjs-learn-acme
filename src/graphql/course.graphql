@@ -4,13 +4,6 @@
 mutation CreateCourse($input: CreateCourseInput!) {
   createCourse(input: $input) {
     _id
-    createdBy {
-      _id
-      email
-      role
-    }
-    title
-    slug
   }
 }
 
@@ -51,12 +44,6 @@ query GetAllCourse {
     slug
     courseCode
     status
-    thumbnail {
-      publicId
-      width
-      height
-      format
-    }
   }
 }
 
