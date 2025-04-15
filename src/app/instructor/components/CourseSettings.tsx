@@ -39,7 +39,7 @@ export const CourseSettings = () => {
         refetch={refetch}
       />
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-6 lg:grid-cols-2">
         <CourseThumbnailCard
           course={data?.getCourseBasicInfoForEdit as Course}
           refetch={refetch}

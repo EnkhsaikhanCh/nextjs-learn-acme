@@ -5,6 +5,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -243,21 +244,20 @@ export const BasicInformationCard = ({
               </Select>
             </div>
           </div>
-
-          {/* Submit Button */}
-          <div className="pt-6 text-right">
-            <Button
-              type="submit"
-              disabled={isUpdating || isSubmitting || !isDirty}
-            >
-              {isUpdating ? (
-                <Loader className="animate-spin" />
-              ) : (
-                "Save Basic Information Changes"
-              )}
-            </Button>
-          </div>
         </CardContent>
+
+        <CardFooter className="flex justify-end border-t bg-gray-50/50 px-6 py-4 dark:border-emerald-900 dark:bg-emerald-900/30">
+          <Button
+            type="submit"
+            disabled={isUpdating || isSubmitting || !isDirty}
+          >
+            {isUpdating ? (
+              <Loader className="animate-spin" />
+            ) : (
+              "Save Basic Information Changes"
+            )}
+          </Button>
+        </CardFooter>
       </Card>
     </form>
   );

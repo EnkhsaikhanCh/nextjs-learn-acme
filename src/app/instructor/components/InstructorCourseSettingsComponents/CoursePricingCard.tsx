@@ -5,6 +5,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -145,21 +146,20 @@ export const CoursePricingCard = ({
               />
             </div>
           </div>
-
-          {/* Submit button */}
-          <div className="pt-4 text-right">
-            <Button
-              type="submit"
-              disabled={isUpdating || isSubmitting || !isDirty}
-            >
-              {isUpdating ? (
-                <Loader className="animate-spin" />
-              ) : (
-                "Save Pricing Changes"
-              )}
-            </Button>
-          </div>
         </CardContent>
+
+        <CardFooter className="flex justify-end border-t bg-gray-50/50 px-6 py-4 dark:border-purple-900 dark:bg-purple-900/30">
+          <Button
+            type="submit"
+            disabled={isUpdating || isSubmitting || !isDirty}
+          >
+            {isUpdating ? (
+              <Loader className="animate-spin" />
+            ) : (
+              "Save Pricing Changes"
+            )}
+          </Button>
+        </CardFooter>
       </Card>
     </form>
   );
