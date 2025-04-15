@@ -20,7 +20,12 @@ export type Course = {
   difficulty: "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
   price?: PricingPlan;
   sectionId: string[];
-  thumbnail?: string;
+  thumbnail?: {
+    publicId: string;
+    width?: number;
+    height?: number;
+    format?: string;
+  };
   category?: string;
   tags?: string[];
   status?: "DRAFT" | "PUBLISHED" | "ARCHIVED";
@@ -33,6 +38,16 @@ const PricingPlanSchema = new Schema(
     description: { type: String },
     amount: { type: Number, required: true },
     currency: { type: String, enum: ["MNT"], required: true },
+  },
+  { _id: false },
+);
+
+const ThumbnailSchema = new Schema(
+  {
+    publicId: { type: String, required: true },
+    width: { type: Number },
+    height: { type: Number },
+    format: { type: String },
   },
   { _id: false },
 );
@@ -52,7 +67,7 @@ const CourseSchema = new Schema<Course>(
     },
     price: { type: PricingPlanSchema },
     sectionId: [{ type: Schema.Types.String, ref: "Section", default: [] }],
-    thumbnail: { type: String },
+    thumbnail: { type: ThumbnailSchema },
     category: { type: String },
     tags: { type: [String], default: [] },
     status: {
