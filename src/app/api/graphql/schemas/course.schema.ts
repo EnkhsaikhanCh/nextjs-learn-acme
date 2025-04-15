@@ -48,6 +48,13 @@ export const typeDefs = gql`
     fullContent: Course
   }
 
+  type Thumbnail {
+    publicId: String!
+    width: Int
+    height: Int
+    format: String
+  }
+
   type Course {
     _id: ID!
     createdBy: User
@@ -57,7 +64,7 @@ export const typeDefs = gql`
     description: String
     courseCode: String
     difficulty: Difficulty
-    thumbnail: String
+    thumbnail: Thumbnail
     price: PricingPlan
     sectionId: [Section]
     category: String
@@ -122,7 +129,6 @@ export const typeDefs = gql`
     title: String
     description: String
     difficulty: Difficulty
-    thumbnail: String
     price: PricingPlanInput
     category: String
     tags: [String]
@@ -145,12 +151,20 @@ export const typeDefs = gql`
     currency: Currency
   }
 
+  input ThumbnailInput {
+    publicId: String!
+    width: Int
+    height: Int
+    format: String
+  }
+
   type Mutation {
     updateCourseBasicInfo(courseId: ID!, input: CourseBasicInfoInput!): Course!
     updateCoursePricing(
       courseId: ID!
       input: UpdateCoursePricingInput!
     ): Course!
+    updateCourseThumbnail(courseId: ID!, input: ThumbnailInput!): Course!
     createCourse(input: CreateCourseInput!): Course!
     updateCourse(input: UpdateCourseInput!): Course!
     deleteCourse(id: ID!): Boolean!

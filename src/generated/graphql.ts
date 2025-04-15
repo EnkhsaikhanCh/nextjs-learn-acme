@@ -33,7 +33,7 @@ export type Course = {
   status?: Maybe<CourseStatus>;
   subtitle?: Maybe<Scalars['String']['output']>;
   tags?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  thumbnail?: Maybe<Scalars['String']['output']>;
+  thumbnail?: Maybe<Thumbnail>;
   title: Scalars['String']['output'];
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
   whatYouWillLearn?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
@@ -215,6 +215,7 @@ export type Mutation = {
   updateCourse: Course;
   updateCourseBasicInfo: Course;
   updateCoursePricing: Course;
+  updateCourseThumbnail: Course;
   updateEnrollment?: Maybe<Enrollment>;
   updateLesson: Lesson;
   updatePaymentStatus?: Maybe<Payment>;
@@ -313,6 +314,12 @@ export type MutationUpdateCourseBasicInfoArgs = {
 export type MutationUpdateCoursePricingArgs = {
   courseId: Scalars['ID']['input'];
   input: UpdateCoursePricingInput;
+};
+
+
+export type MutationUpdateCourseThumbnailArgs = {
+  courseId: Scalars['ID']['input'];
+  input: ThumbnailInput;
 };
 
 
@@ -616,6 +623,21 @@ export type SubscriberPaginationResult = {
   totalCount: Scalars['Int']['output'];
 };
 
+export type Thumbnail = {
+  __typename?: 'Thumbnail';
+  format?: Maybe<Scalars['String']['output']>;
+  height?: Maybe<Scalars['Int']['output']>;
+  publicId: Scalars['String']['output'];
+  width?: Maybe<Scalars['Int']['output']>;
+};
+
+export type ThumbnailInput = {
+  format?: InputMaybe<Scalars['String']['input']>;
+  height?: InputMaybe<Scalars['Int']['input']>;
+  publicId: Scalars['String']['input'];
+  width?: InputMaybe<Scalars['Int']['input']>;
+};
+
 export type UpdateCourseInput = {
   _id: Scalars['ID']['input'];
   category?: InputMaybe<Scalars['String']['input']>;
@@ -624,7 +646,6 @@ export type UpdateCourseInput = {
   price?: InputMaybe<PricingPlanInput>;
   status?: InputMaybe<CourseStatus>;
   tags?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  thumbnail?: InputMaybe<Scalars['String']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
   whatYouWillLearn?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
@@ -769,22 +790,30 @@ export type UpdateCoursePricingMutationVariables = Exact<{
 
 export type UpdateCoursePricingMutation = { __typename?: 'Mutation', updateCoursePricing: { __typename?: 'Course', _id: string } };
 
+export type UpdateCourseThumbnailMutationVariables = Exact<{
+  courseId: Scalars['ID']['input'];
+  input: ThumbnailInput;
+}>;
+
+
+export type UpdateCourseThumbnailMutation = { __typename?: 'Mutation', updateCourseThumbnail: { __typename?: 'Course', _id: string } };
+
 export type GetAllCourseQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAllCourseQuery = { __typename?: 'Query', getAllCourse: Array<{ __typename?: 'Course', _id: string, title: string, slug?: string | null, courseCode?: string | null, status?: CourseStatus | null, thumbnail?: string | null }> };
+export type GetAllCourseQuery = { __typename?: 'Query', getAllCourse: Array<{ __typename?: 'Course', _id: string, title: string, slug?: string | null, courseCode?: string | null, status?: CourseStatus | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null }> };
 
 export type GetAllCourseWithEnrollmentQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAllCourseWithEnrollmentQuery = { __typename?: 'Query', getAllCourseWithEnrollment: Array<{ __typename?: 'Course', _id: string, title: string, slug?: string | null, thumbnail?: string | null, isEnrolled?: boolean | null }> };
+export type GetAllCourseWithEnrollmentQuery = { __typename?: 'Query', getAllCourseWithEnrollment: Array<{ __typename?: 'Course', _id: string, title: string, slug?: string | null, isEnrolled?: boolean | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null }> };
 
 export type GetCourseForUserQueryVariables = Exact<{
   slug: Scalars['String']['input'];
 }>;
 
 
-export type GetCourseForUserQuery = { __typename?: 'Query', getCourseForUser: { __typename?: 'CourseForUserPayload', status: CourseAccessStatus, fullContent?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, description?: string | null, difficulty?: Difficulty | null, thumbnail?: string | null, status?: CourseStatus | null, sectionId?: Array<{ __typename?: 'Section', _id: string, title: string, description?: string | null, order: number, lessonId?: Array<{ __typename?: 'Lesson', _id: string, title: string, content?: string | null, videoUrl?: string | null, order: number, isPublished: boolean } | null> | null } | null> | null } | null, coursePreviewData?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, description?: string | null, courseCode?: string | null, difficulty?: Difficulty | null, thumbnail?: string | null, category?: string | null, tags?: Array<string | null> | null, status?: CourseStatus | null, whatYouWillLearn?: Array<string | null> | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: string | null, amount?: number | null, currency?: Currency | null } | null } | null } };
+export type GetCourseForUserQuery = { __typename?: 'Query', getCourseForUser: { __typename?: 'CourseForUserPayload', status: CourseAccessStatus, fullContent?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, description?: string | null, difficulty?: Difficulty | null, status?: CourseStatus | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null, sectionId?: Array<{ __typename?: 'Section', _id: string, title: string, description?: string | null, order: number, lessonId?: Array<{ __typename?: 'Lesson', _id: string, title: string, content?: string | null, videoUrl?: string | null, order: number, isPublished: boolean } | null> | null } | null> | null } | null, coursePreviewData?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, description?: string | null, courseCode?: string | null, difficulty?: Difficulty | null, category?: string | null, tags?: Array<string | null> | null, status?: CourseStatus | null, whatYouWillLearn?: Array<string | null> | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: string | null, amount?: number | null, currency?: Currency | null } | null } | null } };
 
 export type GetUserEnrolledCoursesCountQueryVariables = Exact<{
   userId: Scalars['ID']['input'];
@@ -798,7 +827,7 @@ export type GetUserNotEnrolledCoursesQueryVariables = Exact<{
 }>;
 
 
-export type GetUserNotEnrolledCoursesQuery = { __typename?: 'Query', getUserNotEnrolledCourses?: Array<{ __typename?: 'Course', _id: string, title: string, slug?: string | null, thumbnail?: string | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: string | null, amount?: number | null, currency?: Currency | null } | null } | null> | null };
+export type GetUserNotEnrolledCoursesQuery = { __typename?: 'Query', getUserNotEnrolledCourses?: Array<{ __typename?: 'Course', _id: string, title: string, slug?: string | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: string | null, amount?: number | null, currency?: Currency | null } | null } | null> | null };
 
 export type GetAllCoursesByInstructurIdQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -817,7 +846,7 @@ export type GetCourseBasicInfoForEditQueryVariables = Exact<{
 }>;
 
 
-export type GetCourseBasicInfoForEditQuery = { __typename?: 'Query', getCourseBasicInfoForEdit?: { __typename?: 'Course', _id: string, title: string, subtitle?: string | null, description?: string | null, category?: string | null, difficulty?: Difficulty | null, createdBy?: { __typename?: 'User', _id: string, email: string } | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: string | null, amount?: number | null, currency?: Currency | null } | null } | null };
+export type GetCourseBasicInfoForEditQuery = { __typename?: 'Query', getCourseBasicInfoForEdit?: { __typename?: 'Course', _id: string, title: string, subtitle?: string | null, description?: string | null, category?: string | null, difficulty?: Difficulty | null, createdBy?: { __typename?: 'User', _id: string, email: string } | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: string | null, amount?: number | null, currency?: Currency | null } | null } | null };
 
 export type MarkLessonAsCompletedMutationVariables = Exact<{
   input?: InputMaybe<MarkLessonAsCompletedInput>;
@@ -853,7 +882,7 @@ export type GetUserEnrolledCoursesQueryVariables = Exact<{
 }>;
 
 
-export type GetUserEnrolledCoursesQuery = { __typename?: 'Query', getUserEnrolledCourses?: Array<{ __typename?: 'Enrollment', _id: string, progress?: number | null, lastAccessedAt?: Date | null, courseId?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, thumbnail?: string | null } | null } | null> | null };
+export type GetUserEnrolledCoursesQuery = { __typename?: 'Query', getUserEnrolledCourses?: Array<{ __typename?: 'Enrollment', _id: string, progress?: number | null, lastAccessedAt?: Date | null, courseId?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null } | null } | null> | null };
 
 export type CreateLessonMutationVariables = Exact<{
   input: CreateLessonInput;
@@ -1279,6 +1308,40 @@ export function useUpdateCoursePricingMutation(baseOptions?: Apollo.MutationHook
 export type UpdateCoursePricingMutationHookResult = ReturnType<typeof useUpdateCoursePricingMutation>;
 export type UpdateCoursePricingMutationResult = Apollo.MutationResult<UpdateCoursePricingMutation>;
 export type UpdateCoursePricingMutationOptions = Apollo.BaseMutationOptions<UpdateCoursePricingMutation, UpdateCoursePricingMutationVariables>;
+export const UpdateCourseThumbnailDocument = gql`
+    mutation UpdateCourseThumbnail($courseId: ID!, $input: ThumbnailInput!) {
+  updateCourseThumbnail(courseId: $courseId, input: $input) {
+    _id
+  }
+}
+    `;
+export type UpdateCourseThumbnailMutationFn = Apollo.MutationFunction<UpdateCourseThumbnailMutation, UpdateCourseThumbnailMutationVariables>;
+
+/**
+ * __useUpdateCourseThumbnailMutation__
+ *
+ * To run a mutation, you first call `useUpdateCourseThumbnailMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateCourseThumbnailMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateCourseThumbnailMutation, { data, loading, error }] = useUpdateCourseThumbnailMutation({
+ *   variables: {
+ *      courseId: // value for 'courseId'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateCourseThumbnailMutation(baseOptions?: Apollo.MutationHookOptions<UpdateCourseThumbnailMutation, UpdateCourseThumbnailMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateCourseThumbnailMutation, UpdateCourseThumbnailMutationVariables>(UpdateCourseThumbnailDocument, options);
+      }
+export type UpdateCourseThumbnailMutationHookResult = ReturnType<typeof useUpdateCourseThumbnailMutation>;
+export type UpdateCourseThumbnailMutationResult = Apollo.MutationResult<UpdateCourseThumbnailMutation>;
+export type UpdateCourseThumbnailMutationOptions = Apollo.BaseMutationOptions<UpdateCourseThumbnailMutation, UpdateCourseThumbnailMutationVariables>;
 export const GetAllCourseDocument = gql`
     query GetAllCourse {
   getAllCourse {
@@ -1287,7 +1350,12 @@ export const GetAllCourseDocument = gql`
     slug
     courseCode
     status
-    thumbnail
+    thumbnail {
+      publicId
+      width
+      height
+      format
+    }
   }
 }
     `;
@@ -1329,7 +1397,12 @@ export const GetAllCourseWithEnrollmentDocument = gql`
     _id
     title
     slug
-    thumbnail
+    thumbnail {
+      publicId
+      width
+      height
+      format
+    }
     isEnrolled
   }
 }
@@ -1376,7 +1449,12 @@ export const GetCourseForUserDocument = gql`
       slug
       description
       difficulty
-      thumbnail
+      thumbnail {
+        publicId
+        width
+        height
+        format
+      }
       sectionId {
         _id
         title
@@ -1400,7 +1478,12 @@ export const GetCourseForUserDocument = gql`
       description
       courseCode
       difficulty
-      thumbnail
+      thumbnail {
+        publicId
+        width
+        height
+        format
+      }
       price {
         planTitle
         description
@@ -1497,7 +1580,12 @@ export const GetUserNotEnrolledCoursesDocument = gql`
     _id
     title
     slug
-    thumbnail
+    thumbnail {
+      publicId
+      width
+      height
+      format
+    }
     price {
       planTitle
       description
@@ -1643,6 +1731,12 @@ export const GetCourseBasicInfoForEditDocument = gql`
     }
     title
     subtitle
+    thumbnail {
+      publicId
+      width
+      height
+      format
+    }
     description
     category
     difficulty
@@ -1854,7 +1948,12 @@ export const GetUserEnrolledCoursesDocument = gql`
       _id
       title
       slug
-      thumbnail
+      thumbnail {
+        publicId
+        width
+        height
+        format
+      }
     }
     progress
     lastAccessedAt
