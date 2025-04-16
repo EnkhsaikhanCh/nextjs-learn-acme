@@ -75,6 +75,7 @@ export const BasicInformationCard = ({
             requirements: values.requirements,
             category: values.category,
             difficulty: values.difficulty,
+            whoIsThisFor: values.whoIsThisFor,
           },
         },
       });
@@ -203,6 +204,24 @@ export const BasicInformationCard = ({
               value={watch("requirements") ?? ""}
               onChange={(value) =>
                 setValue("requirements", value, { shouldDirty: true })
+              }
+            />
+          </div>
+
+          <Separator className="my-6 dark:bg-emerald-900" />
+
+          {/* Who Is This For */}
+          <div className="space-y-4">
+            <Label
+              htmlFor="course-whoIsThisFor"
+              className="text-base font-medium dark:text-emerald-100"
+            >
+              Who Is This For
+            </Label>
+            <RichTextEditor
+              value={watch("whoIsThisFor") ?? ""}
+              onChange={(value) =>
+                setValue("whoIsThisFor", value, { shouldDirty: true })
               }
             />
           </div>

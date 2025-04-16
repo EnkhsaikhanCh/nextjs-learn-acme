@@ -200,5 +200,6 @@ query GetCourseBasicInfoForEdit($slug: String!) {
     category
     status
     updatedAt
+    whoIsThisFor
   }
 }

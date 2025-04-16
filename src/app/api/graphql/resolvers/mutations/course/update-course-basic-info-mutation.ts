@@ -42,6 +42,7 @@ export const updateCourseBasicInfo = async (
     course.requirements = input.requirements ?? "";
     course.category = input.category ?? "";
     course.difficulty = input.difficulty ?? "BEGINNER";
+    course.whoIsThisFor = input.whoIsThisFor ?? "";
 
     await course.save();
 

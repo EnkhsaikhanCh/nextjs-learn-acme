@@ -38,6 +38,7 @@ export type Course = {
   title: Scalars['String']['output'];
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
   whatYouWillLearn?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  whoIsThisFor?: Maybe<Scalars['String']['output']>;
 };
 
 /**
@@ -63,6 +64,7 @@ export type CourseBasicInfoInput = {
   requirements?: InputMaybe<Scalars['String']['input']>;
   subtitle?: InputMaybe<Scalars['String']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
+  whoIsThisFor?: InputMaybe<Scalars['String']['input']>;
 };
 
 /**
@@ -829,7 +831,7 @@ export type GetCourseBasicInfoForEditQueryVariables = Exact<{
 }>;
 
 
-export type GetCourseBasicInfoForEditQuery = { __typename?: 'Query', getCourseBasicInfoForEdit?: { __typename?: 'Course', _id: string, title: string, subtitle?: string | null, slug?: string | null, description?: string | null, requirements?: string | null, courseCode?: string | null, difficulty?: Difficulty | null, category?: string | null, status?: CourseStatus | null, updatedAt?: Date | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: string | null, amount?: number | null, currency?: Currency | null } | null } | null };
+export type GetCourseBasicInfoForEditQuery = { __typename?: 'Query', getCourseBasicInfoForEdit?: { __typename?: 'Course', _id: string, title: string, subtitle?: string | null, slug?: string | null, description?: string | null, requirements?: string | null, courseCode?: string | null, difficulty?: Difficulty | null, category?: string | null, status?: CourseStatus | null, updatedAt?: Date | null, whoIsThisFor?: string | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: string | null, amount?: number | null, currency?: Currency | null } | null } | null };
 
 export type MarkLessonAsCompletedMutationVariables = Exact<{
   input?: InputMaybe<MarkLessonAsCompletedInput>;
@@ -1703,6 +1705,7 @@ export const GetCourseBasicInfoForEditDocument = gql`
     category
     status
     updatedAt
+    whoIsThisFor
   }
 }
     `;

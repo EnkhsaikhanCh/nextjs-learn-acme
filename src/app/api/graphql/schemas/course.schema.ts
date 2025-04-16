@@ -72,6 +72,7 @@ export const typeDefs = gql`
     tags: [String]
     status: CourseStatus
     whatYouWillLearn: [String]
+    whoIsThisFor: String
     isEnrolled: Boolean
     updatedAt: Date
   }
@@ -130,6 +131,7 @@ export const typeDefs = gql`
     subtitle: String
     description: String
     requirements: String
+    whoIsThisFor: String
     category: String
     difficulty: Difficulty
   }

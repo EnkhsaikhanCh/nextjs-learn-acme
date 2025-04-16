@@ -15,7 +15,7 @@ export type Course = {
   title: string;
   subtitle: string;
   description: string;
-  requirements: string;
+  requirements?: string;
   slug: string;
   courseCode: string;
   difficulty: "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
@@ -31,6 +31,7 @@ export type Course = {
   tags?: string[];
   status?: "DRAFT" | "PUBLISHED" | "ARCHIVED";
   whatYouWillLearn?: string[];
+  whoIsThisFor?: string;
 };
 
 const PricingPlanSchema = new Schema(
@@ -78,6 +79,7 @@ const CourseSchema = new Schema<Course>(
       default: "DRAFT",
     },
     whatYouWillLearn: { type: [String], default: [] },
+    whoIsThisFor: { type: String },
   },
   { timestamps: true },
 );
