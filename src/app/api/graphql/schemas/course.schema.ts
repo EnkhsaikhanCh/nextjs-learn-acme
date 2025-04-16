@@ -62,6 +62,7 @@ export const typeDefs = gql`
     subtitle: String
     slug: String
     description: String
+    requirements: String
     courseCode: String
     difficulty: Difficulty
     thumbnail: Thumbnail
@@ -128,6 +129,7 @@ export const typeDefs = gql`
     title: String
     subtitle: String
     description: String
+    requirements: String
     category: String
     difficulty: Difficulty
   }

@@ -15,6 +15,7 @@ export type Course = {
   title: string;
   subtitle: string;
   description: string;
+  requirements: string;
   slug: string;
   courseCode: string;
   difficulty: "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
@@ -59,6 +60,7 @@ const CourseSchema = new Schema<Course>(
     title: { type: String, required: true },
     subtitle: { type: String },
     description: { type: String },
+    requirements: { type: String },
     slug: { type: String },
     courseCode: { type: String, required: true, unique: true },
     difficulty: {

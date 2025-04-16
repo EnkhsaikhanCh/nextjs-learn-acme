@@ -1,8 +1,20 @@
 "use client";
 
 import { useEditor, EditorContent } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import { Bold, Italic, Strikethrough, Undo, Redo } from "lucide-react";
+import Bold from "@tiptap/extension-bold";
+import Italic from "@tiptap/extension-italic";
+import Strike from "@tiptap/extension-strike";
+import Paragraph from "@tiptap/extension-paragraph";
+import Document from "@tiptap/extension-document";
+import Text from "@tiptap/extension-text";
+import History from "@tiptap/extension-history";
+import {
+  Bold as BoldIcon,
+  Italic as ItalicIcon,
+  Strikethrough,
+  Undo,
+  Redo,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Button } from "@/components/ui/button";
@@ -14,7 +26,7 @@ interface RichTextEditorProps {
 
 export const RichTextEditor = ({ value, onChange }: RichTextEditorProps) => {
   const editor = useEditor({
-    extensions: [StarterKit],
+    extensions: [Document, Paragraph, Text, Bold, Italic, Strike, History],
     content: value,
     editorProps: {
       attributes: {
@@ -110,10 +122,10 @@ export const RichTextEditor = ({ value, onChange }: RichTextEditorProps) => {
           className="rounded-md border p-1"
         >
           <ToggleGroupItem value="bold">
-            <Bold className="h-4 w-4" />
+            <BoldIcon className="h-4 w-4" />
           </ToggleGroupItem>
           <ToggleGroupItem value="italic">
-            <Italic className="h-4 w-4" />
+            <ItalicIcon className="h-4 w-4" />
           </ToggleGroupItem>
           <ToggleGroupItem value="strike">
             <Strikethrough className="h-4 w-4" />

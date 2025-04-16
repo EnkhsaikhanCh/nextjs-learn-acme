@@ -72,6 +72,7 @@ export const BasicInformationCard = ({
             title: values.title,
             subtitle: values.subtitle,
             description: values.description,
+            requirements: values.requirements,
             category: values.category,
             difficulty: values.difficulty,
           },
@@ -186,6 +187,24 @@ export const BasicInformationCard = ({
               Use clear, concise language. Include key topics, learning
               outcomes, and target audience.
             </p>
+          </div>
+
+          <Separator className="my-6 dark:bg-emerald-900" />
+
+          {/* Requirements */}
+          <div className="space-y-4">
+            <Label
+              htmlFor="course-requirements"
+              className="text-base font-medium dark:text-emerald-100"
+            >
+              Requirements
+            </Label>
+            <RichTextEditor
+              value={watch("requirements") ?? ""}
+              onChange={(value) =>
+                setValue("requirements", value, { shouldDirty: true })
+              }
+            />
           </div>
 
           <Separator className="my-6 dark:bg-emerald-900" />

@@ -182,6 +182,7 @@ query GetCourseBasicInfoForEdit($slug: String!) {
     subtitle
     slug
     description
+    requirements
     courseCode
     difficulty
     thumbnail {
