@@ -10,7 +10,6 @@ import { z } from "zod";
 
 // Zod schema for validation
 const UpdateVisibilitySchema = z.object({
-  courseId: z.string().min(1, "Course ID is required"),
   status: z.nativeEnum(CourseStatus),
 });
 
