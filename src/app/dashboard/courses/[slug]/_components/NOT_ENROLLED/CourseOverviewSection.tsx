@@ -58,25 +58,6 @@ export const CourseOverviewSection = ({ course }: Props) => {
                     )}
                   </div>
                 </li>
-                <li>
-                  <strong>Түлхүүр үгс:</strong>
-                  <div className="mt-1 flex flex-wrap items-center gap-2">
-                    {course.tags?.length ? (
-                      course.tags.map((tag, index) => (
-                        <Badge
-                          key={index}
-                          className="bg-yellow-200 text-yellow-600"
-                        >
-                          {tag}
-                        </Badge>
-                      ))
-                    ) : (
-                      <div className="text-sm text-gray-500">
-                        Түлхүүр үг байхгүй
-                      </div>
-                    )}
-                  </div>
-                </li>
               </ul>
             </CardContent>
           </Card>
