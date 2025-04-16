@@ -220,6 +220,7 @@ export type Mutation = {
   updateCoursePricing: Course;
   updateCourseThumbnail: Course;
   updateCourseVisibilityAndAccess: Course;
+  updateCourseWhatYouWillLearn: Course;
   updateEnrollment?: Maybe<Enrollment>;
   updateLesson: Lesson;
   updatePaymentStatus?: Maybe<Payment>;
@@ -324,6 +325,12 @@ export type MutationUpdateCourseThumbnailArgs = {
 
 export type MutationUpdateCourseVisibilityAndAccessArgs = {
   input: UpdateCourseVisibilityAndAccessInput;
+};
+
+
+export type MutationUpdateCourseWhatYouWillLearnArgs = {
+  courseId: Scalars['ID']['input'];
+  input: UpdateCourseWhatYouWillLearnInput;
 };
 
 
@@ -642,6 +649,10 @@ export type UpdateCourseVisibilityAndAccessInput = {
   status: CourseStatus;
 };
 
+export type UpdateCourseWhatYouWillLearnInput = {
+  points: Array<Scalars['String']['input']>;
+};
+
 export type UpdateEnrollmentInput = {
   _id: Scalars['ID']['input'];
   progress?: InputMaybe<Scalars['Float']['input']>;
@@ -783,6 +794,14 @@ export type UpdateCourseVisibilityAndAccessMutationVariables = Exact<{
 
 export type UpdateCourseVisibilityAndAccessMutation = { __typename?: 'Mutation', updateCourseVisibilityAndAccess: { __typename?: 'Course', _id: string } };
 
+export type UpdateCourseWhatYouWillLearnMutationVariables = Exact<{
+  courseId: Scalars['ID']['input'];
+  input: UpdateCourseWhatYouWillLearnInput;
+}>;
+
+
+export type UpdateCourseWhatYouWillLearnMutation = { __typename?: 'Mutation', updateCourseWhatYouWillLearn: { __typename?: 'Course', _id: string } };
+
 export type GetAllCourseQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -831,7 +850,7 @@ export type GetCourseBasicInfoForEditQueryVariables = Exact<{
 }>;
 
 
-export type GetCourseBasicInfoForEditQuery = { __typename?: 'Query', getCourseBasicInfoForEdit?: { __typename?: 'Course', _id: string, title: string, subtitle?: string | null, slug?: string | null, description?: string | null, requirements?: string | null, courseCode?: string | null, difficulty?: Difficulty | null, category?: string | null, status?: CourseStatus | null, updatedAt?: Date | null, whoIsThisFor?: string | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: string | null, amount?: number | null, currency?: Currency | null } | null } | null };
+export type GetCourseBasicInfoForEditQuery = { __typename?: 'Query', getCourseBasicInfoForEdit?: { __typename?: 'Course', _id: string, title: string, subtitle?: string | null, slug?: string | null, description?: string | null, requirements?: string | null, courseCode?: string | null, difficulty?: Difficulty | null, category?: string | null, status?: CourseStatus | null, updatedAt?: Date | null, whoIsThisFor?: string | null, whatYouWillLearn?: Array<string | null> | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: string | null, amount?: number | null, currency?: Currency | null } | null } | null };
 
 export type MarkLessonAsCompletedMutationVariables = Exact<{
   input?: InputMaybe<MarkLessonAsCompletedInput>;
@@ -1306,6 +1325,40 @@ export function useUpdateCourseVisibilityAndAccessMutation(baseOptions?: Apollo.
 export type UpdateCourseVisibilityAndAccessMutationHookResult = ReturnType<typeof useUpdateCourseVisibilityAndAccessMutation>;
 export type UpdateCourseVisibilityAndAccessMutationResult = Apollo.MutationResult<UpdateCourseVisibilityAndAccessMutation>;
 export type UpdateCourseVisibilityAndAccessMutationOptions = Apollo.BaseMutationOptions<UpdateCourseVisibilityAndAccessMutation, UpdateCourseVisibilityAndAccessMutationVariables>;
+export const UpdateCourseWhatYouWillLearnDocument = gql`
+    mutation UpdateCourseWhatYouWillLearn($courseId: ID!, $input: UpdateCourseWhatYouWillLearnInput!) {
+  updateCourseWhatYouWillLearn(courseId: $courseId, input: $input) {
+    _id
+  }
+}
+    `;
+export type UpdateCourseWhatYouWillLearnMutationFn = Apollo.MutationFunction<UpdateCourseWhatYouWillLearnMutation, UpdateCourseWhatYouWillLearnMutationVariables>;
+
+/**
+ * __useUpdateCourseWhatYouWillLearnMutation__
+ *
+ * To run a mutation, you first call `useUpdateCourseWhatYouWillLearnMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateCourseWhatYouWillLearnMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateCourseWhatYouWillLearnMutation, { data, loading, error }] = useUpdateCourseWhatYouWillLearnMutation({
+ *   variables: {
+ *      courseId: // value for 'courseId'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateCourseWhatYouWillLearnMutation(baseOptions?: Apollo.MutationHookOptions<UpdateCourseWhatYouWillLearnMutation, UpdateCourseWhatYouWillLearnMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateCourseWhatYouWillLearnMutation, UpdateCourseWhatYouWillLearnMutationVariables>(UpdateCourseWhatYouWillLearnDocument, options);
+      }
+export type UpdateCourseWhatYouWillLearnMutationHookResult = ReturnType<typeof useUpdateCourseWhatYouWillLearnMutation>;
+export type UpdateCourseWhatYouWillLearnMutationResult = Apollo.MutationResult<UpdateCourseWhatYouWillLearnMutation>;
+export type UpdateCourseWhatYouWillLearnMutationOptions = Apollo.BaseMutationOptions<UpdateCourseWhatYouWillLearnMutation, UpdateCourseWhatYouWillLearnMutationVariables>;
 export const GetAllCourseDocument = gql`
     query GetAllCourse {
   getAllCourse {
@@ -1706,6 +1759,7 @@ export const GetCourseBasicInfoForEditDocument = gql`
     status
     updatedAt
     whoIsThisFor
+    whatYouWillLearn
   }
 }
     `;

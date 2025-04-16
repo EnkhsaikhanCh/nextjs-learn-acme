@@ -36,6 +36,15 @@ mutation UpdateCourseVisibilityAndAccess(
   }
 }
 
+mutation UpdateCourseWhatYouWillLearn(
+  $courseId: ID!
+  $input: UpdateCourseWhatYouWillLearnInput!
+) {
+  updateCourseWhatYouWillLearn(courseId: $courseId, input: $input) {
+    _id
+  }
+}
+
 # Queries
 query GetAllCourse {
   getAllCourse {
@@ -201,5 +210,6 @@ query GetCourseBasicInfoForEdit($slug: String!) {
     status
     updatedAt
     whoIsThisFor
+    whatYouWillLearn
   }
 }

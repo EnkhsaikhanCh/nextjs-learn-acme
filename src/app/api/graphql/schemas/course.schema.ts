@@ -155,6 +155,10 @@ export const typeDefs = gql`
     status: CourseStatus!
   }
 
+  input UpdateCourseWhatYouWillLearnInput {
+    points: [String!]!
+  }
+
   type Mutation {
     updateCourseBasicInfo(courseId: ID!, input: CourseBasicInfoInput!): Course!
     updateCoursePricing(
@@ -164,6 +168,10 @@ export const typeDefs = gql`
     updateCourseThumbnail(courseId: ID!, input: ThumbnailInput!): Course!
     updateCourseVisibilityAndAccess(
       input: UpdateCourseVisibilityAndAccessInput!
+    ): Course!
+    updateCourseWhatYouWillLearn(
+      courseId: ID!
+      input: UpdateCourseWhatYouWillLearnInput!
     ): Course!
     createCourse(input: CreateCourseInput!): Course!
     deleteCourse(id: ID!): Boolean!
