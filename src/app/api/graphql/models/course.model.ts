@@ -78,7 +78,7 @@ const CourseSchema = new Schema<Course>(
       enum: ["DRAFT", "PUBLISHED", "ARCHIVED"],
       default: "DRAFT",
     },
-    whatYouWillLearn: { type: [String], default: [] },
+    whatYouWillLearn: { type: [String] },
     whoIsThisFor: { type: String },
   },
   { timestamps: true },
