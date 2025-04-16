@@ -122,7 +122,6 @@ query GetCourseForUser($slug: String!) {
         currency
       }
       category
-      tags
       status
       whatYouWillLearn
     }

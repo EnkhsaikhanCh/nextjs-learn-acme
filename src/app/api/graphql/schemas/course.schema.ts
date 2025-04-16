@@ -69,7 +69,6 @@ export const typeDefs = gql`
     price: PricingPlan
     sectionId: [Section]
     category: String
-    tags: [String]
     status: CourseStatus
     whatYouWillLearn: [String]
     whoIsThisFor: String

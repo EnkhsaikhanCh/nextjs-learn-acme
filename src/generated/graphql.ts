@@ -33,7 +33,6 @@ export type Course = {
   slug?: Maybe<Scalars['String']['output']>;
   status?: Maybe<CourseStatus>;
   subtitle?: Maybe<Scalars['String']['output']>;
-  tags?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   thumbnail?: Maybe<Thumbnail>;
   title: Scalars['String']['output'];
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
@@ -817,7 +816,7 @@ export type GetCourseForUserQueryVariables = Exact<{
 }>;
 
 
-export type GetCourseForUserQuery = { __typename?: 'Query', getCourseForUser: { __typename?: 'CourseForUserPayload', status: CourseAccessStatus, fullContent?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, description?: string | null, difficulty?: Difficulty | null, status?: CourseStatus | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null, sectionId?: Array<{ __typename?: 'Section', _id: string, title: string, description?: string | null, order: number, lessonId?: Array<{ __typename?: 'Lesson', _id: string, title: string, content?: string | null, videoUrl?: string | null, order: number, isPublished: boolean } | null> | null } | null> | null } | null, coursePreviewData?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, description?: string | null, courseCode?: string | null, difficulty?: Difficulty | null, category?: string | null, tags?: Array<string | null> | null, status?: CourseStatus | null, whatYouWillLearn?: Array<string | null> | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: string | null, amount?: number | null, currency?: Currency | null } | null } | null } };
+export type GetCourseForUserQuery = { __typename?: 'Query', getCourseForUser: { __typename?: 'CourseForUserPayload', status: CourseAccessStatus, fullContent?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, description?: string | null, difficulty?: Difficulty | null, status?: CourseStatus | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null, sectionId?: Array<{ __typename?: 'Section', _id: string, title: string, description?: string | null, order: number, lessonId?: Array<{ __typename?: 'Lesson', _id: string, title: string, content?: string | null, videoUrl?: string | null, order: number, isPublished: boolean } | null> | null } | null> | null } | null, coursePreviewData?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, description?: string | null, courseCode?: string | null, difficulty?: Difficulty | null, category?: string | null, status?: CourseStatus | null, whatYouWillLearn?: Array<string | null> | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: string | null, amount?: number | null, currency?: Currency | null } | null } | null } };
 
 export type GetUserEnrolledCoursesCountQueryVariables = Exact<{
   userId: Scalars['ID']['input'];
@@ -1502,7 +1501,6 @@ export const GetCourseForUserDocument = gql`
         currency
       }
       category
-      tags
       status
       whatYouWillLearn
     }

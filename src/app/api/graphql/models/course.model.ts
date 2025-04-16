@@ -28,7 +28,6 @@ export type Course = {
     format?: string;
   };
   category?: string;
-  tags?: string[];
   status?: "DRAFT" | "PUBLISHED" | "ARCHIVED";
   whatYouWillLearn?: string[];
   whoIsThisFor?: string;
@@ -72,7 +71,6 @@ const CourseSchema = new Schema<Course>(
     sectionId: [{ type: Schema.Types.String, ref: "Section", default: [] }],
     thumbnail: { type: ThumbnailSchema },
     category: { type: String },
-    tags: { type: [String], default: [] },
     status: {
       type: String,
       enum: ["DRAFT", "PUBLISHED", "ARCHIVED"],
