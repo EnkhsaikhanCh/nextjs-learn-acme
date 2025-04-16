@@ -83,6 +83,8 @@ const config: Config = {
     "src/utils/sanitize.ts",
     "src/utils/validation.ts",
     "src/utils/slug-to-label.ts",
+    "src/utils/generate-next-course-code.ts",
+    "src/utils/generate-unique-slug.ts",
 
     // src/app/(auth)
     "src/app/\\(auth\\)/forgot-password",
@@ -113,7 +115,6 @@ const config: Config = {
     "src/app/api/graphql/models",
     "src/app/api/graphql/schemas",
     "src/app/api/graphql/resolvers/mutations/enrollment",
-    "src/app/api/graphql/resolvers/mutations/course",
     "src/app/api/graphql/resolvers/mutations/payment/updateOrCreateEnrollment.ts",
     "src/app/api/graphql/resolvers/queries/course/get-all-course-with-enrollment-query.ts",
     "src/app/api/graphql/resolvers/queries/course/get-all-course.ts",
