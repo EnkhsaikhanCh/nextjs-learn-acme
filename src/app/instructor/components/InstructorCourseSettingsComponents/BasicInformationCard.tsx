@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -35,6 +34,7 @@ import {
   useUpdateCourseBasicInfoMutation,
 } from "@/generated/graphql";
 import { useEffect, useState } from "react";
+import { RichTextEditor } from "../RichTextEditor";
 
 interface BasicInformationFormProps {
   initialValues: Course;
@@ -176,11 +176,11 @@ export const BasicInformationCard = ({
             >
               Description
             </Label>
-            <Textarea
-              id="course-description"
-              className="min-h-[150px] resize-y"
-              placeholder="Describe what students will learn..."
-              {...register("description")}
+            <RichTextEditor
+              value={watch("description") ?? ""}
+              onChange={(value) =>
+                setValue("description", value, { shouldDirty: true })
+              }
             />
             <p className="text-xs text-gray-500 dark:text-gray-400">
               Use clear, concise language. Include key topics, learning
