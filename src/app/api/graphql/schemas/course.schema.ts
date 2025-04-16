@@ -114,7 +114,6 @@ export const typeDefs = gql`
   }
 
   input CreateCourseInput {
-    createdBy: String
     title: String
   }
 

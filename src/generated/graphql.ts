@@ -86,7 +86,6 @@ export enum CourseStatus {
 }
 
 export type CreateCourseInput = {
-  createdBy?: InputMaybe<Scalars['String']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
 };
 
