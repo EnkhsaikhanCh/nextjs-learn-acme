@@ -6,7 +6,7 @@ import {
   Role,
   User,
 } from "@/generated/graphql";
-import { updateCourseVisibilityAndAccess } from "@/app/api/graphql/resolvers/mutations";
+import { updateCourseVisibilityAndAccess } from "@/app/api/graphql/resolvers/mutations/course/update-course-visibility-and-access-mutation";
 import { CourseModel } from "@/app/api/graphql/models";
 
 // Mock dependencies

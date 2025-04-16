@@ -4,7 +4,7 @@ import { GraphQLError } from "graphql";
 import { CreateCourseInput, Role, User } from "@/generated/graphql";
 import { generateUniqueSlug } from "@/utils/generate-unique-slug";
 import { generateNextCourseCode } from "@/utils/generate-next-course-code";
-import { createCourse } from "@/app/api/graphql/resolvers/mutations";
+import { createCourse } from "@/app/api/graphql/resolvers/mutations/course/create-course-mutation";
 
 // --- Mocks ---
 jest.mock("../../../../../src/lib/auth-utils", () => ({

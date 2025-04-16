@@ -1,5 +1,5 @@
-import { updateCourseWhatYouWillLearn } from "../../../../../src/app/api/graphql/resolvers/mutations/course/update-course-what-you-will-learn-mutation";
-import { CourseModel } from "../../../../../src/app/api/graphql/models/course.model";
+import { updateCourseWhatYouWillLearn } from "@/app/api/graphql/resolvers/mutations/course/update-course-what-you-will-learn-mutation";
+import { CourseModel } from "@/app/api/graphql/models/course.model";
 import { requireAuthAndRoles } from "@/lib/auth-utils";
 import { GraphQLError } from "graphql";
 import {
