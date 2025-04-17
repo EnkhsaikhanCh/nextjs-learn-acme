@@ -6,6 +6,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { CourseOverview } from "./CourseOverview";
 import { CourseSettings } from "./CourseSettings";
+import { CourseContent } from "./CourseContent";
 // import { CourseContent } from "@/components/course-content";
 // import { CourseStudents } from "@/components/course-students";
 // import { CourseAnalytics } from "@/components/course-analytics";
@@ -43,7 +44,7 @@ export function InstructorDashboard() {
             >
               <TabsList className="grid w-full grid-cols-5">
                 <TabsTrigger value="overview">Overview</TabsTrigger>
-                {/* <TabsTrigger value="content">Content</TabsTrigger> */}
+                <TabsTrigger value="content">Content</TabsTrigger>
                 {/* <TabsTrigger value="students">Students</TabsTrigger> */}
                 {/* <TabsTrigger value="analytics">Analytics</TabsTrigger> */}
                 <TabsTrigger value="settings">Settings</TabsTrigger>
@@ -51,9 +52,9 @@ export function InstructorDashboard() {
               <TabsContent value="overview" className="space-y-6">
                 <CourseOverview />
               </TabsContent>
-              {/* <TabsContent value="content" className="space-y-6">
+              <TabsContent value="content" className="space-y-6">
                 <CourseContent />
-              </TabsContent> */}
+              </TabsContent>
               {/* <TabsContent value="students" className="space-y-6">
                 <CourseStudents />
               </TabsContent> */}
