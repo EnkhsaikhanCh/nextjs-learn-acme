@@ -3,13 +3,13 @@ import gql from "graphql-tag";
 export const typeDefs = gql`
   type Section {
     _id: ID!
-    courseId: Course!
-    title: String!
+    courseId: Course
+    title: String
     description: String
-    order: Int!
+    order: Int
     lessonId: [Lesson]
-    createdAt: String!
-    updatedAt: String!
+    createdAt: String
+    updatedAt: String
   }
 
   input CreateSectionInput {
