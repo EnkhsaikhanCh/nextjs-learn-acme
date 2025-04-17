@@ -28,15 +28,16 @@ export type Course = {
   difficulty?: Maybe<Difficulty>;
   isEnrolled?: Maybe<Scalars['Boolean']['output']>;
   price?: Maybe<PricingPlan>;
+  requirements?: Maybe<Scalars['String']['output']>;
   sectionId?: Maybe<Array<Maybe<Section>>>;
   slug?: Maybe<Scalars['String']['output']>;
   status?: Maybe<CourseStatus>;
   subtitle?: Maybe<Scalars['String']['output']>;
-  tags?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   thumbnail?: Maybe<Thumbnail>;
   title: Scalars['String']['output'];
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
   whatYouWillLearn?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  whoIsThisFor?: Maybe<Scalars['String']['output']>;
 };
 
 /**
@@ -59,8 +60,10 @@ export type CourseBasicInfoInput = {
   category?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   difficulty?: InputMaybe<Difficulty>;
+  requirements?: InputMaybe<Scalars['String']['input']>;
   subtitle?: InputMaybe<Scalars['String']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
+  whoIsThisFor?: InputMaybe<Scalars['String']['input']>;
 };
 
 /**
@@ -83,7 +86,6 @@ export enum CourseStatus {
 }
 
 export type CreateCourseInput = {
-  createdBy?: InputMaybe<Scalars['String']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -216,6 +218,7 @@ export type Mutation = {
   updateCoursePricing: Course;
   updateCourseThumbnail: Course;
   updateCourseVisibilityAndAccess: Course;
+  updateCourseWhatYouWillLearn: Course;
   updateEnrollment?: Maybe<Enrollment>;
   updateLesson: Lesson;
   updatePaymentStatus?: Maybe<Payment>;
@@ -320,6 +323,12 @@ export type MutationUpdateCourseThumbnailArgs = {
 
 export type MutationUpdateCourseVisibilityAndAccessArgs = {
   input: UpdateCourseVisibilityAndAccessInput;
+};
+
+
+export type MutationUpdateCourseWhatYouWillLearnArgs = {
+  courseId: Scalars['ID']['input'];
+  input: UpdateCourseWhatYouWillLearnInput;
 };
 
 
@@ -638,6 +647,10 @@ export type UpdateCourseVisibilityAndAccessInput = {
   status: CourseStatus;
 };
 
+export type UpdateCourseWhatYouWillLearnInput = {
+  points: Array<Scalars['String']['input']>;
+};
+
 export type UpdateEnrollmentInput = {
   _id: Scalars['ID']['input'];
   progress?: InputMaybe<Scalars['Float']['input']>;
@@ -779,6 +792,14 @@ export type UpdateCourseVisibilityAndAccessMutationVariables = Exact<{
 
 export type UpdateCourseVisibilityAndAccessMutation = { __typename?: 'Mutation', updateCourseVisibilityAndAccess: { __typename?: 'Course', _id: string } };
 
+export type UpdateCourseWhatYouWillLearnMutationVariables = Exact<{
+  courseId: Scalars['ID']['input'];
+  input: UpdateCourseWhatYouWillLearnInput;
+}>;
+
+
+export type UpdateCourseWhatYouWillLearnMutation = { __typename?: 'Mutation', updateCourseWhatYouWillLearn: { __typename?: 'Course', _id: string } };
+
 export type GetAllCourseQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -794,7 +815,7 @@ export type GetCourseForUserQueryVariables = Exact<{
 }>;
 
 
-export type GetCourseForUserQuery = { __typename?: 'Query', getCourseForUser: { __typename?: 'CourseForUserPayload', status: CourseAccessStatus, fullContent?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, description?: string | null, difficulty?: Difficulty | null, status?: CourseStatus | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null, sectionId?: Array<{ __typename?: 'Section', _id: string, title: string, description?: string | null, order: number, lessonId?: Array<{ __typename?: 'Lesson', _id: string, title: string, content?: string | null, videoUrl?: string | null, order: number, isPublished: boolean } | null> | null } | null> | null } | null, coursePreviewData?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, description?: string | null, courseCode?: string | null, difficulty?: Difficulty | null, category?: string | null, tags?: Array<string | null> | null, status?: CourseStatus | null, whatYouWillLearn?: Array<string | null> | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: string | null, amount?: number | null, currency?: Currency | null } | null } | null } };
+export type GetCourseForUserQuery = { __typename?: 'Query', getCourseForUser: { __typename?: 'CourseForUserPayload', status: CourseAccessStatus, fullContent?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, description?: string | null, difficulty?: Difficulty | null, status?: CourseStatus | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null, sectionId?: Array<{ __typename?: 'Section', _id: string, title: string, description?: string | null, order: number, lessonId?: Array<{ __typename?: 'Lesson', _id: string, title: string, content?: string | null, videoUrl?: string | null, order: number, isPublished: boolean } | null> | null } | null> | null } | null, coursePreviewData?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, description?: string | null, courseCode?: string | null, difficulty?: Difficulty | null, category?: string | null, status?: CourseStatus | null, whatYouWillLearn?: Array<string | null> | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: string | null, amount?: number | null, currency?: Currency | null } | null } | null } };
 
 export type GetUserEnrolledCoursesCountQueryVariables = Exact<{
   userId: Scalars['ID']['input'];
@@ -827,7 +848,7 @@ export type GetCourseBasicInfoForEditQueryVariables = Exact<{
 }>;
 
 
-export type GetCourseBasicInfoForEditQuery = { __typename?: 'Query', getCourseBasicInfoForEdit?: { __typename?: 'Course', _id: string, title: string, subtitle?: string | null, slug?: string | null, description?: string | null, courseCode?: string | null, difficulty?: Difficulty | null, category?: string | null, status?: CourseStatus | null, updatedAt?: Date | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: string | null, amount?: number | null, currency?: Currency | null } | null } | null };
+export type GetCourseBasicInfoForEditQuery = { __typename?: 'Query', getCourseBasicInfoForEdit?: { __typename?: 'Course', _id: string, title: string, subtitle?: string | null, slug?: string | null, description?: string | null, requirements?: string | null, courseCode?: string | null, difficulty?: Difficulty | null, category?: string | null, status?: CourseStatus | null, updatedAt?: Date | null, whoIsThisFor?: string | null, whatYouWillLearn?: Array<string | null> | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: string | null, amount?: number | null, currency?: Currency | null } | null } | null };
 
 export type MarkLessonAsCompletedMutationVariables = Exact<{
   input?: InputMaybe<MarkLessonAsCompletedInput>;
@@ -1302,6 +1323,40 @@ export function useUpdateCourseVisibilityAndAccessMutation(baseOptions?: Apollo.
 export type UpdateCourseVisibilityAndAccessMutationHookResult = ReturnType<typeof useUpdateCourseVisibilityAndAccessMutation>;
 export type UpdateCourseVisibilityAndAccessMutationResult = Apollo.MutationResult<UpdateCourseVisibilityAndAccessMutation>;
 export type UpdateCourseVisibilityAndAccessMutationOptions = Apollo.BaseMutationOptions<UpdateCourseVisibilityAndAccessMutation, UpdateCourseVisibilityAndAccessMutationVariables>;
+export const UpdateCourseWhatYouWillLearnDocument = gql`
+    mutation UpdateCourseWhatYouWillLearn($courseId: ID!, $input: UpdateCourseWhatYouWillLearnInput!) {
+  updateCourseWhatYouWillLearn(courseId: $courseId, input: $input) {
+    _id
+  }
+}
+    `;
+export type UpdateCourseWhatYouWillLearnMutationFn = Apollo.MutationFunction<UpdateCourseWhatYouWillLearnMutation, UpdateCourseWhatYouWillLearnMutationVariables>;
+
+/**
+ * __useUpdateCourseWhatYouWillLearnMutation__
+ *
+ * To run a mutation, you first call `useUpdateCourseWhatYouWillLearnMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateCourseWhatYouWillLearnMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateCourseWhatYouWillLearnMutation, { data, loading, error }] = useUpdateCourseWhatYouWillLearnMutation({
+ *   variables: {
+ *      courseId: // value for 'courseId'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateCourseWhatYouWillLearnMutation(baseOptions?: Apollo.MutationHookOptions<UpdateCourseWhatYouWillLearnMutation, UpdateCourseWhatYouWillLearnMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateCourseWhatYouWillLearnMutation, UpdateCourseWhatYouWillLearnMutationVariables>(UpdateCourseWhatYouWillLearnDocument, options);
+      }
+export type UpdateCourseWhatYouWillLearnMutationHookResult = ReturnType<typeof useUpdateCourseWhatYouWillLearnMutation>;
+export type UpdateCourseWhatYouWillLearnMutationResult = Apollo.MutationResult<UpdateCourseWhatYouWillLearnMutation>;
+export type UpdateCourseWhatYouWillLearnMutationOptions = Apollo.BaseMutationOptions<UpdateCourseWhatYouWillLearnMutation, UpdateCourseWhatYouWillLearnMutationVariables>;
 export const GetAllCourseDocument = gql`
     query GetAllCourse {
   getAllCourse {
@@ -1445,7 +1500,6 @@ export const GetCourseForUserDocument = gql`
         currency
       }
       category
-      tags
       status
       whatYouWillLearn
     }
@@ -1683,6 +1737,7 @@ export const GetCourseBasicInfoForEditDocument = gql`
     subtitle
     slug
     description
+    requirements
     courseCode
     difficulty
     thumbnail {
@@ -1700,6 +1755,8 @@ export const GetCourseBasicInfoForEditDocument = gql`
     category
     status
     updatedAt
+    whoIsThisFor
+    whatYouWillLearn
   }
 }
     `;

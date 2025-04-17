@@ -5,6 +5,7 @@ import { BasicInformationCard } from "./InstructorCourseSettingsComponents/Basic
 import { CoursePricingCard } from "./InstructorCourseSettingsComponents/CoursePricingCard";
 import { CourseThumbnailCard } from "./InstructorCourseSettingsComponents/CourseThumbnailCard";
 import { VisibilityAndAccessCard } from "./InstructorCourseSettingsComponents/VisibilityAndAccessCard";
+import { WhatYouWillLearnCard } from "./InstructorCourseSettingsComponents/WhatYouWillLearnCard";
 
 export const CourseSettings = () => {
   const { slug } = useParams();
@@ -36,6 +37,16 @@ export const CourseSettings = () => {
 
       <BasicInformationCard
         initialValues={data?.getCourseBasicInfoForEdit as Course}
+        refetch={refetch}
+      />
+
+      <WhatYouWillLearnCard
+        initialValues={
+          (data?.getCourseBasicInfoForEdit?.whatYouWillLearn?.filter(
+            Boolean,
+          ) as string[]) || []
+        }
+        courseId={data?.getCourseBasicInfoForEdit?._id as string}
         refetch={refetch}
       />
 

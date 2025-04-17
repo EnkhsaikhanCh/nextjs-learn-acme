@@ -8,8 +8,8 @@ import { cloudinary } from "@/lib/cloudinary";
 // Zod schema for validation
 const ThumbnailSchema = z.object({
   publicId: z.string().min(5).max(255),
-  // width: z.number().int().min(1280),
-  // height: z.number().int().min(720),
+  width: z.number().positive(),
+  height: z.number().positive(),
   format: z.enum(["jpg", "jpeg", "png"]),
 });
 
@@ -62,14 +62,10 @@ export const updateCourseThumbnail = async (
     ) {
       try {
         await cloudinary.uploader.destroy(course.thumbnail.publicId);
-      } catch (error) {
-        const errorMessage = (error as Error).message;
-        throw new GraphQLError(
-          `Failed to delete previous thumbnail: ${errorMessage}`,
-          {
-            extensions: { code: "CLOUDINARY_ERROR" },
-          },
-        );
+      } catch {
+        throw new GraphQLError("Failed to delete previous thumbnail", {
+          extensions: { code: "CLOUDINARY_ERROR" },
+        });
       }
     }
 

@@ -62,15 +62,16 @@ export const typeDefs = gql`
     subtitle: String
     slug: String
     description: String
+    requirements: String
     courseCode: String
     difficulty: Difficulty
     thumbnail: Thumbnail
     price: PricingPlan
     sectionId: [Section]
     category: String
-    tags: [String]
     status: CourseStatus
     whatYouWillLearn: [String]
+    whoIsThisFor: String
     isEnrolled: Boolean
     updatedAt: Date
   }
@@ -113,7 +114,6 @@ export const typeDefs = gql`
   }
 
   input CreateCourseInput {
-    createdBy: String
     title: String
   }
 
@@ -128,6 +128,8 @@ export const typeDefs = gql`
     title: String
     subtitle: String
     description: String
+    requirements: String
+    whoIsThisFor: String
     category: String
     difficulty: Difficulty
   }
@@ -151,6 +153,10 @@ export const typeDefs = gql`
     status: CourseStatus!
   }
 
+  input UpdateCourseWhatYouWillLearnInput {
+    points: [String!]!
+  }
+
   type Mutation {
     updateCourseBasicInfo(courseId: ID!, input: CourseBasicInfoInput!): Course!
     updateCoursePricing(
@@ -160,6 +166,10 @@ export const typeDefs = gql`
     updateCourseThumbnail(courseId: ID!, input: ThumbnailInput!): Course!
     updateCourseVisibilityAndAccess(
       input: UpdateCourseVisibilityAndAccessInput!
+    ): Course!
+    updateCourseWhatYouWillLearn(
+      courseId: ID!
+      input: UpdateCourseWhatYouWillLearnInput!
     ): Course!
     createCourse(input: CreateCourseInput!): Course!
     deleteCourse(id: ID!): Boolean!

@@ -15,6 +15,7 @@ export type Course = {
   title: string;
   subtitle: string;
   description: string;
+  requirements?: string;
   slug: string;
   courseCode: string;
   difficulty: "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
@@ -27,9 +28,9 @@ export type Course = {
     format?: string;
   };
   category?: string;
-  tags?: string[];
   status?: "DRAFT" | "PUBLISHED" | "ARCHIVED";
   whatYouWillLearn?: string[];
+  whoIsThisFor?: string;
 };
 
 const PricingPlanSchema = new Schema(
@@ -59,6 +60,7 @@ const CourseSchema = new Schema<Course>(
     title: { type: String, required: true },
     subtitle: { type: String },
     description: { type: String },
+    requirements: { type: String },
     slug: { type: String },
     courseCode: { type: String, required: true, unique: true },
     difficulty: {
@@ -69,13 +71,13 @@ const CourseSchema = new Schema<Course>(
     sectionId: [{ type: Schema.Types.String, ref: "Section", default: [] }],
     thumbnail: { type: ThumbnailSchema },
     category: { type: String },
-    tags: { type: [String], default: [] },
     status: {
       type: String,
       enum: ["DRAFT", "PUBLISHED", "ARCHIVED"],
       default: "DRAFT",
     },
-    whatYouWillLearn: { type: [String], default: [] },
+    whatYouWillLearn: { type: [String] },
+    whoIsThisFor: { type: String },
   },
   { timestamps: true },
 );

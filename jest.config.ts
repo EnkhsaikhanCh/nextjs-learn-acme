@@ -113,7 +113,6 @@ const config: Config = {
     "src/app/api/graphql/models",
     "src/app/api/graphql/schemas",
     "src/app/api/graphql/resolvers/mutations/enrollment",
-    "src/app/api/graphql/resolvers/mutations/course",
     "src/app/api/graphql/resolvers/mutations/payment/updateOrCreateEnrollment.ts",
     "src/app/api/graphql/resolvers/queries/course/get-all-course-with-enrollment-query.ts",
     "src/app/api/graphql/resolvers/queries/course/get-all-course.ts",

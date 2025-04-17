@@ -2,14 +2,8 @@ import { GraphQLError } from "graphql";
 import { CourseModel } from "../../../models";
 import { CreateCourseInput, User } from "@/generated/graphql";
 import { requireAuthAndRoles } from "@/lib/auth-utils";
-
-const slugify = (title: string): string => {
-  return title
-    .toLowerCase()
-    .replace(/[^a-z0-9а-яөү]/g, " ") // Тусгай тэмдэгтүүдийг устгах
-    .trim()
-    .replace(/\s+/g, "-"); // Сул зайг "-" болгох
-};
+import { generateUniqueSlug } from "@/utils/generate-unique-slug";
+import { generateNextCourseCode } from "@/utils/generate-next-course-code";
 
 export const createCourse = async (
   _: unknown,
@@ -20,40 +14,26 @@ export const createCourse = async (
     const { user } = context;
     await requireAuthAndRoles(user, ["ADMIN", "INSTRUCTOR"]);
 
-    if (!input.title) {
+    const { title } = input;
+
+    if (!title) {
       throw new GraphQLError("Missing required title field", {
         extensions: { code: "BAD_USER_INPUT" },
       });
     }
 
-    const generatedSlug = slugify(input.title);
+    const uniqueSlug = await generateUniqueSlug(title, CourseModel);
 
-    // slug давхцах эсэхийг шалгах
-    let uniqueSlug = generatedSlug;
-    let count = 1;
-    while (await CourseModel.findOne({ slug: uniqueSlug })) {
-      uniqueSlug = `${generatedSlug}-${count}`;
-      count++;
-    }
-
-    const lastCourse = await CourseModel.findOne().sort({ courseCode: -1 });
-
-    let newCourseCode = "001"; // Default эхний код
-    if (lastCourse && lastCourse.courseCode) {
-      const lastCode = parseInt(lastCourse.courseCode, 10);
-      newCourseCode = String(lastCode + 1).padStart(3, "0"); // 3 оронтой формат
-    }
+    const newCourseCode = await generateNextCourseCode();
 
     const newCourse = new CourseModel({
-      ...input,
+      title,
       createdBy: user?._id,
       slug: uniqueSlug,
       courseCode: newCourseCode,
     });
 
     const savedCourse = await newCourse.save();
-
-    await savedCourse.populate({ path: "createdBy", model: "User" });
 
     return savedCourse;
   } catch (error) {

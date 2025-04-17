@@ -1,39 +1,27 @@
-import {
-  CourseStatus,
-  UpdateCourseVisibilityAndAccessInput,
-  User,
-} from "@/generated/graphql";
+import { UpdateCourseWhatYouWillLearnInput, User } from "@/generated/graphql";
 import { requireAuthAndRoles } from "@/lib/auth-utils";
 import { GraphQLError } from "graphql";
 import { CourseModel } from "../../../models";
-import { z } from "zod";
 
-// Zod schema for validation
-const UpdateVisibilitySchema = z.object({
-  status: z.nativeEnum(CourseStatus),
-});
-
-export const updateCourseVisibilityAndAccess = async (
+export const updateCourseWhatYouWillLearn = async (
   _: unknown,
-  { input }: { input: UpdateCourseVisibilityAndAccessInput },
+  {
+    courseId,
+    input,
+  }: { courseId: string; input: UpdateCourseWhatYouWillLearnInput },
   context: { user?: User },
 ) => {
   try {
     const { user } = context;
     await requireAuthAndRoles(user, ["INSTRUCTOR"]);
 
-    // Validate input using zod
-    const validated = UpdateVisibilitySchema.safeParse(input);
-    if (!validated.success) {
-      throw new GraphQLError("Invalid input for course visibility", {
-        extensions: {
-          code: "BAD_USER_INPUT",
-          details: validated.error.flatten(),
-        },
+    if (!courseId) {
+      throw new GraphQLError("Course ID is required", {
+        extensions: { code: "BAD_USER_INPUT" },
       });
     }
 
-    const course = await CourseModel.findById(input.courseId);
+    const course = await CourseModel.findById(courseId);
     if (!course) {
       throw new GraphQLError("Course not found", {
         extensions: { code: "COURSE_NOT_FOUND" },
@@ -50,7 +38,7 @@ export const updateCourseVisibilityAndAccess = async (
       );
     }
 
-    course.status = input.status;
+    course.whatYouWillLearn = input.points ?? [];
 
     await course.save();
 
