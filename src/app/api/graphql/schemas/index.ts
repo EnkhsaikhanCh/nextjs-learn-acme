@@ -8,6 +8,7 @@ import { typeDefs as LessonTypeDefs } from "./lesson.schema";
 import { typeDefs as PaymentTypeDefs } from "./payment.schema";
 import { typeDefs as SubscribeTypeDefs } from "./subscriber.schema";
 import { typeDefs as AuthTypeDefs } from "./auth.schema";
+import { typeDefs as InstructorTypeDefs } from "./instructor.schema";
 
 export const typeDefs = mergeTypeDefs([
   UserTypeDefs,
@@ -18,4 +19,5 @@ export const typeDefs = mergeTypeDefs([
   PaymentTypeDefs,
   SubscribeTypeDefs,
   AuthTypeDefs,
+  InstructorTypeDefs,
 ]);
