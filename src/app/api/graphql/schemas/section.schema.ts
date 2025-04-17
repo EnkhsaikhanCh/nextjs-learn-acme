@@ -28,8 +28,13 @@ export const typeDefs = gql`
     message: String
   }
 
+  type CreateSectionResponse {
+    success: Boolean!
+    message: String!
+  }
+
   type Mutation {
-    createSection(input: CreateSectionInput): Section
+    createSection(input: CreateSectionInput): CreateSectionResponse!
     updateSection(_id: ID!, input: UpdateSectionInput!): Section!
     deleteSection(_id: ID!): DeleteSectionResponse!
   }
