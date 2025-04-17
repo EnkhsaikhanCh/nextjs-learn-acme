@@ -112,6 +112,12 @@ export type CreateSectionInput = {
   title: Scalars['String']['input'];
 };
 
+export type CreateSectionResponse = {
+  __typename?: 'CreateSectionResponse';
+  message: Scalars['String']['output'];
+  success: Scalars['Boolean']['output'];
+};
+
 export enum Currency {
   Mnt = 'MNT'
 }
@@ -203,7 +209,7 @@ export type Mutation = {
   createEnrollment?: Maybe<Enrollment>;
   createLesson: Lesson;
   createPayment?: Maybe<Payment>;
-  createSection?: Maybe<Section>;
+  createSection: CreateSectionResponse;
   createSubscriber: SubscribeResponse;
   createUser: RegisterResponse;
   deleteCourse: Scalars['Boolean']['output'];
@@ -966,7 +972,7 @@ export type CreateSectionMutationVariables = Exact<{
 }>;
 
 
-export type CreateSectionMutation = { __typename?: 'Mutation', createSection?: { __typename?: 'Section', _id: string } | null };
+export type CreateSectionMutation = { __typename?: 'Mutation', createSection: { __typename?: 'CreateSectionResponse', success: boolean, message: string } };
 
 export type UpdateSectionMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -2401,7 +2407,8 @@ export type GetPaymentByUserAndCourseQueryResult = Apollo.QueryResult<GetPayment
 export const CreateSectionDocument = gql`
     mutation CreateSection($input: CreateSectionInput) {
   createSection(input: $input) {
-    _id
+    success
+    message
   }
 }
     `;
