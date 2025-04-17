@@ -47,37 +47,13 @@ export const CourseOverviewSection = ({ course }: Props) => {
                 <li>
                   <strong>Ангилал:</strong>
                   <div className="mt-1 flex flex-wrap items-center gap-2">
-                    {course.categories?.length ? (
-                      course.categories.map((category, index) => (
-                        <Badge
-                          key={index}
-                          className="bg-yellow-200 text-yellow-600"
-                        >
-                          {category}
-                        </Badge>
-                      ))
+                    {course.category?.length ? (
+                      <Badge className="bg-yellow-200 text-yellow-600">
+                        {course.category}
+                      </Badge>
                     ) : (
                       <div className="text-sm text-gray-500">
                         Ангилал байхгүй
-                      </div>
-                    )}
-                  </div>
-                </li>
-                <li>
-                  <strong>Түлхүүр үгс:</strong>
-                  <div className="mt-1 flex flex-wrap items-center gap-2">
-                    {course.tags?.length ? (
-                      course.tags.map((tag, index) => (
-                        <Badge
-                          key={index}
-                          className="bg-yellow-200 text-yellow-600"
-                        >
-                          {tag}
-                        </Badge>
-                      ))
-                    ) : (
-                      <div className="text-sm text-gray-500">
-                        Түлхүүр үг байхгүй
                       </div>
                     )}
                   </div>

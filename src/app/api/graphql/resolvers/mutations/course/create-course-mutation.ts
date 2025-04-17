@@ -1,46 +1,34 @@
 import { GraphQLError } from "graphql";
 import { CourseModel } from "../../../models";
-import { CreateCourseInput } from "@/generated/graphql";
-
-const slugify = (title: string): string => {
-  return title
-    .toLowerCase()
-    .replace(/[^a-z0-9а-яөү]/g, " ") // Тусгай тэмдэгтүүдийг устгах
-    .trim()
-    .replace(/\s+/g, "-"); // Сул зайг "-" болгох
-};
+import { CreateCourseInput, User } from "@/generated/graphql";
+import { requireAuthAndRoles } from "@/lib/auth-utils";
+import { generateUniqueSlug } from "@/utils/generate-unique-slug";
+import { generateNextCourseCode } from "@/utils/generate-next-course-code";
 
 export const createCourse = async (
   _: unknown,
   { input }: { input: CreateCourseInput },
+  context: { user?: User },
 ) => {
   try {
-    if (!input.title) {
+    const { user } = context;
+    await requireAuthAndRoles(user, ["ADMIN", "INSTRUCTOR"]);
+
+    const { title } = input;
+
+    if (!title) {
       throw new GraphQLError("Missing required title field", {
         extensions: { code: "BAD_USER_INPUT" },
       });
     }
 
-    const generatedSlug = slugify(input.title);
+    const uniqueSlug = await generateUniqueSlug(title, CourseModel);
 
-    // slug давхцах эсэхийг шалгах
-    let uniqueSlug = generatedSlug;
-    let count = 1;
-    while (await CourseModel.findOne({ slug: uniqueSlug })) {
-      uniqueSlug = `${generatedSlug}-${count}`;
-      count++;
-    }
-
-    const lastCourse = await CourseModel.findOne().sort({ courseCode: -1 });
-
-    let newCourseCode = "001"; // Default эхний код
-    if (lastCourse && lastCourse.courseCode) {
-      const lastCode = parseInt(lastCourse.courseCode, 10);
-      newCourseCode = String(lastCode + 1).padStart(3, "0"); // 3 оронтой формат
-    }
+    const newCourseCode = await generateNextCourseCode();
 
     const newCourse = new CourseModel({
-      ...input,
+      title,
+      createdBy: user?._id,
       slug: uniqueSlug,
       courseCode: newCourseCode,
     });
@@ -52,10 +40,7 @@ export const createCourse = async (
     if (error instanceof GraphQLError) {
       throw error;
     }
-
-    const message = (error as Error).message;
-
-    throw new GraphQLError(`Internal server error: ${message}`, {
+    throw new GraphQLError("Internal server error", {
       extensions: { code: "INTERNAL_SERVER_ERROR" },
     });
   }

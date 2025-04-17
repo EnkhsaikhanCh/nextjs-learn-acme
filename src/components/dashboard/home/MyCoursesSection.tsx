@@ -8,10 +8,10 @@ import {
 } from "@/components/ui/card";
 import { useGetUserEnrolledCoursesQuery } from "@/generated/graphql";
 import { Clock, Play } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { mn } from "date-fns/locale"; // <- make sure to install this if not already
+import { CldImage } from "next-cloudinary";
 
 export const MyCoursesSection = ({ userId }: { userId?: string }) => {
   const { data, loading } = useGetUserEnrolledCoursesQuery({
@@ -38,16 +38,18 @@ export const MyCoursesSection = ({ userId }: { userId?: string }) => {
             >
               <Card className="group shadow-sm">
                 <CardHeader className="p-0">
-                  <div className="relative h-40 w-full overflow-hidden">
-                    <Image
+                  <div className="relative w-full overflow-hidden">
+                    <CldImage
                       src={
-                        course?.courseId?.thumbnail ||
+                        course?.courseId?.thumbnail?.publicId ||
                         "/code.jpg?height=100&width=200"
                       }
-                      alt={course?.courseId?.title || "Course image"}
-                      width={400}
-                      height={200}
-                      className="h-48 w-full rounded-t-md object-cover"
+                      width={1280}
+                      height={720}
+                      crop="fill"
+                      alt="Course Thumbnail"
+                      className="aspect-video h-48 w-full rounded-t-md object-cover"
+                      key={course?.courseId?.thumbnail?.publicId}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
                     <div className="absolute right-3 bottom-3 left-3">

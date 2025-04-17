@@ -2,8 +2,9 @@
 import gql from "graphql-tag";
 
 export const typeDefs = gql`
+  scalar Date
+
   enum Currency {
-    USD
     MNT
   }
 
@@ -47,42 +48,39 @@ export const typeDefs = gql`
     fullContent: Course
   }
 
+  type Thumbnail {
+    publicId: String!
+    width: Int
+    height: Int
+    format: String
+  }
+
   type Course {
     _id: ID!
+    createdBy: User
     title: String!
+    subtitle: String
     slug: String
     description: String
+    requirements: String
     courseCode: String
     difficulty: Difficulty
-    thumbnail: String
-    price: Price
-    pricingDetails: PricingDetails
+    thumbnail: Thumbnail
+    price: PricingPlan
     sectionId: [Section]
-    categories: [String]
-    tags: [String]
+    category: String
     status: CourseStatus
     whatYouWillLearn: [String]
-    whyChooseOurCourse: [WhyChoose]
+    whoIsThisFor: String
     isEnrolled: Boolean
+    updatedAt: Date
   }
 
-  type PricingDetails {
+  type PricingPlan {
     planTitle: String
     description: String
-    price: String
-    details: [String]
-  }
-
-  type Price {
-    amount: Float
+    amount: Int
     currency: Currency
-    discount: Float
-  }
-
-  type WhyChoose {
-    icon: String
-    title: String
-    description: String
   }
 
   type GetUserEnrolledCoursesCountResponse {
@@ -92,62 +90,88 @@ export const typeDefs = gql`
     courseCompletionPercentage: Float!
   }
 
+  type getCourseDetailsForInstructorResponse {
+    course: Course
+    totalSections: Int
+    totalLessons: Int
+    totalEnrollment: Int
+  }
+
   type Query {
-    getCourseById(_id: ID!): Course
-    getCourseBySlug(slug: String!): Course
-    getCourseDetails(slug: String!): Course
+    getCourseBasicInfoForEdit(slug: String!): Course
+    getCourseDetailsForInstructor(
+      slug: String!
+    ): getCourseDetailsForInstructorResponse
     getAllCourse: [Course!]!
     getAllCourseWithEnrollment: [Course!]!
-    getEnrolledCourseContentBySlug(slug: String!): Course
-    getCourseIdBySlug(slug: String): Course
     getCourseForUser(slug: String!): CourseForUserPayload!
     getUserEnrolledCoursesCount(
       userId: ID!
     ): GetUserEnrolledCoursesCountResponse!
     getUserNotEnrolledCourses(userId: ID!): [Course]
-  }
 
-  input PriceInput {
-    amount: Float
-    currency: Currency
-    discount: Float
-  }
-
-  input PricingDetailsInput {
-    planTitle: String
-    description: String
-    price: String
-    details: [String]
-  }
-
-  input WhyChooseInput {
-    icon: String
-    title: String
-    description: String
+    getAllCoursesByInstructurId: [Course]
   }
 
   input CreateCourseInput {
     title: String
   }
 
-  input UpdateCourseInput {
-    _id: ID!
-    title: String
+  input PricingPlanInput {
+    planTitle: String
     description: String
-    price: PriceInput
+    amount: Int
+    currency: Currency
+  }
+
+  input CourseBasicInfoInput {
+    title: String
+    subtitle: String
+    description: String
+    requirements: String
+    whoIsThisFor: String
+    category: String
     difficulty: Difficulty
-    thumbnail: String
-    pricingDetails: PricingDetailsInput
-    categories: [String]
-    tags: [String]
-    status: CourseStatus
-    whatYouWillLearn: [String]
-    whyChooseOurCourse: [WhyChooseInput]
+  }
+
+  input UpdateCoursePricingInput {
+    planTitle: String
+    description: String
+    amount: Int
+    currency: Currency
+  }
+
+  input ThumbnailInput {
+    publicId: String!
+    width: Int
+    height: Int
+    format: String
+  }
+
+  input UpdateCourseVisibilityAndAccessInput {
+    courseId: ID!
+    status: CourseStatus!
+  }
+
+  input UpdateCourseWhatYouWillLearnInput {
+    points: [String!]!
   }
 
   type Mutation {
+    updateCourseBasicInfo(courseId: ID!, input: CourseBasicInfoInput!): Course!
+    updateCoursePricing(
+      courseId: ID!
+      input: UpdateCoursePricingInput!
+    ): Course!
+    updateCourseThumbnail(courseId: ID!, input: ThumbnailInput!): Course!
+    updateCourseVisibilityAndAccess(
+      input: UpdateCourseVisibilityAndAccessInput!
+    ): Course!
+    updateCourseWhatYouWillLearn(
+      courseId: ID!
+      input: UpdateCourseWhatYouWillLearnInput!
+    ): Course!
     createCourse(input: CreateCourseInput!): Course!
-    updateCourse(input: UpdateCourseInput!): Course!
     deleteCourse(id: ID!): Boolean!
   }
 `;

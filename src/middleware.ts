@@ -3,60 +3,88 @@ import { getToken } from "next-auth/jwt";
 import { NextResponse, NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // 🔒 Check auth token
   const token = await getToken({
     req: request,
     secret: process.env.AUTH_SECRET,
   });
 
-  const { pathname } = request.nextUrl;
+  // Define allowed roles
+  type Role = "ADMIN" | "INSTRUCTOR" | "STUDENT";
+  const role: Role = (token?.role as Role) || "";
+  const isVerified = token?.isVerified ?? false;
 
-  // Орчны хувьсагч ашиглан launch хийгдсэн эсэхийг шалгах
-  const isSiteLaunched = process.env.SITE_LAUNCHED === "true";
+  // 🚀 Site launch status
+  const isLaunched = process.env.SITE_LAUNCHED === "true";
 
-  // Хэрэв сайт launch хийгдээгүй бол зөвхөн home page ажиллана
-  if (!isSiteLaunched) {
-    if (pathname !== "/") {
-      return NextResponse.redirect(new URL("/", request.url));
-    }
-    return NextResponse.next(); // Home page-ийг үргэлжлүүлнэ
+  // 🧭 Role-based default redirects
+  const roleRedirectMap: Record<Role, string> = {
+    ADMIN: "/admin",
+    INSTRUCTOR: "/instructor",
+    STUDENT: "/dashboard",
+  };
+
+  const fallbackRedirect = "/";
+
+  // 🛡️ Routes that require login
+  const protectedPaths = ["/admin", "/dashboard", "/instructor"];
+  const isProtectedRoute = protectedPaths.some((p) => pathname.startsWith(p));
+
+  // 🚫 If site is not launched, block everything except "/"
+  if (!isLaunched && pathname !== "/") {
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
-  // Нэвтрээгүй хэрэглэгчдийг `/login` руу чиглүүлэх
+  // 🔐 If unauthenticated, redirect protected routes to login
   if (!token) {
-    if (pathname.startsWith("/admin") || pathname.startsWith("/dashboard")) {
+    if (isProtectedRoute) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
-    return NextResponse.next(); // Үргэлжлүүлэх
+    return NextResponse.next();
   }
 
-  if (!token.isVerified && pathname !== "/verify-otp") {
+  // 🧪 OTP not verified → force /verify-otp
+  if (!isVerified && pathname !== "/verify-otp") {
     return NextResponse.redirect(new URL("/verify-otp", request.url));
   }
 
-  // Token-оос хэрэглэгчийн role авна
-  const role = token?.role;
+  // 🔄 Define allowed roles for each route.
+  const routeRoleMap: { pathPrefix: string; allowedRoles: Role[] }[] = [
+    { pathPrefix: "/admin", allowedRoles: ["ADMIN"] },
+    { pathPrefix: "/instructor", allowedRoles: ["INSTRUCTOR"] },
+    {
+      pathPrefix: "/dashboard",
+      allowedRoles: ["STUDENT", "ADMIN", "INSTRUCTOR"],
+    },
+  ];
 
-  // `/admin` замд зөвхөн admin role-тэй хэрэглэгч нэвтрэх боломжтой
-  if (pathname.startsWith("/admin") && role !== "ADMIN") {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+  // Check if the current role is permitted to access the requested route.
+  for (const { pathPrefix, allowedRoles } of routeRoleMap) {
+    if (pathname.startsWith(pathPrefix) && !allowedRoles.includes(role)) {
+      const target = roleRedirectMap[role] || fallbackRedirect;
+      return NextResponse.redirect(new URL(target, request.url));
+    }
   }
 
-  if (
-    pathname.startsWith("/dashboard/courses") &&
-    role !== "STUDENT" &&
-    role !== "ADMIN"
-  ) {
-    return NextResponse.redirect(new URL("/admin", request.url));
+  // 🔁 Block authenticated users from accessing /login or /signup again
+  if (["/login", "/signup"].includes(pathname)) {
+    const target = roleRedirectMap[role] || fallbackRedirect;
+    return NextResponse.redirect(new URL(target, request.url));
   }
 
-  // Хэрэглэгч `/login` эсвэл `/signup` руу орох үед `/dashboard` руу чиглүүлэх
-  if (token && (pathname === "/login" || pathname === "/signup")) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
-  }
-
-  return NextResponse.next(); // Үргэлжлүүлэх
+  return NextResponse.next(); // ✅ Allow access if no conditions match
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/dashboard/:path*", "/login", "/signup", "/"], // Middleware ажиллах замууд
+  matcher: [
+    "/admin/:path*",
+    "/dashboard/:path*",
+    "/instructor/:path*",
+    "/login",
+    "/signup",
+    "/verify-otp",
+    "/", // Home — for SITE_LAUNCHED check
+  ],
 };

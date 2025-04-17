@@ -24,7 +24,6 @@ import {
 } from "@/generated/graphql";
 import {
   Banknote,
-  CircleCheck,
   CircleUserRound,
   ClipboardCheck,
   CreditCard,
@@ -152,22 +151,20 @@ export const NotEnrolled = ({ course }: { course: Course }) => {
           <div className="mx-auto max-w-md">
             <Card>
               <CardHeader>
-                <CardTitle className="text-2xl">Full Course Access</CardTitle>
-                <CardDescription>
-                  {course?.pricingDetails?.description}
-                </CardDescription>
+                <CardTitle className="text-2xl">
+                  {course.price?.planTitle}
+                </CardTitle>
+                <CardDescription>{course?.price?.description}</CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-4xl font-bold">
-                  ₮{course?.pricingDetails?.price}
-                </p>
+                <p className="text-4xl font-bold">₮{course?.price?.amount}</p>
                 <ul className="mt-4 space-y-2">
-                  {course?.pricingDetails?.details?.map((detail, index) => (
+                  {/* {course?.pricingDetails?.details?.map((detail, index) => (
                     <li className="flex items-center" key={index}>
                       <CircleCheck className="mr-2 h-5 w-5 text-green-500" />
                       {detail}
                     </li>
-                  ))}
+                  ))} */}
                 </ul>
               </CardContent>
               <CardFooter>

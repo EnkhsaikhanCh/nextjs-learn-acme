@@ -3,7 +3,7 @@ import { User } from "@/generated/graphql";
 import { UserModel } from "../../../models";
 import { GraphQLError } from "graphql";
 import { requireAuthAndRoles } from "@/lib/auth-utils";
-import { FilterQuery } from "mongoose";
+import type { FilterQuery } from "mongoose";
 
 interface GetAllUserArgs {
   limit?: number;
