@@ -21,7 +21,9 @@ export const generateNextCourseCode = async (): Promise<string> => {
 
     return String(lastCode + 1).padStart(3, "0");
   } catch (error) {
-    console.error("generateNextCourseCode error:", error);
+    if (error instanceof GraphQLError) {
+      throw error;
+    }
     throw new GraphQLError("Failed to generate next course code", {
       extensions: { code: "INTERNAL_SERVER_ERROR" },
     });

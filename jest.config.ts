@@ -83,8 +83,6 @@ const config: Config = {
     "src/utils/sanitize.ts",
     "src/utils/validation.ts",
     "src/utils/slug-to-label.ts",
-    "src/utils/generate-next-course-code.ts",
-    "src/utils/generate-unique-slug.ts",
 
     // src/app/(auth)
     "src/app/\\(auth\\)/forgot-password",
