@@ -22,7 +22,7 @@ const SectionSchema = new Schema<Section>(
     },
     title: { type: String, required: true },
     description: { type: String },
-    order: { type: Number, required: true, min: 1 },
+    order: { type: Number, required: true, min: 0 },
     lessonId: [
       {
         type: Schema.Types.String,
