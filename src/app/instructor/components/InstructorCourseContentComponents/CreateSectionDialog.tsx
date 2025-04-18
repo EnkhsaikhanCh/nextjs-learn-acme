@@ -73,15 +73,16 @@ export const CreateSectionDialog: React.FC<CreateSectionDialogProps> = ({
       }}
     >
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent>
+      <DialogContent className="sm:max-w-[550px]">
         <DialogHeader>
-          <DialogTitle>Create Section</DialogTitle>
+          <DialogTitle>Add New Section</DialogTitle>
           <DialogDescription>
-            Give your new section a clear, descriptive title.
+            Create a new module for your course. Modules help organize your
+            course content into logical sections.
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="mt-3 space-y-4">
           <div className="grid w-full items-center gap-1.5">
             <Label htmlFor="title">Title</Label>
             <Input
@@ -99,6 +100,7 @@ export const CreateSectionDialog: React.FC<CreateSectionDialogProps> = ({
               variant="secondary"
               type="button"
               onClick={() => setOpen(false)}
+              disabled={loading}
             >
               Cancel
             </Button>

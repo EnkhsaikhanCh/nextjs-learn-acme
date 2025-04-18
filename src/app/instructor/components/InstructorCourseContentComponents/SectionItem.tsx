@@ -42,11 +42,11 @@ export const SectionItem: React.FC<SectionItemProps> = ({
     >
       <AccordionTrigger className="group space-x-2 px-4 py-3">
         <div className="flex-1 text-left">
-          <h3 className="font-medium">{section.title}</h3>
-          <p className="text-xs text-gray-500">
+          <h3 className="font-bold">{section.title}</h3>
+          <div className="text-xs font-semibold text-gray-500">
             {section?.lessonId?.length}{" "}
             {section?.lessonId?.length === 1 ? "lesson" : "lessons"}
-          </p>
+          </div>
         </div>
 
         <TooltipProvider>
@@ -76,7 +76,7 @@ export const SectionItem: React.FC<SectionItemProps> = ({
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 text-gray-500 hover:text-red-600"
+                className="h-8 w-8 hover:text-red-600"
                 onClick={(e) => {
                   e.stopPropagation();
                   setOpen(true);

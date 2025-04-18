@@ -3,13 +3,6 @@
 import { useParams } from "next/navigation";
 import { Loader } from "lucide-react";
 import { Accordion } from "@/components/ui/accordion";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { CreateSectionDialog } from "./InstructorCourseContentComponents/CreateSectionDialog";
@@ -52,56 +45,40 @@ export const CourseContent = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Course Content</h1>
+          <h1 className="text-2xl font-bold tracking-tight">
+            Course Structure
+          </h1>
           <p className="mt-1 text-sm text-gray-500">
-            Organize your course structure and materials
+            Organize your course content by modules and lessons
           </p>
         </div>
+
+        <CreateSectionDialog
+          courseId={courseId!}
+          onCreated={() => {
+            refetch();
+            toast.success("Section successfully created");
+          }}
+          trigger={<Button variant="default">New Section</Button>}
+        />
       </div>
 
-      <Card>
-        <CardHeader className="px-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>Course Structure</CardTitle>
-              <CardDescription>
-                Organize your course content by modules and lessons
-              </CardDescription>
-            </div>
+      <Accordion type="multiple" className="space-y-2">
+        {sections.map((section) => (
+          <SectionItem
+            key={section?._id}
+            section={section as Section}
+            onDelete={handleDelete}
+            deleting={deleting}
+            onUpdate={handleUpdate}
+            updating={updating}
+          />
+        ))}
+      </Accordion>
 
-            <CreateSectionDialog
-              courseId={courseId!}
-              onCreated={() => {
-                refetch();
-                toast.success("Section successfully created");
-              }}
-              trigger={<Button variant="default">New Section</Button>}
-            />
-          </div>
-        </CardHeader>
-
-        <CardContent>
-          <Accordion type="multiple" className="space-y-2">
-            {sections.map((section) => (
-              <SectionItem
-                key={section?._id}
-                section={section as Section}
-                onDelete={handleDelete}
-                deleting={deleting}
-                onUpdate={handleUpdate}
-                updating={updating}
-              />
-            ))}
-          </Accordion>
-
-          {sections.length === 0 && (
-            <NoSectionYetSection
-              courseId={courseId as string}
-              refetch={refetch}
-            />
-          )}
-        </CardContent>
-      </Card>
+      {sections.length === 0 && (
+        <NoSectionYetSection courseId={courseId as string} refetch={refetch} />
+      )}
     </div>
   );
 };

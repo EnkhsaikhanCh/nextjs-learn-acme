@@ -12,6 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Section } from "@/generated/graphql";
+import { Textarea } from "@/components/ui/textarea";
 
 export interface UpdateSectionDialogProps {
   open: boolean;
@@ -46,7 +47,7 @@ export const UpdateSectionDialog: React.FC<UpdateSectionDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[550px]">
         <DialogHeader>
           <DialogTitle>Edit Section</DialogTitle>
           <DialogDescription>
@@ -68,7 +69,7 @@ export const UpdateSectionDialog: React.FC<UpdateSectionDialogProps> = ({
 
           <div>
             <Label htmlFor="description">Description</Label>
-            <Input id="description" {...register("description")} />
+            <Textarea id="description" {...register("description")} />
           </div>
 
           <DialogFooter>
