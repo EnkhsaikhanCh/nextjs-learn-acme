@@ -99,6 +99,12 @@ export type CreateLessonInput = {
   title: Scalars['String']['input'];
 };
 
+export type CreateLessonResponse = {
+  __typename?: 'CreateLessonResponse';
+  message: Scalars['String']['output'];
+  success: Scalars['Boolean']['output'];
+};
+
 export type CreatePaymentInput = {
   amount: Scalars['Float']['input'];
   courseId: Scalars['ID']['input'];
@@ -207,7 +213,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   createCourse: Course;
   createEnrollment?: Maybe<Enrollment>;
-  createLesson: Lesson;
+  createLesson: CreateLessonResponse;
   createPayment?: Maybe<Payment>;
   createSection: CreateSectionResponse;
   createSubscriber: SubscribeResponse;
@@ -915,7 +921,7 @@ export type CreateLessonMutationVariables = Exact<{
 }>;
 
 
-export type CreateLessonMutation = { __typename?: 'Mutation', createLesson: { __typename?: 'Lesson', _id: string } };
+export type CreateLessonMutation = { __typename?: 'Mutation', createLesson: { __typename?: 'CreateLessonResponse', success: boolean, message: string } };
 
 export type UpdateLessonMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -2080,7 +2086,8 @@ export type GetInstructorCourseContentQueryResult = Apollo.QueryResult<GetInstru
 export const CreateLessonDocument = gql`
     mutation CreateLesson($input: CreateLessonInput!) {
   createLesson(input: $input) {
-    _id
+    success
+    message
   }
 }
     `;
