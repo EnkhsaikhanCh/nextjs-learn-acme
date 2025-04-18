@@ -10,7 +10,8 @@ mutation CreateSection($input: CreateSectionInput) {
 
 mutation UpdateSection($id: ID!, $input: UpdateSectionInput!) {
   updateSection(_id: $id, input: $input) {
-    _id
+    success
+    message
   }
 }
 

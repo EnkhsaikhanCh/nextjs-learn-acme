@@ -20,12 +20,6 @@ export const typeDefs = gql`
   input UpdateSectionInput {
     title: String
     description: String
-    order: Int
-  }
-
-  type DeleteSectionResponse {
-    success: Boolean!
-    message: String
   }
 
   type CreateSectionResponse {
@@ -33,9 +27,19 @@ export const typeDefs = gql`
     message: String!
   }
 
+  type UpdateSectionResponse {
+    success: Boolean!
+    message: String!
+  }
+
+  type DeleteSectionResponse {
+    success: Boolean!
+    message: String
+  }
+
   type Mutation {
     createSection(input: CreateSectionInput): CreateSectionResponse!
-    updateSection(_id: ID!, input: UpdateSectionInput!): Section!
+    updateSection(_id: ID!, input: UpdateSectionInput!): UpdateSectionResponse!
     deleteSection(_id: ID!): DeleteSectionResponse!
   }
 `;

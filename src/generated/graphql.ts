@@ -228,7 +228,7 @@ export type Mutation = {
   updateEnrollment?: Maybe<Enrollment>;
   updateLesson: Lesson;
   updatePaymentStatus?: Maybe<Payment>;
-  updateSection: Section;
+  updateSection: UpdateSectionResponse;
   updateUser: User;
   verifyOTP: VerifyOtpResponse;
 };
@@ -679,8 +679,13 @@ export type UpdateLessonInput = {
 
 export type UpdateSectionInput = {
   description?: InputMaybe<Scalars['String']['input']>;
-  order?: InputMaybe<Scalars['Int']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateSectionResponse = {
+  __typename?: 'UpdateSectionResponse';
+  message: Scalars['String']['output'];
+  success: Scalars['Boolean']['output'];
 };
 
 export type UpdateUserInput = {
@@ -980,7 +985,7 @@ export type UpdateSectionMutationVariables = Exact<{
 }>;
 
 
-export type UpdateSectionMutation = { __typename?: 'Mutation', updateSection: { __typename?: 'Section', _id: string } };
+export type UpdateSectionMutation = { __typename?: 'Mutation', updateSection: { __typename?: 'UpdateSectionResponse', success: boolean, message: string } };
 
 export type DeleteSectionMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -2441,7 +2446,8 @@ export type CreateSectionMutationOptions = Apollo.BaseMutationOptions<CreateSect
 export const UpdateSectionDocument = gql`
     mutation UpdateSection($id: ID!, $input: UpdateSectionInput!) {
   updateSection(_id: $id, input: $input) {
-    _id
+    success
+    message
   }
 }
     `;
