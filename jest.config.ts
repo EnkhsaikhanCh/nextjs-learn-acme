@@ -60,6 +60,7 @@ const config: Config = {
     "src/components/LoadingScreen.tsx",
     "src/components/active-theme.tsx",
     "src/components/SubscribeForm.tsx",
+    "src/components/delete-confirmation.tsx",
 
     // src/app
     "src/app/admin",
@@ -114,6 +115,7 @@ const config: Config = {
     "src/app/api/graphql/schemas",
     "src/app/api/graphql/resolvers/mutations/enrollment",
     "src/app/api/graphql/resolvers/mutations/section/create-section-mutation.ts",
+    "src/app/api/graphql/resolvers/mutations/section/delete-section-mutation.ts",
     "src/app/api/graphql/resolvers/mutations/payment/updateOrCreateEnrollment.ts",
     "src/app/api/graphql/resolvers/queries/course/get-all-course-with-enrollment-query.ts",
     "src/app/api/graphql/resolvers/queries/course/get-all-course.ts",
