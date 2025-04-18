@@ -1,16 +1,12 @@
-import {
-  useDeleteSectionMutation,
-  useGetInstructorCourseContentQuery,
-} from "@/generated/graphql";
+import { useDeleteSectionMutation } from "@/generated/graphql";
 import { useCallback } from "react";
 import { toast } from "sonner";
 
-export function useCourseSections(slug: string) {
-  const { data, loading, error, refetch } = useGetInstructorCourseContentQuery({
-    variables: { slug },
-    skip: !slug,
-  });
+interface useCourseSectionsProps {
+  refetch: () => void;
+}
 
+export const useCourseSections = ({ refetch }: useCourseSectionsProps) => {
   const [deleteSection, { loading: deleting }] = useDeleteSectionMutation();
 
   const handleDelete = useCallback(
@@ -29,12 +25,7 @@ export function useCourseSections(slug: string) {
   );
 
   return {
-    sections: data?.getInstructorCourseContent?.sectionId ?? [],
-    courseId: data?.getInstructorCourseContent?._id,
-    loading,
-    error,
     deleting,
-    refetch,
     handleDelete,
   };
-}
+};
