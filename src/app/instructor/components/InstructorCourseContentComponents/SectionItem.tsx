@@ -12,27 +12,33 @@ import {
   TooltipContent,
   TooltipProvider,
 } from "@/components/ui/tooltip";
-import { Trash2 } from "lucide-react";
+import { Edit3, Trash2 } from "lucide-react";
 import { DeleteConfirmation } from "@/components/delete-confirmation";
-import { Section } from "@/generated/graphql";
+import { Section, UpdateSectionInput } from "@/generated/graphql";
+import { UpdateSectionDialog } from "./UpdateSectionDialog";
 
 export interface SectionItemProps {
   section: Section;
   onDelete: (id: string, title: string) => void;
   deleting: boolean;
+  onUpdate: (id: string, input: UpdateSectionInput) => void;
+  updating: boolean;
 }
 
 export const SectionItem: React.FC<SectionItemProps> = ({
   section,
   onDelete,
   deleting,
+  onUpdate,
+  updating,
 }) => {
   const [open, setOpen] = useState(false);
+  const [updateOpen, setUpdateOpen] = useState(false);
 
   return (
     <AccordionItem
       value={section._id}
-      className="mb-4 overflow-hidden rounded-lg border"
+      className="mb-4 overflow-hidden rounded-sm border"
     >
       <AccordionTrigger className="group space-x-2 px-4 py-3">
         <div className="flex-1 text-left">
@@ -42,6 +48,27 @@ export const SectionItem: React.FC<SectionItemProps> = ({
             {section?.lessonId?.length === 1 ? "lesson" : "lessons"}
           </p>
         </div>
+
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setUpdateOpen(true);
+                }}
+              >
+                <Edit3 className="h-4 w-4" />
+                <span className="sr-only">Edit section</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Edit module</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
 
         <TooltipProvider>
           <Tooltip>
@@ -66,10 +93,12 @@ export const SectionItem: React.FC<SectionItemProps> = ({
         </TooltipProvider>
       </AccordionTrigger>
 
-      <AccordionContent>
-        <div className="p-4">
+      <AccordionContent className="border-t">
+        <div className="space-y-4 p-4">
           {section?.description && (
-            <p className="text-sm text-gray-600">{section.description}</p>
+            <p className="text-muted-foreground text-sm">
+              {section.description}
+            </p>
           )}
 
           {section?.lessonId && section.lessonId.length > 0 ? (
@@ -85,6 +114,14 @@ export const SectionItem: React.FC<SectionItemProps> = ({
           )}
         </div>
       </AccordionContent>
+
+      <UpdateSectionDialog
+        open={updateOpen}
+        onOpenChange={setUpdateOpen}
+        section={section}
+        onUpdated={(input) => onUpdate(section._id, input)}
+        updating={updating}
+      />
 
       <DeleteConfirmation
         open={open}
