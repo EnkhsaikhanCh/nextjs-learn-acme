@@ -114,6 +114,7 @@ const config: Config = {
     "src/app/api/graphql/models",
     "src/app/api/graphql/schemas",
     "src/app/api/graphql/resolvers/mutations/enrollment",
+    "src/app/api/graphql/resolvers/mutations/lesson/create-lesson-mutation.ts",
     "src/app/api/graphql/resolvers/mutations/section/create-section-mutation.ts",
     "src/app/api/graphql/resolvers/mutations/section/delete-section-mutation.ts",
     "src/app/api/graphql/resolvers/mutations/section/update-section-mutation.ts",
