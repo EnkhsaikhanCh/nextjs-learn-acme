@@ -14,8 +14,13 @@ import {
 } from "@/components/ui/tooltip";
 import { Edit3, Trash2 } from "lucide-react";
 import { DeleteConfirmation } from "@/components/delete-confirmation";
-import { Section, UpdateSectionInput } from "@/generated/graphql";
+import {
+  CreateLessonInput,
+  Section,
+  UpdateSectionInput,
+} from "@/generated/graphql";
 import { UpdateSectionDialog } from "./UpdateSectionDialog";
+import { CreateLessonDialog } from "./CreateLessonDialog";
 
 export interface SectionItemProps {
   section: Section;
@@ -23,6 +28,8 @@ export interface SectionItemProps {
   deleting: boolean;
   onUpdate: (id: string, input: UpdateSectionInput) => void;
   updating: boolean;
+  onLessonCreate: (input: CreateLessonInput) => void;
+  lessonCreating: boolean;
 }
 
 export const SectionItem: React.FC<SectionItemProps> = ({
@@ -31,6 +38,8 @@ export const SectionItem: React.FC<SectionItemProps> = ({
   deleting,
   onUpdate,
   updating,
+  onLessonCreate,
+  lessonCreating,
 }) => {
   const [open, setOpen] = useState(false);
   const [updateOpen, setUpdateOpen] = useState(false);
@@ -112,6 +121,14 @@ export const SectionItem: React.FC<SectionItemProps> = ({
               No lessons yet. Add your first lesson to this module.
             </div>
           )}
+
+          <div className="flex justify-center">
+            <CreateLessonDialog
+              lessonCreating={lessonCreating}
+              onLessonCreate={onLessonCreate}
+              sectionId={section._id}
+            />
+          </div>
         </div>
       </AccordionContent>
 
