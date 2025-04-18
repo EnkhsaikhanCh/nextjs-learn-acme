@@ -15,21 +15,26 @@ import { toast } from "sonner";
 import { CreateSectionDialog } from "./InstructorCourseContentComponents/CreateSectionDialog";
 import { SectionItem } from "./InstructorCourseContentComponents/SectionItem";
 import { useCourseSections } from "../feature/useCourseSections";
-import { Section } from "@/generated/graphql";
+import {
+  Section,
+  useGetInstructorCourseContentQuery,
+} from "@/generated/graphql";
 import { NoSectionYetSection } from "./InstructorCourseContentComponents/NoSectionYetSection";
+import { useUpdateCourseSection } from "../feature/useupdateCourseSection";
 
 export const CourseContent = () => {
   const { slug } = useParams();
 
-  const {
-    sections,
-    courseId,
-    loading,
-    error,
-    refetch,
-    deleting,
-    handleDelete,
-  } = useCourseSections(slug as string);
+  const { data, loading, error, refetch } = useGetInstructorCourseContentQuery({
+    variables: { slug: slug as string },
+    skip: !slug,
+  });
+
+  const sections = data?.getInstructorCourseContent?.sectionId ?? [];
+  const courseId = data?.getInstructorCourseContent?._id;
+
+  const { deleting, handleDelete } = useCourseSections({ refetch });
+  const { updating, handleUpdate } = useUpdateCourseSection({ refetch });
 
   if (loading) {
     return (
@@ -83,11 +88,18 @@ export const CourseContent = () => {
                 section={section as Section}
                 onDelete={handleDelete}
                 deleting={deleting}
+                onUpdate={handleUpdate}
+                updating={updating}
               />
             ))}
           </Accordion>
 
-          {sections.length === 0 && <NoSectionYetSection />}
+          {sections.length === 0 && (
+            <NoSectionYetSection
+              courseId={courseId as string}
+              refetch={refetch}
+            />
+          )}
         </CardContent>
       </Card>
     </div>
