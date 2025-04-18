@@ -1,15 +1,15 @@
 import { GalleryVerticalEnd, Plus } from "lucide-react";
 import { CreateSectionDialog } from "./CreateSectionDialog";
-import { useParams } from "next/navigation";
-import { useCourseSections } from "../../feature/useCourseSections";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 
-export const NoSectionYetSection = () => {
-  const { slug } = useParams();
-
-  const { courseId, refetch } = useCourseSections(slug as string);
-
+export const NoSectionYetSection = ({
+  courseId,
+  refetch,
+}: {
+  courseId: string;
+  refetch: () => void;
+}) => {
   return (
     <div className="flex flex-col items-center justify-center space-y-6 rounded-lg border-2 border-dashed py-12 text-center">
       <div className="bg-accent mb-4 flex h-13 w-13 items-center justify-center rounded-full border">
