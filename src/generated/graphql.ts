@@ -1116,6 +1116,13 @@ export type GetLessonByIdQueryVariables = Exact<{
 
 export type GetLessonByIdQuery = { __typename?: 'Query', getLessonById: { __typename?: 'Lesson', _id: string, title: string, content?: string | null, videoUrl?: string | null, order: number, isPublished: boolean, createdAt: string, updatedAt: string } };
 
+export type DeleteLessonV2MutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type DeleteLessonV2Mutation = { __typename?: 'Mutation', deleteLessonV2: { __typename?: 'DeleteLessonV2Response', success: boolean, message?: string | null } };
+
 export type CreatePaymentMutationVariables = Exact<{
   input: CreatePaymentInput;
 }>;
@@ -2439,6 +2446,40 @@ export type GetLessonByIdQueryHookResult = ReturnType<typeof useGetLessonByIdQue
 export type GetLessonByIdLazyQueryHookResult = ReturnType<typeof useGetLessonByIdLazyQuery>;
 export type GetLessonByIdSuspenseQueryHookResult = ReturnType<typeof useGetLessonByIdSuspenseQuery>;
 export type GetLessonByIdQueryResult = Apollo.QueryResult<GetLessonByIdQuery, GetLessonByIdQueryVariables>;
+export const DeleteLessonV2Document = gql`
+    mutation DeleteLessonV2($id: ID!) {
+  deleteLessonV2(_id: $id) {
+    success
+    message
+  }
+}
+    `;
+export type DeleteLessonV2MutationFn = Apollo.MutationFunction<DeleteLessonV2Mutation, DeleteLessonV2MutationVariables>;
+
+/**
+ * __useDeleteLessonV2Mutation__
+ *
+ * To run a mutation, you first call `useDeleteLessonV2Mutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteLessonV2Mutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteLessonV2Mutation, { data, loading, error }] = useDeleteLessonV2Mutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteLessonV2Mutation(baseOptions?: Apollo.MutationHookOptions<DeleteLessonV2Mutation, DeleteLessonV2MutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteLessonV2Mutation, DeleteLessonV2MutationVariables>(DeleteLessonV2Document, options);
+      }
+export type DeleteLessonV2MutationHookResult = ReturnType<typeof useDeleteLessonV2Mutation>;
+export type DeleteLessonV2MutationResult = Apollo.MutationResult<DeleteLessonV2Mutation>;
+export type DeleteLessonV2MutationOptions = Apollo.BaseMutationOptions<DeleteLessonV2Mutation, DeleteLessonV2MutationVariables>;
 export const CreatePaymentDocument = gql`
     mutation CreatePayment($input: CreatePaymentInput!) {
   createPayment(input: $input) {
