@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 // import { DeleteConfirmation } from "@/components/course-management/delete-confirmation";
 import { Badge } from "@/components/ui/badge";
 import {
-  GripVertical,
+  // GripVertical,
   Pencil,
   Trash2,
   //   Clock,
@@ -26,6 +26,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { LessonType, LessonV2 } from "@/generated/graphql";
+import { DeleteConfirmation } from "@/components/delete-confirmation";
+import { useState } from "react";
 
 interface LessonItemProps {
   lesson: LessonV2;
@@ -36,7 +38,8 @@ interface LessonItemProps {
   //   isDragging: boolean;
   //   isDragOver: boolean;
   //   onEdit: () => void;
-  //   onDelete: () => void;
+  onDelete: (id: string) => void;
+  deleting: boolean;
 }
 
 export function LessonItem({
@@ -48,10 +51,11 @@ export function LessonItem({
   //   isDragging,
   //   isDragOver,
   //   onEdit,
-  //   onDelete,
+  onDelete,
+  deleting,
 }: LessonItemProps) {
   //   const [isEditLessonOpen, setIsEditLessonOpen] = useState(false);
-  //   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
 
   // Get lesson icon based on type
   const getLessonIcon = () => {
@@ -99,19 +103,19 @@ export function LessonItem({
           //     ? "border-emerald-500 bg-emerald-50"
           //     : "border-gray-200 hover:bg-gray-50",
         )}
-        draggable
+        // draggable
         // onDragStart={onDragStart}
         // onDragOver={onDragOver}
         // onDragEnd={onDragEnd}
         // onDrop={onDrop}
       >
         <div className="flex min-w-0 flex-1 items-center gap-3">
-          <div
+          {/* <div
             className="cursor-grab rounded-md p-1 transition-colors hover:bg-gray-100 active:cursor-grabbing"
             onMouseDown={(e) => e.stopPropagation()}
           >
             <GripVertical className="h-4 w-4 text-gray-400" />
-          </div>
+          </div> */}
 
           <div className="flex-shrink-0">{getLessonIcon()}</div>
 
@@ -161,7 +165,7 @@ export function LessonItem({
                   variant="ghost"
                   size="icon"
                   className="h-7 w-7 text-gray-500 hover:text-red-600"
-                  //   onClick={() => setIsDeleteConfirmOpen(true)}
+                  onClick={() => setIsDeleteConfirmOpen(true)}
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                   <span className="sr-only">Delete lesson</span>
@@ -183,13 +187,18 @@ export function LessonItem({
         defaultValues={lesson}
       /> */}
 
-      {/* <DeleteConfirmation
+      <DeleteConfirmation
         open={isDeleteConfirmOpen}
         onOpenChange={setIsDeleteConfirmOpen}
-        onConfirm={onDelete}
+        onConfirm={async () => {
+          await onDelete(lesson._id);
+          setIsDeleteConfirmOpen(false);
+        }}
+        loading={deleting}
+        confirmName={lesson.title}
         title="Delete Lesson"
         description={`Are you sure you want to delete "${lesson.title}"? This action cannot be undone.`}
-      /> */}
+      />
     </>
   );
 }

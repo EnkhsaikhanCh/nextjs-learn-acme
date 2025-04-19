@@ -16,6 +16,7 @@ import { NoSectionYetSection } from "./InstructorCourseContentComponents/NoSecti
 import { useUpdateCourseSection } from "../feature/useupdateCourseSection";
 import { useCerateLesson } from "../feature/useCreateLesson";
 import { useCreateLessonV2 } from "../feature/useCreateLessonV2";
+import { useDeleteLessonV2 } from "../feature/useDeleteLessonV2";
 
 export const CourseContent = () => {
   const { slug } = useParams();
@@ -32,6 +33,9 @@ export const CourseContent = () => {
   const { updating, handleUpdate } = useUpdateCourseSection({ refetch });
   const { lessonCreating, handleLessonCreate } = useCerateLesson({ refetch });
   const { lessonV2Creating, handleLessonV2Create } = useCreateLessonV2({
+    refetch,
+  });
+  const { lessonV2Deleting, handleDeleteLessonV2 } = useDeleteLessonV2({
     refetch,
   });
 
@@ -82,6 +86,8 @@ export const CourseContent = () => {
             lessonCreating={lessonCreating}
             onLessonV2Create={handleLessonV2Create}
             lessonV2Creating={lessonV2Creating}
+            onDeleteLessonV2={handleDeleteLessonV2}
+            lessonV2Deleting={lessonV2Deleting}
           />
         ))}
       </Accordion>

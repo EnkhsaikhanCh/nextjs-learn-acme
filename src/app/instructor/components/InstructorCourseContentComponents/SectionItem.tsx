@@ -36,6 +36,8 @@ export interface SectionItemProps {
   lessonCreating: boolean;
   onLessonV2Create: (input: CreateLessonV2Input) => void;
   lessonV2Creating: boolean;
+  onDeleteLessonV2: (id: string) => void;
+  lessonV2Deleting: boolean;
 }
 
 export const SectionItem: React.FC<SectionItemProps> = ({
@@ -48,6 +50,8 @@ export const SectionItem: React.FC<SectionItemProps> = ({
   // lessonCreating,
   onLessonV2Create,
   lessonV2Creating,
+  lessonV2Deleting,
+  onDeleteLessonV2,
 }) => {
   const [open, setOpen] = useState(false);
   const [updateOpen, setUpdateOpen] = useState(false);
@@ -121,7 +125,12 @@ export const SectionItem: React.FC<SectionItemProps> = ({
           {section?.lessonId && section.lessonId.length > 0 ? (
             <div className="mt-2 list-inside list-disc space-y-1">
               {section.lessonId.map((lesson) => (
-                <LessonItem key={lesson?._id} lesson={lesson as LessonV2} />
+                <LessonItem
+                  key={lesson?._id}
+                  lesson={lesson as LessonV2}
+                  onDelete={onDeleteLessonV2}
+                  deleting={lessonV2Deleting}
+                />
               ))}
             </div>
           ) : (
