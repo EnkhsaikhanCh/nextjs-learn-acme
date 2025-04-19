@@ -69,34 +69,44 @@ export function LessonTypeSelector({ selected, onSelect, error }: Props) {
       <legend className="mb-1 font-medium">Lesson Type</legend>
       {error && <p className="text-sm text-red-600">{error.message}</p>}
       <div className="grid gap-2 md:grid-cols-2">
-        {lessonTypeOptions.map(({ value, label, description, Icon }) => {
-          const colors = getColorClasses(value);
-          const isSelected = selected === value;
+        {lessonTypeOptions.map(
+          ({ value, label, description, Icon, isDiabled }) => {
+            const colors = getColorClasses(value);
+            const isSelected = selected === value;
 
-          return (
-            <Button
-              key={value}
-              type="button"
-              variant="outline"
-              onClick={() => onSelect(value)}
-              className={cn(
-                "flex h-auto justify-start gap-3 px-4 py-3 text-left transition-all",
-                isSelected
-                  ? `${colors.border} ${colors.bg} ${colors.hover}`
-                  : "hover:bg-muted",
-                `${colors.ring} focus:ring-1 focus:ring-offset-1`,
-              )}
-            >
-              <Icon className={`h-5 w-5 text-center ${colors.text}`} />
-              <div>
-                <div className="font-medium">{label}</div>
-                <div className="text-muted-foreground text-xs">
-                  {description}
+            return (
+              <Button
+                key={value}
+                type="button"
+                variant="outline"
+                disabled={isDiabled}
+                onClick={() => onSelect(value)}
+                className={cn(
+                  "flex h-auto justify-start gap-3 px-4 py-3 text-left transition-all",
+                  isSelected
+                    ? `${colors.border} ${colors.bg} ${colors.hover}`
+                    : "hover:bg-muted",
+                  `${colors.ring} focus:ring-1 focus:ring-offset-1`,
+                )}
+              >
+                <Icon className={`h-5 w-5 text-center ${colors.text}`} />
+                <div>
+                  <div className="flex items-center gap-2 font-medium">
+                    <p>{label}</p>
+                    {isDiabled && (
+                      <span className="bg-muted text-muted-foreground rounded px-2 py-0.5 text-[10px] font-semibold">
+                        Coming Soon
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-muted-foreground text-xs">
+                    {description}
+                  </div>
                 </div>
-              </div>
-            </Button>
-          );
-        })}
+              </Button>
+            );
+          },
+        )}
       </div>
     </fieldset>
   );
