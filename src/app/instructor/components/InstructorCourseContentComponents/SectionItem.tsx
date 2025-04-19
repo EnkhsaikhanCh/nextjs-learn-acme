@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState } from "react";
 import {
   AccordionItem,
@@ -17,11 +18,13 @@ import { DeleteConfirmation } from "@/components/delete-confirmation";
 import {
   CreateLessonInput,
   CreateLessonV2Input,
+  LessonV2,
   Section,
   UpdateSectionInput,
 } from "@/generated/graphql";
 import { UpdateSectionDialog } from "./UpdateSectionDialog";
 import { CreateLessonV2Dialog } from "./CreateLessonV2Dialog";
+import { LessonItem } from "./LessonItem";
 
 export interface SectionItemProps {
   section: Section;
@@ -118,12 +121,7 @@ export const SectionItem: React.FC<SectionItemProps> = ({
           {section?.lessonId && section.lessonId.length > 0 ? (
             <div className="mt-2 list-inside list-disc space-y-1">
               {section.lessonId.map((lesson) => (
-                <div key={lesson?._id}>
-                  <span className="font-semibold">{lesson?.title}</span>
-                  <span className="text-xs text-gray-500">
-                    {lesson?.type === "VIDEO" ? "Video" : "Text"}
-                  </span>
-                </div>
+                <LessonItem key={lesson?._id} lesson={lesson as LessonV2} />
               ))}
             </div>
           ) : (
