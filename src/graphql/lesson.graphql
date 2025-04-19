@@ -8,6 +8,13 @@ mutation CreateLesson($input: CreateLessonInput!) {
   }
 }
 
+mutation CreateLessonV2($input: CreateLessonV2Input!) {
+  createLessonV2(input: $input) {
+    success
+    message
+  }
+}
+
 mutation UpdateLesson($id: ID!, $input: UpdateLessonInput!) {
   updateLesson(_id: $id, input: $input) {
     _id
