@@ -50,6 +50,9 @@ const config: Config = {
     "src/handler.ts",
     "src/scripts/seed-admin.ts",
 
+    // src/confiq
+    "src/config/lessonTypeConfig.ts",
+
     // src/components
     "src/components/ui",
     "src/components/dashboard",
