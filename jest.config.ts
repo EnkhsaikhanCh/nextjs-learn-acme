@@ -50,6 +50,9 @@ const config: Config = {
     "src/handler.ts",
     "src/scripts/seed-admin.ts",
 
+    // src/confiq
+    "src/config/lessonTypeConfig.ts",
+
     // src/components
     "src/components/ui",
     "src/components/dashboard",
@@ -60,6 +63,7 @@ const config: Config = {
     "src/components/LoadingScreen.tsx",
     "src/components/active-theme.tsx",
     "src/components/SubscribeForm.tsx",
+    "src/components/delete-confirmation.tsx",
 
     // src/app
     "src/app/admin",
@@ -113,8 +117,15 @@ const config: Config = {
     "src/app/api/graphql/models",
     "src/app/api/graphql/schemas",
     "src/app/api/graphql/resolvers/mutations/enrollment",
+    "src/app/api/graphql/resolvers/mutations/lesson/create-lesson-mutation.ts",
+    "src/app/api/graphql/resolvers/mutations/section/create-section-mutation.ts",
+    "src/app/api/graphql/resolvers/mutations/section/delete-section-mutation.ts",
+    "src/app/api/graphql/resolvers/mutations/section/update-section-mutation.ts",
+    "src/app/api/graphql/resolvers/mutations/lessonV2/create-lesson-v2-mutation.ts",
+    "src/app/api/graphql/resolvers/mutations/lessonV2/delete-lesson-v2-mutation.ts",
     "src/app/api/graphql/resolvers/mutations/payment/updateOrCreateEnrollment.ts",
     "src/app/api/graphql/resolvers/queries/course/get-all-course-with-enrollment-query.ts",
+    "src/app/api/graphql/resolvers/queries/course/get-course-details-for-instructor-query.ts",
     "src/app/api/graphql/resolvers/queries/course/get-all-course.ts",
     "src/app/api/graphql/resolvers/queries/course/get-course-by-id-query.ts",
     "src/app/api/graphql/resolvers/queries/course/get-course-by-slug-query.ts",

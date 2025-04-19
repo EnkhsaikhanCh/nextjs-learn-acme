@@ -40,14 +40,14 @@ export const getCourseDetailsForInstructor = async (
       model: "User",
     });
 
-    const sections = await SectionModel.find({ courseId: course._id }).populate(
-      { path: "lessonId", model: "Lesson" },
-    );
+    const sections = await SectionModel.find({ courseId: course._id })
+      .populate({ path: "lessonId", model: "LessonV2" })
+      .lean();
 
     const totalSections = sections.length;
 
     const totalLessons = sections.reduce((sum, section) => {
-      return sum + (section.lessons?.length || 0);
+      return sum + (section.lessonId?.length || 0);
     }, 0);
 
     const totalEnrollment = await EnrollmentModel.countDocuments({

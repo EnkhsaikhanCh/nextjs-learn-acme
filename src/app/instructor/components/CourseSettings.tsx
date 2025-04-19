@@ -10,7 +10,7 @@ import { WhatYouWillLearnCard } from "./InstructorCourseSettingsComponents/WhatY
 export const CourseSettings = () => {
   const { slug } = useParams();
 
-  const { data, loading, refetch } = useGetCourseBasicInfoForEditQuery({
+  const { data, loading, error, refetch } = useGetCourseBasicInfoForEditQuery({
     variables: { slug: slug as string },
     skip: !slug,
   });
@@ -22,6 +22,9 @@ export const CourseSettings = () => {
         <Loader className="ml-2 h-4 w-4 animate-spin" />
       </p>
     );
+  }
+  if (error) {
+    return <div>Error: {error.message}</div>;
   }
 
   return (

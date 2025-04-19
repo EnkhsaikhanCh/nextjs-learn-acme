@@ -3,13 +3,13 @@ import gql from "graphql-tag";
 export const typeDefs = gql`
   type Section {
     _id: ID!
-    courseId: Course!
-    title: String!
+    courseId: Course
+    title: String
     description: String
-    order: Int!
-    lessonId: [Lesson]
-    createdAt: String!
-    updatedAt: String!
+    order: Int
+    lessonId: [LessonV2]
+    createdAt: String
+    updatedAt: String
   }
 
   input CreateSectionInput {
@@ -20,7 +20,16 @@ export const typeDefs = gql`
   input UpdateSectionInput {
     title: String
     description: String
-    order: Int
+  }
+
+  type CreateSectionResponse {
+    success: Boolean!
+    message: String!
+  }
+
+  type UpdateSectionResponse {
+    success: Boolean!
+    message: String!
   }
 
   type DeleteSectionResponse {
@@ -29,8 +38,8 @@ export const typeDefs = gql`
   }
 
   type Mutation {
-    createSection(input: CreateSectionInput): Section
-    updateSection(_id: ID!, input: UpdateSectionInput!): Section!
+    createSection(input: CreateSectionInput): CreateSectionResponse!
+    updateSection(_id: ID!, input: UpdateSectionInput!): UpdateSectionResponse!
     deleteSection(_id: ID!): DeleteSectionResponse!
   }
 `;

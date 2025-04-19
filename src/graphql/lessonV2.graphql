@@ -1,0 +1,6 @@
+mutation DeleteLessonV2($id: ID!) {
+  deleteLessonV2(_id: $id) {
+    success
+    message
+  }
+}
