@@ -9,7 +9,11 @@ query GetInstructorCourseContent($slug: String!) {
       lessonId {
         _id
         title
+        isPublished
+        order
+        type
       }
+      order
     }
   }
 }

@@ -26,7 +26,7 @@ const SectionSchema = new Schema<Section>(
     lessonId: [
       {
         type: Schema.Types.String,
-        ref: "Lesson",
+        ref: "LessonV2",
         required: [],
       },
     ],

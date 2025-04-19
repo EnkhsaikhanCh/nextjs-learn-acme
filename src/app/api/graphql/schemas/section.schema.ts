@@ -7,7 +7,7 @@ export const typeDefs = gql`
     title: String
     description: String
     order: Int
-    lessonId: [Lesson]
+    lessonId: [LessonV2]
     createdAt: String
     updatedAt: String
   }
