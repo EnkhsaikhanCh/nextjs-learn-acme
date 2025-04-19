@@ -9,13 +9,26 @@ import { HeroSection } from "./InstructorCourseOverviewComponents/HeroSection";
 import { StudentsEnrolledCard } from "./InstructorCourseOverviewComponents/StudentsEnrolledCard";
 import { AverageRatingCard } from "./InstructorCourseOverviewComponents/AverageRatingCard";
 import { TotalRevenuewCard } from "./InstructorCourseOverviewComponents/TotalRevenueCard";
+import { Loader } from "lucide-react";
 
 export function CourseOverview() {
   const { slug } = useParams();
 
-  const { data, loading } = useGetCourseDetailsForInstructorQuery({
+  const { data, loading, error } = useGetCourseDetailsForInstructorQuery({
     variables: { slug: slug as string },
   });
+
+  if (loading) {
+    return (
+      <p className="text-muted-foreground flex items-center text-sm">
+        Loading course...
+        <Loader className="ml-2 h-4 w-4 animate-spin" />
+      </p>
+    );
+  }
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
 
   return (
     <div className="space-y-6">

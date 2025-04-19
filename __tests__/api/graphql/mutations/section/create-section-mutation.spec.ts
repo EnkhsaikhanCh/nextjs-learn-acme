@@ -1,279 +1,317 @@
+import mongoose from "mongoose";
 import { createSection } from "../../../../../src/app/api/graphql/resolvers/mutations/section/create-section-mutation";
 import {
   CourseModel,
   SectionModel,
 } from "../../../../../src/app/api/graphql/models";
-import { requireAuthAndRoles } from "../../../../../src/lib/auth-utils";
+import { requireAuthAndRoles } from "@/lib/auth-utils";
 import { GraphQLError } from "graphql";
 import {
   CreateSectionInput,
+  CreateSectionResponse,
   Role,
   User,
-} from "../../../../../src/generated/graphql";
+} from "@/generated/graphql";
 
-// Mock dependencies
 jest.mock("../../../../../src/lib/auth-utils", () => ({
   requireAuthAndRoles: jest.fn(),
+}));
+
+jest.mock("mongoose", () => ({
+  startSession: jest.fn(),
 }));
 
 jest.mock("../../../../../src/app/api/graphql/models", () => ({
   CourseModel: {
     findById: jest.fn(),
     findByIdAndUpdate: jest.fn(),
+    updateOne: jest.fn(),
   },
   SectionModel: {
-    findOne: jest.fn(),
     create: jest.fn(),
-    findById: jest.fn(),
   },
 }));
 
-describe("createSection", () => {
-  const mockUser: User = {
-    _id: "admin-id",
+describe("createSection mutation", () => {
+  const adminUser: User = {
+    _id: "admin-1",
     email: "admin@example.com",
     role: Role.Admin,
-    studentId: "admin-id-123",
+    studentId: "stud-1",
     isVerified: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+  const instructorUser: User = { ...adminUser, role: Role.Instructor };
+
+  const validInput: CreateSectionInput = {
+    courseId: "course-1",
+    title: "New Section",
+  };
+
+  let session: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    withTransaction: (fn: any) => Promise<void>;
+    endSession: jest.Mock;
   };
 
   beforeEach(() => {
     jest.clearAllMocks();
+    session = {
+      withTransaction: jest.fn().mockImplementation(async (fn) => fn()),
+      endSession: jest.fn(),
+    };
+    (mongoose.startSession as jest.Mock).mockResolvedValue(session);
+    (requireAuthAndRoles as jest.Mock).mockResolvedValue(undefined);
   });
 
-  // Authentication Test
-  it("throws an error if user is not authenticated", async () => {
-    (requireAuthAndRoles as jest.Mock).mockRejectedValue(
-      new GraphQLError("Unauthenticated", {
-        extensions: { code: "UNAUTHENTICATED" },
-      }),
+  it("calls session.endSession after successful transaction", async () => {
+    const fakeCourse = { createdBy: instructorUser._id, sectionCount: 1 };
+    const updatedCourse = { ...fakeCourse, sectionCount: 2 };
+    const newSection = { _id: "section-1" };
+
+    (CourseModel.findById as jest.Mock).mockReturnValue({
+      session: () => Promise.resolve(fakeCourse),
+    });
+    (CourseModel.findByIdAndUpdate as jest.Mock).mockResolvedValue(
+      updatedCourse,
+    );
+    (SectionModel.create as jest.Mock).mockResolvedValue([newSection]);
+    (CourseModel.updateOne as jest.Mock).mockResolvedValue({});
+
+    const result = await createSection(
+      null,
+      { input: validInput },
+      { user: instructorUser },
     );
 
-    const input: CreateSectionInput = {
-      courseId: "course-id",
-      title: "Section Title",
-    };
-
-    await expect(
-      createSection(null, { input }, { user: mockUser }),
-    ).rejects.toThrow(GraphQLError);
-    await expect(
-      createSection(null, { input }, { user: mockUser }),
-    ).rejects.toHaveProperty("message", "Unauthenticated");
+    expect(result.success).toBe(true);
+    expect(session.endSession).toHaveBeenCalled(); // ⬅️ FINALLY reached
   });
 
-  // Input Validation Test
-  it("throws BAD_USER_INPUT if courseId or title is missing", async () => {
-    (requireAuthAndRoles as jest.Mock).mockResolvedValue(undefined);
+  it("ensures session.endSession is called even if transaction throws", async () => {
+    (session.withTransaction as jest.Mock).mockImplementation(async () => {
+      throw new GraphQLError("Simulated error");
+    });
 
-    // Missing courseId
-    const input1: CreateSectionInput = { courseId: "", title: "Section Title" };
     await expect(
-      createSection(null, { input: input1 }, { user: mockUser }),
+      createSection(null, { input: validInput }, { user: instructorUser }),
+    ).rejects.toHaveProperty("message", "Simulated error");
+
+    expect(mongoose.startSession).toHaveBeenCalled();
+    expect(session.endSession).toHaveBeenCalled();
+  });
+
+  it("calls session.endSession even if transaction throws", async () => {
+    (session.withTransaction as jest.Mock).mockImplementation(async () => {
+      throw new GraphQLError("Transaction failed");
+    });
+
+    await expect(
+      createSection(null, { input: validInput }, { user: instructorUser }),
+    ).rejects.toHaveProperty("message", "Transaction failed");
+
+    expect(session.endSession).toHaveBeenCalled();
+  });
+
+  it("throws BAD_USER_INPUT if input is invalid", async () => {
+    await expect(
+      createSection(
+        null,
+        { input: { courseId: "", title: "" } },
+        { user: instructorUser },
+      ),
     ).rejects.toThrow(GraphQLError);
     await expect(
-      createSection(null, { input: input1 }, { user: mockUser }),
-    ).rejects.toHaveProperty("message", "Invalid input data");
-
-    // Missing title
-    const input2: CreateSectionInput = { courseId: "course-id", title: "" };
-    await expect(
-      createSection(null, { input: input2 }, { user: mockUser }),
-    ).rejects.toThrow(GraphQLError);
-    await expect(
-      createSection(null, { input: input2 }, { user: mockUser }),
+      createSection(
+        null,
+        { input: { courseId: "", title: "" } },
+        { user: instructorUser },
+      ),
     ).rejects.toHaveProperty("message", "Invalid input data");
   });
 
-  // Course Not Found Test
+  it("throws error if requireAuthAndRoles fails", async () => {
+    (requireAuthAndRoles as jest.Mock).mockImplementation(() => {
+      throw new GraphQLError("UNAUTHORIZED");
+    });
+
+    await expect(
+      createSection(null, { input: validInput }, { user: instructorUser }),
+    ).rejects.toHaveProperty("message", "UNAUTHORIZED");
+
+    expect(session.endSession).not.toHaveBeenCalled();
+  });
+
+  it("throws FORBIDDEN if user is not owner", async () => {
+    (CourseModel.findById as jest.Mock).mockReturnValue({
+      session: () => Promise.resolve({ createdBy: "other-user" }),
+    });
+    await expect(
+      createSection(null, { input: validInput }, { user: instructorUser }),
+    ).rejects.toThrow(GraphQLError);
+    expect(session.endSession).toHaveBeenCalled();
+  });
+
+  it("throws INTERNAL_SERVER_ERROR on unexpected errors", async () => {
+    (CourseModel.findById as jest.Mock).mockImplementation(() => {
+      throw new Error("DB fail");
+    });
+    await expect(
+      createSection(null, { input: validInput }, { user: instructorUser }),
+    ).rejects.toThrow(GraphQLError);
+    expect(session.endSession).toHaveBeenCalled();
+  });
+
+  it("calls session.endSession when transaction explicitly fails", async () => {
+    (CourseModel.findById as jest.Mock).mockReturnValue({
+      session: () => Promise.resolve({ createdBy: instructorUser._id }),
+    });
+    (session.withTransaction as jest.Mock).mockRejectedValue(
+      new Error("Transaction failed"),
+    );
+
+    await expect(
+      createSection(null, { input: validInput }, { user: instructorUser }),
+    ).rejects.toThrow(GraphQLError);
+    expect(session.endSession).toHaveBeenCalled();
+  });
+
+  it("throws BAD_USER_INPUT if title is missing", async () => {
+    await expect(
+      createSection(
+        null,
+        { input: { courseId: validInput.courseId, title: "" } },
+        { user: instructorUser },
+      ),
+    ).rejects.toHaveProperty("message", "Invalid input data");
+  });
+
+  it("throws BAD_USER_INPUT if courseId is missing", async () => {
+    await expect(
+      createSection(
+        null,
+        { input: { courseId: "", title: validInput.title } },
+        { user: instructorUser },
+      ),
+    ).rejects.toHaveProperty("message", "Invalid input data");
+  });
+
   it("throws COURSE_NOT_FOUND if course does not exist", async () => {
-    (requireAuthAndRoles as jest.Mock).mockResolvedValue(undefined);
-    (CourseModel.findById as jest.Mock).mockResolvedValue(null);
-
-    const input: CreateSectionInput = {
-      courseId: "course-id",
-      title: "Section Title",
-    };
+    (CourseModel.findById as jest.Mock).mockReturnValue({
+      session: () => Promise.resolve(null),
+    });
 
     await expect(
-      createSection(null, { input }, { user: mockUser }),
+      createSection(null, { input: validInput }, { user: instructorUser }),
     ).rejects.toThrow(GraphQLError);
     await expect(
-      createSection(null, { input }, { user: mockUser }),
+      createSection(null, { input: validInput }, { user: instructorUser }),
     ).rejects.toHaveProperty("message", "Course not found");
+
+    expect(session.endSession).toHaveBeenCalled();
   });
 
-  // Successful creation when no previous section exists (maxOrder = 0)
-  it("creates section successfully with valid input when no previous section exists", async () => {
-    (requireAuthAndRoles as jest.Mock).mockResolvedValue(undefined);
-    // Course exists
-    (CourseModel.findById as jest.Mock).mockResolvedValue({
-      _id: "course-id",
-      title: "Course Title",
+  it("throws FORBIDDEN if user is not owner", async () => {
+    const fakeCourse = { createdBy: "other-user" };
+    (CourseModel.findById as jest.Mock).mockReturnValue({
+      session: () => Promise.resolve(fakeCourse),
     });
-    // No last section found => maxOrder remains 0
-    (SectionModel.findOne as jest.Mock).mockReturnValue({
-      sort: jest
-        .fn()
-        .mockReturnValue({ exec: jest.fn().mockResolvedValue(null) }),
-    });
-    // Simulate section creation: order should be 1 (0 + 1)
-    const newSection = {
-      _id: "new-section-id",
-      courseId: "course-id",
-      title: "Section Title",
-      order: 1,
-    };
-    (SectionModel.create as jest.Mock).mockResolvedValue(newSection);
-    (CourseModel.findByIdAndUpdate as jest.Mock).mockResolvedValue({});
-    // Simulate population: SectionModel.findById returns populated section
-    const populatedSection = {
-      ...newSection,
-      courseId: { _id: "course-id", title: "Course Title" },
-      lessonId: [],
-    };
-    (SectionModel.findById as jest.Mock).mockReturnValue({
-      populate: jest.fn().mockReturnValue({
-        populate: jest.fn().mockResolvedValue(populatedSection),
-      }),
-    });
-
-    const input: CreateSectionInput = {
-      courseId: "course-id",
-      title: "Section Title",
-    };
-
-    const result = await createSection(null, { input }, { user: mockUser });
-
-    expect(SectionModel.create).toHaveBeenCalledWith({
-      courseId: "course-id",
-      title: "Section Title",
-      order: 1,
-    });
-    expect(CourseModel.findByIdAndUpdate).toHaveBeenCalledWith("course-id", {
-      $push: { sectionId: "new-section-id" },
-    });
-    expect(result).toEqual(populatedSection);
-  });
-
-  // Successful creation when previous section exists (maxOrder > 0)
-  it("creates section successfully with valid input when previous section exists", async () => {
-    (requireAuthAndRoles as jest.Mock).mockResolvedValue(undefined);
-    // Course exists
-    (CourseModel.findById as jest.Mock).mockResolvedValue({
-      _id: "course-id",
-      title: "Course Title",
-    });
-    // Last section exists with order = 3
-    (SectionModel.findOne as jest.Mock).mockReturnValue({
-      sort: jest
-        .fn()
-        .mockReturnValue({ exec: jest.fn().mockResolvedValue({ order: 3 }) }),
-    });
-    // New section creation: order should be 4
-    const newSection = {
-      _id: "new-section-id",
-      courseId: "course-id",
-      title: "Section Title",
-      order: 4,
-    };
-    (SectionModel.create as jest.Mock).mockResolvedValue(newSection);
-    (CourseModel.findByIdAndUpdate as jest.Mock).mockResolvedValue({});
-    const populatedSection = {
-      ...newSection,
-      courseId: { _id: "course-id", title: "Course Title" },
-      lessonId: [],
-    };
-    (SectionModel.findById as jest.Mock).mockReturnValue({
-      populate: jest.fn().mockReturnValue({
-        populate: jest.fn().mockResolvedValue(populatedSection),
-      }),
-    });
-
-    const input: CreateSectionInput = {
-      courseId: "course-id",
-      title: "Section Title",
-    };
-
-    const result = await createSection(null, { input }, { user: mockUser });
-
-    expect(SectionModel.create).toHaveBeenCalledWith({
-      courseId: "course-id",
-      title: "Section Title",
-      order: 4,
-    });
-    expect(result).toEqual(populatedSection);
-  });
-
-  // Population Failure Test
-  it("throws DATABASE_ERROR if created section cannot be retrieved", async () => {
-    (requireAuthAndRoles as jest.Mock).mockResolvedValue(undefined);
-    (CourseModel.findById as jest.Mock).mockResolvedValue({
-      _id: "course-id",
-      title: "Course Title",
-    });
-    (SectionModel.findOne as jest.Mock).mockReturnValue({
-      sort: jest
-        .fn()
-        .mockReturnValue({ exec: jest.fn().mockResolvedValue(null) }),
-    });
-    const newSection = {
-      _id: "new-section-id",
-      courseId: "course-id",
-      title: "Section Title",
-      order: 1,
-    };
-    (SectionModel.create as jest.Mock).mockResolvedValue(newSection);
-    (CourseModel.findByIdAndUpdate as jest.Mock).mockResolvedValue({});
-    // Simulate failure to retrieve populated section
-    (SectionModel.findById as jest.Mock).mockReturnValue({
-      populate: jest.fn().mockReturnValue({
-        populate: jest.fn().mockResolvedValue(null),
-      }),
-    });
-
-    const input: CreateSectionInput = {
-      courseId: "course-id",
-      title: "Section Title",
-    };
 
     await expect(
-      createSection(null, { input }, { user: mockUser }),
+      createSection(null, { input: validInput }, { user: instructorUser }),
     ).rejects.toThrow(GraphQLError);
     await expect(
-      createSection(null, { input }, { user: mockUser }),
+      createSection(null, { input: validInput }, { user: instructorUser }),
     ).rejects.toHaveProperty(
       "message",
-      "Failed to retrieve the created section",
+      "Access denied: You do not own this course",
     );
+
+    expect(session.endSession).toHaveBeenCalled();
   });
 
-  // Unexpected Error Test
-  it("throws INTERNAL_SERVER_ERROR on unexpected errors", async () => {
-    (requireAuthAndRoles as jest.Mock).mockResolvedValue(undefined);
-    (CourseModel.findById as jest.Mock).mockResolvedValue({
-      _id: "course-id",
-      title: "Course Title",
+  it("throws COURSE_NOT_FOUND if findByIdAndUpdate returns null", async () => {
+    const fakeCourse = { createdBy: instructorUser._id };
+    (CourseModel.findById as jest.Mock).mockReturnValue({
+      session: () => Promise.resolve(fakeCourse),
     });
-    (SectionModel.findOne as jest.Mock).mockReturnValue({
-      sort: jest
-        .fn()
-        .mockReturnValue({ exec: jest.fn().mockResolvedValue(null) }),
+    (CourseModel.findByIdAndUpdate as jest.Mock).mockResolvedValue(null);
+
+    await expect(
+      createSection(null, { input: validInput }, { user: instructorUser }),
+    ).rejects.toHaveProperty("message", "Course not found");
+
+    expect(session.endSession).toHaveBeenCalled();
+  });
+
+  it("creates section successfully and returns success response", async () => {
+    const fakeCourse = { createdBy: instructorUser._id, sectionCount: 1 };
+    (CourseModel.findById as jest.Mock).mockReturnValue({
+      session: () => Promise.resolve(fakeCourse),
     });
-    (SectionModel.create as jest.Mock).mockRejectedValue(
-      new Error("Database error"),
+    const updatedCourse = { ...fakeCourse, sectionCount: 2 };
+    (CourseModel.findByIdAndUpdate as jest.Mock).mockResolvedValue(
+      updatedCourse,
+    );
+    const newSection = { _id: "section-1" };
+    (SectionModel.create as jest.Mock).mockResolvedValue([newSection]);
+    (CourseModel.updateOne as jest.Mock).mockResolvedValue({});
+
+    const result = await createSection(
+      null,
+      { input: validInput },
+      { user: instructorUser },
     );
 
-    const input: CreateSectionInput = {
-      courseId: "course-id",
-      title: "Section Title",
-    };
+    expect(mongoose.startSession).toHaveBeenCalled();
+    expect(session.withTransaction).toHaveBeenCalled();
+    expect(SectionModel.create).toHaveBeenCalledWith(
+      [
+        {
+          courseId: validInput.courseId,
+          title: validInput.title,
+          order: updatedCourse.sectionCount,
+        },
+      ],
+      { session },
+    );
+    expect(CourseModel.updateOne).toHaveBeenCalledWith(
+      { _id: validInput.courseId },
+      { $push: { sectionId: newSection._id } },
+      { session },
+    );
+    expect(session.endSession).toHaveBeenCalled();
+    expect(result).toEqual<Partial<CreateSectionResponse>>({
+      success: true,
+      message: "Section амжилттай үүслээ!",
+    });
+  });
+
+  it("ensures session.endSession is called even if transaction throws", async () => {
+    (session.withTransaction as jest.Mock).mockImplementation(async () => {
+      throw new GraphQLError("Simulated failure");
+    });
 
     await expect(
-      createSection(null, { input }, { user: mockUser }),
+      createSection(null, { input: validInput }, { user: instructorUser }),
+    ).rejects.toHaveProperty("message", "Simulated failure");
+
+    expect(mongoose.startSession).toHaveBeenCalled();
+    expect(session.endSession).toHaveBeenCalled();
+  });
+
+  it("throws INTERNAL_SERVER_ERROR on unexpected errors", async () => {
+    (CourseModel.findById as jest.Mock).mockImplementation(() => {
+      throw new Error("DB fail");
+    });
+
+    await expect(
+      createSection(null, { input: validInput }, { user: instructorUser }),
     ).rejects.toThrow(GraphQLError);
     await expect(
-      createSection(null, { input }, { user: mockUser }),
+      createSection(null, { input: validInput }, { user: instructorUser }),
     ).rejects.toHaveProperty("message", "Internal server error");
+    expect(session.endSession).toHaveBeenCalled();
   });
 });

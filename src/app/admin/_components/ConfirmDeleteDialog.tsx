@@ -39,6 +39,7 @@ export function ConfirmDeleteDialog({
   const handleConfirm = () => {
     if (inputValue === name) {
       onConfirm();
+      onOpenChange(false);
     }
   };
 

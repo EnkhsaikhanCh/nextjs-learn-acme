@@ -1,87 +1,62 @@
-import { SectionModel } from "../../../models";
+import mongoose from "mongoose";
 import { GraphQLError } from "graphql";
-import { UpdateSectionInput, User } from "@/generated/graphql";
+import { CourseModel, SectionModel } from "../../../models";
+import {
+  UpdateSectionInput,
+  UpdateSectionResponse,
+  User,
+} from "@/generated/graphql";
 import { requireAuthAndRoles } from "@/lib/auth-utils";
-
-const validateInput = (input: UpdateSectionInput) => {
-  const { title, description, order } = input;
-
-  if (title !== undefined) {
-    if (
-      typeof title !== "string" ||
-      title.trim() === "" ||
-      title.length > 100
-    ) {
-      throw new GraphQLError(
-        "Title must be a non-empty string and less than 100 characters",
-        {
-          extensions: { code: "BAD_REQUEST" },
-        },
-      );
-    }
-  }
-
-  if (description !== undefined) {
-    if (typeof description !== "string") {
-      throw new GraphQLError("Description must be a string", {
-        extensions: { code: "BAD_REQUEST" },
-      });
-    }
-  }
-
-  if (order !== undefined) {
-    if (typeof order !== "number" || order < 0) {
-      throw new GraphQLError("Order must be a non-negative number", {
-        extensions: { code: "BAD_REQUEST" },
-      });
-    }
-  }
-};
 
 export const updateSection = async (
   _: unknown,
   { _id, input }: { _id: string; input: UpdateSectionInput },
   context: { user?: User },
-) => {
+): Promise<UpdateSectionResponse> => {
   const { user } = context;
+  await requireAuthAndRoles(user, ["INSTRUCTOR"]);
 
-  // Authentication and authorization check
-  await requireAuthAndRoles(user, ["ADMIN"]);
-
-  // Validate Section ID
-  if (!_id) {
-    throw new GraphQLError("Section ID is required", {
-      extensions: { code: "BAD_REQUEST" },
-    });
-  }
-
+  const session = await mongoose.startSession();
   try {
-    // Find the existing section
-    const existingSection = await SectionModel.findById(_id);
-    if (!existingSection) {
-      throw new GraphQLError("Section not found", {
-        extensions: { code: "NOT_FOUND" },
-      });
-    }
+    await session.withTransaction(async () => {
+      // 1. Load the section
+      const section = await SectionModel.findById(_id).session(session);
+      if (!section) {
+        throw new GraphQLError("Section not found", {
+          extensions: { code: "SECTION_NOT_FOUND" },
+        });
+      }
 
-    // Validate input
-    validateInput(input);
+      // 2. Load its parent course
+      const course = await CourseModel.findById(section.courseId).session(
+        session,
+      );
+      if (!course) {
+        throw new GraphQLError("Course not found", {
+          extensions: { code: "COURSE_NOT_FOUND" },
+        });
+      }
 
-    // Update fields only if provided
-    const { title, description, order } = input;
-    if (title !== undefined) {
-      existingSection.title = title;
-    }
-    if (description !== undefined) {
-      existingSection.description = description;
-    }
-    if (order !== undefined) {
-      existingSection.order = order;
-    }
+      // 3. Ownership check
+      const isOwner = String(course.createdBy) === String(user?._id);
+      if (!isOwner) {
+        throw new GraphQLError("Access denied: You do not own this course", {
+          extensions: { code: "FORBIDDEN" },
+        });
+      }
 
-    // Save the updated section
-    const updatedSection = await existingSection.save();
-    return updatedSection;
+      // 4. Perform the update
+      await SectionModel.updateOne(
+        { _id },
+        { $set: input },
+        { session, runValidators: true },
+      );
+    });
+
+    return {
+      success: true,
+      message: "Section successfully updated!",
+    };
   } catch (error) {
     if (error instanceof GraphQLError) {
       throw error;
@@ -89,5 +64,7 @@ export const updateSection = async (
     throw new GraphQLError("Internal server error", {
       extensions: { code: "INTERNAL_SERVER_ERROR" },
     });
+  } finally {
+    session.endSession();
   }
 };

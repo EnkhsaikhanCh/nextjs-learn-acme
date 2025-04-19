@@ -3,7 +3,15 @@
 # Mutations
 mutation CreateLesson($input: CreateLessonInput!) {
   createLesson(input: $input) {
-    _id
+    success
+    message
+  }
+}
+
+mutation CreateLessonV2($input: CreateLessonV2Input!) {
+  createLessonV2(input: $input) {
+    success
+    message
   }
 }
 
