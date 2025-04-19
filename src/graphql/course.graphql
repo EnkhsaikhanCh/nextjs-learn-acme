@@ -94,8 +94,6 @@ query GetCourseForUser($slug: String!) {
         lessonId {
           _id
           title
-          content
-          videoUrl
           order
           isPublished
         }

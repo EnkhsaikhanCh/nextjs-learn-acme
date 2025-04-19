@@ -14,6 +14,8 @@ import {
 } from "@/generated/graphql";
 import { NoSectionYetSection } from "./InstructorCourseContentComponents/NoSectionYetSection";
 import { useUpdateCourseSection } from "../feature/useupdateCourseSection";
+import { useCerateLesson } from "../feature/useCreateLesson";
+import { useCreateLessonV2 } from "../feature/useCreateLessonV2";
 
 export const CourseContent = () => {
   const { slug } = useParams();
@@ -28,6 +30,10 @@ export const CourseContent = () => {
 
   const { deleting, handleDelete } = useCourseSections({ refetch });
   const { updating, handleUpdate } = useUpdateCourseSection({ refetch });
+  const { lessonCreating, handleLessonCreate } = useCerateLesson({ refetch });
+  const { lessonV2Creating, handleLessonV2Create } = useCreateLessonV2({
+    refetch,
+  });
 
   if (loading) {
     return (
@@ -72,6 +78,10 @@ export const CourseContent = () => {
             deleting={deleting}
             onUpdate={handleUpdate}
             updating={updating}
+            onLessonCreate={handleLessonCreate}
+            lessonCreating={lessonCreating}
+            onLessonV2Create={handleLessonV2Create}
+            lessonV2Creating={lessonV2Creating}
           />
         ))}
       </Accordion>

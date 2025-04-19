@@ -25,7 +25,7 @@ export const getInstructorCourseContent = async (
       model: "Section",
       populate: {
         path: "lessonId",
-        model: "Lesson",
+        model: "LessonV2",
       },
     });
 
