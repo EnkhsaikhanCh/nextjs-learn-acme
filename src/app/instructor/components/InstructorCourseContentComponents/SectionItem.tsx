@@ -16,11 +16,12 @@ import { Edit3, Trash2 } from "lucide-react";
 import { DeleteConfirmation } from "@/components/delete-confirmation";
 import {
   CreateLessonInput,
+  CreateLessonV2Input,
   Section,
   UpdateSectionInput,
 } from "@/generated/graphql";
 import { UpdateSectionDialog } from "./UpdateSectionDialog";
-import { CreateLessonDialog } from "./CreateLessonDialog";
+import { CreateLessonV2Dialog } from "./CreateLessonV2Dialog";
 
 export interface SectionItemProps {
   section: Section;
@@ -30,6 +31,8 @@ export interface SectionItemProps {
   updating: boolean;
   onLessonCreate: (input: CreateLessonInput) => void;
   lessonCreating: boolean;
+  onLessonV2Create: (input: CreateLessonV2Input) => void;
+  lessonV2Creating: boolean;
 }
 
 export const SectionItem: React.FC<SectionItemProps> = ({
@@ -38,8 +41,10 @@ export const SectionItem: React.FC<SectionItemProps> = ({
   deleting,
   onUpdate,
   updating,
-  onLessonCreate,
-  lessonCreating,
+  // onLessonCreate,
+  // lessonCreating,
+  onLessonV2Create,
+  lessonV2Creating,
 }) => {
   const [open, setOpen] = useState(false);
   const [updateOpen, setUpdateOpen] = useState(false);
@@ -111,11 +116,16 @@ export const SectionItem: React.FC<SectionItemProps> = ({
           )}
 
           {section?.lessonId && section.lessonId.length > 0 ? (
-            <ul className="mt-2 list-inside list-disc space-y-1">
+            <div className="mt-2 list-inside list-disc space-y-1">
               {section.lessonId.map((lesson) => (
-                <li key={lesson?._id}>{lesson?.title}</li>
+                <div key={lesson?._id}>
+                  <span className="font-semibold">{lesson?.title}</span>
+                  <span className="text-xs text-gray-500">
+                    {lesson?.type === "VIDEO" ? "Video" : "Text"}
+                  </span>
+                </div>
               ))}
-            </ul>
+            </div>
           ) : (
             <div className="rounded-md border border-dashed border-gray-200 py-6 text-center text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400">
               No lessons yet. Add your first lesson to this module.
@@ -123,9 +133,9 @@ export const SectionItem: React.FC<SectionItemProps> = ({
           )}
 
           <div className="flex justify-center">
-            <CreateLessonDialog
-              lessonCreating={lessonCreating}
-              onLessonCreate={onLessonCreate}
+            <CreateLessonV2Dialog
+              lessonV2Creating={lessonV2Creating}
+              onLessonV2Create={onLessonV2Create}
               sectionId={section._id}
             />
           </div>
