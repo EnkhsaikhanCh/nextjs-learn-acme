@@ -18,7 +18,7 @@ export const createLessonV2 = async (
 
   await requireAuthAndRoles(user, ["ADMIN", "INSTRUCTOR"]);
 
-  if (!sectionId || !title.trim()) {
+  if (!sectionId || !title.trim() || !type) {
     throw new GraphQLError("Section, title and type are required", {
       extensions: { code: "BAD_USER_INPUT" },
     });

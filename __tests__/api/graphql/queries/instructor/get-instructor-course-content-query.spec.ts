@@ -111,7 +111,7 @@ describe("getInstructorCourseContent", () => {
     expect(populateMock).toHaveBeenCalledWith({
       path: "sectionId",
       model: "Section",
-      populate: { path: "lessonId", model: "Lesson" },
+      populate: { path: "lessonId", model: "LessonV2" },
     });
     expect(result).toBe(fakeCourse);
   });
