@@ -41,12 +41,11 @@ const discriminator = (name: string, schema: Schema) => {
 
 // Discriminators for each lesson type
 const VideoLesson = discriminator(
-  "VIDEO",
+  LessonType.Video,
   new Schema({
-    videoUrl: {
-      type: String,
-      // required: [true, "Video URL is required for video lessons"],
-    },
+    muxUploadId: { type: String, default: null },
+    muxAssetId: { type: String, default: null },
+    muxPlaybackId: { type: String, default: null },
   }),
 );
 
