@@ -1,6 +1,9 @@
 import gql from "graphql-tag";
 
 export const typeDefs = gql`
+  scalar Date
+
+  # --- Common Enums & Interfaces ---
   enum LessonType {
     VIDEO
     TEXT
@@ -9,28 +12,55 @@ export const typeDefs = gql`
     ASSIGNMENT
   }
 
-  # Interface for common lesson fields
   interface LessonV2 {
     _id: ID!
     sectionId: Section!
     title: String!
     order: Int!
     isPublished: Boolean!
-    createdAt: String!
-    updatedAt: String!
-    type: LessonType! # Expose the discriminator key
+    createdAt: Date!
+    updatedAt: Date!
+    type: LessonType!
   }
 
+  # --- Mux Upload Helper Types ---
+  enum PlaybackPolicy {
+    PUBLIC
+    SIGNED
+  }
+
+  type MuxUpload {
+    # The Mux upload ID—tie this back to your VideoLesson.
+    uploadId: String!
+    # Signed URL that the client will PUT the file to.
+    uploadUrl: String!
+  }
+
+  # --- Lesson Types ---
   type VideoLesson implements LessonV2 {
     _id: ID!
     sectionId: Section!
     title: String!
     order: Int!
     isPublished: Boolean!
-    createdAt: String!
-    updatedAt: String!
+    createdAt: Date!
+    updatedAt: Date!
     type: LessonType!
-    videoUrl: String
+
+    """
+    Mux upload identifier (always present).
+    """
+    muxUploadId: String
+
+    """
+    Mux asset identifier (set once processing completes).
+    """
+    muxAssetId: String
+
+    """
+    Mux playback identifier (set once processing completes).
+    """
+    muxPlaybackId: String
   }
 
   type TextLesson implements LessonV2 {
@@ -39,8 +69,8 @@ export const typeDefs = gql`
     title: String!
     order: Int!
     isPublished: Boolean!
-    createdAt: String!
-    updatedAt: String!
+    createdAt: Date!
+    updatedAt: Date!
     type: LessonType!
     content: String
   }
@@ -51,8 +81,8 @@ export const typeDefs = gql`
     title: String!
     order: Int!
     isPublished: Boolean!
-    createdAt: String!
-    updatedAt: String!
+    createdAt: Date!
+    updatedAt: Date!
     type: LessonType!
     fileUrl: String
   }
@@ -63,10 +93,10 @@ export const typeDefs = gql`
     title: String!
     order: Int!
     isPublished: Boolean!
-    createdAt: String!
-    updatedAt: String!
+    createdAt: Date!
+    updatedAt: Date!
     type: LessonType!
-    quizQuestions: [QuizQuestion!]
+    quizQuestions: [QuizQuestion!]!
   }
 
   type AssignmentLesson implements LessonV2 {
@@ -75,8 +105,8 @@ export const typeDefs = gql`
     title: String!
     order: Int!
     isPublished: Boolean!
-    createdAt: String!
-    updatedAt: String!
+    createdAt: Date!
+    updatedAt: Date!
     type: LessonType!
     assignmentDetails: String
   }
@@ -87,27 +117,32 @@ export const typeDefs = gql`
     correctAnswer: String!
   }
 
+  # --- Queries ---
   type Query {
-    getLessonByIdV2(_id: ID!): LessonV2!
-    getLessonsBySectionV2(sectionId: ID!): [LessonV2!]!
+    getLessonV2ById(_id: ID!): LessonV2!
+    getLessonsV2BySection(sectionId: ID!): [LessonV2!]!
   }
 
+  # --- Mutation Responses ---
   type CreateLessonV2Response {
     success: Boolean!
     message: String!
   }
-
   type UpdateLessonV2Response {
     success: Boolean!
     message: String!
   }
-
   type DeleteLessonV2Response {
     success: Boolean!
     message: String
   }
 
+  # --- Mutations ---
   type Mutation {
+    createMuxUploadUrl(
+      playbackPolicy: [PlaybackPolicy!] = [SIGNED]
+      corsOrigin: String = "*"
+    ): MuxUpload!
     createLessonV2(input: CreateLessonV2Input!): CreateLessonV2Response!
     updateLessonV2(
       _id: ID!
@@ -116,6 +151,7 @@ export const typeDefs = gql`
     deleteLessonV2(_id: ID!): DeleteLessonV2Response!
   }
 
+  # --- Inputs ---
   input CreateLessonV2Input {
     type: LessonType!
     sectionId: ID!
@@ -126,12 +162,14 @@ export const typeDefs = gql`
   input UpdateLessonV2Input {
     title: String
     content: String
-    videoUrl: String
     fileUrl: String
     quizQuestions: [QuizQuestionInput!]
     assignmentDetails: String
     order: Int
     isPublished: Boolean
+    muxUploadId: String
+    muxAssetId: String
+    muxPlaybackId: String
   }
 
   input QuizQuestionInput {
