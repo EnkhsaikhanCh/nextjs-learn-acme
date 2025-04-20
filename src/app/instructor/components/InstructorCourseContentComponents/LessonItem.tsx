@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-
+import { useRouter } from "next/navigation";
 // import { useState } from "react";
 // import type { Lesson } from "@/types/course";
 import { Button } from "@/components/ui/button";
@@ -56,6 +56,8 @@ export function LessonItem({
 }: LessonItemProps) {
   //   const [isEditLessonOpen, setIsEditLessonOpen] = useState(false);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+
+  const router = useRouter();
 
   // Get lesson icon based on type
   const getLessonIcon = () => {
@@ -146,7 +148,11 @@ export function LessonItem({
                   variant="ghost"
                   size="icon"
                   className="h-7 w-7 text-gray-500 hover:text-gray-900"
-                  //   onClick={() => setIsEditLessonOpen(true)}
+                  onClick={() => {
+                    router.push(
+                      `/instructor/courses/${lesson.sectionId?.courseId?.slug}/lesson/${lesson._id}/edit`,
+                    );
+                  }}
                 >
                   <Pencil className="h-3.5 w-3.5" />
                   <span className="sr-only">Edit lesson</span>
