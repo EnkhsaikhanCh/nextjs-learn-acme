@@ -1,6 +1,62 @@
+# Mutations
 mutation DeleteLessonV2($id: ID!) {
   deleteLessonV2(_id: $id) {
     success
     message
+  }
+}
+
+mutation CreateMuxUploadUrl {
+  createMuxUploadUrl {
+    uploadId
+    uploadUrl
+  }
+}
+
+mutation UpdateLessonV2($id: ID!, $input: UpdateLessonV2Input!) {
+  updateLessonV2(_id: $id, input: $input) {
+    success
+    message
+  }
+}
+
+# Query
+query GetLessonV2ById($id: ID!) {
+  getLessonV2ById(_id: $id) {
+    _id
+    sectionId {
+      _id
+      courseId {
+        _id
+        slug
+      }
+    }
+    title
+    order
+    isPublished
+    createdAt
+    updatedAt
+    type
+    ... on VideoLesson {
+      muxUploadId
+      muxAssetId
+      muxPlaybackId
+    }
+    ... on TextLesson {
+      content
+    }
+    ... on FileLesson {
+      fileUrl
+    }
+    ... on QuizLesson {
+      quizQuestions {
+        question
+        answers
+        correctAnswer
+      }
+    }
+    ... on AssignmentLesson {
+      assignmentDetails
+    }
   }
 }

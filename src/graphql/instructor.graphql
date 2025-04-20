@@ -12,6 +12,11 @@ query GetInstructorCourseContent($slug: String!) {
         isPublished
         order
         type
+        sectionId {
+          courseId {
+            slug
+          }
+        }
       }
       order
     }
