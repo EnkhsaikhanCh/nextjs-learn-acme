@@ -838,6 +838,7 @@ export type UpdateLessonInput = {
 export type UpdateLessonV2Input = {
   assignmentDetails?: InputMaybe<Scalars['String']['input']>;
   content?: InputMaybe<Scalars['String']['input']>;
+  duration?: InputMaybe<Scalars['Float']['input']>;
   fileUrl?: InputMaybe<Scalars['String']['input']>;
   isPublished?: InputMaybe<Scalars['Boolean']['input']>;
   muxAssetId?: InputMaybe<Scalars['String']['input']>;
@@ -845,6 +846,7 @@ export type UpdateLessonV2Input = {
   muxUploadId?: InputMaybe<Scalars['String']['input']>;
   order?: InputMaybe<Scalars['Int']['input']>;
   quizQuestions?: InputMaybe<Array<QuizQuestionInput>>;
+  status?: InputMaybe<Scalars['String']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -905,15 +907,14 @@ export type VideoLesson = LessonV2 & {
   __typename?: 'VideoLesson';
   _id: Scalars['ID']['output'];
   createdAt: Scalars['DateTime']['output'];
+  duration?: Maybe<Scalars['Float']['output']>;
   isPublished: Scalars['Boolean']['output'];
-  /** Mux asset identifier (set once processing completes). */
   muxAssetId?: Maybe<Scalars['String']['output']>;
-  /** Mux playback identifier (set once processing completes). */
   muxPlaybackId?: Maybe<Scalars['String']['output']>;
-  /** Mux upload identifier (always present). */
   muxUploadId?: Maybe<Scalars['String']['output']>;
   order: Scalars['Int']['output'];
   sectionId: Section;
+  status?: Maybe<Scalars['String']['output']>;
   title: Scalars['String']['output'];
   type: LessonType;
   updatedAt: Scalars['DateTime']['output'];
@@ -1166,7 +1167,7 @@ export type GetLessonV2ByIdQueryVariables = Exact<{
 }>;
 
 
-export type GetLessonV2ByIdQuery = { __typename?: 'Query', getLessonV2ById: { __typename?: 'AssignmentLesson', assignmentDetails?: string | null, _id: string, title: string, order: number, isPublished: boolean, createdAt: Date, updatedAt: Date, type: LessonType, sectionId: { __typename?: 'Section', _id: string, courseId?: { __typename?: 'Course', _id: string, slug?: string | null } | null } } | { __typename?: 'FileLesson', fileUrl?: string | null, _id: string, title: string, order: number, isPublished: boolean, createdAt: Date, updatedAt: Date, type: LessonType, sectionId: { __typename?: 'Section', _id: string, courseId?: { __typename?: 'Course', _id: string, slug?: string | null } | null } } | { __typename?: 'QuizLesson', _id: string, title: string, order: number, isPublished: boolean, createdAt: Date, updatedAt: Date, type: LessonType, quizQuestions: Array<{ __typename?: 'QuizQuestion', question: string, answers: Array<string>, correctAnswer: string }>, sectionId: { __typename?: 'Section', _id: string, courseId?: { __typename?: 'Course', _id: string, slug?: string | null } | null } } | { __typename?: 'TextLesson', content?: string | null, _id: string, title: string, order: number, isPublished: boolean, createdAt: Date, updatedAt: Date, type: LessonType, sectionId: { __typename?: 'Section', _id: string, courseId?: { __typename?: 'Course', _id: string, slug?: string | null } | null } } | { __typename?: 'VideoLesson', muxUploadId?: string | null, muxAssetId?: string | null, muxPlaybackId?: string | null, _id: string, title: string, order: number, isPublished: boolean, createdAt: Date, updatedAt: Date, type: LessonType, sectionId: { __typename?: 'Section', _id: string, courseId?: { __typename?: 'Course', _id: string, slug?: string | null } | null } } };
+export type GetLessonV2ByIdQuery = { __typename?: 'Query', getLessonV2ById: { __typename?: 'AssignmentLesson', assignmentDetails?: string | null, _id: string, title: string, order: number, isPublished: boolean, createdAt: Date, updatedAt: Date, type: LessonType, sectionId: { __typename?: 'Section', _id: string, courseId?: { __typename?: 'Course', _id: string, slug?: string | null } | null } } | { __typename?: 'FileLesson', fileUrl?: string | null, _id: string, title: string, order: number, isPublished: boolean, createdAt: Date, updatedAt: Date, type: LessonType, sectionId: { __typename?: 'Section', _id: string, courseId?: { __typename?: 'Course', _id: string, slug?: string | null } | null } } | { __typename?: 'QuizLesson', _id: string, title: string, order: number, isPublished: boolean, createdAt: Date, updatedAt: Date, type: LessonType, quizQuestions: Array<{ __typename?: 'QuizQuestion', question: string, answers: Array<string>, correctAnswer: string }>, sectionId: { __typename?: 'Section', _id: string, courseId?: { __typename?: 'Course', _id: string, slug?: string | null } | null } } | { __typename?: 'TextLesson', content?: string | null, _id: string, title: string, order: number, isPublished: boolean, createdAt: Date, updatedAt: Date, type: LessonType, sectionId: { __typename?: 'Section', _id: string, courseId?: { __typename?: 'Course', _id: string, slug?: string | null } | null } } | { __typename?: 'VideoLesson', muxUploadId?: string | null, muxAssetId?: string | null, muxPlaybackId?: string | null, status?: string | null, duration?: number | null, _id: string, title: string, order: number, isPublished: boolean, createdAt: Date, updatedAt: Date, type: LessonType, sectionId: { __typename?: 'Section', _id: string, courseId?: { __typename?: 'Course', _id: string, slug?: string | null } | null } } };
 
 export type CreatePaymentMutationVariables = Exact<{
   input: CreatePaymentInput;
@@ -2619,6 +2620,8 @@ export const GetLessonV2ByIdDocument = gql`
       muxUploadId
       muxAssetId
       muxPlaybackId
+      status
+      duration
     }
     ... on TextLesson {
       content

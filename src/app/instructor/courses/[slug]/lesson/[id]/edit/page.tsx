@@ -22,7 +22,7 @@ import { Button } from "@/components/ui/button";
 export default function Page() {
   const { slug, id } = useParams();
 
-  const { data, loading } = useGetLessonV2ByIdQuery({
+  const { data, loading, error, refetch } = useGetLessonV2ByIdQuery({
     variables: { id: id as string },
   });
 
@@ -52,6 +52,7 @@ export default function Page() {
 
           const json = await res.json();
           setToken(json.token);
+          refetch();
         } catch {
           toast.error(
             "Failed to fetch secure video token. Please try again later.",
@@ -70,6 +71,15 @@ export default function Page() {
       <div className="text-muted-foreground flex items-center justify-center gap-2 p-6 text-sm">
         <p>Loading lesson…</p>
         <Loader className="h-4 w-4 animate-spin" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center gap-2 p-6 text-sm text-red-500">
+        <p>Failed to load lesson.</p>
+        <ArrowLeft className="h-4 w-4" />
       </div>
     );
   }

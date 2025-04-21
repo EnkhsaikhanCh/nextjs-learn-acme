@@ -47,20 +47,11 @@ export const typeDefs = gql`
     updatedAt: Date!
     type: LessonType!
 
-    """
-    Mux upload identifier (always present).
-    """
+    status: String
     muxUploadId: String
-
-    """
-    Mux asset identifier (set once processing completes).
-    """
     muxAssetId: String
-
-    """
-    Mux playback identifier (set once processing completes).
-    """
     muxPlaybackId: String
+    duration: Float
   }
 
   type TextLesson implements LessonV2 {
@@ -167,6 +158,8 @@ export const typeDefs = gql`
     assignmentDetails: String
     order: Int
     isPublished: Boolean
+    status: String
+    duration: Float
     muxUploadId: String
     muxAssetId: String
     muxPlaybackId: String

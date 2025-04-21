@@ -43,6 +43,8 @@ const discriminator = (name: string, schema: Schema) => {
 const VideoLesson = discriminator(
   LessonType.Video,
   new Schema({
+    duration: { type: Number, default: null },
+    status: { type: String, default: null },
     muxUploadId: { type: String, default: null },
     muxAssetId: { type: String, default: null },
     muxPlaybackId: { type: String, default: null },

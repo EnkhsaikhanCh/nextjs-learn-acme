@@ -41,6 +41,8 @@ query GetLessonV2ById($id: ID!) {
       muxUploadId
       muxAssetId
       muxPlaybackId
+      status
+      duration
     }
     ... on TextLesson {
       content
