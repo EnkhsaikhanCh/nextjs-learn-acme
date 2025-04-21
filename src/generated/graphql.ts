@@ -471,6 +471,7 @@ export type MutationVerifyOtpArgs = {
 
 export type MuxUpload = {
   __typename?: 'MuxUpload';
+  passthrough: Scalars['String']['output'];
   uploadId: Scalars['String']['output'];
   uploadUrl: Scalars['String']['output'];
 };
@@ -845,6 +846,7 @@ export type UpdateLessonV2Input = {
   muxPlaybackId?: InputMaybe<Scalars['String']['input']>;
   muxUploadId?: InputMaybe<Scalars['String']['input']>;
   order?: InputMaybe<Scalars['Int']['input']>;
+  passthrough?: InputMaybe<Scalars['String']['input']>;
   quizQuestions?: InputMaybe<Array<QuizQuestionInput>>;
   status?: InputMaybe<Scalars['String']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
@@ -913,6 +915,7 @@ export type VideoLesson = LessonV2 & {
   muxPlaybackId?: Maybe<Scalars['String']['output']>;
   muxUploadId?: Maybe<Scalars['String']['output']>;
   order: Scalars['Int']['output'];
+  passthrough?: Maybe<Scalars['String']['output']>;
   sectionId: Section;
   status?: Maybe<Scalars['String']['output']>;
   title: Scalars['String']['output'];
@@ -1152,7 +1155,7 @@ export type DeleteLessonV2Mutation = { __typename?: 'Mutation', deleteLessonV2: 
 export type CreateMuxUploadUrlMutationVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CreateMuxUploadUrlMutation = { __typename?: 'Mutation', createMuxUploadUrl: { __typename?: 'MuxUpload', uploadId: string, uploadUrl: string } };
+export type CreateMuxUploadUrlMutation = { __typename?: 'Mutation', createMuxUploadUrl: { __typename?: 'MuxUpload', uploadId: string, uploadUrl: string, passthrough: string } };
 
 export type UpdateLessonV2MutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -2536,6 +2539,7 @@ export const CreateMuxUploadUrlDocument = gql`
   createMuxUploadUrl {
     uploadId
     uploadUrl
+    passthrough
   }
 }
     `;

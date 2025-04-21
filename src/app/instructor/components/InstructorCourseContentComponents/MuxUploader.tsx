@@ -32,7 +32,8 @@ export function MuxUploaderComponent({ lessonId }: Props) {
     try {
       // 1. createMuxUploadUrl → get uploadId + uploadUrl
       const { data } = await createUpload();
-      const { uploadId, uploadUrl } = data?.createMuxUploadUrl ?? {};
+      const { uploadId, uploadUrl, passthrough } =
+        data?.createMuxUploadUrl ?? {};
 
       if (!uploadId || !uploadUrl) {
         throw new Error("Invalid upload URL");
@@ -55,6 +56,7 @@ export function MuxUploaderComponent({ lessonId }: Props) {
           id: lessonId,
           input: {
             muxUploadId: uploadId,
+            passthrough: passthrough,
           },
         },
       });

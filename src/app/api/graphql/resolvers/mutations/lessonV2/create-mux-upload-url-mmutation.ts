@@ -2,6 +2,7 @@ import { User } from "@/generated/graphql";
 import { requireAuthAndRoles } from "@/lib/auth-utils";
 import { video } from "@/lib/mux";
 import { GraphQLError } from "graphql";
+import { v4 as uuid } from "uuid";
 
 export const createMuxUploadUrl = async (
   _: unknown,
@@ -21,16 +22,19 @@ export const createMuxUploadUrl = async (
   );
 
   try {
+    const passthrough = uuid();
     const upload = await video.uploads.create({
       cors_origin: corsOrigin,
       new_asset_settings: {
         playback_policies,
+        passthrough,
       },
     });
 
     return {
       uploadId: upload.id,
       uploadUrl: upload.url,
+      passthrough: passthrough,
     };
   } catch (error) {
     console.error("Mux upload creation failed:", error);

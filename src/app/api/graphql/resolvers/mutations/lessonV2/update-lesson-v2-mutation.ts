@@ -52,6 +52,7 @@ export const updateLessonV2 = async (
       "assignmentDetails",
       "order",
       "isPublished",
+      "passthrough",
       "status",
       "duration",
       "muxUploadId",

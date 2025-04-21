@@ -30,7 +30,7 @@ export async function POST(req: Request) {
       case "video.asset.created":
       case "video.asset.ready": {
         const lesson = await LessonV2Model.findOne({
-          muxUploadId: data.upload_id,
+          passthrough: data.passthrough,
         }).populate({
           path: "sectionId",
           populate: { path: "courseId", select: "slug" },
@@ -65,14 +65,17 @@ export async function POST(req: Request) {
 
       case "video.upload.cancelled": {
         const lesson = await LessonV2Model.findOne({
-          muxUploadId: data.upload_id,
+          passthrough: data.passthrough,
         });
+
         if (!lesson) {
           return new Response("Lesson not found!", { status: 400 });
         }
-        // Optionally update status
+
         lesson.isPublished = false;
+
         await lesson.save();
+
         break;
       }
 

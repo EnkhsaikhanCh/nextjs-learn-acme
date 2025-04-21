@@ -34,6 +34,8 @@ export const typeDefs = gql`
     uploadId: String!
     # Signed URL that the client will PUT the file to.
     uploadUrl: String!
+    # Optional passthrough value to identify the upload.
+    passthrough: String!
   }
 
   # --- Lesson Types ---
@@ -46,6 +48,7 @@ export const typeDefs = gql`
     createdAt: Date!
     updatedAt: Date!
     type: LessonType!
+    passthrough: String
 
     status: String
     muxUploadId: String
@@ -158,6 +161,7 @@ export const typeDefs = gql`
     assignmentDetails: String
     order: Int
     isPublished: Boolean
+    passthrough: String
     status: String
     duration: Float
     muxUploadId: String
