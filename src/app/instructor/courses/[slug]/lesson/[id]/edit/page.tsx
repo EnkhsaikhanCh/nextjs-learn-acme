@@ -1,23 +1,25 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useGetLessonV2ByIdQuery } from "@/generated/graphql";
+import {
+  useCreateMuxUploadUrlMutation,
+  useGetLessonV2ByIdQuery,
+  useUpdateLessonV2Mutation,
+} from "@/generated/graphql";
 import { useParams } from "next/navigation";
 import MuxPlayer from "@mux/mux-player-react";
-import { ArrowLeft, Loader } from "lucide-react";
+import { ArrowLeft, Loader, PlusCircle } from "lucide-react";
 import { LessonType } from "@/generated/graphql";
-import { MuxUploaderComponent } from "@/app/instructor/components/InstructorCourseContentComponents/MuxUploader";
 import { toast } from "sonner";
 import { LessonHeader } from "../components/lesson-header";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-// import MuxUploader from "@mux/mux-uploader-react";
-// import {
-//   MuxUploaderDrop,
-//   MuxUploaderFileSelect,
-//   MuxUploaderProgress,
-//   MuxUploaderStatus,
-// } from "@mux/mux-uploader-react";
+import MuxUploader, {
+  MuxUploaderDrop,
+  MuxUploaderFileSelect,
+  MuxUploaderProgress,
+  MuxUploaderStatus,
+} from "@mux/mux-uploader-react";
 
 export default function Page() {
   const { slug, id } = useParams();
@@ -25,6 +27,8 @@ export default function Page() {
   const { data, loading, error, refetch } = useGetLessonV2ByIdQuery({
     variables: { id: id as string },
   });
+  const [createUpload] = useCreateMuxUploadUrlMutation();
+  const [updateLessonV2] = useUpdateLessonV2Mutation();
 
   const [token, setToken] = useState<string | null>(null);
   const [tokenLoading, setTokenLoading] = useState(false);
@@ -111,13 +115,92 @@ export default function Page() {
               <div className="mt-4 space-y-4">
                 {lesson.muxPlaybackId ? (
                   token ? (
-                    <MuxPlayer
-                      playbackId={lesson.muxPlaybackId}
-                      tokens={{ playback: token }}
-                      style={{ aspectRatio: "16/9" }}
-                      autoPlay={false}
-                      accentColor="#ac39f2"
-                    />
+                    <>
+                      {lesson.muxPlaybackId && (
+                        <div className="flex flex-1 items-center justify-end">
+                          <MuxUploader
+                            noDrop
+                            noProgress
+                            noRetry
+                            noStatus
+                            className="hidden bg-orange-300"
+                            id="my-uploader"
+                            endpoint={async () => {
+                              const { data } = await createUpload();
+                              const { uploadId, uploadUrl, passthrough } =
+                                data?.createMuxUploadUrl ?? {};
+
+                              if (!uploadUrl || !uploadId || !passthrough) {
+                                throw new Error(
+                                  "Upload URL or passthrough missing",
+                                );
+                              }
+
+                              localStorage.setItem("uploadId", uploadId);
+                              localStorage.setItem("passthrough", passthrough);
+
+                              return uploadUrl;
+                            }}
+                            onSuccess={async () => {
+                              toast.success(
+                                "Upload complete! Mux is processing...",
+                              );
+
+                              const uploadId = localStorage.getItem("uploadId");
+                              const passthrough =
+                                localStorage.getItem("passthrough");
+
+                              if (!uploadId || !passthrough) {
+                                return toast.error(
+                                  "Upload ID or passthrough missing",
+                                );
+                              }
+
+                              await updateLessonV2({
+                                variables: {
+                                  id: lesson._id,
+                                  input: {
+                                    muxUploadId: uploadId,
+                                    passthrough: passthrough,
+                                  },
+                                },
+                              });
+
+                              toast.success(
+                                "Lesson updated with upload metadata",
+                              );
+                            }}
+                          ></MuxUploader>
+
+                          <div className="w-full bg-sky-200">
+                            <MuxUploaderStatus muxUploader="my-uploader"></MuxUploaderStatus>
+
+                            <MuxUploaderProgress
+                              type="bar"
+                              muxUploader="my-uploader"
+                              className="w-full [--progress-bar-fill-color:#047857]"
+                            ></MuxUploaderProgress>
+                          </div>
+
+                          <MuxUploaderFileSelect muxUploader="my-uploader">
+                            <Button size="sm" className="h-7 gap-1">
+                              <PlusCircle className="h-3.5 w-3.5" />
+                              <span className="sm:whitespace-nowrap">
+                                Change
+                              </span>
+                            </Button>
+                          </MuxUploaderFileSelect>
+                        </div>
+                      )}
+                      <MuxPlayer
+                        playbackId={lesson.muxPlaybackId}
+                        tokens={{ playback: token }}
+                        style={{ aspectRatio: "16/9" }}
+                        autoPlay={false}
+                        accentColor="#ac39f2"
+                        className="aspect-[16/9] overflow-hidden rounded-md"
+                      />
+                    </>
                   ) : tokenLoading ? (
                     <div className="text-muted-foreground text-sm">
                       Fetching secure video token…
@@ -128,58 +211,87 @@ export default function Page() {
                     </div>
                   )
                 ) : (
-                  <MuxUploaderComponent lessonId={lesson._id} />
-                  // <div className="bg-muted flex aspect-video min-h-48 grow items-center justify-center rounded-md">
-                  //   <MuxUploaderDrop
-                  //     overlay
-                  //     overlayText="Drop to upload"
-                  //     muxUploader="lesson-uploader"
-                  //     className="h-full w-full rounded-md border border-dashed border-emerald-700 [--overlay-background-color:#047857]"
-                  //   >
-                  //     <MuxUploader
-                  //       noDrop
-                  //       noRetry
-                  //       noProgress
-                  //       noStatus
-                  //       className="hidden"
-                  //       id="lesson-uploader"
-                  //       // endpoint={async () => await createUploadUrl(id as string)}
-                  //       // onSuccess={() => setVideoStatus("preparing")}
-                  //     />
+                  <div className="bg-muted flex aspect-video min-h-48 grow items-center justify-center rounded-md">
+                    <MuxUploaderDrop
+                      overlay
+                      overlayText="Drop to upload"
+                      muxUploader="my-uploader"
+                      className="h-full w-full rounded-md border border-dashed border-emerald-700 [--overlay-background-color:#047857]"
+                    >
+                      <MuxUploader
+                        noDrop
+                        noProgress
+                        noRetry
+                        noStatus
+                        id="my-uploader"
+                        className="hidden"
+                        endpoint={async () => {
+                          const { data } = await createUpload();
+                          const { uploadId, uploadUrl, passthrough } =
+                            data?.createMuxUploadUrl ?? {};
 
-                  //     <h1 slot="heading">Drop a video file here to upload</h1>
-                  //     <span
-                  //       slot="separator"
-                  //       className="text-muted-foreground mt-2 text-sm italic"
-                  //     >
-                  //       — or —
-                  //     </span>
+                          if (!uploadUrl || !uploadId || !passthrough) {
+                            throw new Error(
+                              "Upload URL or passthrough missing",
+                            );
+                          }
 
-                  //     <div className="w-full">
-                  //       <MuxUploaderStatus muxUploader="lesson-uploader" />
-                  //       <MuxUploaderProgress
-                  //         className="text-sm font-semibold text-emerald-700 sm:text-base"
-                  //         muxUploader="lesson-uploader"
-                  //         type="percentage"
-                  //       />
-                  //       <MuxUploaderProgress
-                  //         type="bar"
-                  //         muxUploader="lesson-uploader"
-                  //         className="[--progress-bar-fill-color:#047857] [--progress-bar-height:8px] sm:[--progress-bar-height:10px]"
-                  //       />
-                  //     </div>
+                          localStorage.setItem("uploadId", uploadId);
+                          localStorage.setItem("passthrough", passthrough);
 
-                  //     <MuxUploaderFileSelect
-                  //       muxUploader="lesson-uploader"
-                  //       className="mt-4"
-                  //     >
-                  //       <Button size="sm" className="h-7 gap-1">
-                  //         <Plus className="h-4 w-4" />
-                  //         <span>Select a file</span>
-                  //       </Button>
-                  //     </MuxUploaderFileSelect>
-                  //   </MuxUploaderDrop>
-                  // </div>
+                          return uploadUrl;
+                        }}
+                        onSuccess={async () => {
+                          toast.success(
+                            "Upload complete! Mux is processing...",
+                          );
+
+                          const uploadId = localStorage.getItem("uploadId");
+                          const passthrough =
+                            localStorage.getItem("passthrough");
+
+                          if (!uploadId || !passthrough) {
+                            return toast.error(
+                              "Upload ID or passthrough missing",
+                            );
+                          }
+
+                          await updateLessonV2({
+                            variables: {
+                              id: lesson._id,
+                              input: {
+                                muxUploadId: uploadId,
+                                passthrough: passthrough,
+                              },
+                            },
+                          });
+
+                          toast.success("Lesson updated with upload metadata");
+                        }}
+                      ></MuxUploader>
+                      <h1 slot="heading">Drop a video file here to upload</h1>
+                      <span
+                        slot="separator"
+                        className="text-muted-foreground mt-2 text-sm italic"
+                      >
+                        — or —
+                      </span>
+                      <div>
+                        <MuxUploaderStatus muxUploader="my-uploader"></MuxUploaderStatus>
+                      </div>
+                      <MuxUploaderFileSelect
+                        muxUploader="my-uploader"
+                        className="mt-4"
+                      >
+                        <Button size="sm" className="h-7 gap-1">
+                          <PlusCircle className="h-3.5 w-3.5" />
+                          <span className="sm:whitespace-nowrap">
+                            Select a file
+                          </span>
+                        </Button>
+                      </MuxUploaderFileSelect>
+                    </MuxUploaderDrop>
+                  </div>
                 )}
               </div>
             )}
