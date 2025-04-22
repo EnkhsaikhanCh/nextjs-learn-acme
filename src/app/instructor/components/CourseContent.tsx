@@ -18,7 +18,11 @@ import { useCerateLesson } from "../feature/useCreateLesson";
 import { useCreateLessonV2 } from "../feature/useCreateLessonV2";
 import { useDeleteLessonV2 } from "../feature/useDeleteLessonV2";
 
-export const CourseContent = () => {
+interface CourseContentProps {
+  mainRefetch: () => void;
+}
+
+export const CourseContent = ({ mainRefetch }: CourseContentProps) => {
   const { slug } = useParams();
 
   const { data, loading, error, refetch } = useGetInstructorCourseContentQuery({
@@ -65,8 +69,9 @@ export const CourseContent = () => {
 
         <CreateSectionDialog
           courseId={courseId!}
-          onCreated={() => {
-            refetch();
+          onCreated={async () => {
+            await refetch();
+            await mainRefetch();
             toast.success("Section successfully created");
           }}
           trigger={<Button variant="default">New Section</Button>}
@@ -88,6 +93,7 @@ export const CourseContent = () => {
             lessonV2Creating={lessonV2Creating}
             onDeleteLessonV2={handleDeleteLessonV2}
             lessonV2Deleting={lessonV2Deleting}
+            mainRefetch={mainRefetch}
           />
         ))}
       </Accordion>

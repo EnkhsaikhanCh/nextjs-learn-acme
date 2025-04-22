@@ -9,14 +9,12 @@ import { Button } from "@/components/ui/button";
 // import { DeleteConfirmation } from "@/components/course-management/delete-confirmation";
 import { Badge } from "@/components/ui/badge";
 import {
+  Clock,
+  LockOpen,
   // GripVertical,
   Pencil,
   Trash2,
   //   Clock,
-  Play,
-  FileText,
-  FileQuestion,
-  File,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -28,6 +26,7 @@ import {
 import { LessonType, LessonV2 } from "@/generated/graphql";
 import { DeleteConfirmation } from "@/components/delete-confirmation";
 import { useState } from "react";
+import { getLessonTypeColor, getLessonTypeIcon } from "@/utils/lesson";
 
 interface LessonItemProps {
   lesson: LessonV2;
@@ -40,6 +39,7 @@ interface LessonItemProps {
   //   onEdit: () => void;
   onDelete: (id: string) => void;
   deleting: boolean;
+  mainRefetch: () => void;
 }
 
 export function LessonItem({
@@ -53,47 +53,18 @@ export function LessonItem({
   //   onEdit,
   onDelete,
   deleting,
+  mainRefetch,
 }: LessonItemProps) {
   //   const [isEditLessonOpen, setIsEditLessonOpen] = useState(false);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
 
   const router = useRouter();
 
-  // Get lesson icon based on type
-  const getLessonIcon = () => {
-    switch (lesson.type) {
-      case LessonType.Video:
-        return <Play className="h-4 w-4 text-blue-500" />;
-      case LessonType.Text:
-        return <FileText className="h-4 w-4 text-emerald-500" />;
-      case LessonType.File:
-        return <File className="h-4 w-4 text-purple-500" />;
-      case LessonType.Quiz:
-        return <FileQuestion className="h-4 w-4 text-amber-500" />;
-      case LessonType.Assignment:
-        return <File className="h-4 w-4 text-gray-500" />;
-      default:
-        return <File className="h-4 w-4 text-gray-500" />;
-    }
-  };
-
-  // Get badge color based on lesson type
-  const getBadgeClasses = () => {
-    switch (lesson.type) {
-      case LessonType.Video:
-        return "bg-blue-50 border-blue-300 dark:border-blue-500/30 dark:bg-blue-950";
-      case LessonType.Text:
-        return "bg-emerald-50  border-emerald-300 dark:border-emerald-500/30 dark:bg-emerald-950";
-      case LessonType.File:
-        return "bg-purple-50  border-purple-300 dark:border-purple-500/30 dark:bg-purple-950";
-      case LessonType.Quiz:
-        return "bg-amber-50  border-amber-300 dark:border-amber-500/30 dark:bg-amber-950";
-      case LessonType.Assignment:
-        return "bg-gray-50  border-gray-300 dark:border-gray-600 dark:bg-gray-900";
-      default:
-        return "bg-gray-50 border-gray-300 dark:border-gray-600 dark:bg-gray-900";
-    }
-  };
+  function formatToMMSS(seconds: number) {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  }
 
   return (
     <>
@@ -119,23 +90,50 @@ export function LessonItem({
             <GripVertical className="h-4 w-4 text-gray-400" />
           </div> */}
 
-          <div className="flex-shrink-0">{getLessonIcon()}</div>
+          <div className="flex-shrink-0">{getLessonTypeIcon(lesson.type)}</div>
 
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-medium">{lesson.title}</p>
-            <div className="mt-1 flex items-center gap-3">
-              {/* {lesson.type === LessonType.Video && lesson.duration && (
+            <div className="mt-1 flex items-center gap-1.5">
+              {lesson.type === LessonType.Video &&
+              "duration" in lesson &&
+              typeof lesson.duration === "number" ? (
                 <div className="flex items-center gap-1 text-xs text-gray-500">
                   <Clock className="h-3 w-3" />
-                  <span>{lesson.duration}</span>
+                  <span>{formatToMMSS(lesson.duration)}</span>
                 </div>
-              )} */}
+              ) : (
+                <div className="flex items-center gap-1 text-xs text-gray-500">
+                  <span>Video not upload</span>
+                </div>
+              )}
+
               <Badge
                 variant="outline"
-                className={cn("px-1.5 py-0 text-xs", getBadgeClasses())}
+                className={cn(
+                  "px-1.5 py-0 text-xs",
+                  getLessonTypeColor(lesson.type),
+                )}
               >
                 {lesson.type.charAt(0).toUpperCase() + lesson.type.slice(1)}
               </Badge>
+
+              {lesson.isPublished ? (
+                <Badge className="border border-green-400 bg-green-200 px-1.5 py-0 text-xs text-black dark:border-green-900 dark:bg-green-950 dark:text-green-400">
+                  Published
+                </Badge>
+              ) : (
+                <Badge className="border border-yellow-400 bg-yellow-200 px-1.5 py-0 text-xs text-black hover:bg-yellow-200 dark:border-yellow-900 dark:bg-yellow-950 dark:text-yellow-400">
+                  Unpublished
+                </Badge>
+              )}
+
+              {lesson.isFree && (
+                <Badge className="gap-1 border border-orange-400 bg-orange-200 px-1.5 py-0 text-xs text-black dark:border-orange-900 dark:bg-orange-950 dark:text-orange-400">
+                  <LockOpen className="h-2.5 w-2.5 text-orange-500" />
+                  Free
+                </Badge>
+              )}
             </div>
           </div>
         </div>
@@ -198,6 +196,7 @@ export function LessonItem({
         onOpenChange={setIsDeleteConfirmOpen}
         onConfirm={async () => {
           await onDelete(lesson._id);
+          await mainRefetch();
           setIsDeleteConfirmOpen(false);
         }}
         loading={deleting}

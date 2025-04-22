@@ -7,7 +7,11 @@ import { CourseThumbnailCard } from "./InstructorCourseSettingsComponents/Course
 import { VisibilityAndAccessCard } from "./InstructorCourseSettingsComponents/VisibilityAndAccessCard";
 import { WhatYouWillLearnCard } from "./InstructorCourseSettingsComponents/WhatYouWillLearnCard";
 
-export const CourseSettings = () => {
+interface CourseSettingsProps {
+  mainRefetch: () => void;
+}
+
+export const CourseSettings = ({ mainRefetch }: CourseSettingsProps) => {
   const { slug } = useParams();
 
   const { data, loading, error, refetch } = useGetCourseBasicInfoForEditQuery({
@@ -41,6 +45,7 @@ export const CourseSettings = () => {
       <BasicInformationCard
         initialValues={data?.getCourseBasicInfoForEdit as Course}
         refetch={refetch}
+        mainRefetch={mainRefetch}
       />
 
       <WhatYouWillLearnCard
@@ -51,23 +56,27 @@ export const CourseSettings = () => {
         }
         courseId={data?.getCourseBasicInfoForEdit?._id as string}
         refetch={refetch}
+        mainRefetch={mainRefetch}
       />
 
       <div className="grid gap-6 lg:grid-cols-2">
         <CourseThumbnailCard
           course={data?.getCourseBasicInfoForEdit as Course}
           refetch={refetch}
+          mainRefetch={mainRefetch}
         />
 
         <CoursePricingCard
           initialValues={data?.getCourseBasicInfoForEdit as Course}
           refetch={refetch}
+          mainRefetch={mainRefetch}
         />
       </div>
 
       <VisibilityAndAccessCard
         initialValues={data?.getCourseBasicInfoForEdit as Course}
         refetch={refetch}
+        mainRefetch={mainRefetch}
       />
     </div>
   );

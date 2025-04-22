@@ -39,11 +39,13 @@ import { RichTextEditor } from "../RichTextEditor";
 interface BasicInformationFormProps {
   initialValues: Course;
   refetch: () => void;
+  mainRefetch: () => void;
 }
 
 export const BasicInformationCard = ({
   initialValues,
   refetch,
+  mainRefetch,
 }: BasicInformationFormProps) => {
   const {
     register,
@@ -81,7 +83,7 @@ export const BasicInformationCard = ({
       });
 
       await refetch();
-
+      await mainRefetch();
       toast.success("Course info updated successfully!");
     } catch (error) {
       toast.error("Failed to update course", {

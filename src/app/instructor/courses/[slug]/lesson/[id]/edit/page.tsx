@@ -8,7 +8,7 @@ import {
 } from "@/generated/graphql";
 import { useParams } from "next/navigation";
 import MuxPlayer from "@mux/mux-player-react";
-import { ArrowLeft, Loader, PlusCircle, Trash2 } from "lucide-react";
+import { ArrowLeft, Loader, Lock, LockOpen, Upload } from "lucide-react";
 import { LessonType } from "@/generated/graphql";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -19,9 +19,19 @@ import MuxUploader, {
   MuxUploaderProgress,
   MuxUploaderStatus,
 } from "@mux/mux-uploader-react";
-import { Video, FileText, File, HelpCircle, BookOpen } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { getLessonTypeColor, getLessonTypeIcon } from "@/utils/lesson";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export default function Page() {
   const { slug, id } = useParams();
@@ -32,10 +42,16 @@ export default function Page() {
   const [createUpload] = useCreateMuxUploadUrlMutation();
   const [updateLessonV2] = useUpdateLessonV2Mutation();
 
+  const lesson = data?.getLessonV2ById;
+
+  // Local state for toggles
+  const [isPublished, setIsPublished] = useState(false);
+  const [isFree, setIsFree] = useState(false);
+  const [isupdating, setIsUpdating] = useState<boolean>(false);
+
+  // Secure token state
   const [token, setToken] = useState<string | null>(null);
   const [tokenLoading, setTokenLoading] = useState(false);
-
-  const lesson = data?.getLessonV2ById;
 
   useEffect(() => {
     const fetchToken = async () => {
@@ -70,39 +86,38 @@ export default function Page() {
     };
 
     fetchToken();
+    refetch();
+  }, [lesson, refetch]);
+
+  useEffect(() => {
+    if (lesson) {
+      setIsFree(lesson.isFree ?? false);
+      setIsPublished(lesson.isPublished ?? false);
+    }
   }, [lesson]);
 
-  const getLessonTypeIcon = () => {
-    switch (lesson?.type) {
-      case "VIDEO":
-        return <Video className="h-4 w-4" />;
-      case "TEXT":
-        return <FileText className="h-4 w-4" />;
-      case "FILE":
-        return <File className="h-4 w-4" />;
-      case "QUIZ":
-        return <HelpCircle className="h-4 w-4" />;
-      case "ASSIGNMENT":
-        return <BookOpen className="h-4 w-4" />;
-      default:
-        return null;
-    }
-  };
-
-  const getLessonTypeColor = () => {
-    switch (lesson?.type) {
-      case "VIDEO":
-        return "bg-blue-100 text-blue-800 border-blue-200";
-      case "TEXT":
-        return "bg-emerald-100 text-emerald-800 border-emerald-200";
-      case "FILE":
-        return "bg-amber-100 text-amber-800 border-amber-200";
-      case "QUIZ":
-        return "bg-purple-100 text-purple-800 border-purple-200";
-      case "ASSIGNMENT":
-        return "bg-indigo-100 text-indigo-800 border-indigo-200";
-      default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
+  const handleUpdateLesson = async () => {
+    try {
+      setIsUpdating(true);
+      const data = await updateLessonV2({
+        variables: {
+          id: lesson?._id as string,
+          input: {
+            title: lesson?.title,
+            isPublished,
+            isFree,
+          },
+        },
+      });
+      if (data.errors) {
+        throw new Error("Failed to update lesson");
+      }
+      await refetch();
+      toast.success("Lesson updated successfully");
+    } catch {
+      toast.error("Failed to update lesson");
+    } finally {
+      setIsUpdating(false);
     }
   };
 
@@ -130,7 +145,7 @@ export default function Page() {
         <div className="flex flex-1 flex-col overflow-hidden">
           <div className="flex-1 space-y-6 overflow-y-auto px-4 py-8 sm:px-6 lg:px-8">
             <Link href={`/instructor/courses/${slug}?tab=content`}>
-              <Button size={"sm"}>
+              <Button variant={"outline"} size={"sm"}>
                 <ArrowLeft /> Back to Course
               </Button>
             </Link>
@@ -141,38 +156,128 @@ export default function Page() {
               <div className="flex justify-between gap-4">
                 <div className="space-y-1">
                   <h1 className="text-3xl font-bold">{lesson?.title}</h1>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
                     <Badge
                       variant="outline"
                       className={cn(
                         "flex items-center gap-1.5",
-                        getLessonTypeColor(),
+                        getLessonTypeColor(lesson?.type),
                       )}
                     >
-                      {getLessonTypeIcon()}
+                      {getLessonTypeIcon(lesson?.type)}
                       {lesson?.type}
                     </Badge>
+
+                    {lesson?.isPublished ? (
+                      <Badge
+                        variant={"outline"}
+                        className="border border-green-400 bg-green-200 text-green-700 dark:border-green-900 dark:bg-green-950 dark:text-green-400"
+                      >
+                        PUBLISHED
+                      </Badge>
+                    ) : (
+                      <Badge
+                        variant={"outline"}
+                        className="border border-gray-400 bg-gray-200 text-gray-700 dark:border-gray-500 dark:bg-gray-700 dark:text-gray-200"
+                      >
+                        DRAFT
+                      </Badge>
+                    )}
+
+                    {lesson?.isFree ? (
+                      <Badge
+                        variant={"outline"}
+                        className="gap-1.5 border-orange-400 bg-orange-200 text-orange-900 dark:border-orange-900 dark:bg-orange-950 dark:text-orange-400"
+                      >
+                        <LockOpen className="h-3 w-3 text-orange-700" /> FREE
+                      </Badge>
+                    ) : (
+                      <Badge
+                        variant={"outline"}
+                        className="gap-1.5 border-green-400 bg-green-200 text-green-700 dark:border-green-900 dark:bg-green-950 dark:text-green-400"
+                      >
+                        <Lock className="h-3 w-3 text-green-700" />
+                        Enrolled students only
+                      </Badge>
+                    )}
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Button size="sm" variant="secondary">
-                    Save changes
-                  </Button>
-                  <Button size="icon" variant="outline" className="h-8">
-                    <Trash2 className="size-4 text-rose-500 dark:text-rose-400" />
-                  </Button>
-                </div>
+              </div>
+            </div>
+            <div className="flex-1">
+              <div className="flex flex-col gap-4">
+                <Card>
+                  <CardHeader className="border-b">
+                    <CardTitle>Visibility & Access</CardTitle>
+                    <CardDescription>
+                      Control who can see and access your course
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6 pt-6">
+                    <div className="space-y-4">
+                      <div className="bg-accent flex items-center justify-between rounded-lg p-3">
+                        <div className="flex items-center space-x-3">
+                          <Switch
+                            id="access"
+                            checked={isFree}
+                            onCheckedChange={setIsFree}
+                            className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-gray-200"
+                          />
+                          <div>
+                            <Label htmlFor="access" className="font-medium">
+                              Free Preview
+                            </Label>
+                            <p className="text-xs text-gray-500">
+                              Allow non-enrolled users to preview selected
+                              lessons
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="bg-accent flex items-center justify-between rounded-lg p-3">
+                        <div className="flex items-center space-x-3">
+                          <Switch
+                            id="publish"
+                            checked={isPublished}
+                            onCheckedChange={setIsPublished}
+                            className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-gray-200"
+                          />
+                          <div>
+                            <Label htmlFor="publish" className="font-medium">
+                              Publish
+                            </Label>
+                            <p className="text-xs text-gray-500">
+                              Publish this lesson to make it available to
+                              students.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                  <CardFooter className="flex justify-end border-t px-6 py-4">
+                    <Button onClick={handleUpdateLesson} disabled={isupdating}>
+                      {isupdating && (
+                        <Loader className="h-4 w-4 animate-spin" />
+                      )}
+                      {isupdating ? "Saving..." : "Save changes"}
+                    </Button>
+                  </CardFooter>
+                </Card>
               </div>
             </div>
 
             {/* Video */}
             {lesson?.type === LessonType.Video && "muxPlaybackId" in lesson && (
-              <div className="flex flex-1 flex-col gap-3 rounded-md border p-4">
+              <Card className="flex flex-1 flex-col">
                 <div className="flex items-center justify-between">
-                  <h3 className="flex-1 text-sm font-medium">Lesson video</h3>
+                  <CardHeader>
+                    <CardTitle>Lesson video</CardTitle>
+                  </CardHeader>
 
                   {lesson.muxPlaybackId && lesson.status === "ready" && (
-                    <div className="flex flex-1 items-center justify-end">
+                    <CardHeader className="flex flex-1 items-end">
                       <MuxUploader
                         noDrop
                         noProgress
@@ -225,151 +330,153 @@ export default function Page() {
                         }}
                       ></MuxUploader>
 
-                      <div className="w-full bg-sky-200">
-                        <MuxUploaderStatus muxUploader="my-uploader"></MuxUploaderStatus>
+                      <MuxUploaderStatus muxUploader="my-uploader"></MuxUploaderStatus>
 
-                        <MuxUploaderProgress
-                          type="bar"
-                          muxUploader="my-uploader"
-                          className="w-full [--progress-bar-fill-color:#047857]"
-                        ></MuxUploaderProgress>
-                      </div>
+                      <MuxUploaderProgress
+                        type="bar"
+                        muxUploader="my-uploader"
+                        className="w-full [--progress-bar-fill-color:#047857]"
+                      ></MuxUploaderProgress>
 
                       <MuxUploaderFileSelect muxUploader="my-uploader">
-                        <Button size="sm" className="h-7 gap-1">
-                          <PlusCircle className="h-3.5 w-3.5" />
-                          <span className="sm:whitespace-nowrap">Change</span>
+                        <Button size="sm" variant={"outline"}>
+                          <Upload className="h-3.5 w-3.5" />
+                          Change Video
                         </Button>
                       </MuxUploaderFileSelect>
-                    </div>
+                    </CardHeader>
                   )}
                 </div>
 
-                <div
-                  className={cn(
-                    "bg-muted flex aspect-video min-h-48 grow items-center justify-center rounded-md",
-                  )}
-                >
-                  {lesson.muxPlaybackId &&
-                    lesson.status === "ready" &&
-                    (token ? (
-                      <MuxPlayer
-                        playbackId={lesson.muxPlaybackId}
-                        tokens={{ playback: token }}
-                        style={{ aspectRatio: "16/9" }}
-                        autoPlay={false}
-                        accentColor="#ac39f2"
-                        className="aspect-[16/9] overflow-hidden rounded-md"
-                      />
-                    ) : tokenLoading ? (
-                      <div className="text-muted-foreground text-sm">
-                        Fetching secure video token…
-                      </div>
-                    ) : (
-                      <div className="text-sm text-red-500">
-                        Failed to load video token.
-                      </div>
-                    ))}
-
-                  {lesson.status === "preparing" && (
-                    <div className="text-background">
-                      <h4 className="text-xl font-semibold">Processing...</h4>
-                      <p className="mt-3 text-sm">
-                        This might take a few minutes!
-                      </p>
-                      <p className="text-sm">
-                        Make sure to save changes before leaving this page.
-                      </p>
-                    </div>
-                  )}
-
-                  {!lesson.muxPlaybackId && lesson.status !== "preparing" && (
-                    <div className="bg-muted flex aspect-video min-h-48 grow items-center justify-center rounded-md">
-                      <MuxUploaderDrop
-                        overlay
-                        overlayText="Drop to upload"
-                        muxUploader="my-uploader"
-                        className="h-full w-full rounded-md border border-dashed border-emerald-700 [--overlay-background-color:#047857]"
-                      >
-                        <MuxUploader
-                          noDrop
-                          noProgress
-                          noRetry
-                          noStatus
-                          id="my-uploader"
-                          className="hidden"
-                          endpoint={async () => {
-                            const { data } = await createUpload();
-                            const { uploadId, uploadUrl, passthrough } =
-                              data?.createMuxUploadUrl ?? {};
-
-                            if (!uploadUrl || !uploadId || !passthrough) {
-                              throw new Error(
-                                "Upload URL or passthrough missing",
-                              );
-                            }
-
-                            localStorage.setItem("uploadId", uploadId);
-                            localStorage.setItem("passthrough", passthrough);
-
-                            return uploadUrl;
-                          }}
-                          onSuccess={async () => {
-                            toast.success(
-                              "Upload complete! Mux is processing...",
-                            );
-
-                            const uploadId = localStorage.getItem("uploadId");
-                            const passthrough =
-                              localStorage.getItem("passthrough");
-
-                            if (!uploadId || !passthrough) {
-                              return toast.error(
-                                "Upload ID or passthrough missing",
-                              );
-                            }
-
-                            await updateLessonV2({
-                              variables: {
-                                id: lesson._id,
-                                input: {
-                                  muxUploadId: uploadId,
-                                  passthrough: passthrough,
-                                },
-                              },
-                            });
-
-                            toast.success(
-                              "Lesson updated with upload metadata",
-                            );
-                          }}
-                        ></MuxUploader>
-                        <h1 slot="heading">Drop a video file here to upload</h1>
-                        <span
-                          slot="separator"
-                          className="text-muted-foreground mt-2 text-sm italic"
-                        >
-                          — or —
-                        </span>
-                        <div>
-                          <MuxUploaderStatus muxUploader="my-uploader"></MuxUploaderStatus>
+                <CardContent>
+                  <div
+                    className={cn(
+                      "bg-muted flex aspect-video min-h-48 grow items-center justify-center rounded-md",
+                    )}
+                  >
+                    {lesson.muxPlaybackId &&
+                      lesson.status === "ready" &&
+                      (token ? (
+                        <MuxPlayer
+                          playbackId={lesson.muxPlaybackId}
+                          tokens={{ playback: token }}
+                          style={{ aspectRatio: "16/9" }}
+                          autoPlay={false}
+                          accentColor="#ac39f2"
+                          className="aspect-[16/9] overflow-hidden rounded-md"
+                        />
+                      ) : tokenLoading ? (
+                        <div className="text-muted-foreground text-sm">
+                          <Loader className="animate-spin" />
                         </div>
-                        <MuxUploaderFileSelect
+                      ) : (
+                        <div className="text-sm text-red-500">
+                          Failed to load video.
+                        </div>
+                      ))}
+
+                    {lesson.status === "preparing" && (
+                      <div className="text-background">
+                        <h4 className="text-xl font-semibold">Processing...</h4>
+                        <p className="mt-3 text-sm">
+                          This might take a few minutes!
+                        </p>
+                        <p className="text-sm">
+                          Make sure to save changes before leaving this page.
+                        </p>
+                      </div>
+                    )}
+
+                    {!lesson.muxPlaybackId && lesson.status !== "preparing" && (
+                      <div className="bg-muted flex aspect-video min-h-48 grow items-center justify-center rounded-md">
+                        <MuxUploaderDrop
+                          overlay
+                          overlayText="Drop to upload"
                           muxUploader="my-uploader"
-                          className="mt-4"
+                          className="h-full w-full rounded-md border-2 border-dashed [--overlay-background-color:#047857]"
                         >
-                          <Button size="sm" className="h-7 gap-1">
-                            <PlusCircle className="h-3.5 w-3.5" />
-                            <span className="sm:whitespace-nowrap">
-                              Select a file
-                            </span>
-                          </Button>
-                        </MuxUploaderFileSelect>
-                      </MuxUploaderDrop>
-                    </div>
-                  )}
-                </div>
-              </div>
+                          <MuxUploader
+                            noDrop
+                            noProgress
+                            noRetry
+                            noStatus
+                            id="my-uploader"
+                            className="hidden"
+                            endpoint={async () => {
+                              const { data } = await createUpload();
+                              const { uploadId, uploadUrl, passthrough } =
+                                data?.createMuxUploadUrl ?? {};
+
+                              if (!uploadUrl || !uploadId || !passthrough) {
+                                throw new Error(
+                                  "Upload URL or passthrough missing",
+                                );
+                              }
+
+                              localStorage.setItem("uploadId", uploadId);
+                              localStorage.setItem("passthrough", passthrough);
+
+                              return uploadUrl;
+                            }}
+                            onSuccess={async () => {
+                              toast.success(
+                                "Upload complete! Mux is processing...",
+                              );
+
+                              const uploadId = localStorage.getItem("uploadId");
+                              const passthrough =
+                                localStorage.getItem("passthrough");
+
+                              if (!uploadId || !passthrough) {
+                                return toast.error(
+                                  "Upload ID or passthrough missing",
+                                );
+                              }
+
+                              await updateLessonV2({
+                                variables: {
+                                  id: lesson._id,
+                                  input: {
+                                    muxUploadId: uploadId,
+                                    passthrough: passthrough,
+                                  },
+                                },
+                              });
+
+                              toast.success(
+                                "Lesson updated with upload metadata",
+                              );
+                            }}
+                          ></MuxUploader>
+                          <h1 slot="heading">
+                            Drop a video file here to upload
+                          </h1>
+                          <span
+                            slot="separator"
+                            className="text-muted-foreground mt-2 text-sm italic"
+                          >
+                            — or —
+                          </span>
+                          <div>
+                            <MuxUploaderStatus muxUploader="my-uploader"></MuxUploaderStatus>
+                          </div>
+                          <MuxUploaderFileSelect
+                            muxUploader="my-uploader"
+                            className="mt-4"
+                          >
+                            <Button variant={"outline"}>
+                              <Upload />
+                              <span className="sm:whitespace-nowrap">
+                                Select a file
+                              </span>
+                            </Button>
+                          </MuxUploaderFileSelect>
+                        </MuxUploaderDrop>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
             )}
           </div>
         </div>

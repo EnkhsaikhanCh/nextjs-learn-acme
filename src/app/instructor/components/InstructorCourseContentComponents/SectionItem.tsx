@@ -38,6 +38,7 @@ export interface SectionItemProps {
   lessonV2Creating: boolean;
   onDeleteLessonV2: (id: string) => void;
   lessonV2Deleting: boolean;
+  mainRefetch: () => void;
 }
 
 export const SectionItem: React.FC<SectionItemProps> = ({
@@ -52,6 +53,7 @@ export const SectionItem: React.FC<SectionItemProps> = ({
   lessonV2Creating,
   lessonV2Deleting,
   onDeleteLessonV2,
+  mainRefetch,
 }) => {
   const [open, setOpen] = useState(false);
   const [updateOpen, setUpdateOpen] = useState(false);
@@ -130,6 +132,7 @@ export const SectionItem: React.FC<SectionItemProps> = ({
                   lesson={lesson as LessonV2}
                   onDelete={onDeleteLessonV2}
                   deleting={lessonV2Deleting}
+                  mainRefetch={mainRefetch}
                 />
               ))}
             </div>
@@ -144,6 +147,7 @@ export const SectionItem: React.FC<SectionItemProps> = ({
               lessonV2Creating={lessonV2Creating}
               onLessonV2Create={onLessonV2Create}
               sectionId={section._id}
+              mainRefetch={mainRefetch}
             />
           </div>
         </div>
@@ -163,8 +167,9 @@ export const SectionItem: React.FC<SectionItemProps> = ({
         loading={deleting}
         title="Delete Module"
         description={`Are you sure you want to delete “${section.title}”?`}
-        onConfirm={() => {
+        onConfirm={async () => {
           onDelete(section._id, section.title ?? "");
+          await mainRefetch();
           setOpen(false);
         }}
         confirmName={section.title ?? ""}
