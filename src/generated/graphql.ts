@@ -23,6 +23,7 @@ export type AssignmentLesson = LessonV2 & {
   _id: Scalars['ID']['output'];
   assignmentDetails?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
+  isFree: Scalars['Boolean']['output'];
   isPublished: Scalars['Boolean']['output'];
   order: Scalars['Int']['output'];
   sectionId: Section;
@@ -215,6 +216,7 @@ export type FileLesson = LessonV2 & {
   _id: Scalars['ID']['output'];
   createdAt: Scalars['DateTime']['output'];
   fileUrl?: Maybe<Scalars['String']['output']>;
+  isFree: Scalars['Boolean']['output'];
   isPublished: Scalars['Boolean']['output'];
   order: Scalars['Int']['output'];
   sectionId: Section;
@@ -265,6 +267,7 @@ export enum LessonType {
 export type LessonV2 = {
   _id: Scalars['ID']['output'];
   createdAt: Scalars['DateTime']['output'];
+  isFree: Scalars['Boolean']['output'];
   isPublished: Scalars['Boolean']['output'];
   order: Scalars['Int']['output'];
   sectionId: Section;
@@ -696,6 +699,7 @@ export type QuizLesson = LessonV2 & {
   __typename?: 'QuizLesson';
   _id: Scalars['ID']['output'];
   createdAt: Scalars['DateTime']['output'];
+  isFree: Scalars['Boolean']['output'];
   isPublished: Scalars['Boolean']['output'];
   order: Scalars['Int']['output'];
   quizQuestions: Array<QuizQuestion>;
@@ -783,6 +787,7 @@ export type TextLesson = LessonV2 & {
   _id: Scalars['ID']['output'];
   content?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
+  isFree: Scalars['Boolean']['output'];
   isPublished: Scalars['Boolean']['output'];
   order: Scalars['Int']['output'];
   sectionId: Section;
@@ -841,6 +846,7 @@ export type UpdateLessonV2Input = {
   content?: InputMaybe<Scalars['String']['input']>;
   duration?: InputMaybe<Scalars['Float']['input']>;
   fileUrl?: InputMaybe<Scalars['String']['input']>;
+  isFree?: InputMaybe<Scalars['Boolean']['input']>;
   isPublished?: InputMaybe<Scalars['Boolean']['input']>;
   muxAssetId?: InputMaybe<Scalars['String']['input']>;
   muxPlaybackId?: InputMaybe<Scalars['String']['input']>;
@@ -910,6 +916,7 @@ export type VideoLesson = LessonV2 & {
   _id: Scalars['ID']['output'];
   createdAt: Scalars['DateTime']['output'];
   duration?: Maybe<Scalars['Float']['output']>;
+  isFree: Scalars['Boolean']['output'];
   isPublished: Scalars['Boolean']['output'];
   muxAssetId?: Maybe<Scalars['String']['output']>;
   muxPlaybackId?: Maybe<Scalars['String']['output']>;
@@ -1107,7 +1114,7 @@ export type GetInstructorCourseContentQueryVariables = Exact<{
 }>;
 
 
-export type GetInstructorCourseContentQuery = { __typename?: 'Query', getInstructorCourseContent?: { __typename?: 'Course', _id: string, sectionId?: Array<{ __typename?: 'Section', _id: string, title?: string | null, description?: string | null, order?: number | null, lessonId?: Array<{ __typename?: 'AssignmentLesson', _id: string, title: string, isPublished: boolean, order: number, type: LessonType, sectionId: { __typename?: 'Section', courseId?: { __typename?: 'Course', slug?: string | null } | null } } | { __typename?: 'FileLesson', _id: string, title: string, isPublished: boolean, order: number, type: LessonType, sectionId: { __typename?: 'Section', courseId?: { __typename?: 'Course', slug?: string | null } | null } } | { __typename?: 'QuizLesson', _id: string, title: string, isPublished: boolean, order: number, type: LessonType, sectionId: { __typename?: 'Section', courseId?: { __typename?: 'Course', slug?: string | null } | null } } | { __typename?: 'TextLesson', _id: string, title: string, isPublished: boolean, order: number, type: LessonType, sectionId: { __typename?: 'Section', courseId?: { __typename?: 'Course', slug?: string | null } | null } } | { __typename?: 'VideoLesson', _id: string, title: string, isPublished: boolean, order: number, type: LessonType, sectionId: { __typename?: 'Section', courseId?: { __typename?: 'Course', slug?: string | null } | null } } | null> | null } | null> | null } | null };
+export type GetInstructorCourseContentQuery = { __typename?: 'Query', getInstructorCourseContent?: { __typename?: 'Course', _id: string, sectionId?: Array<{ __typename?: 'Section', _id: string, title?: string | null, description?: string | null, order?: number | null, lessonId?: Array<{ __typename?: 'AssignmentLesson', assignmentDetails?: string | null, _id: string, title: string, isPublished: boolean, order: number, type: LessonType, sectionId: { __typename?: 'Section', courseId?: { __typename?: 'Course', slug?: string | null } | null } } | { __typename?: 'FileLesson', fileUrl?: string | null, _id: string, title: string, isPublished: boolean, order: number, type: LessonType, sectionId: { __typename?: 'Section', courseId?: { __typename?: 'Course', slug?: string | null } | null } } | { __typename?: 'QuizLesson', _id: string, title: string, isPublished: boolean, order: number, type: LessonType, quizQuestions: Array<{ __typename?: 'QuizQuestion', question: string, answers: Array<string>, correctAnswer: string }>, sectionId: { __typename?: 'Section', courseId?: { __typename?: 'Course', slug?: string | null } | null } } | { __typename?: 'TextLesson', content?: string | null, _id: string, title: string, isPublished: boolean, order: number, type: LessonType, sectionId: { __typename?: 'Section', courseId?: { __typename?: 'Course', slug?: string | null } | null } } | { __typename?: 'VideoLesson', duration?: number | null, _id: string, title: string, isPublished: boolean, order: number, type: LessonType, sectionId: { __typename?: 'Section', courseId?: { __typename?: 'Course', slug?: string | null } | null } } | null> | null } | null> | null } | null };
 
 export type CreateLessonMutationVariables = Exact<{
   input: CreateLessonInput;
@@ -1170,7 +1177,7 @@ export type GetLessonV2ByIdQueryVariables = Exact<{
 }>;
 
 
-export type GetLessonV2ByIdQuery = { __typename?: 'Query', getLessonV2ById: { __typename?: 'AssignmentLesson', assignmentDetails?: string | null, _id: string, title: string, order: number, isPublished: boolean, createdAt: Date, updatedAt: Date, type: LessonType, sectionId: { __typename?: 'Section', _id: string, courseId?: { __typename?: 'Course', _id: string, slug?: string | null } | null } } | { __typename?: 'FileLesson', fileUrl?: string | null, _id: string, title: string, order: number, isPublished: boolean, createdAt: Date, updatedAt: Date, type: LessonType, sectionId: { __typename?: 'Section', _id: string, courseId?: { __typename?: 'Course', _id: string, slug?: string | null } | null } } | { __typename?: 'QuizLesson', _id: string, title: string, order: number, isPublished: boolean, createdAt: Date, updatedAt: Date, type: LessonType, quizQuestions: Array<{ __typename?: 'QuizQuestion', question: string, answers: Array<string>, correctAnswer: string }>, sectionId: { __typename?: 'Section', _id: string, courseId?: { __typename?: 'Course', _id: string, slug?: string | null } | null } } | { __typename?: 'TextLesson', content?: string | null, _id: string, title: string, order: number, isPublished: boolean, createdAt: Date, updatedAt: Date, type: LessonType, sectionId: { __typename?: 'Section', _id: string, courseId?: { __typename?: 'Course', _id: string, slug?: string | null } | null } } | { __typename?: 'VideoLesson', muxUploadId?: string | null, muxAssetId?: string | null, muxPlaybackId?: string | null, status?: string | null, duration?: number | null, _id: string, title: string, order: number, isPublished: boolean, createdAt: Date, updatedAt: Date, type: LessonType, sectionId: { __typename?: 'Section', _id: string, courseId?: { __typename?: 'Course', _id: string, slug?: string | null } | null } } };
+export type GetLessonV2ByIdQuery = { __typename?: 'Query', getLessonV2ById: { __typename?: 'AssignmentLesson', assignmentDetails?: string | null, _id: string, title: string, order: number, isPublished: boolean, isFree: boolean, createdAt: Date, updatedAt: Date, type: LessonType, sectionId: { __typename?: 'Section', _id: string, courseId?: { __typename?: 'Course', _id: string, slug?: string | null } | null } } | { __typename?: 'FileLesson', fileUrl?: string | null, _id: string, title: string, order: number, isPublished: boolean, isFree: boolean, createdAt: Date, updatedAt: Date, type: LessonType, sectionId: { __typename?: 'Section', _id: string, courseId?: { __typename?: 'Course', _id: string, slug?: string | null } | null } } | { __typename?: 'QuizLesson', _id: string, title: string, order: number, isPublished: boolean, isFree: boolean, createdAt: Date, updatedAt: Date, type: LessonType, quizQuestions: Array<{ __typename?: 'QuizQuestion', question: string, answers: Array<string>, correctAnswer: string }>, sectionId: { __typename?: 'Section', _id: string, courseId?: { __typename?: 'Course', _id: string, slug?: string | null } | null } } | { __typename?: 'TextLesson', content?: string | null, _id: string, title: string, order: number, isPublished: boolean, isFree: boolean, createdAt: Date, updatedAt: Date, type: LessonType, sectionId: { __typename?: 'Section', _id: string, courseId?: { __typename?: 'Course', _id: string, slug?: string | null } | null } } | { __typename?: 'VideoLesson', muxUploadId?: string | null, muxAssetId?: string | null, muxPlaybackId?: string | null, status?: string | null, duration?: number | null, _id: string, title: string, order: number, isPublished: boolean, isFree: boolean, createdAt: Date, updatedAt: Date, type: LessonType, sectionId: { __typename?: 'Section', _id: string, courseId?: { __typename?: 'Course', _id: string, slug?: string | null } | null } } };
 
 export type CreatePaymentMutationVariables = Exact<{
   input: CreatePaymentInput;
@@ -2278,6 +2285,25 @@ export const GetInstructorCourseContentDocument = gql`
             slug
           }
         }
+        ... on VideoLesson {
+          duration
+        }
+        ... on TextLesson {
+          content
+        }
+        ... on FileLesson {
+          fileUrl
+        }
+        ... on QuizLesson {
+          quizQuestions {
+            question
+            answers
+            correctAnswer
+          }
+        }
+        ... on AssignmentLesson {
+          assignmentDetails
+        }
       }
       order
     }
@@ -2617,6 +2643,7 @@ export const GetLessonV2ByIdDocument = gql`
     title
     order
     isPublished
+    isFree
     createdAt
     updatedAt
     type

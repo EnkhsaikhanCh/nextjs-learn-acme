@@ -35,6 +35,7 @@ query GetLessonV2ById($id: ID!) {
     title
     order
     isPublished
+    isFree
     createdAt
     updatedAt
     type

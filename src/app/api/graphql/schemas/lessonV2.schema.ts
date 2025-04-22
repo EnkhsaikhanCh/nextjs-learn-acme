@@ -18,6 +18,7 @@ export const typeDefs = gql`
     title: String!
     order: Int!
     isPublished: Boolean!
+    isFree: Boolean!
     createdAt: Date!
     updatedAt: Date!
     type: LessonType!
@@ -45,11 +46,12 @@ export const typeDefs = gql`
     title: String!
     order: Int!
     isPublished: Boolean!
+    isFree: Boolean!
     createdAt: Date!
     updatedAt: Date!
     type: LessonType!
-    passthrough: String
 
+    passthrough: String
     status: String
     muxUploadId: String
     muxAssetId: String
@@ -63,9 +65,11 @@ export const typeDefs = gql`
     title: String!
     order: Int!
     isPublished: Boolean!
+    isFree: Boolean!
     createdAt: Date!
     updatedAt: Date!
     type: LessonType!
+
     content: String
   }
 
@@ -75,9 +79,11 @@ export const typeDefs = gql`
     title: String!
     order: Int!
     isPublished: Boolean!
+    isFree: Boolean!
     createdAt: Date!
     updatedAt: Date!
     type: LessonType!
+
     fileUrl: String
   }
 
@@ -87,9 +93,11 @@ export const typeDefs = gql`
     title: String!
     order: Int!
     isPublished: Boolean!
+    isFree: Boolean!
     createdAt: Date!
     updatedAt: Date!
     type: LessonType!
+
     quizQuestions: [QuizQuestion!]!
   }
 
@@ -99,9 +107,11 @@ export const typeDefs = gql`
     title: String!
     order: Int!
     isPublished: Boolean!
+    isFree: Boolean!
     createdAt: Date!
     updatedAt: Date!
     type: LessonType!
+
     assignmentDetails: String
   }
 
@@ -161,6 +171,7 @@ export const typeDefs = gql`
     assignmentDetails: String
     order: Int
     isPublished: Boolean
+    isFree: Boolean
     passthrough: String
     status: String
     duration: Float

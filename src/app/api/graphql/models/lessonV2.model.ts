@@ -19,6 +19,7 @@ const LessonV2Schema = new Schema(
     title: { type: String, required: [true, "Title is required"] },
     order: { type: Number, required: true, min: 1 },
     isPublished: { type: Boolean, default: false },
+    isFree: { type: Boolean, default: false },
     type: {
       type: String,
       required: [true, "Lesson type is required"],

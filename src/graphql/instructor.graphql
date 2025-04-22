@@ -17,6 +17,25 @@ query GetInstructorCourseContent($slug: String!) {
             slug
           }
         }
+        ... on VideoLesson {
+          duration
+        }
+        ... on TextLesson {
+          content
+        }
+        ... on FileLesson {
+          fileUrl
+        }
+        ... on QuizLesson {
+          quizQuestions {
+            question
+            answers
+            correctAnswer
+          }
+        }
+        ... on AssignmentLesson {
+          assignmentDetails
+        }
       }
       order
     }

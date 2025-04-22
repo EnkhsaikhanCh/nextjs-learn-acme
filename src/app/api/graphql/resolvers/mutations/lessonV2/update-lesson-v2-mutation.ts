@@ -52,6 +52,7 @@ export const updateLessonV2 = async (
       "assignmentDetails",
       "order",
       "isPublished",
+      "isFree",
       "passthrough",
       "status",
       "duration",
