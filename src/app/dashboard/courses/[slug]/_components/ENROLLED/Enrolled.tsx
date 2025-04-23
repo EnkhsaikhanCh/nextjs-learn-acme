@@ -130,16 +130,6 @@ export const Enrolled = ({ course }: { course: Course }) => {
     return null;
   };
 
-  // Youtube embed болгож хувиргах тусдаа функц
-  // function getEmbedUrl(url: string) {
-  //   const match = url.match(
-  //     /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
-  //   );
-  //   return match
-  //     ? `https://www.youtube.com/embed/${match[1]}?rel=0&modestbranding=1&showinfo=0`
-  //     : url;
-  // }
-
   const nextLesson = getNextLesson();
 
   return (
@@ -212,24 +202,6 @@ export const Enrolled = ({ course }: { course: Course }) => {
                   )}
                 </div>
               </CardHeader>
-              <CardContent className="flex-1">
-                {/* {selectedLesson.videoUrl && (
-                  <div className="mb-6">
-                    <iframe
-                      src={getEmbedUrl(selectedLesson.videoUrl || "")}
-                      className="aspect-video w-full rounded-lg"
-                      allowFullScreen
-                      allow="autoplay; encrypted-media"
-                    />
-                  </div>
-                )} */}
-                {/* {selectedLesson.content && (
-                  <div
-                    className="prose max-w-none"
-                    dangerouslySetInnerHTML={{ __html: selectedLesson.content }}
-                  />
-                )} */}
-              </CardContent>
               <CardFooter className="flex flex-col gap-3 border-t pt-6 sm:flex-row">
                 <Button
                   variant={

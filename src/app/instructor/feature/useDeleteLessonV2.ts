@@ -25,8 +25,8 @@ export const useDeleteLessonV2 = ({ refetch }: UseDeleteLessonV2Props) => {
       // Refetch-г амжилттай устгасны дараа хий, алдаа нь чухал биш
       try {
         await refetch();
-      } catch (err) {
-        console.warn("Refetch failed after deletion", err);
+      } catch {
+        toast.error("Refetch failed after deletion");
       }
     },
     [deleteLesson, refetch],

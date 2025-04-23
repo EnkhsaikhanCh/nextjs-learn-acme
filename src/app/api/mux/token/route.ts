@@ -30,8 +30,7 @@ export async function POST(req: NextRequest) {
     );
 
     return NextResponse.json({ token });
-  } catch (error) {
-    console.error("Token signing error:", error);
+  } catch {
     return NextResponse.json(
       { error: "Could not sign token" },
       { status: 500 },

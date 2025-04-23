@@ -114,7 +114,8 @@ async function getFullCourseContent(courseId: string) {
     model: "Section",
     populate: {
       path: "lessonId",
-      model: "Lesson",
+      model: "LessonV2",
+      match: { isPublished: true },
     },
   });
   return fullCourse;

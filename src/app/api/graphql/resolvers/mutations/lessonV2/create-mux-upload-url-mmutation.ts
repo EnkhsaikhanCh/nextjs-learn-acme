@@ -36,9 +36,7 @@ export const createMuxUploadUrl = async (
       uploadUrl: upload.url,
       passthrough: passthrough,
     };
-  } catch (error) {
-    console.error("Mux upload creation failed:", error);
-
+  } catch {
     throw new GraphQLError("Failed to create Mux upload URL", {
       extensions: { code: "MUX_UPLOAD_ERROR" },
     });
