@@ -3,12 +3,21 @@
 import { useEffect, useState } from "react";
 import {
   useCreateMuxUploadUrlMutation,
+  useGetInstructorCourseContentQuery,
   useGetLessonV2ByIdQuery,
   useUpdateLessonV2Mutation,
 } from "@/generated/graphql";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import MuxPlayer from "@mux/mux-player-react";
-import { ArrowLeft, Loader, Lock, LockOpen, Upload } from "lucide-react";
+import {
+  ArrowLeft,
+  Info,
+  Loader,
+  Lock,
+  LockOpen,
+  Trash2,
+  Upload,
+} from "lucide-react";
 import { LessonType } from "@/generated/graphql";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -32,26 +41,81 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller } from "react-hook-form";
+import { useDeleteLessonV2 } from "@/app/instructor/feature/useDeleteLessonV2";
+import { DeleteConfirmation } from "@/components/delete-confirmation";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Input } from "@/components/ui/input";
+
+const schema = z.object({
+  title: z.string().optional(),
+  // description: z.string().optional(),
+  isFree: z.boolean(),
+  isPublished: z.boolean(),
+});
+
+type FormValues = z.infer<typeof schema>;
 
 export default function Page() {
   const { slug, id } = useParams();
 
-  const { data, loading, error, refetch } = useGetLessonV2ByIdQuery({
-    variables: { id: id as string },
-  });
+  const router = useRouter();
+
   const [createUpload] = useCreateMuxUploadUrlMutation();
   const [updateLessonV2] = useUpdateLessonV2Mutation();
 
-  const lesson = data?.getLessonV2ById;
-
-  // Local state for toggles
-  const [isPublished, setIsPublished] = useState(false);
-  const [isFree, setIsFree] = useState(false);
-  const [isupdating, setIsUpdating] = useState<boolean>(false);
-
-  // Secure token state
   const [token, setToken] = useState<string | null>(null);
   const [tokenLoading, setTokenLoading] = useState(false);
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] =
+    useState<boolean>(false);
+  const [deleted, setDeleted] = useState<boolean>(false);
+
+  const { data, loading, error, refetch } = useGetLessonV2ByIdQuery({
+    variables: { id: id as string },
+    skip: !id || deleted, // ⛔️ Lesson устгасны дараа query хийхгүй
+  });
+
+  const { refetch: sectionRefetch } = useGetInstructorCourseContentQuery({
+    variables: { slug: slug as string },
+    skip: !slug,
+  });
+
+  const lesson = data?.getLessonV2ById;
+
+  const {
+    register,
+    handleSubmit,
+    control,
+    reset,
+    formState: { isSubmitting, isDirty },
+  } = useForm<FormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      title: "",
+      // description: "",
+      isFree: false,
+      isPublished: false,
+    },
+  });
+
+  useEffect(() => {
+    if (lesson) {
+      reset({
+        title: lesson.title ?? "",
+        // description: (lesson as any).description ?? "",
+        isFree: lesson.isFree ?? false,
+        isPublished: lesson.isPublished ?? false,
+      });
+    }
+  }, [lesson, reset]);
 
   useEffect(() => {
     const fetchToken = async () => {
@@ -89,37 +153,24 @@ export default function Page() {
     refetch();
   }, [lesson, refetch]);
 
-  useEffect(() => {
-    if (lesson) {
-      setIsFree(lesson.isFree ?? false);
-      setIsPublished(lesson.isPublished ?? false);
-    }
-  }, [lesson]);
-
-  const handleUpdateLesson = async () => {
+  const onSubmit = async (values: FormValues) => {
     try {
-      setIsUpdating(true);
-      const data = await updateLessonV2({
+      await updateLessonV2({
         variables: {
-          id: lesson?._id as string,
-          input: {
-            title: lesson?.title,
-            isPublished,
-            isFree,
-          },
+          id: lesson!._id,
+          input: values,
         },
       });
-      if (data.errors) {
-        throw new Error("Failed to update lesson");
-      }
       await refetch();
-      toast.success("Lesson updated successfully");
+      toast.success("Lesson updated");
     } catch {
-      toast.error("Failed to update lesson");
-    } finally {
-      setIsUpdating(false);
+      toast.error("Failed to update");
     }
   };
+
+  const { lessonV2Deleting, handleDeleteLessonV2 } = useDeleteLessonV2({
+    refetch,
+  });
 
   if (loading) {
     return (
@@ -134,7 +185,6 @@ export default function Page() {
     return (
       <div className="flex items-center justify-center gap-2 p-6 text-sm text-red-500">
         <p>Failed to load lesson.</p>
-        <ArrowLeft className="h-4 w-4" />
       </div>
     );
   }
@@ -205,66 +255,119 @@ export default function Page() {
               </div>
             </div>
             <div className="flex-1">
-              <div className="flex flex-col gap-4">
-                <Card>
-                  <CardHeader className="border-b">
-                    <CardTitle>Visibility & Access</CardTitle>
-                    <CardDescription>
-                      Control who can see and access your course
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-6 pt-6">
-                    <div className="space-y-4">
-                      <div className="bg-accent flex items-center justify-between rounded-lg p-3">
-                        <div className="flex items-center space-x-3">
-                          <Switch
-                            id="access"
-                            checked={isFree}
-                            onCheckedChange={setIsFree}
-                            className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-gray-200"
-                          />
-                          <div>
-                            <Label htmlFor="access" className="font-medium">
-                              Free Preview
+              <div>
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Basic Information</CardTitle>
+                      <CardDescription>
+                        Essential details about your course
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                      {/* Title & Subtitle */}
+                      <div className="space-y-4">
+                        {/* Title */}
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <Label
+                              htmlFor="course-title"
+                              className="text-base font-medium dark:text-emerald-100"
+                            >
+                              Lesson Title
                             </Label>
-                            <p className="text-xs text-gray-500">
-                              Allow non-enrolled users to preview selected
-                              lessons
-                            </p>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Info className="h-4 w-4 text-gray-400 dark:text-gray-300" />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p className="text-muted-foreground max-w-xs">
+                                    Choose a clear, specific title that
+                                    accurately reflects your lesson content.
+                                  </p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
                           </div>
+                          <Input id="course-title" {...register("title")} />
                         </div>
                       </div>
+                    </CardContent>
+                  </Card>
+                  {/* Visibility & Access */}
+                  <Card>
+                    <CardHeader className="border-b">
+                      <CardTitle>Visibility & Access</CardTitle>
+                      <CardDescription>
+                        Control who can see and access your course
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6 pt-6">
+                      <div className="space-y-4">
+                        <div className="bg-accent flex items-center justify-between rounded-lg p-3">
+                          <div className="flex items-center space-x-3">
+                            <Controller
+                              name="isFree"
+                              control={control}
+                              render={({ field }) => (
+                                <Switch
+                                  id="access"
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                  className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-gray-200"
+                                />
+                              )}
+                            />
+                            <div>
+                              <Label htmlFor="access" className="font-medium">
+                                Free Preview
+                              </Label>
+                              <p className="text-xs text-gray-500">
+                                Allow non-enrolled users to preview selected
+                                lessons
+                              </p>
+                            </div>
+                          </div>
+                        </div>
 
-                      <div className="bg-accent flex items-center justify-between rounded-lg p-3">
-                        <div className="flex items-center space-x-3">
-                          <Switch
-                            id="publish"
-                            checked={isPublished}
-                            onCheckedChange={setIsPublished}
-                            className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-gray-200"
-                          />
-                          <div>
-                            <Label htmlFor="publish" className="font-medium">
-                              Publish
-                            </Label>
-                            <p className="text-xs text-gray-500">
-                              Publish this lesson to make it available to
-                              students.
-                            </p>
+                        <div className="bg-accent flex items-center justify-between rounded-lg p-3">
+                          <div className="flex items-center space-x-3">
+                            <Controller
+                              name="isPublished"
+                              control={control}
+                              render={({ field }) => (
+                                <Switch
+                                  id="publish"
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                  className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-gray-200"
+                                />
+                              )}
+                            />
+                            <div>
+                              <Label htmlFor="publish" className="font-medium">
+                                Publish
+                              </Label>
+                              <p className="text-xs text-gray-500">
+                                Publish this lesson to make it available to
+                                students.
+                              </p>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </CardContent>
-                  <CardFooter className="flex justify-end border-t px-6 py-4">
-                    <Button onClick={handleUpdateLesson} disabled={isupdating}>
-                      {isupdating && (
-                        <Loader className="h-4 w-4 animate-spin" />
-                      )}
-                      {isupdating ? "Saving..." : "Save changes"}
-                    </Button>
-                  </CardFooter>
-                </Card>
+                    </CardContent>
+                    <CardFooter className="flex justify-end border-t px-6 py-4">
+                      <Button type="submit" disabled={!isDirty || isSubmitting}>
+                        {isSubmitting && (
+                          <Loader className="h-4 w-4 animate-spin" />
+                        )}
+                        {isSubmitting ? "Saving..." : "Save changes"}
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                </form>
               </div>
             </div>
 
@@ -478,6 +581,52 @@ export default function Page() {
                 </CardContent>
               </Card>
             )}
+
+            <Card className="border-destructive bg-destructive/10 text-destructive">
+              <CardHeader>
+                <CardTitle>Delete this lesson</CardTitle>
+                <CardDescription>
+                  This action cannot be undone. All content and data will be
+                  permanently deleted.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex justify-end">
+                <Button
+                  variant={"destructive"}
+                  onClick={() => setIsDeleteConfirmOpen(true)}
+                >
+                  <Trash2 />
+                  Delete lesson
+                </Button>
+              </CardContent>
+            </Card>
+
+            <DeleteConfirmation
+              open={isDeleteConfirmOpen}
+              onOpenChange={setIsDeleteConfirmOpen}
+              onConfirm={async () => {
+                const courseSlug = lesson?.sectionId.courseId?.slug; // Slug-г хадгалж авна
+                if (!courseSlug) {
+                  toast.error("Course slug not found.");
+                  return;
+                }
+
+                try {
+                  await handleDeleteLessonV2(lesson!._id);
+                  setDeleted(true);
+                  router.push(`/instructor/courses/${courseSlug}?tab=content`);
+                  await sectionRefetch();
+                } catch {
+                  toast.error("Failed to delete lesson or redirect.");
+                } finally {
+                  setIsDeleteConfirmOpen(false);
+                }
+              }}
+              loading={lessonV2Deleting}
+              confirmName={lesson?.title as string}
+              title="Delete Lesson"
+              description={`Are you sure you want to delete "${lesson?.title}"? This action cannot be undone.`}
+            />
           </div>
         </div>
       </div>

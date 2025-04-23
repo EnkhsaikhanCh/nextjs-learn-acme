@@ -49,20 +49,25 @@ export function DeleteConfirmation({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>{title}</AlertDialogTitle>
+          <AlertDialogTitle className="text-destructive">
+            {title}
+          </AlertDialogTitle>
           <AlertDialogDescription>{description}</AlertDialogDescription>
         </AlertDialogHeader>
 
-        <div className="space-y-2 py-2">
-          <Label htmlFor="confirmation-input" className="text-sm">
+        <div className="py-2">
+          <Label htmlFor="confirmation-input" className="font-normal">
             To confirm, type{" "}
-            <span className="font-semibold">"{confirmName}"</span>
+            <span className="bg-accent rounded-sm border px-2 py-0.5 font-semibold">
+              {confirmName}
+            </span>
           </Label>
           <Input
             id="confirmation-input"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             disabled={loading}
+            className="mt-3"
           />
         </div>
 

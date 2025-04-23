@@ -14,12 +14,19 @@ export const useDeleteLessonV2 = ({ refetch }: UseDeleteLessonV2Props) => {
     async (id: string) => {
       try {
         await deleteLesson({ variables: { id } });
-        await refetch();
-        toast.success(`Deleted `);
+        toast.success(`Lesson deleted`);
       } catch (e) {
         toast.error("Could not delete lesson", {
           description: (e as Error).message,
         });
+        return;
+      }
+
+      // Refetch-г амжилттай устгасны дараа хий, алдаа нь чухал биш
+      try {
+        await refetch();
+      } catch (err) {
+        console.warn("Refetch failed after deletion", err);
       }
     },
     [deleteLesson, refetch],

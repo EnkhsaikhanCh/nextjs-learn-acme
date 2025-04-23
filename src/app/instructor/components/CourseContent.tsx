@@ -28,6 +28,7 @@ export const CourseContent = ({ mainRefetch }: CourseContentProps) => {
   const { data, loading, error, refetch } = useGetInstructorCourseContentQuery({
     variables: { slug: slug as string },
     skip: !slug,
+    errorPolicy: "all",
   });
 
   const sections = data?.getInstructorCourseContent?.sectionId ?? [];
@@ -51,8 +52,13 @@ export const CourseContent = ({ mainRefetch }: CourseContentProps) => {
       </p>
     );
   }
-  if (error) {
-    return <div>Error: {error.message}</div>;
+
+  if (!loading && error && !data?.getInstructorCourseContent) {
+    return (
+      <div className="text-destructive">
+        Error loading course content. Please try again.
+      </div>
+    );
   }
 
   return (
