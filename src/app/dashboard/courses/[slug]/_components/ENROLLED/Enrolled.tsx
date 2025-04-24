@@ -12,6 +12,14 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Course,
@@ -19,9 +27,9 @@ import {
   useMarkLessonAsCompletedMutation,
   useUndoLessonCompletionMutation,
 } from "@/generated/graphql";
-import { ArrowRight, CheckCircle, ChevronDown } from "lucide-react";
+import { ArrowDown, ArrowRight, CheckCircle, ChevronDown } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export const Enrolled = ({ course }: { course: Course }) => {
@@ -29,9 +37,19 @@ export const Enrolled = ({ course }: { course: Course }) => {
     course.sectionId?.[0]?.lessonId?.[0] || null,
   );
   const [isLessonActionLoading, setLessonActionLoading] = useState(false);
+  const [isMobile, setIsMobile] = useState<boolean>(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
 
   const [markLessonAsCompleted] = useMarkLessonAsCompletedMutation();
   const [undoLessonCompletion] = useUndoLessonCompletionMutation();
+
+  // only run on mount/unmount
+  useEffect(() => {
+    const checkViewport = () => setIsMobile(window.innerWidth < 760);
+    checkViewport();
+    window.addEventListener("resize", checkViewport);
+    return () => window.removeEventListener("resize", checkViewport);
+  }, []);
 
   const { data: session } = useSession();
   const userId = session?.user?._id;
@@ -109,6 +127,9 @@ export const Enrolled = ({ course }: { course: Course }) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleLessonClick = (lesson: any) => {
     setSelectedLesson(lesson);
+    if (isMobile) {
+      setIsDrawerOpen(true);
+    }
   };
 
   const getNextLesson = () => {
@@ -132,13 +153,70 @@ export const Enrolled = ({ course }: { course: Course }) => {
 
   const nextLesson = getNextLesson();
 
+  // pulls out the JSX for your lesson detail card
+  const renderLessonDetail = () =>
+    selectedLesson && (
+      <Card className="flex h-full flex-col">
+        <CardHeader>
+          <div className="flex items-start justify-between">
+            <div>
+              <CardTitle>{selectedLesson.title}</CardTitle>
+            </div>
+            {completedLessons.includes(selectedLesson._id) && (
+              <Badge variant="secondary" className="ml-2">
+                <CheckCircle className="mr-1 h-3 w-3" />
+                Completed
+              </Badge>
+            )}
+          </div>
+        </CardHeader>
+
+        <CardContent className="flex-1 overflow-auto">
+          <p>{selectedLesson.type}</p>
+        </CardContent>
+
+        <CardFooter className="flex flex-col gap-3 border-t pt-6 sm:flex-row">
+          <Button
+            variant={
+              completedLessons.includes(selectedLesson._id)
+                ? "outline"
+                : "default"
+            }
+            onClick={() =>
+              completedLessons.includes(selectedLesson._id)
+                ? handleUndoLessonCompletion(selectedLesson._id)
+                : handleMarkLessonAsCompleted(selectedLesson._id)
+            }
+            disabled={isLessonActionLoading}
+            className="w-full sm:w-auto"
+          >
+            <CheckCircle className="mr-2 h-4 w-4" />
+            {completedLessons.includes(selectedLesson._id)
+              ? "Undo Completion"
+              : "Mark as Complete"}
+          </Button>
+
+          {nextLesson && (
+            <Button
+              variant="outline"
+              onClick={() => handleLessonClick(nextLesson)}
+              className="w-full sm:w-auto"
+            >
+              Next Lesson
+              <ArrowRight className="ml-2" />
+            </Button>
+          )}
+        </CardFooter>
+      </Card>
+    );
+
   return (
     <div className="container mx-auto px-4 py-6">
       <h1 className="mb-6 text-2xl font-bold">{course.title}</h1>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* Course Content - Left Side */}
-        <div className="lg:col-span-1">
+      {isMobile ? (
+        <>
+          {/* -- Mobile: Table of Contents -- */}
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">Course Content</CardTitle>
@@ -151,9 +229,9 @@ export const Enrolled = ({ course }: { course: Course }) => {
                     className="mx-2 border-b px-4 py-2"
                     defaultOpen={section?.order === 1}
                   >
-                    <CollapsibleTrigger className="hover:text-primary flex w-full cursor-pointer items-center justify-between py-2 font-medium">
+                    <CollapsibleTrigger className="group hover:text-primary flex w-full items-center justify-between py-2 font-medium">
                       <span>{section?.title}</span>
-                      <ChevronDown className="h-4 w-4 transition-transform duration-200 ease-in-out group-data-[state=open]:rotate-180" />
+                      <ChevronDown className="h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-180" />
                     </CollapsibleTrigger>
                     <CollapsibleContent>
                       <ul className="space-y-1 p-2">
@@ -161,7 +239,7 @@ export const Enrolled = ({ course }: { course: Course }) => {
                           <li key={lesson?._id}>
                             <button
                               onClick={() => handleLessonClick(lesson)}
-                              className={`group flex w-full cursor-pointer items-center rounded-md px-3 py-2 text-left text-sm transition-colors ${
+                              className={`group flex w-full items-center rounded-md px-3 py-2 text-left text-sm transition-colors ${
                                 selectedLesson?._id === lesson?._id
                                   ? "bg-primary/10 text-primary font-medium"
                                   : "hover:bg-muted"
@@ -170,7 +248,9 @@ export const Enrolled = ({ course }: { course: Course }) => {
                               <span className="flex-1 truncate">
                                 {lesson?.title}
                               </span>
-                              {completedLessons.includes(lesson?._id || "") && (
+                              {completedLessons.includes(
+                                lesson?._id ?? null,
+                              ) && (
                                 <CheckCircle className="text-primary ml-2 h-4 w-4 flex-shrink-0" />
                               )}
                             </button>
@@ -183,61 +263,86 @@ export const Enrolled = ({ course }: { course: Course }) => {
               </ScrollArea>
             </CardContent>
           </Card>
-        </div>
 
-        {/* Lesson Detail - Right Side */}
-        <div className="lg:col-span-2">
-          {selectedLesson && (
-            <Card className="flex h-full flex-col">
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div>
-                    <CardTitle>{selectedLesson.title}</CardTitle>
-                  </div>
-                  {completedLessons.includes(selectedLesson._id) && (
-                    <Badge variant="secondary" className="ml-2">
-                      <CheckCircle className="mr-1 h-3 w-3" />
-                      Completed
-                    </Badge>
-                  )}
-                </div>
-              </CardHeader>
-              <CardFooter className="flex flex-col gap-3 border-t pt-6 sm:flex-row">
-                <Button
-                  variant={
-                    completedLessons.includes(selectedLesson._id)
-                      ? "outline"
-                      : "default"
-                  }
-                  className="w-full sm:w-auto"
-                  onClick={() =>
-                    completedLessons.includes(selectedLesson._id)
-                      ? handleUndoLessonCompletion(selectedLesson._id)
-                      : handleMarkLessonAsCompleted(selectedLesson._id)
-                  }
-                  disabled={isLessonActionLoading}
-                >
-                  <CheckCircle className="mr-2 h-4 w-4" />
-                  {completedLessons.includes(selectedLesson._id)
-                    ? "Undo Completion"
-                    : "Mark as Complete"}
-                </Button>
-
-                {nextLesson && (
-                  <Button
-                    variant="outline"
-                    className="w-full sm:w-auto"
-                    onClick={() => handleLessonClick(nextLesson)}
-                  >
-                    Next Lesson
-                    <ArrowRight />
+          {/* -- Mobile: Drawer with lesson detail -- */}
+          <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+            <DrawerContent>
+              <DrawerHeader>
+                <DrawerTitle>Selected Lesson</DrawerTitle>
+                <DrawerClose asChild>
+                  <Button variant="outline" className="mt-2">
+                    Close <ArrowDown className="ml-1" />
                   </Button>
-                )}
-              </CardFooter>
+                </DrawerClose>
+              </DrawerHeader>
+
+              <div className="h-[calc(100vh-200px)] p-4">
+                {renderLessonDetail()}
+              </div>
+
+              <DrawerFooter>
+                <Button variant="link" onClick={() => setIsDrawerOpen(false)}>
+                  Back to Contents
+                </Button>
+              </DrawerFooter>
+            </DrawerContent>
+          </Drawer>
+        </>
+      ) : (
+        /* -- Desktop: 2-column grid with contents + detail -- */
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <div className="lg:col-span-1">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Course Content</CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                <ScrollArea className="h-[calc(100vh-220px)]">
+                  {course.sectionId?.map((section) => (
+                    <Collapsible
+                      key={section?._id}
+                      className="mx-2 border-b px-4 py-2"
+                      defaultOpen={section?.order === 1}
+                    >
+                      <CollapsibleTrigger className="group hover:text-primary flex w-full items-center justify-between py-2 font-medium">
+                        <span>{section?.title}</span>
+                        <ChevronDown className="h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-180" />
+                      </CollapsibleTrigger>
+                      <CollapsibleContent>
+                        <ul className="space-y-1 p-2">
+                          {section?.lessonId?.map((lesson) => (
+                            <li key={lesson?._id}>
+                              <button
+                                onClick={() => handleLessonClick(lesson)}
+                                className={`group flex w-full items-center rounded-md px-3 py-2 text-left text-sm transition-colors ${
+                                  selectedLesson?._id === lesson?._id
+                                    ? "bg-primary/10 text-primary font-medium"
+                                    : "hover:bg-muted"
+                                }`}
+                              >
+                                <span className="flex-1 truncate">
+                                  {lesson?.title}
+                                </span>
+                                {completedLessons.includes(
+                                  lesson?._id ?? null,
+                                ) && (
+                                  <CheckCircle className="text-primary ml-2 h-4 w-4 flex-shrink-0" />
+                                )}
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      </CollapsibleContent>
+                    </Collapsible>
+                  ))}
+                </ScrollArea>
+              </CardContent>
             </Card>
-          )}
+          </div>
+
+          <div className="lg:col-span-2">{renderLessonDetail()}</div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
