@@ -305,7 +305,6 @@ export type Mutation = {
   updateEnrollment?: Maybe<Enrollment>;
   updateFileLessonV2: UpdateLessonV2Response;
   updateLesson: Lesson;
-  updateLessonV2: UpdateLessonV2Response;
   updateLessonV2GeneralInfo: UpdateLessonV2Response;
   updateLessonV2Video: UpdateLessonV2Response;
   updatePaymentStatus?: Maybe<Payment>;
@@ -457,12 +456,6 @@ export type MutationUpdateFileLessonV2Args = {
 export type MutationUpdateLessonArgs = {
   _id: Scalars['ID']['input'];
   input: UpdateLessonInput;
-};
-
-
-export type MutationUpdateLessonV2Args = {
-  _id: Scalars['ID']['input'];
-  input: UpdateLessonV2Input;
 };
 
 
@@ -891,23 +884,6 @@ export type UpdateLessonInput = {
   videoUrl?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type UpdateLessonV2Input = {
-  assignmentDetails?: InputMaybe<Scalars['String']['input']>;
-  content?: InputMaybe<Scalars['String']['input']>;
-  duration?: InputMaybe<Scalars['Float']['input']>;
-  fileUrl?: InputMaybe<Scalars['String']['input']>;
-  isFree?: InputMaybe<Scalars['Boolean']['input']>;
-  isPublished?: InputMaybe<Scalars['Boolean']['input']>;
-  muxAssetId?: InputMaybe<Scalars['String']['input']>;
-  muxPlaybackId?: InputMaybe<Scalars['String']['input']>;
-  muxUploadId?: InputMaybe<Scalars['String']['input']>;
-  order?: InputMaybe<Scalars['Int']['input']>;
-  passthrough?: InputMaybe<Scalars['String']['input']>;
-  quizQuestions?: InputMaybe<Array<QuizQuestionInput>>;
-  status?: InputMaybe<Scalars['String']['input']>;
-  title?: InputMaybe<Scalars['String']['input']>;
-};
-
 export type UpdateLessonV2Response = {
   __typename?: 'UpdateLessonV2Response';
   message: Scalars['String']['output'];
@@ -1237,14 +1213,6 @@ export type CreateMuxUploadUrlMutationVariables = Exact<{ [key: string]: never; 
 
 
 export type CreateMuxUploadUrlMutation = { __typename?: 'Mutation', createMuxUploadUrl: { __typename?: 'MuxUpload', uploadId: string, uploadUrl: string, passthrough: string } };
-
-export type UpdateLessonV2MutationVariables = Exact<{
-  id: Scalars['ID']['input'];
-  input: UpdateLessonV2Input;
-}>;
-
-
-export type UpdateLessonV2Mutation = { __typename?: 'Mutation', updateLessonV2: { __typename?: 'UpdateLessonV2Response', success: boolean, message: string } };
 
 export type UpdateLessonV2GeneralInfoMutationVariables = Exact<{
   id?: InputMaybe<Scalars['ID']['input']>;
@@ -2696,41 +2664,6 @@ export function useCreateMuxUploadUrlMutation(baseOptions?: Apollo.MutationHookO
 export type CreateMuxUploadUrlMutationHookResult = ReturnType<typeof useCreateMuxUploadUrlMutation>;
 export type CreateMuxUploadUrlMutationResult = Apollo.MutationResult<CreateMuxUploadUrlMutation>;
 export type CreateMuxUploadUrlMutationOptions = Apollo.BaseMutationOptions<CreateMuxUploadUrlMutation, CreateMuxUploadUrlMutationVariables>;
-export const UpdateLessonV2Document = gql`
-    mutation UpdateLessonV2($id: ID!, $input: UpdateLessonV2Input!) {
-  updateLessonV2(_id: $id, input: $input) {
-    success
-    message
-  }
-}
-    `;
-export type UpdateLessonV2MutationFn = Apollo.MutationFunction<UpdateLessonV2Mutation, UpdateLessonV2MutationVariables>;
-
-/**
- * __useUpdateLessonV2Mutation__
- *
- * To run a mutation, you first call `useUpdateLessonV2Mutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUpdateLessonV2Mutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [updateLessonV2Mutation, { data, loading, error }] = useUpdateLessonV2Mutation({
- *   variables: {
- *      id: // value for 'id'
- *      input: // value for 'input'
- *   },
- * });
- */
-export function useUpdateLessonV2Mutation(baseOptions?: Apollo.MutationHookOptions<UpdateLessonV2Mutation, UpdateLessonV2MutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<UpdateLessonV2Mutation, UpdateLessonV2MutationVariables>(UpdateLessonV2Document, options);
-      }
-export type UpdateLessonV2MutationHookResult = ReturnType<typeof useUpdateLessonV2Mutation>;
-export type UpdateLessonV2MutationResult = Apollo.MutationResult<UpdateLessonV2Mutation>;
-export type UpdateLessonV2MutationOptions = Apollo.BaseMutationOptions<UpdateLessonV2Mutation, UpdateLessonV2MutationVariables>;
 export const UpdateLessonV2GeneralInfoDocument = gql`
     mutation UpdateLessonV2GeneralInfo($id: ID, $input: updateLessonV2GeneralInfoInput) {
   updateLessonV2GeneralInfo(_id: $id, input: $input) {

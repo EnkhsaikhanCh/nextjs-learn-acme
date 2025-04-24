@@ -14,13 +14,6 @@ mutation CreateMuxUploadUrl {
   }
 }
 
-mutation UpdateLessonV2($id: ID!, $input: UpdateLessonV2Input!) {
-  updateLessonV2(_id: $id, input: $input) {
-    success
-    message
-  }
-}
-
 mutation UpdateLessonV2GeneralInfo(
   $id: ID
   $input: updateLessonV2GeneralInfoInput

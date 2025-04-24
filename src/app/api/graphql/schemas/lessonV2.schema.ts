@@ -148,10 +148,6 @@ export const typeDefs = gql`
       corsOrigin: String = "*"
     ): MuxUpload!
     createLessonV2(input: CreateLessonV2Input!): CreateLessonV2Response!
-    updateLessonV2(
-      _id: ID!
-      input: UpdateLessonV2Input!
-    ): UpdateLessonV2Response!
     deleteLessonV2(_id: ID!): DeleteLessonV2Response!
 
     # LessonV2 Update Mutations
@@ -192,23 +188,6 @@ export const typeDefs = gql`
     sectionId: ID!
     title: String!
     order: Int
-  }
-
-  input UpdateLessonV2Input {
-    title: String
-    content: String
-    fileUrl: String
-    quizQuestions: [QuizQuestionInput!]
-    assignmentDetails: String
-    order: Int
-    isPublished: Boolean
-    isFree: Boolean
-    passthrough: String
-    status: String
-    duration: Float
-    muxUploadId: String
-    muxAssetId: String
-    muxPlaybackId: String
   }
 
   input updateLessonV2GeneralInfoInput {
