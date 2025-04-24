@@ -70,7 +70,7 @@ export function LessonItem({
     <>
       <div
         className={cn(
-          "flex items-center justify-between rounded-md border p-3 transition-all duration-200",
+          "bg-card flex items-center justify-between rounded-md border p-3 transition-all duration-200",
           //   isDragging ? "opacity-50" : "opacity-100",
           //   isDragOver
           //     ? "border-emerald-500 bg-emerald-50"
@@ -143,9 +143,9 @@ export function LessonItem({
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
-                  variant="ghost"
+                  variant={"outline"}
                   size="icon"
-                  className="h-7 w-7 text-gray-500 hover:text-gray-900"
+                  className="h-7 w-7"
                   onClick={() => {
                     router.push(
                       `/instructor/courses/${lesson.sectionId?.courseId?.slug}/lesson/${lesson._id}/edit`,
@@ -166,9 +166,9 @@ export function LessonItem({
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
-                  variant="ghost"
+                  variant={"outline"}
                   size="icon"
-                  className="h-7 w-7 text-gray-500 hover:text-red-600"
+                  className="h-7 w-7 hover:text-red-600"
                   onClick={() => setIsDeleteConfirmOpen(true)}
                 >
                   <Trash2 className="h-3.5 w-3.5" />
