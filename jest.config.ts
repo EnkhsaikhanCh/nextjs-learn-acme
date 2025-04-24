@@ -126,6 +126,7 @@ const config: Config = {
     // src/app/api/graphql/
     "src/app/api/graphql/models",
     "src/app/api/graphql/schemas",
+    // Mutations
     "src/app/api/graphql/resolvers/mutations/enrollment",
     "src/app/api/graphql/resolvers/mutations/lesson/create-lesson-mutation.ts",
     "src/app/api/graphql/resolvers/mutations/section/create-section-mutation.ts",
@@ -134,7 +135,10 @@ const config: Config = {
     "src/app/api/graphql/resolvers/mutations/lessonV2/create-lesson-v2-mutation.ts",
     "src/app/api/graphql/resolvers/mutations/lessonV2/delete-lesson-v2-mutation.ts",
     "src/app/api/graphql/resolvers/mutations/lessonV2/create-mux-upload-url-mutation.ts",
+    "src/app/api/graphql/resolvers/mutations/lessonV2/update-lesson-v2-general-info-mutation.ts",
+    "src/app/api/graphql/resolvers/mutations/lessonV2/update-lesson-v2-mutation.ts",
     "src/app/api/graphql/resolvers/mutations/payment/updateOrCreateEnrollment.ts",
+    // Queries
     "src/app/api/graphql/resolvers/queries/course/get-all-course-with-enrollment-query.ts",
     "src/app/api/graphql/resolvers/queries/course/get-course-details-for-instructor-query.ts",
     "src/app/api/graphql/resolvers/queries/course/get-all-course.ts",

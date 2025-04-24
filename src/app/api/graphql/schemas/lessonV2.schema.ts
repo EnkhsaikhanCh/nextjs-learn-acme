@@ -153,6 +153,37 @@ export const typeDefs = gql`
       input: UpdateLessonV2Input!
     ): UpdateLessonV2Response!
     deleteLessonV2(_id: ID!): DeleteLessonV2Response!
+
+    # LessonV2 Update Mutations
+    updateLessonV2GeneralInfo(
+      _id: ID
+      input: updateLessonV2GeneralInfoInput
+    ): UpdateLessonV2Response!
+
+    updateVideoLessonV2(
+      _id: ID!
+      input: UpdateVideoLessonV2Input!
+    ): UpdateLessonV2Response!
+
+    updateTextLessonV2(
+      _id: ID!
+      input: UpdateTextLessonV2Input!
+    ): UpdateLessonV2Response!
+
+    updateFileLessonV2(
+      _id: ID!
+      input: UpdateFileLessonV2Input!
+    ): UpdateLessonV2Response!
+
+    updateQuizLessonV2(
+      _id: ID!
+      input: UpdateQuizLessonV2Input!
+    ): UpdateLessonV2Response!
+
+    updateAssignmentLessonV2(
+      _id: ID!
+      input: UpdateAssignmentLessonV2Input!
+    ): UpdateLessonV2Response!
   }
 
   # --- Inputs ---
@@ -178,6 +209,38 @@ export const typeDefs = gql`
     muxUploadId: String
     muxAssetId: String
     muxPlaybackId: String
+  }
+
+  input updateLessonV2GeneralInfoInput {
+    title: String
+    order: Int
+    isPublished: Boolean
+    isFree: Boolean
+  }
+
+  input UpdateVideoLessonV2Input {
+    passthrough: String
+    status: String
+    duration: Float
+    muxUploadId: String
+    muxAssetId: String
+    muxPlaybackId: String
+  }
+
+  input UpdateTextLessonV2Input {
+    content: String!
+  }
+
+  input UpdateFileLessonV2Input {
+    fileUrl: String!
+  }
+
+  input UpdateQuizLessonV2Input {
+    quizQuestions: [QuizQuestionInput!]!
+  }
+
+  input UpdateAssignmentLessonV2Input {
+    assignmentDetails: String!
   }
 
   input QuizQuestionInput {

@@ -21,6 +21,16 @@ mutation UpdateLessonV2($id: ID!, $input: UpdateLessonV2Input!) {
   }
 }
 
+mutation UpdateLessonV2GeneralInfo(
+  $id: ID
+  $input: updateLessonV2GeneralInfoInput
+) {
+  updateLessonV2GeneralInfo(_id: $id, input: $input) {
+    success
+    message
+  }
+}
+
 # Query
 query getLessonV2ByIdForInstructor($id: ID!) {
   getLessonV2ByIdForInstructor(_id: $id) {

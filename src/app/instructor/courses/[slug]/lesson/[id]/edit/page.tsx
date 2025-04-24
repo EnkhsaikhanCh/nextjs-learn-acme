@@ -5,6 +5,7 @@ import {
   useCreateMuxUploadUrlMutation,
   useGetInstructorCourseContentQuery,
   useGetLessonV2ByIdForInstructorQuery,
+  useUpdateLessonV2GeneralInfoMutation,
   useUpdateLessonV2Mutation,
 } from "@/generated/graphql";
 import { useParams, useRouter } from "next/navigation";
@@ -71,6 +72,7 @@ export default function Page() {
 
   const [createUpload] = useCreateMuxUploadUrlMutation();
   const [updateLessonV2] = useUpdateLessonV2Mutation();
+  const [updateLessonV2GeneralInfo] = useUpdateLessonV2GeneralInfoMutation();
 
   const [token, setToken] = useState<string | null>(null);
   const [tokenLoading, setTokenLoading] = useState(false);
@@ -156,7 +158,7 @@ export default function Page() {
 
   const onSubmit = async (values: FormValues) => {
     try {
-      await updateLessonV2({
+      await updateLessonV2GeneralInfo({
         variables: {
           id: lesson!._id,
           input: values,

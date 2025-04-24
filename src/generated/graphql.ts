@@ -296,17 +296,23 @@ export type Mutation = {
   markLessonAsCompleted?: Maybe<Enrollment>;
   sendOTP: SendOtpResponse;
   undoLessonCompletion?: Maybe<Enrollment>;
+  updateAssignmentLessonV2: UpdateLessonV2Response;
   updateCourseBasicInfo: Course;
   updateCoursePricing: Course;
   updateCourseThumbnail: Course;
   updateCourseVisibilityAndAccess: Course;
   updateCourseWhatYouWillLearn: Course;
   updateEnrollment?: Maybe<Enrollment>;
+  updateFileLessonV2: UpdateLessonV2Response;
   updateLesson: Lesson;
   updateLessonV2: UpdateLessonV2Response;
+  updateLessonV2GeneralInfo: UpdateLessonV2Response;
   updatePaymentStatus?: Maybe<Payment>;
+  updateQuizLessonV2: UpdateLessonV2Response;
   updateSection: UpdateSectionResponse;
+  updateTextLessonV2: UpdateLessonV2Response;
   updateUser: User;
+  updateVideoLessonV2: UpdateLessonV2Response;
   verifyOTP: VerifyOtpResponse;
 };
 
@@ -402,6 +408,12 @@ export type MutationUndoLessonCompletionArgs = {
 };
 
 
+export type MutationUpdateAssignmentLessonV2Args = {
+  _id: Scalars['ID']['input'];
+  input: UpdateAssignmentLessonV2Input;
+};
+
+
 export type MutationUpdateCourseBasicInfoArgs = {
   courseId: Scalars['ID']['input'];
   input: CourseBasicInfoInput;
@@ -436,6 +448,12 @@ export type MutationUpdateEnrollmentArgs = {
 };
 
 
+export type MutationUpdateFileLessonV2Args = {
+  _id: Scalars['ID']['input'];
+  input: UpdateFileLessonV2Input;
+};
+
+
 export type MutationUpdateLessonArgs = {
   _id: Scalars['ID']['input'];
   input: UpdateLessonInput;
@@ -448,10 +466,22 @@ export type MutationUpdateLessonV2Args = {
 };
 
 
+export type MutationUpdateLessonV2GeneralInfoArgs = {
+  _id?: InputMaybe<Scalars['ID']['input']>;
+  input?: InputMaybe<UpdateLessonV2GeneralInfoInput>;
+};
+
+
 export type MutationUpdatePaymentStatusArgs = {
   _id: Scalars['ID']['input'];
   refundReason?: InputMaybe<Scalars['String']['input']>;
   status: PaymentStatus;
+};
+
+
+export type MutationUpdateQuizLessonV2Args = {
+  _id: Scalars['ID']['input'];
+  input: UpdateQuizLessonV2Input;
 };
 
 
@@ -461,9 +491,21 @@ export type MutationUpdateSectionArgs = {
 };
 
 
+export type MutationUpdateTextLessonV2Args = {
+  _id: Scalars['ID']['input'];
+  input: UpdateTextLessonV2Input;
+};
+
+
 export type MutationUpdateUserArgs = {
   _id: Scalars['ID']['input'];
   input: UpdateUserInput;
+};
+
+
+export type MutationUpdateVideoLessonV2Args = {
+  _id: Scalars['ID']['input'];
+  input: UpdateVideoLessonV2Input;
 };
 
 
@@ -811,6 +853,10 @@ export type ThumbnailInput = {
   width?: InputMaybe<Scalars['Int']['input']>;
 };
 
+export type UpdateAssignmentLessonV2Input = {
+  assignmentDetails: Scalars['String']['input'];
+};
+
 export type UpdateCoursePricingInput = {
   amount?: InputMaybe<Scalars['Int']['input']>;
   currency?: InputMaybe<Currency>;
@@ -831,6 +877,10 @@ export type UpdateEnrollmentInput = {
   _id: Scalars['ID']['input'];
   progress?: InputMaybe<Scalars['Float']['input']>;
   status?: InputMaybe<EnrollmentStatus>;
+};
+
+export type UpdateFileLessonV2Input = {
+  fileUrl: Scalars['String']['input'];
 };
 
 export type UpdateLessonInput = {
@@ -864,6 +914,10 @@ export type UpdateLessonV2Response = {
   success: Scalars['Boolean']['output'];
 };
 
+export type UpdateQuizLessonV2Input = {
+  quizQuestions: Array<QuizQuestionInput>;
+};
+
 export type UpdateSectionInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
@@ -875,9 +929,22 @@ export type UpdateSectionResponse = {
   success: Scalars['Boolean']['output'];
 };
 
+export type UpdateTextLessonV2Input = {
+  content: Scalars['String']['input'];
+};
+
 export type UpdateUserInput = {
   email?: InputMaybe<Scalars['String']['input']>;
   role?: InputMaybe<Role>;
+};
+
+export type UpdateVideoLessonV2Input = {
+  duration?: InputMaybe<Scalars['Float']['input']>;
+  muxAssetId?: InputMaybe<Scalars['String']['input']>;
+  muxPlaybackId?: InputMaybe<Scalars['String']['input']>;
+  muxUploadId?: InputMaybe<Scalars['String']['input']>;
+  passthrough?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type User = {
@@ -946,6 +1013,13 @@ export type MarkLessonAsCompletedInput = {
 export type UndoLessonCompletionInput = {
   enrollmentId: Scalars['ID']['input'];
   lessonId: Scalars['ID']['input'];
+};
+
+export type UpdateLessonV2GeneralInfoInput = {
+  isFree?: InputMaybe<Scalars['Boolean']['input']>;
+  isPublished?: InputMaybe<Scalars['Boolean']['input']>;
+  order?: InputMaybe<Scalars['Int']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type GenerateTempTokenMutationVariables = Exact<{
@@ -1171,6 +1245,14 @@ export type UpdateLessonV2MutationVariables = Exact<{
 
 
 export type UpdateLessonV2Mutation = { __typename?: 'Mutation', updateLessonV2: { __typename?: 'UpdateLessonV2Response', success: boolean, message: string } };
+
+export type UpdateLessonV2GeneralInfoMutationVariables = Exact<{
+  id?: InputMaybe<Scalars['ID']['input']>;
+  input?: InputMaybe<UpdateLessonV2GeneralInfoInput>;
+}>;
+
+
+export type UpdateLessonV2GeneralInfoMutation = { __typename?: 'Mutation', updateLessonV2GeneralInfo: { __typename?: 'UpdateLessonV2Response', success: boolean, message: string } };
 
 export type GetLessonV2ByIdForInstructorQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -2641,6 +2723,41 @@ export function useUpdateLessonV2Mutation(baseOptions?: Apollo.MutationHookOptio
 export type UpdateLessonV2MutationHookResult = ReturnType<typeof useUpdateLessonV2Mutation>;
 export type UpdateLessonV2MutationResult = Apollo.MutationResult<UpdateLessonV2Mutation>;
 export type UpdateLessonV2MutationOptions = Apollo.BaseMutationOptions<UpdateLessonV2Mutation, UpdateLessonV2MutationVariables>;
+export const UpdateLessonV2GeneralInfoDocument = gql`
+    mutation UpdateLessonV2GeneralInfo($id: ID, $input: updateLessonV2GeneralInfoInput) {
+  updateLessonV2GeneralInfo(_id: $id, input: $input) {
+    success
+    message
+  }
+}
+    `;
+export type UpdateLessonV2GeneralInfoMutationFn = Apollo.MutationFunction<UpdateLessonV2GeneralInfoMutation, UpdateLessonV2GeneralInfoMutationVariables>;
+
+/**
+ * __useUpdateLessonV2GeneralInfoMutation__
+ *
+ * To run a mutation, you first call `useUpdateLessonV2GeneralInfoMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateLessonV2GeneralInfoMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateLessonV2GeneralInfoMutation, { data, loading, error }] = useUpdateLessonV2GeneralInfoMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateLessonV2GeneralInfoMutation(baseOptions?: Apollo.MutationHookOptions<UpdateLessonV2GeneralInfoMutation, UpdateLessonV2GeneralInfoMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateLessonV2GeneralInfoMutation, UpdateLessonV2GeneralInfoMutationVariables>(UpdateLessonV2GeneralInfoDocument, options);
+      }
+export type UpdateLessonV2GeneralInfoMutationHookResult = ReturnType<typeof useUpdateLessonV2GeneralInfoMutation>;
+export type UpdateLessonV2GeneralInfoMutationResult = Apollo.MutationResult<UpdateLessonV2GeneralInfoMutation>;
+export type UpdateLessonV2GeneralInfoMutationOptions = Apollo.BaseMutationOptions<UpdateLessonV2GeneralInfoMutation, UpdateLessonV2GeneralInfoMutationVariables>;
 export const GetLessonV2ByIdForInstructorDocument = gql`
     query getLessonV2ByIdForInstructor($id: ID!) {
   getLessonV2ByIdForInstructor(_id: $id) {
