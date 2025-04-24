@@ -558,7 +558,7 @@ export type Query = {
   getEnrollmentsByUser: Array<Enrollment>;
   getInstructorCourseContent?: Maybe<Course>;
   getLessonById: Lesson;
-  getLessonV2ById: LessonV2;
+  getLessonV2ByIdForInstructor: LessonV2;
   getLessonsBySection: Array<Lesson>;
   getLessonsV2BySection: Array<LessonV2>;
   getPaymentById?: Maybe<Payment>;
@@ -645,7 +645,7 @@ export type QueryGetLessonByIdArgs = {
 };
 
 
-export type QueryGetLessonV2ByIdArgs = {
+export type QueryGetLessonV2ByIdForInstructorArgs = {
   _id: Scalars['ID']['input'];
 };
 
@@ -1172,12 +1172,12 @@ export type UpdateLessonV2MutationVariables = Exact<{
 
 export type UpdateLessonV2Mutation = { __typename?: 'Mutation', updateLessonV2: { __typename?: 'UpdateLessonV2Response', success: boolean, message: string } };
 
-export type GetLessonV2ByIdQueryVariables = Exact<{
+export type GetLessonV2ByIdForInstructorQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
 
-export type GetLessonV2ByIdQuery = { __typename?: 'Query', getLessonV2ById: { __typename?: 'AssignmentLesson', assignmentDetails?: string | null, _id: string, title: string, order: number, isPublished: boolean, isFree: boolean, createdAt: Date, updatedAt: Date, type: LessonType, sectionId: { __typename?: 'Section', _id: string, courseId?: { __typename?: 'Course', _id: string, slug?: string | null } | null } } | { __typename?: 'FileLesson', fileUrl?: string | null, _id: string, title: string, order: number, isPublished: boolean, isFree: boolean, createdAt: Date, updatedAt: Date, type: LessonType, sectionId: { __typename?: 'Section', _id: string, courseId?: { __typename?: 'Course', _id: string, slug?: string | null } | null } } | { __typename?: 'QuizLesson', _id: string, title: string, order: number, isPublished: boolean, isFree: boolean, createdAt: Date, updatedAt: Date, type: LessonType, quizQuestions: Array<{ __typename?: 'QuizQuestion', question: string, answers: Array<string>, correctAnswer: string }>, sectionId: { __typename?: 'Section', _id: string, courseId?: { __typename?: 'Course', _id: string, slug?: string | null } | null } } | { __typename?: 'TextLesson', content?: string | null, _id: string, title: string, order: number, isPublished: boolean, isFree: boolean, createdAt: Date, updatedAt: Date, type: LessonType, sectionId: { __typename?: 'Section', _id: string, courseId?: { __typename?: 'Course', _id: string, slug?: string | null } | null } } | { __typename?: 'VideoLesson', muxUploadId?: string | null, muxAssetId?: string | null, muxPlaybackId?: string | null, status?: string | null, duration?: number | null, _id: string, title: string, order: number, isPublished: boolean, isFree: boolean, createdAt: Date, updatedAt: Date, type: LessonType, sectionId: { __typename?: 'Section', _id: string, courseId?: { __typename?: 'Course', _id: string, slug?: string | null } | null } } };
+export type GetLessonV2ByIdForInstructorQuery = { __typename?: 'Query', getLessonV2ByIdForInstructor: { __typename?: 'AssignmentLesson', assignmentDetails?: string | null, _id: string, title: string, order: number, isPublished: boolean, isFree: boolean, createdAt: Date, updatedAt: Date, type: LessonType, sectionId: { __typename?: 'Section', _id: string, courseId?: { __typename?: 'Course', _id: string, slug?: string | null } | null } } | { __typename?: 'FileLesson', fileUrl?: string | null, _id: string, title: string, order: number, isPublished: boolean, isFree: boolean, createdAt: Date, updatedAt: Date, type: LessonType, sectionId: { __typename?: 'Section', _id: string, courseId?: { __typename?: 'Course', _id: string, slug?: string | null } | null } } | { __typename?: 'QuizLesson', _id: string, title: string, order: number, isPublished: boolean, isFree: boolean, createdAt: Date, updatedAt: Date, type: LessonType, quizQuestions: Array<{ __typename?: 'QuizQuestion', question: string, answers: Array<string>, correctAnswer: string }>, sectionId: { __typename?: 'Section', _id: string, courseId?: { __typename?: 'Course', _id: string, slug?: string | null } | null } } | { __typename?: 'TextLesson', content?: string | null, _id: string, title: string, order: number, isPublished: boolean, isFree: boolean, createdAt: Date, updatedAt: Date, type: LessonType, sectionId: { __typename?: 'Section', _id: string, courseId?: { __typename?: 'Course', _id: string, slug?: string | null } | null } } | { __typename?: 'VideoLesson', muxUploadId?: string | null, muxAssetId?: string | null, muxPlaybackId?: string | null, status?: string | null, duration?: number | null, _id: string, title: string, order: number, isPublished: boolean, isFree: boolean, createdAt: Date, updatedAt: Date, type: LessonType, sectionId: { __typename?: 'Section', _id: string, courseId?: { __typename?: 'Course', _id: string, slug?: string | null } | null } } };
 
 export type CreatePaymentMutationVariables = Exact<{
   input: CreatePaymentInput;
@@ -2641,9 +2641,9 @@ export function useUpdateLessonV2Mutation(baseOptions?: Apollo.MutationHookOptio
 export type UpdateLessonV2MutationHookResult = ReturnType<typeof useUpdateLessonV2Mutation>;
 export type UpdateLessonV2MutationResult = Apollo.MutationResult<UpdateLessonV2Mutation>;
 export type UpdateLessonV2MutationOptions = Apollo.BaseMutationOptions<UpdateLessonV2Mutation, UpdateLessonV2MutationVariables>;
-export const GetLessonV2ByIdDocument = gql`
-    query GetLessonV2ById($id: ID!) {
-  getLessonV2ById(_id: $id) {
+export const GetLessonV2ByIdForInstructorDocument = gql`
+    query getLessonV2ByIdForInstructor($id: ID!) {
+  getLessonV2ByIdForInstructor(_id: $id) {
     _id
     sectionId {
       _id
@@ -2687,37 +2687,37 @@ export const GetLessonV2ByIdDocument = gql`
     `;
 
 /**
- * __useGetLessonV2ByIdQuery__
+ * __useGetLessonV2ByIdForInstructorQuery__
  *
- * To run a query within a React component, call `useGetLessonV2ByIdQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetLessonV2ByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetLessonV2ByIdForInstructorQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetLessonV2ByIdForInstructorQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetLessonV2ByIdQuery({
+ * const { data, loading, error } = useGetLessonV2ByIdForInstructorQuery({
  *   variables: {
  *      id: // value for 'id'
  *   },
  * });
  */
-export function useGetLessonV2ByIdQuery(baseOptions: Apollo.QueryHookOptions<GetLessonV2ByIdQuery, GetLessonV2ByIdQueryVariables> & ({ variables: GetLessonV2ByIdQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+export function useGetLessonV2ByIdForInstructorQuery(baseOptions: Apollo.QueryHookOptions<GetLessonV2ByIdForInstructorQuery, GetLessonV2ByIdForInstructorQueryVariables> & ({ variables: GetLessonV2ByIdForInstructorQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetLessonV2ByIdQuery, GetLessonV2ByIdQueryVariables>(GetLessonV2ByIdDocument, options);
+        return Apollo.useQuery<GetLessonV2ByIdForInstructorQuery, GetLessonV2ByIdForInstructorQueryVariables>(GetLessonV2ByIdForInstructorDocument, options);
       }
-export function useGetLessonV2ByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetLessonV2ByIdQuery, GetLessonV2ByIdQueryVariables>) {
+export function useGetLessonV2ByIdForInstructorLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetLessonV2ByIdForInstructorQuery, GetLessonV2ByIdForInstructorQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetLessonV2ByIdQuery, GetLessonV2ByIdQueryVariables>(GetLessonV2ByIdDocument, options);
+          return Apollo.useLazyQuery<GetLessonV2ByIdForInstructorQuery, GetLessonV2ByIdForInstructorQueryVariables>(GetLessonV2ByIdForInstructorDocument, options);
         }
-export function useGetLessonV2ByIdSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetLessonV2ByIdQuery, GetLessonV2ByIdQueryVariables>) {
+export function useGetLessonV2ByIdForInstructorSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetLessonV2ByIdForInstructorQuery, GetLessonV2ByIdForInstructorQueryVariables>) {
           const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetLessonV2ByIdQuery, GetLessonV2ByIdQueryVariables>(GetLessonV2ByIdDocument, options);
+          return Apollo.useSuspenseQuery<GetLessonV2ByIdForInstructorQuery, GetLessonV2ByIdForInstructorQueryVariables>(GetLessonV2ByIdForInstructorDocument, options);
         }
-export type GetLessonV2ByIdQueryHookResult = ReturnType<typeof useGetLessonV2ByIdQuery>;
-export type GetLessonV2ByIdLazyQueryHookResult = ReturnType<typeof useGetLessonV2ByIdLazyQuery>;
-export type GetLessonV2ByIdSuspenseQueryHookResult = ReturnType<typeof useGetLessonV2ByIdSuspenseQuery>;
-export type GetLessonV2ByIdQueryResult = Apollo.QueryResult<GetLessonV2ByIdQuery, GetLessonV2ByIdQueryVariables>;
+export type GetLessonV2ByIdForInstructorQueryHookResult = ReturnType<typeof useGetLessonV2ByIdForInstructorQuery>;
+export type GetLessonV2ByIdForInstructorLazyQueryHookResult = ReturnType<typeof useGetLessonV2ByIdForInstructorLazyQuery>;
+export type GetLessonV2ByIdForInstructorSuspenseQueryHookResult = ReturnType<typeof useGetLessonV2ByIdForInstructorSuspenseQuery>;
+export type GetLessonV2ByIdForInstructorQueryResult = Apollo.QueryResult<GetLessonV2ByIdForInstructorQuery, GetLessonV2ByIdForInstructorQueryVariables>;
 export const CreatePaymentDocument = gql`
     mutation CreatePayment($input: CreatePaymentInput!) {
   createPayment(input: $input) {

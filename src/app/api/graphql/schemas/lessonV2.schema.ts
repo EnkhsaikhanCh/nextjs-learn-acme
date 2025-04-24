@@ -123,7 +123,7 @@ export const typeDefs = gql`
 
   # --- Queries ---
   type Query {
-    getLessonV2ById(_id: ID!): LessonV2!
+    getLessonV2ByIdForInstructor(_id: ID!): LessonV2!
     getLessonsV2BySection(sectionId: ID!): [LessonV2!]!
   }
 

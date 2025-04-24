@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import {
   useCreateMuxUploadUrlMutation,
   useGetInstructorCourseContentQuery,
-  useGetLessonV2ByIdQuery,
+  useGetLessonV2ByIdForInstructorQuery,
   useUpdateLessonV2Mutation,
 } from "@/generated/graphql";
 import { useParams, useRouter } from "next/navigation";
@@ -78,17 +78,18 @@ export default function Page() {
     useState<boolean>(false);
   const [deleted, setDeleted] = useState<boolean>(false);
 
-  const { data, loading, error, refetch } = useGetLessonV2ByIdQuery({
-    variables: { id: id as string },
-    skip: !id || deleted, // ⛔️ Lesson устгасны дараа query хийхгүй
-  });
+  const { data, loading, error, refetch } =
+    useGetLessonV2ByIdForInstructorQuery({
+      variables: { id: id as string },
+      skip: !id || deleted, // ⛔️ Lesson устгасны дараа query хийхгүй
+    });
 
   const { refetch: sectionRefetch } = useGetInstructorCourseContentQuery({
     variables: { slug: slug as string },
     skip: !slug,
   });
 
-  const lesson = data?.getLessonV2ById;
+  const lesson = data?.getLessonV2ByIdForInstructor;
 
   const {
     register,

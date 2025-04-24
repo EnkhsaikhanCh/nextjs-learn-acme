@@ -22,8 +22,8 @@ mutation UpdateLessonV2($id: ID!, $input: UpdateLessonV2Input!) {
 }
 
 # Query
-query GetLessonV2ById($id: ID!) {
-  getLessonV2ById(_id: $id) {
+query getLessonV2ByIdForInstructor($id: ID!) {
+  getLessonV2ByIdForInstructor(_id: $id) {
     _id
     sectionId {
       _id
