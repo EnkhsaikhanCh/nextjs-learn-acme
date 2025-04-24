@@ -160,9 +160,9 @@ export const typeDefs = gql`
       input: updateLessonV2GeneralInfoInput
     ): UpdateLessonV2Response!
 
-    updateVideoLessonV2(
+    updateLessonV2Video(
       _id: ID!
-      input: UpdateVideoLessonV2Input!
+      input: UpdateLessonV2VideoInput!
     ): UpdateLessonV2Response!
 
     updateTextLessonV2(
@@ -218,7 +218,7 @@ export const typeDefs = gql`
     isFree: Boolean
   }
 
-  input UpdateVideoLessonV2Input {
+  input UpdateLessonV2VideoInput {
     passthrough: String
     status: String
     duration: Float

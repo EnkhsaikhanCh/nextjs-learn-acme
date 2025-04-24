@@ -31,6 +31,13 @@ mutation UpdateLessonV2GeneralInfo(
   }
 }
 
+mutation UpdateLessonV2Video($id: ID!, $input: UpdateLessonV2VideoInput!) {
+  updateLessonV2Video(_id: $id, input: $input) {
+    success
+    message
+  }
+}
+
 # Query
 query getLessonV2ByIdForInstructor($id: ID!) {
   getLessonV2ByIdForInstructor(_id: $id) {

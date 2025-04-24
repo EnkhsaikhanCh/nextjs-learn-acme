@@ -6,7 +6,7 @@ import {
   useGetInstructorCourseContentQuery,
   useGetLessonV2ByIdForInstructorQuery,
   useUpdateLessonV2GeneralInfoMutation,
-  useUpdateLessonV2Mutation,
+  useUpdateLessonV2VideoMutation,
 } from "@/generated/graphql";
 import { useParams, useRouter } from "next/navigation";
 import MuxPlayer from "@mux/mux-player-react";
@@ -71,7 +71,7 @@ export default function Page() {
   const router = useRouter();
 
   const [createUpload] = useCreateMuxUploadUrlMutation();
-  const [updateLessonV2] = useUpdateLessonV2Mutation();
+  const [updateLessonV2Video] = useUpdateLessonV2VideoMutation();
   const [updateLessonV2GeneralInfo] = useUpdateLessonV2GeneralInfoMutation();
 
   const [token, setToken] = useState<string | null>(null);
@@ -422,7 +422,7 @@ export default function Page() {
                             );
                           }
 
-                          await updateLessonV2({
+                          await updateLessonV2Video({
                             variables: {
                               id: lesson._id,
                               input: {
@@ -539,7 +539,7 @@ export default function Page() {
                                 );
                               }
 
-                              await updateLessonV2({
+                              await updateLessonV2Video({
                                 variables: {
                                   id: lesson._id,
                                   input: {
