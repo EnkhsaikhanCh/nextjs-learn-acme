@@ -7,10 +7,10 @@ const mux = new Mux();
 
 export async function POST(req: Request) {
   const WEBHOOK_SECRET = process.env.MUX_WEBHOOK_SECRET;
+  // ✅ Preview deployments-д webhook идэвхгүй
   if (!WEBHOOK_SECRET) {
-    throw new Error(
-      "Please add MUX_WEBHOOK_SECRET from Mux Dashboard to .env or .env.local",
-    );
+    console.log("[MUX] Webhook skipped (no secret set)");
+    return new Response("Webhook ignored in preview", { status: 204 });
   }
 
   const headerPayload = await headers();
