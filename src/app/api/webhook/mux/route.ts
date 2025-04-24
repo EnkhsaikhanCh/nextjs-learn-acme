@@ -2,10 +2,11 @@ import Mux from "@mux/mux-node";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { LessonV2Model } from "@/app/api/graphql/models/lessonV2.model";
+import { NextRequest } from "next/server";
 
 const mux = new Mux();
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   const WEBHOOK_SECRET = process.env.MUX_WEBHOOK_SECRET;
   // ✅ Preview deployments-д webhook идэвхгүй
   if (!WEBHOOK_SECRET) {
