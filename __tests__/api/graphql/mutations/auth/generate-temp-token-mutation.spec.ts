@@ -1,4 +1,4 @@
-import { generateTempToken } from "@/app/api/graphql/resolvers/mutations";
+import { generateTempToken } from "@/app/api/graphql/resolvers/mutations/auth/generate-temp-token-mutation";
 import { redis } from "@/lib/redis";
 import { v4 as uuidv4 } from "uuid";
 import { validateEmail } from "@/utils/validation";
