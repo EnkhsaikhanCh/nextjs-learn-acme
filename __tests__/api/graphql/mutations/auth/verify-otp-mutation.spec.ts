@@ -2,7 +2,7 @@ import { redis } from "@/lib/redis";
 import { UserModel } from "@/app/api/graphql/models";
 import { v4 as uuidv4 } from "uuid";
 import { normalizeEmail, validateEmail } from "@/utils/validation";
-import { verifyOTP } from "@/app/api/graphql/resolvers/mutations";
+import { verifyOTP } from "@/app/api/graphql/resolvers/mutations/auth/verify-otp-mutation";
 
 jest.mock("../../../../../src/lib/redis", () => ({
   redis: {
