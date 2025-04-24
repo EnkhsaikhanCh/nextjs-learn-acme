@@ -133,6 +133,7 @@ const config: Config = {
     "src/app/api/graphql/resolvers/mutations/section/update-section-mutation.ts",
     "src/app/api/graphql/resolvers/mutations/lessonV2/create-lesson-v2-mutation.ts",
     "src/app/api/graphql/resolvers/mutations/lessonV2/delete-lesson-v2-mutation.ts",
+    "src/app/api/graphql/resolvers/mutations/lessonV2/create-mux-upload-url-mutation.ts",
     "src/app/api/graphql/resolvers/mutations/payment/updateOrCreateEnrollment.ts",
     "src/app/api/graphql/resolvers/queries/course/get-all-course-with-enrollment-query.ts",
     "src/app/api/graphql/resolvers/queries/course/get-course-details-for-instructor-query.ts",
