@@ -10,7 +10,6 @@ export async function POST(req: NextRequest) {
   const WEBHOOK_SECRET = process.env.MUX_WEBHOOK_SECRET;
   // ✅ Preview deployments-д webhook идэвхгүй
   if (!WEBHOOK_SECRET) {
-    console.log("[MUX] Webhook skipped (no secret set)");
     return new Response("Webhook ignored in preview", { status: 204 });
   }
 
@@ -58,6 +57,9 @@ export async function POST(req: NextRequest) {
         if (courseSlug) {
           revalidatePath(
             `/instructor/courses/${courseSlug}/lesson/${lesson._id}/edit`,
+          );
+          revalidatePath(
+            `/dashboard/courses/${courseSlug}?lesson=${lesson._id}`,
           );
         }
 
