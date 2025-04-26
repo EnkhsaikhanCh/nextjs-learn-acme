@@ -44,11 +44,13 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export const Enrolled = ({ course }: { course: Course }) => {
-  const [isLessonActionLoading, setLessonActionLoading] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isLessonActionLoading, setLessonActionLoading] =
+    useState<boolean>(false);
+  const [isMobile, setIsMobile] = useState<boolean>(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
   const [token, setToken] = useState<string | null>(null);
-  const [tokenLoading, setTokenLoading] = useState(false);
+  const [tokenLoading, setTokenLoading] = useState<boolean>(false);
+  const [isVideoLoading, setIsVideoLoading] = useState<boolean>(true);
 
   const { data: session } = useSession();
   const userId = session?.user?._id;
@@ -132,6 +134,8 @@ export const Enrolled = ({ course }: { course: Course }) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleLessonClick = async (lesson: any) => {
     try {
+      setIsVideoLoading(true);
+
       const { data } = await fetchLessonById({ variables: { id: lesson._id } });
       const loadedLesson = data?.getLessonV2byIdForStudent;
 
@@ -286,16 +290,27 @@ export const Enrolled = ({ course }: { course: Course }) => {
               <>
                 {selectedLesson.muxPlaybackId ? (
                   token ? (
-                    <MuxPlayer
-                      key={selectedLesson._id + "-" + token}
-                      playbackId={selectedLesson.muxPlaybackId as string}
-                      tokens={{ playback: token }}
-                      style={{ aspectRatio: "16/9" }}
-                      autoPlay={false}
-                      playsInline
-                      accentColor="#ac39f2"
-                      className="aspect-[16/9] overflow-hidden rounded-md"
-                    />
+                    <>
+                      {isVideoLoading && (
+                        <div className="flex aspect-[16/9] items-center justify-center rounded-md bg-gray-100 dark:bg-black">
+                          <Loader className="h-6 w-6 animate-spin dark:text-white" />
+                        </div>
+                      )}
+                      <MuxPlayer
+                        key={selectedLesson._id + "-" + token}
+                        playbackId={selectedLesson.muxPlaybackId as string}
+                        tokens={{ playback: token }}
+                        style={{
+                          aspectRatio: "16/9",
+                          display: isVideoLoading ? "none" : "block",
+                        }}
+                        autoPlay={false}
+                        playsInline
+                        accentColor="#ac39f2"
+                        className="aspect-[16/9] overflow-hidden rounded-md"
+                        onCanPlay={() => setIsVideoLoading(false)}
+                      />
+                    </>
                   ) : tokenLoading ? (
                     <div className="text-muted-foreground text-sm">
                       <Loader className="animate-spin" />
