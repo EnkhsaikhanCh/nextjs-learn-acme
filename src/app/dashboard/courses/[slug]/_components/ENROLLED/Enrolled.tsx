@@ -244,7 +244,7 @@ export const Enrolled = ({ course }: { course: Course }) => {
   const renderLessonDetail = () => {
     if (selectedLessonLoading || tokenLoading) {
       return (
-        <Card className="text-muted-foreground flex h-full items-center justify-center gap-2">
+        <Card className="text-muted-foreground flex h-full items-center justify-center gap-2 rounded-sm">
           <p>Loading lesson...</p>
           <Loader2 className="h-4 w-4 animate-spin" />
         </Card>
@@ -253,7 +253,7 @@ export const Enrolled = ({ course }: { course: Course }) => {
 
     if (!selectedLesson) {
       return (
-        <Card className="flex h-full flex-col items-center justify-center">
+        <Card className="flex h-full flex-col items-center justify-center rounded-sm">
           <p className="text-muted-foreground text-sm">
             Select a lesson to start
           </p>
@@ -314,7 +314,7 @@ export const Enrolled = ({ course }: { course: Course }) => {
             )}
         </CardContent>
 
-        <CardFooter className="flex flex-col gap-3 border-t pt-6 sm:flex-row">
+        <CardFooter className="flex flex-col gap-3 border-t py-3 sm:flex-row">
           <Button
             variant={
               completedLessons.includes(selectedLesson._id)
@@ -412,7 +412,7 @@ export const Enrolled = ({ course }: { course: Course }) => {
 
           {/* -- Mobile: Drawer with lesson detail -- */}
           <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
-            <DrawerContent className="fixed top-0 left-0 w-full bg-white opacity-100 transition-all duration-300">
+            <DrawerContent className="dark:bg-card fixed top-0 left-0 w-full bg-white opacity-100 transition-all duration-300">
               <DrawerHeader>
                 <DrawerTitle>Selected Lesson</DrawerTitle>
                 <DrawerClose asChild>
