@@ -432,11 +432,7 @@ export default function Page() {
                             toast.success(
                               "Lesson updated with upload metadata",
                             );
-                          } catch (error) {
-                            console.error(
-                              "[MUX Upload onSuccess] Failed to update lesson:",
-                              error,
-                            );
+                          } catch {
                             toast.error(
                               "Something went wrong while saving video info.",
                             );

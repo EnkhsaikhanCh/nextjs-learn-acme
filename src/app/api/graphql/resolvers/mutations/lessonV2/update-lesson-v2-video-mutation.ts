@@ -68,7 +68,6 @@ export const updateLessonV2Video = async (
       message: "Lesson updated successfully",
     };
   } catch (error) {
-    console.error("[updateLessonV2Video] Unexpected error:", error);
     return {
       success: false,
       message: "Internal error: " + (error as Error).message,
