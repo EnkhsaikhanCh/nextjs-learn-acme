@@ -60,7 +60,7 @@ export function CreateLessonV2Dialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="w-full max-w-md">
+        <Button className="w-full max-w-md">
           <Plus className="mr-2 h-4 w-4" /> Add Lesson V2
         </Button>
       </DialogTrigger>

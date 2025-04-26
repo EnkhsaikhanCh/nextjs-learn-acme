@@ -58,7 +58,6 @@ import { Input } from "@/components/ui/input";
 
 const schema = z.object({
   title: z.string().optional(),
-  // description: z.string().optional(),
   isFree: z.boolean(),
   isPublished: z.boolean(),
 });
@@ -91,6 +90,10 @@ export default function Page() {
     skip: !slug,
   });
 
+  const { lessonV2Deleting, handleDeleteLessonV2 } = useDeleteLessonV2({
+    refetch,
+  });
+
   const lesson = data?.getLessonV2ByIdForInstructor;
 
   const {
@@ -103,17 +106,30 @@ export default function Page() {
     resolver: zodResolver(schema),
     defaultValues: {
       title: "",
-      // description: "",
       isFree: false,
       isPublished: false,
     },
   });
 
+  const onSubmit = async (values: FormValues) => {
+    try {
+      await updateLessonV2GeneralInfo({
+        variables: {
+          id: lesson!._id,
+          input: values,
+        },
+      });
+      await refetch();
+      toast.success("Lesson updated");
+    } catch {
+      toast.error("Failed to update");
+    }
+  };
+
   useEffect(() => {
     if (lesson) {
       reset({
         title: lesson.title ?? "",
-        // description: (lesson as any).description ?? "",
         isFree: lesson.isFree ?? false,
         isPublished: lesson.isPublished ?? false,
       });
@@ -155,25 +171,6 @@ export default function Page() {
     fetchToken();
     refetch();
   }, [lesson, refetch]);
-
-  const onSubmit = async (values: FormValues) => {
-    try {
-      await updateLessonV2GeneralInfo({
-        variables: {
-          id: lesson!._id,
-          input: values,
-        },
-      });
-      await refetch();
-      toast.success("Lesson updated");
-    } catch {
-      toast.error("Failed to update");
-    }
-  };
-
-  const { lessonV2Deleting, handleDeleteLessonV2 } = useDeleteLessonV2({
-    refetch,
-  });
 
   if (loading) {
     return (
@@ -412,27 +409,38 @@ export default function Page() {
                             "Upload complete! Mux is processing...",
                           );
 
-                          const uploadId = localStorage.getItem("uploadId");
-                          const passthrough =
-                            localStorage.getItem("passthrough");
+                          try {
+                            const uploadId = localStorage.getItem("uploadId");
+                            const passthrough =
+                              localStorage.getItem("passthrough");
 
-                          if (!uploadId || !passthrough) {
-                            return toast.error(
-                              "Upload ID or passthrough missing",
+                            if (!uploadId || !passthrough) {
+                              toast.error("Upload ID or passthrough missing");
+                              return;
+                            }
+
+                            await updateLessonV2Video({
+                              variables: {
+                                id: lesson._id,
+                                input: {
+                                  muxUploadId: uploadId,
+                                  passthrough: passthrough,
+                                },
+                              },
+                            });
+
+                            toast.success(
+                              "Lesson updated with upload metadata",
+                            );
+                          } catch (error) {
+                            console.error(
+                              "[MUX Upload onSuccess] Failed to update lesson:",
+                              error,
+                            );
+                            toast.error(
+                              "Something went wrong while saving video info.",
                             );
                           }
-
-                          await updateLessonV2Video({
-                            variables: {
-                              id: lesson._id,
-                              input: {
-                                muxUploadId: uploadId,
-                                passthrough: passthrough,
-                              },
-                            },
-                          });
-
-                          toast.success("Lesson updated with upload metadata");
                         }}
                       ></MuxUploader>
 
@@ -565,6 +573,12 @@ export default function Page() {
                           </span>
                           <div>
                             <MuxUploaderStatus muxUploader="my-uploader"></MuxUploaderStatus>
+
+                            <MuxUploaderProgress
+                              type="bar"
+                              muxUploader="my-uploader"
+                              className="w-full [--progress-bar-fill-color:#047857]"
+                            ></MuxUploaderProgress>
                           </div>
                           <MuxUploaderFileSelect
                             muxUploader="my-uploader"

@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   Clock,
+  Loader2,
   LockOpen,
   // GripVertical,
   Pencil,
@@ -38,6 +39,7 @@ interface LessonItemProps {
   //   isDragOver: boolean;
   //   onEdit: () => void;
   onDelete: (id: string) => void;
+  deletingLessonId: string | null;
   deleting: boolean;
   mainRefetch: () => void;
 }
@@ -52,6 +54,7 @@ export function LessonItem({
   //   isDragOver,
   //   onEdit,
   onDelete,
+  deletingLessonId,
   deleting,
   mainRefetch,
 }: LessonItemProps) {
@@ -146,6 +149,7 @@ export function LessonItem({
                   variant={"outline"}
                   size="icon"
                   className="h-7 w-7"
+                  disabled={deletingLessonId === lesson._id}
                   onClick={() => {
                     router.push(
                       `/instructor/courses/${lesson.sectionId?.courseId?.slug}/lesson/${lesson._id}/edit`,
@@ -171,8 +175,14 @@ export function LessonItem({
                   className="h-7 w-7 hover:text-red-600"
                   onClick={() => setIsDeleteConfirmOpen(true)}
                 >
-                  <Trash2 className="h-3.5 w-3.5" />
-                  <span className="sr-only">Delete lesson</span>
+                  {deletingLessonId !== lesson._id ? (
+                    <>
+                      <Trash2 className="h-3.5 w-3.5" />
+                      <span className="sr-only">Delete lesson</span>
+                    </>
+                  ) : (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  )}
                 </Button>
               </TooltipTrigger>
               <TooltipContent>

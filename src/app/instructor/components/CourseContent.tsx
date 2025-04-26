@@ -40,9 +40,10 @@ export const CourseContent = ({ mainRefetch }: CourseContentProps) => {
   const { lessonV2Creating, handleLessonV2Create } = useCreateLessonV2({
     refetch,
   });
-  const { lessonV2Deleting, handleDeleteLessonV2 } = useDeleteLessonV2({
-    refetch,
-  });
+  const { lessonV2Deleting, handleDeleteLessonV2, deletingLessonId } =
+    useDeleteLessonV2({
+      refetch,
+    });
 
   if (loading) {
     return (
@@ -99,6 +100,7 @@ export const CourseContent = ({ mainRefetch }: CourseContentProps) => {
             lessonV2Creating={lessonV2Creating}
             onDeleteLessonV2={handleDeleteLessonV2}
             lessonV2Deleting={lessonV2Deleting}
+            deletingLessonId={deletingLessonId}
             mainRefetch={mainRefetch}
           />
         ))}
