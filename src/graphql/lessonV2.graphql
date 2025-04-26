@@ -50,11 +50,40 @@ query getLessonV2ByIdForInstructor($id: ID!) {
     updatedAt
     type
     ... on VideoLesson {
+      passthrough
       muxUploadId
       muxAssetId
       muxPlaybackId
       status
       duration
+    }
+    ... on TextLesson {
+      content
+    }
+    ... on FileLesson {
+      fileUrl
+    }
+    ... on QuizLesson {
+      quizQuestions {
+        question
+        answers
+        correctAnswer
+      }
+    }
+    ... on AssignmentLesson {
+      assignmentDetails
+    }
+  }
+}
+
+query GetLessonV2byIdForStudent($id: ID!) {
+  getLessonV2byIdForStudent(_id: $id) {
+    _id
+    title
+    order
+    type
+    ... on VideoLesson {
+      muxPlaybackId
     }
     ... on TextLesson {
       content
