@@ -35,6 +35,7 @@ import {
   ArrowRight,
   CheckCircle,
   ChevronDown,
+  CircleCheck,
   Loader,
   Loader2,
 } from "lucide-react";
@@ -87,15 +88,19 @@ export const Enrolled = ({ course }: { course: Course }) => {
   const fetchMuxToken = async (muxPlaybackId: string) => {
     try {
       setTokenLoading(true);
-      const res = await fetch("/api/mux/token", {
+
+      const response = await fetch("/api/mux/token", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ playbackId: muxPlaybackId }),
       });
-      if (!res.ok) {
+
+      if (!response.ok) {
         throw new Error("Failed to fetch token");
       }
-      const json = await res.json();
+
+      const json = await response.json();
+
       setToken(json.token);
     } catch {
       toast.error(
@@ -105,6 +110,24 @@ export const Enrolled = ({ course }: { course: Course }) => {
       setTokenLoading(false);
     }
   };
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const lessonId = params.get("lesson");
+
+    if (lessonId) {
+      fetchLessonById({ variables: { id: lessonId } }).then(({ data }) => {
+        const loadedLesson = data?.getLessonV2byIdForStudent;
+        if (
+          loadedLesson?.type === LessonType.Video &&
+          "muxPlaybackId" in loadedLesson &&
+          loadedLesson.muxPlaybackId
+        ) {
+          fetchMuxToken(loadedLesson.muxPlaybackId);
+        }
+      });
+    }
+  }, []);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleLessonClick = async (lesson: any) => {
@@ -246,8 +269,11 @@ export const Enrolled = ({ course }: { course: Course }) => {
               <CardTitle>{selectedLesson.title}</CardTitle>
             </div>
             {completedLessons.includes(selectedLesson._id) && (
-              <Badge variant="secondary" className="ml-2">
-                <CheckCircle className="mr-1 h-3 w-3" />
+              <Badge
+                variant="secondary"
+                className="ml-2 border border-green-600 bg-green-100 text-green-600 transition-colors dark:border-green-400 dark:bg-green-900 dark:text-green-300"
+              >
+                <CircleCheck className="mr-1 h-3 w-3" />
                 Completed
               </Badge>
             )}
@@ -301,12 +327,18 @@ export const Enrolled = ({ course }: { course: Course }) => {
                 : handleMarkLessonAsCompleted(selectedLesson._id)
             }
             disabled={isLessonActionLoading}
-            className="w-full sm:w-auto"
+            className="flex w-full items-center justify-center sm:w-auto"
           >
-            <CheckCircle className="mr-2 h-4 w-4" />
-            {completedLessons.includes(selectedLesson._id)
-              ? "Undo Completion"
-              : "Mark as Complete"}
+            {isLessonActionLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <CircleCheck className="h-4 w-4" />
+            )}
+            {isLessonActionLoading
+              ? "Processing..."
+              : completedLessons.includes(selectedLesson._id)
+                ? "Undo Completion"
+                : "Mark as Complete"}
           </Button>
 
           {nextLesson && (
@@ -316,7 +348,7 @@ export const Enrolled = ({ course }: { course: Course }) => {
               className="w-full sm:w-auto"
             >
               Next Lesson
-              <ArrowRight className="ml-2" />
+              <ArrowRight />
             </Button>
           )}
         </CardFooter>
@@ -440,7 +472,9 @@ export const Enrolled = ({ course }: { course: Course }) => {
                                 {completedLessons.includes(
                                   lesson?._id ?? null,
                                 ) && (
-                                  <CheckCircle className="text-primary ml-2 h-4 w-4 flex-shrink-0" />
+                                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
+                                    <CircleCheck className="h-4 w-4 flex-shrink-0 text-green-600 dark:text-green-300" />
+                                  </div>
                                 )}
                               </button>
                             </li>
