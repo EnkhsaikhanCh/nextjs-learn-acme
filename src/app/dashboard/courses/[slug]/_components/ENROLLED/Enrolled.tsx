@@ -29,6 +29,7 @@ import {
   useMarkLessonAsCompletedMutation,
   useUndoLessonCompletionMutation,
 } from "@/generated/graphql";
+import { useCachedSession } from "@/hooks/useCachedSession";
 import MuxPlayer from "@mux/mux-player-react";
 import {
   ArrowDown,
@@ -39,7 +40,6 @@ import {
   Loader,
   Loader2,
 } from "lucide-react";
-import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -52,7 +52,7 @@ export const Enrolled = ({ course }: { course: Course }) => {
   const [tokenLoading, setTokenLoading] = useState<boolean>(false);
   const [isVideoLoading, setIsVideoLoading] = useState<boolean>(true);
 
-  const { data: session } = useSession();
+  const { session } = useCachedSession();
   const userId = session?.user?._id;
 
   const [markLessonAsCompleted] = useMarkLessonAsCompletedMutation();

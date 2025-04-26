@@ -32,7 +32,6 @@ import {
   MailCheck,
   Tag,
 } from "lucide-react";
-import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { CopyableField } from "../CopyableField";
@@ -41,6 +40,7 @@ import clsx from "clsx";
 import { format } from "date-fns";
 import { CourseHeroSection } from "./CourseHeroSection";
 import { CourseOverviewSection } from "./CourseOverviewSection";
+import { useCachedSession } from "@/hooks/useCachedSession";
 
 interface PaymentDetails {
   bankName: string;
@@ -58,7 +58,7 @@ export const NotEnrolled = ({ course }: { course: Course }) => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
-  const { data: session } = useSession();
+  const { session } = useCachedSession();
 
   const [createPayment] = useCreatePaymentMutation();
 
