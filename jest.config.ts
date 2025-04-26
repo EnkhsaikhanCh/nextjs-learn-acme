@@ -49,6 +49,7 @@ const config: Config = {
     "src/providers",
     "src/handler.ts",
     "src/scripts/seed-admin.ts",
+    "src/store/useSessionStore.ts",
 
     // src/confiq
     "src/config/lessonTypeConfig.ts",
