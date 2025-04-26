@@ -17,11 +17,13 @@ import { CldImage } from "next-cloudinary"; // 👈 нэмнэ
 interface CourseThumbnailCardProps {
   course: Course;
   refetch: () => void;
+  mainRefetch: () => void;
 }
 
 export const CourseThumbnailCard = ({
   course,
   refetch,
+  mainRefetch,
 }: CourseThumbnailCardProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -104,6 +106,7 @@ export const CourseThumbnailCard = ({
       });
 
       await refetch();
+      await mainRefetch();
       setTempThumbnailPublicId(null);
       toast.success("Thumbnail updated!");
     } catch (error) {

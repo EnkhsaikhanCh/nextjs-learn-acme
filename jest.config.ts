@@ -87,6 +87,7 @@ const config: Config = {
     "src/utils/sanitize.ts",
     "src/utils/validation.ts",
     "src/utils/slug-to-label.ts",
+    "src/utils/lesson.tsx",
 
     // src/app/(auth)
     "src/app/\\(auth\\)/forgot-password",
@@ -103,8 +104,17 @@ const config: Config = {
     "src/app/api/graphql/resolvers/index.ts",
     "src/app/api/graphql/resolvers/mutations/index.ts",
     "src/app/api/graphql/resolvers/mutations/test/index.ts",
-    "src/app/api/graphql/resolvers/mutations/test/index.ts",
+    "src/app/api/graphql/resolvers/mutations/section/index.ts",
+    "src/app/api/graphql/resolvers/mutations/payment/index.ts",
+    "src/app/api/graphql/resolvers/mutations/subscriber/index.ts",
+    "src/app/api/graphql/resolvers/mutations/user/index.ts",
+    "src/app/api/graphql/resolvers/mutations/lessonV2/index.ts",
+    "src/app/api/graphql/resolvers/mutations/lesson/index.ts",
+    "src/app/api/graphql/resolvers/mutations/course/index.ts",
+    "src/app/api/graphql/resolvers/mutations/auth/index.ts",
     "src/app/api/graphql/resolvers/queries/index.ts",
+    "src/app/api/graphql/resolvers/queries/test/index.ts",
+    "src/app/api/graphql/resolvers/queries/test/index.ts",
     "src/app/api/graphql/resolvers/queries/test/index.ts",
 
     // graphQL
@@ -116,6 +126,7 @@ const config: Config = {
     // src/app/api/graphql/
     "src/app/api/graphql/models",
     "src/app/api/graphql/schemas",
+    // Mutations
     "src/app/api/graphql/resolvers/mutations/enrollment",
     "src/app/api/graphql/resolvers/mutations/lesson/create-lesson-mutation.ts",
     "src/app/api/graphql/resolvers/mutations/section/create-section-mutation.ts",
@@ -123,7 +134,12 @@ const config: Config = {
     "src/app/api/graphql/resolvers/mutations/section/update-section-mutation.ts",
     "src/app/api/graphql/resolvers/mutations/lessonV2/create-lesson-v2-mutation.ts",
     "src/app/api/graphql/resolvers/mutations/lessonV2/delete-lesson-v2-mutation.ts",
+    "src/app/api/graphql/resolvers/mutations/lessonV2/create-mux-upload-url-mutation.ts",
+    "src/app/api/graphql/resolvers/mutations/lessonV2/update-lesson-v2-general-info-mutation.ts",
+    "src/app/api/graphql/resolvers/mutations/lessonV2/update-lesson-v2-mutation.ts",
+    "src/app/api/graphql/resolvers/mutations/lessonV2/update-lesson-v2-video-mutation.ts",
     "src/app/api/graphql/resolvers/mutations/payment/updateOrCreateEnrollment.ts",
+    // Queries
     "src/app/api/graphql/resolvers/queries/course/get-all-course-with-enrollment-query.ts",
     "src/app/api/graphql/resolvers/queries/course/get-course-details-for-instructor-query.ts",
     "src/app/api/graphql/resolvers/queries/course/get-all-course.ts",
@@ -132,10 +148,15 @@ const config: Config = {
     "src/app/api/graphql/resolvers/queries/course/get-course-for-user-query.ts",
     "src/app/api/graphql/resolvers/queries/course/get-course-id-by-slug-query.ts",
     "src/app/api/graphql/resolvers/queries/course/get-enrolled-course-content-by-slug-query.ts",
+    "src/app/api/graphql/resolvers/queries/lessonV2/get-lesson-v2-by-id-for-student-query.ts",
     "src/app/api/graphql/resolvers/queries/enrollment/check-enrollment-query.ts",
     "src/app/api/graphql/resolvers/queries/enrollment/get-enrollment-by-user-and-course.ts",
     "src/app/api/graphql/resolvers/queries/section",
     "src/app/api/graphql/resolvers/queries/payment",
+
+    // api
+    "src/app/api/mux/token",
+    "src/app/api/webhook/mux",
 
     // Sentry
     "src/instrumentation-client.ts",

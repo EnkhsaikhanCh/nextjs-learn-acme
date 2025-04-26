@@ -38,6 +38,8 @@ export interface SectionItemProps {
   lessonV2Creating: boolean;
   onDeleteLessonV2: (id: string) => void;
   lessonV2Deleting: boolean;
+  deletingLessonId: string | null;
+  mainRefetch: () => void;
 }
 
 export const SectionItem: React.FC<SectionItemProps> = ({
@@ -52,6 +54,8 @@ export const SectionItem: React.FC<SectionItemProps> = ({
   lessonV2Creating,
   lessonV2Deleting,
   onDeleteLessonV2,
+  deletingLessonId,
+  mainRefetch,
 }) => {
   const [open, setOpen] = useState(false);
   const [updateOpen, setUpdateOpen] = useState(false);
@@ -59,7 +63,7 @@ export const SectionItem: React.FC<SectionItemProps> = ({
   return (
     <AccordionItem
       value={section._id}
-      className="mb-4 overflow-hidden rounded-sm border"
+      className="bg-card mb-4 overflow-hidden rounded-sm border"
     >
       <AccordionTrigger className="group space-x-2 px-4 py-3">
         <div className="flex-1 text-left">
@@ -128,13 +132,15 @@ export const SectionItem: React.FC<SectionItemProps> = ({
                 <LessonItem
                   key={lesson?._id}
                   lesson={lesson as LessonV2}
+                  deletingLessonId={deletingLessonId}
                   onDelete={onDeleteLessonV2}
                   deleting={lessonV2Deleting}
+                  mainRefetch={mainRefetch}
                 />
               ))}
             </div>
           ) : (
-            <div className="rounded-md border border-dashed border-gray-200 py-6 text-center text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400">
+            <div className="rounded-md border-2 border-dashed py-6 text-center text-sm text-gray-500 dark:text-gray-400">
               No lessons yet. Add your first lesson to this module.
             </div>
           )}
@@ -144,6 +150,7 @@ export const SectionItem: React.FC<SectionItemProps> = ({
               lessonV2Creating={lessonV2Creating}
               onLessonV2Create={onLessonV2Create}
               sectionId={section._id}
+              mainRefetch={mainRefetch}
             />
           </div>
         </div>
@@ -163,8 +170,9 @@ export const SectionItem: React.FC<SectionItemProps> = ({
         loading={deleting}
         title="Delete Module"
         description={`Are you sure you want to delete “${section.title}”?`}
-        onConfirm={() => {
+        onConfirm={async () => {
           onDelete(section._id, section.title ?? "");
+          await mainRefetch();
           setOpen(false);
         }}
         confirmName={section.title ?? ""}

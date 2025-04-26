@@ -26,6 +26,15 @@ export const getInstructorCourseContent = async (
       populate: {
         path: "lessonId",
         model: "LessonV2",
+        populate: {
+          path: "sectionId",
+          model: "Section",
+          populate: {
+            path: "courseId",
+            model: "Course",
+            select: "slug",
+          },
+        },
       },
     });
 

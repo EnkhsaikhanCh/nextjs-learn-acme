@@ -18,12 +18,17 @@ import { useCerateLesson } from "../feature/useCreateLesson";
 import { useCreateLessonV2 } from "../feature/useCreateLessonV2";
 import { useDeleteLessonV2 } from "../feature/useDeleteLessonV2";
 
-export const CourseContent = () => {
+interface CourseContentProps {
+  mainRefetch: () => void;
+}
+
+export const CourseContent = ({ mainRefetch }: CourseContentProps) => {
   const { slug } = useParams();
 
   const { data, loading, error, refetch } = useGetInstructorCourseContentQuery({
     variables: { slug: slug as string },
     skip: !slug,
+    errorPolicy: "all",
   });
 
   const sections = data?.getInstructorCourseContent?.sectionId ?? [];
@@ -35,9 +40,10 @@ export const CourseContent = () => {
   const { lessonV2Creating, handleLessonV2Create } = useCreateLessonV2({
     refetch,
   });
-  const { lessonV2Deleting, handleDeleteLessonV2 } = useDeleteLessonV2({
-    refetch,
-  });
+  const { lessonV2Deleting, handleDeleteLessonV2, deletingLessonId } =
+    useDeleteLessonV2({
+      refetch,
+    });
 
   if (loading) {
     return (
@@ -47,8 +53,13 @@ export const CourseContent = () => {
       </p>
     );
   }
-  if (error) {
-    return <div>Error: {error.message}</div>;
+
+  if (!loading && error && !data?.getInstructorCourseContent) {
+    return (
+      <div className="text-destructive">
+        Error loading course content. Please try again.
+      </div>
+    );
   }
 
   return (
@@ -65,8 +76,9 @@ export const CourseContent = () => {
 
         <CreateSectionDialog
           courseId={courseId!}
-          onCreated={() => {
-            refetch();
+          onCreated={async () => {
+            await refetch();
+            await mainRefetch();
             toast.success("Section successfully created");
           }}
           trigger={<Button variant="default">New Section</Button>}
@@ -88,6 +100,8 @@ export const CourseContent = () => {
             lessonV2Creating={lessonV2Creating}
             onDeleteLessonV2={handleDeleteLessonV2}
             lessonV2Deleting={lessonV2Deleting}
+            deletingLessonId={deletingLessonId}
+            mainRefetch={mainRefetch}
           />
         ))}
       </Accordion>

@@ -25,11 +25,13 @@ import { toast } from "sonner";
 interface CoursePricingCardProps {
   initialValues: Course;
   refetch: () => void;
+  mainRefetch: () => void;
 }
 
 export const CoursePricingCard = ({
   initialValues,
   refetch,
+  mainRefetch,
 }: CoursePricingCardProps) => {
   const {
     register,
@@ -72,6 +74,7 @@ export const CoursePricingCard = ({
       }
 
       await refetch();
+      await mainRefetch();
       toast.success("Course price updated successfully!");
     } catch (error) {
       toast.error("Failed to update course price", {

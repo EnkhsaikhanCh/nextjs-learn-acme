@@ -12,6 +12,30 @@ query GetInstructorCourseContent($slug: String!) {
         isPublished
         order
         type
+        sectionId {
+          courseId {
+            slug
+          }
+        }
+        ... on VideoLesson {
+          duration
+        }
+        ... on TextLesson {
+          content
+        }
+        ... on FileLesson {
+          fileUrl
+        }
+        ... on QuizLesson {
+          quizQuestions {
+            question
+            answers
+            correctAnswer
+          }
+        }
+        ... on AssignmentLesson {
+          assignmentDetails
+        }
       }
       order
     }

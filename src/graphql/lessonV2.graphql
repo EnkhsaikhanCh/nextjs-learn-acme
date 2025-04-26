@@ -1,6 +1,105 @@
+# Mutations
 mutation DeleteLessonV2($id: ID!) {
   deleteLessonV2(_id: $id) {
     success
     message
+  }
+}
+
+mutation CreateMuxUploadUrl {
+  createMuxUploadUrl {
+    uploadId
+    uploadUrl
+    passthrough
+  }
+}
+
+mutation UpdateLessonV2GeneralInfo(
+  $id: ID
+  $input: updateLessonV2GeneralInfoInput
+) {
+  updateLessonV2GeneralInfo(_id: $id, input: $input) {
+    success
+    message
+  }
+}
+
+mutation UpdateLessonV2Video($id: ID!, $input: UpdateLessonV2VideoInput!) {
+  updateLessonV2Video(_id: $id, input: $input) {
+    success
+    message
+  }
+}
+
+# Query
+query getLessonV2ByIdForInstructor($id: ID!) {
+  getLessonV2ByIdForInstructor(_id: $id) {
+    _id
+    sectionId {
+      _id
+      courseId {
+        _id
+        slug
+      }
+    }
+    title
+    order
+    isPublished
+    isFree
+    createdAt
+    updatedAt
+    type
+    ... on VideoLesson {
+      passthrough
+      muxUploadId
+      muxAssetId
+      muxPlaybackId
+      status
+      duration
+    }
+    ... on TextLesson {
+      content
+    }
+    ... on FileLesson {
+      fileUrl
+    }
+    ... on QuizLesson {
+      quizQuestions {
+        question
+        answers
+        correctAnswer
+      }
+    }
+    ... on AssignmentLesson {
+      assignmentDetails
+    }
+  }
+}
+
+query GetLessonV2byIdForStudent($id: ID!) {
+  getLessonV2byIdForStudent(_id: $id) {
+    _id
+    title
+    order
+    type
+    ... on VideoLesson {
+      muxPlaybackId
+    }
+    ... on TextLesson {
+      content
+    }
+    ... on FileLesson {
+      fileUrl
+    }
+    ... on QuizLesson {
+      quizQuestions {
+        question
+        answers
+        correctAnswer
+      }
+    }
+    ... on AssignmentLesson {
+      assignmentDetails
+    }
   }
 }

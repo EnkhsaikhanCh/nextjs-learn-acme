@@ -34,11 +34,13 @@ const visibilitySchema = z.object({
 interface VisibilityAndAccessCardProps {
   initialValues: Course;
   refetch: () => void;
+  mainRefetch: () => void;
 }
 
 export const VisibilityAndAccessCard = ({
   initialValues,
   refetch,
+  mainRefetch,
 }: VisibilityAndAccessCardProps) => {
   const {
     control,
@@ -70,6 +72,7 @@ export const VisibilityAndAccessCard = ({
       });
 
       await refetch();
+      await mainRefetch();
       reset(values);
       toast.success("Course visibility updated!");
     } catch (error) {

@@ -19,6 +19,7 @@ const LessonV2Schema = new Schema(
     title: { type: String, required: [true, "Title is required"] },
     order: { type: Number, required: true, min: 1 },
     isPublished: { type: Boolean, default: false },
+    isFree: { type: Boolean, default: false },
     type: {
       type: String,
       required: [true, "Lesson type is required"],
@@ -41,12 +42,14 @@ const discriminator = (name: string, schema: Schema) => {
 
 // Discriminators for each lesson type
 const VideoLesson = discriminator(
-  "VIDEO",
+  LessonType.Video,
   new Schema({
-    videoUrl: {
-      type: String,
-      // required: [true, "Video URL is required for video lessons"],
-    },
+    passthrough: { type: String, default: null },
+    duration: { type: Number, default: null },
+    status: { type: String, default: null },
+    muxUploadId: { type: String, default: null },
+    muxAssetId: { type: String, default: null },
+    muxPlaybackId: { type: String, default: null },
   }),
 );
 

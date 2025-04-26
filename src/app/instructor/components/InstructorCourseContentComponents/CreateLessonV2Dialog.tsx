@@ -27,12 +27,14 @@ interface CreateLessonV2DialogProps {
   lessonV2Creating: boolean;
   onLessonV2Create: (input: CreateLessonV2Input) => void;
   sectionId: string;
+  mainRefetch: () => void;
 }
 
 export function CreateLessonV2Dialog({
   lessonV2Creating,
   onLessonV2Create,
   sectionId,
+  mainRefetch,
 }: CreateLessonV2DialogProps) {
   const [open, setOpen] = useState(false);
   const {
@@ -50,6 +52,7 @@ export function CreateLessonV2Dialog({
 
   const onSubmit = async (data: LessonFormValues) => {
     await onLessonV2Create({ ...data, sectionId });
+    await mainRefetch();
     reset();
     setOpen(false);
   };
@@ -57,7 +60,7 @@ export function CreateLessonV2Dialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="w-full max-w-md">
+        <Button className="w-full max-w-md">
           <Plus className="mr-2 h-4 w-4" /> Add Lesson V2
         </Button>
       </DialogTrigger>
