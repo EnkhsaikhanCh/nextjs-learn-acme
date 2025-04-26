@@ -4,7 +4,6 @@ import {
   User,
 } from "@/generated/graphql";
 import { requireAuthAndRoles } from "@/lib/auth-utils";
-import { GraphQLError } from "graphql";
 import { LessonV2Model } from "../../../models";
 
 export const updateLessonV2Video = async (
@@ -16,47 +15,51 @@ export const updateLessonV2Video = async (
   await requireAuthAndRoles(user, ["INSTRUCTOR"]);
 
   if (!_id) {
-    throw new GraphQLError("Lesson ID is required", {
-      extensions: { code: "BAD_USER_INPUT" },
-    });
+    return {
+      success: false,
+      message: "Lesson ID is required",
+    };
   }
 
   try {
     const lesson = await LessonV2Model.findById(_id).populate({
       path: "sectionId",
-      populate: {
-        path: "courseId",
-        select: "createdBy",
-      },
+      populate: { path: "courseId", select: "createdBy" },
     });
 
     if (!lesson) {
-      throw new GraphQLError("Lesson not found", {
-        extensions: { code: "NOT_FOUND" },
-      });
+      return {
+        success: false,
+        message: "Lesson not found",
+      };
     }
 
     const course = lesson.sectionId?.courseId;
     if (String(course?.createdBy) !== String(user?._id)) {
-      throw new GraphQLError("Access denied: Not your course", {
-        extensions: { code: "FORBIDDEN" },
-      });
+      return {
+        success: false,
+        message: "Access denied: Not your course",
+      };
     }
 
-    const updatable: (keyof UpdateLessonV2VideoInput)[] = [
-      "passthrough",
-      "status",
-      "duration",
-      "muxUploadId",
-      "muxAssetId",
-      "muxPlaybackId",
-    ];
-
-    updatable.forEach((field) => {
-      if (input[field] !== undefined) {
-        lesson[field] = input[field];
-      }
-    });
+    if (input.passthrough) {
+      lesson.passthrough = input.passthrough;
+    }
+    if (input.status) {
+      lesson.status = input.status;
+    }
+    if (input.duration) {
+      lesson.duration = input.duration;
+    }
+    if (input.muxUploadId) {
+      lesson.muxUploadId = input.muxUploadId;
+    }
+    if (input.muxAssetId) {
+      lesson.muxAssetId = input.muxAssetId;
+    }
+    if (input.muxPlaybackId) {
+      lesson.muxPlaybackId = input.muxPlaybackId;
+    }
 
     await lesson.save();
 
@@ -65,11 +68,10 @@ export const updateLessonV2Video = async (
       message: "Lesson updated successfully",
     };
   } catch (error) {
-    if (error instanceof GraphQLError) {
-      throw error;
-    }
-    throw new GraphQLError("Failed to update lesson", {
-      extensions: { code: "INTERNAL_SERVER_ERROR" },
-    });
+    console.error("[updateLessonV2Video] Unexpected error:", error);
+    return {
+      success: false,
+      message: "Internal error: " + (error as Error).message,
+    };
   }
 };
