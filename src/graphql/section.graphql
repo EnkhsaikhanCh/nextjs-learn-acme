@@ -3,13 +3,15 @@
 # Mutations
 mutation CreateSection($input: CreateSectionInput) {
   createSection(input: $input) {
-    _id
+    success
+    message
   }
 }
 
 mutation UpdateSection($id: ID!, $input: UpdateSectionInput!) {
   updateSection(_id: $id, input: $input) {
-    _id
+    success
+    message
   }
 }
 

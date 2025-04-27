@@ -1,0 +1,43 @@
+# Query
+query GetInstructorCourseContent($slug: String!) {
+  getInstructorCourseContent(slug: $slug) {
+    _id
+    sectionId {
+      _id
+      title
+      description
+      lessonId {
+        _id
+        title
+        isPublished
+        order
+        type
+        sectionId {
+          courseId {
+            slug
+          }
+        }
+        ... on VideoLesson {
+          duration
+        }
+        ... on TextLesson {
+          content
+        }
+        ... on FileLesson {
+          fileUrl
+        }
+        ... on QuizLesson {
+          quizQuestions {
+            question
+            answers
+            correctAnswer
+          }
+        }
+        ... on AssignmentLesson {
+          assignmentDetails
+        }
+      }
+      order
+    }
+  }
+}

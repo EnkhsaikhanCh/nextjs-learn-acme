@@ -13,12 +13,13 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { useCachedSession } from "@/hooks/useCachedSession";
 import { ChevronUp, CircleUserRound, LogOut, SquareUser } from "lucide-react";
-import { signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 
 export function InstructorNavUser() {
   const { isMobile } = useSidebar();
-  const { data: session } = useSession();
+  const { session } = useCachedSession();
 
   return (
     <SidebarMenu>

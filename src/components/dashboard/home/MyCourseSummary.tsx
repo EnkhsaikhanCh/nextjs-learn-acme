@@ -14,7 +14,7 @@ export function MyCourseSummary({ userId }: { userId?: string }) {
     variables: {
       userId: userId || "",
     },
-    fetchPolicy: "cache-and-network",
+    fetchPolicy: "cache-first",
   });
 
   if (loading) {

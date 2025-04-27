@@ -31,6 +31,7 @@ export type Course = {
   status?: "DRAFT" | "PUBLISHED" | "ARCHIVED";
   whatYouWillLearn?: string[];
   whoIsThisFor?: string;
+  sectionCount: number;
 };
 
 const PricingPlanSchema = new Schema(
@@ -78,6 +79,7 @@ const CourseSchema = new Schema<Course>(
     },
     whatYouWillLearn: { type: [String] },
     whoIsThisFor: { type: String },
+    sectionCount: { type: Number, required: true, default: 0 },
   },
   { timestamps: true },
 );

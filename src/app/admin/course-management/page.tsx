@@ -29,7 +29,9 @@ export default function Page() {
   const [isCreating, setIsCreating] = useState(false);
   const [title, setTitle] = useState("");
 
-  const { data, loading, error, refetch } = useGetAllCourseQuery();
+  const { data, loading, error, refetch } = useGetAllCourseQuery({
+    fetchPolicy: "cache-first",
+  });
   const [createCourse] = useCreateCourseMutation();
 
   const handleCreateCourse = async (e: React.FormEvent) => {

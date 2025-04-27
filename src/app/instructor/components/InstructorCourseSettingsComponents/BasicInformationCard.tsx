@@ -34,16 +34,18 @@ import {
   useUpdateCourseBasicInfoMutation,
 } from "@/generated/graphql";
 import { useEffect, useState } from "react";
-import { RichTextEditor } from "../RichTextEditor";
+import RichTextEditorTest from "@/components/rich-text-editor";
 
 interface BasicInformationFormProps {
   initialValues: Course;
   refetch: () => void;
+  mainRefetch: () => void;
 }
 
 export const BasicInformationCard = ({
   initialValues,
   refetch,
+  mainRefetch,
 }: BasicInformationFormProps) => {
   const {
     register,
@@ -81,7 +83,7 @@ export const BasicInformationCard = ({
       });
 
       await refetch();
-
+      await mainRefetch();
       toast.success("Course info updated successfully!");
     } catch (error) {
       toast.error("Failed to update course", {
@@ -178,7 +180,7 @@ export const BasicInformationCard = ({
             >
               Description
             </Label>
-            <RichTextEditor
+            <RichTextEditorTest
               value={watch("description") ?? ""}
               onChange={(value) =>
                 setValue("description", value, { shouldDirty: true })
@@ -200,7 +202,7 @@ export const BasicInformationCard = ({
             >
               Requirements
             </Label>
-            <RichTextEditor
+            <RichTextEditorTest
               value={watch("requirements") ?? ""}
               onChange={(value) =>
                 setValue("requirements", value, { shouldDirty: true })
@@ -218,7 +220,7 @@ export const BasicInformationCard = ({
             >
               Who Is This For
             </Label>
-            <RichTextEditor
+            <RichTextEditorTest
               value={watch("whoIsThisFor") ?? ""}
               onChange={(value) =>
                 setValue("whoIsThisFor", value, { shouldDirty: true })

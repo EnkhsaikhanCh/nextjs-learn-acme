@@ -1,5 +1,4 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   Tooltip,
   TooltipContent,
@@ -9,10 +8,8 @@ import {
 import { Users } from "lucide-react";
 
 export const StudentsEnrolledCard = ({
-  loading,
   totalEnrollment,
 }: {
-  loading: boolean;
   totalEnrollment: number;
 }) => {
   return (
@@ -33,29 +30,20 @@ export const StudentsEnrolledCard = ({
         </TooltipProvider>
       </CardHeader>
       <CardContent>
-        {loading ? (
-          <div className="space-y-3">
-            <Skeleton className="h-7 w-20" />
-            <Skeleton className="h-8 w-full" />
+        <div className="flex items-baseline justify-between">
+          <div className="text-2xl font-bold">{totalEnrollment}</div>
+        </div>
+        <div className="mt-3 h-8">
+          <div className="flex h-full items-end justify-between gap-1">
+            {[35, 45, 40, 50, 60, 55, 65, 70, 75, 80].map((value, i) => (
+              <div
+                key={i}
+                className="w-full rounded-sm bg-blue-100 transition-all hover:bg-blue-200"
+                style={{ height: `${value}%` }}
+              />
+            ))}
           </div>
-        ) : (
-          <>
-            <div className="flex items-baseline justify-between">
-              <div className="text-2xl font-bold">{totalEnrollment}</div>
-            </div>
-            <div className="mt-3 h-8">
-              <div className="flex h-full items-end justify-between gap-1">
-                {[35, 45, 40, 50, 60, 55, 65, 70, 75, 80].map((value, i) => (
-                  <div
-                    key={i}
-                    className="w-full rounded-sm bg-blue-100 transition-all hover:bg-blue-200"
-                    style={{ height: `${value}%` }}
-                  />
-                ))}
-              </div>
-            </div>
-          </>
-        )}
+        </div>
       </CardContent>
     </Card>
   );

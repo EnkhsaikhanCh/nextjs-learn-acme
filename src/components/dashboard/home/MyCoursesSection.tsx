@@ -18,8 +18,7 @@ export const MyCoursesSection = ({ userId }: { userId?: string }) => {
     variables: {
       userId: userId as string,
     },
-    fetchPolicy: "cache-and-network",
-    nextFetchPolicy: "cache-first",
+    fetchPolicy: "cache-first",
     skip: !userId,
   });
 

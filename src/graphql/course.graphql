@@ -78,14 +78,6 @@ query GetCourseForUser($slug: String!) {
       _id
       title
       slug
-      description
-      difficulty
-      thumbnail {
-        publicId
-        width
-        height
-        format
-      }
       sectionId {
         _id
         title
@@ -94,10 +86,9 @@ query GetCourseForUser($slug: String!) {
         lessonId {
           _id
           title
-          content
-          videoUrl
           order
           isPublished
+          type
         }
       }
       status

@@ -16,7 +16,9 @@ import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 
 export default function Page() {
-  const { data, loading, refetch } = useGetAllCoursesByInstructurIdQuery();
+  const { data, loading, refetch } = useGetAllCoursesByInstructurIdQuery({
+    fetchPolicy: "cache-first",
+  });
 
   const columns: ColumnDef<Course | null>[] = [
     {

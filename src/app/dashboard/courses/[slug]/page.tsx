@@ -13,6 +13,7 @@ export default function CourseDetailPage() {
 
   const { data, loading, error } = useGetCourseForUserQuery({
     variables: { slug: slug as string },
+    fetchPolicy: "cache-first",
   });
 
   if (loading) {

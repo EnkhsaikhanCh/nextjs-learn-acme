@@ -23,8 +23,13 @@ export const typeDefs = gql`
     message: String
   }
 
+  type CreateLessonResponse {
+    success: Boolean!
+    message: String!
+  }
+
   type Mutation {
-    createLesson(input: CreateLessonInput!): Lesson!
+    createLesson(input: CreateLessonInput!): CreateLessonResponse!
     updateLesson(_id: ID!, input: UpdateLessonInput!): Lesson!
     deleteLesson(_id: ID!): DeleteLessonReponse!
   }

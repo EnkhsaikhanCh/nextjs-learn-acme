@@ -19,6 +19,7 @@ interface WhatYouWillLearnCardProps {
   initialValues: string[];
   courseId: string;
   refetch: () => void;
+  mainRefetch: () => void;
 }
 
 type WhatYouWillLearnForm = {
@@ -29,6 +30,7 @@ export const WhatYouWillLearnCard = ({
   initialValues,
   courseId,
   refetch,
+  mainRefetch,
 }: WhatYouWillLearnCardProps) => {
   const {
     control,
@@ -64,6 +66,7 @@ export const WhatYouWillLearnCard = ({
       });
 
       await refetch();
+      await mainRefetch();
       toast.success("Course info updated successfully!");
       reset(values);
     } catch (error) {
