@@ -28,6 +28,7 @@ export default function Page() {
 
   const { data: subscribersData, loading } = useGetAllSubscribersQuery({
     variables: { limit, offset, search: debouncedSearch },
+    fetchPolicy: "cache-first",
   });
 
   const totalSub = subscribersData?.getAllSubscribers.totalCount || 0;

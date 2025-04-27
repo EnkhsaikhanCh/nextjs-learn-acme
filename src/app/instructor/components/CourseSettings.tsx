@@ -17,6 +17,7 @@ export const CourseSettings = ({ mainRefetch }: CourseSettingsProps) => {
   const { data, loading, error, refetch } = useGetCourseBasicInfoForEditQuery({
     variables: { slug: slug as string },
     skip: !slug,
+    fetchPolicy: "cache-first",
   });
 
   if (!slug || loading) {

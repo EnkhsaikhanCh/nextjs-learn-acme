@@ -36,6 +36,7 @@ export function InstructorDashboard() {
   const { data, loading, error, refetch } =
     useGetCourseDetailsForInstructorQuery({
       variables: { slug: slug as string },
+      fetchPolicy: "cache-first",
     });
 
   useEffect(() => {

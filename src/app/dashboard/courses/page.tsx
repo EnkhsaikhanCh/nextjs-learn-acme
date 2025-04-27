@@ -14,7 +14,9 @@ import { CldImage } from "next-cloudinary";
 import Link from "next/link";
 
 export default function Courses() {
-  const { data, loading, error } = useGetAllCourseWithEnrollmentQuery();
+  const { data, loading, error } = useGetAllCourseWithEnrollmentQuery({
+    fetchPolicy: "cache-first",
+  });
 
   return (
     <main className="p-4">

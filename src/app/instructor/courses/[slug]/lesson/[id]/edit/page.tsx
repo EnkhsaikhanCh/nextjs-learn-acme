@@ -83,11 +83,13 @@ export default function Page() {
     useGetLessonV2ByIdForInstructorQuery({
       variables: { id: id as string },
       skip: !id || deleted, // ⛔️ Lesson устгасны дараа query хийхгүй
+      fetchPolicy: "cache-first",
     });
 
   const { refetch: sectionRefetch } = useGetInstructorCourseContentQuery({
     variables: { slug: slug as string },
     skip: !slug,
+    fetchPolicy: "cache-first",
   });
 
   const { lessonV2Deleting, handleDeleteLessonV2 } = useDeleteLessonV2({
