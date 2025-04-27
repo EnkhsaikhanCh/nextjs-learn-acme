@@ -65,6 +65,7 @@ const config: Config = {
     "src/components/active-theme.tsx",
     "src/components/SubscribeForm.tsx",
     "src/components/delete-confirmation.tsx",
+    "src/components/rich-text-editor",
 
     // src/app
     "src/app/admin",
