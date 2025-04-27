@@ -28,6 +28,8 @@ export const requireAuthAndRoles = async (
     const enrollment = await EnrollmentModel.findOne({
       userId: user._id,
       courseId: options.courseId,
+      isDeleted: false,
+      status: { $in: ["ACTIVE", "COMPLETED"] },
     });
     if (!enrollment) {
       throw new GraphQLError("You are not enrolled in this course", {

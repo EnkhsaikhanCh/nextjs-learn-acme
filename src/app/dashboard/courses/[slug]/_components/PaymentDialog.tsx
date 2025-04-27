@@ -28,6 +28,7 @@ export function PaymentDialog({ course }: { course: Course }) {
 
   const { data: userData } = useGetUserByIdQuery({
     variables: { id: userId as string },
+    fetchPolicy: "cache-first",
   });
 
   const userStudentId = userData?.getUserById.studentId as string;

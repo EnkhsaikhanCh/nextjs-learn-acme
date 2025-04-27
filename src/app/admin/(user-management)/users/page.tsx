@@ -41,6 +41,7 @@ export default function Page() {
         role: roleFilter !== "ALL" ? roleFilter : undefined,
       },
     },
+    fetchPolicy: "cache-first",
   });
 
   // Define table columns
@@ -95,6 +96,7 @@ export default function Page() {
       offset: 0,
       filter: {},
     },
+    fetchPolicy: "cache-first",
   });
 
   const table = useReactTable({
