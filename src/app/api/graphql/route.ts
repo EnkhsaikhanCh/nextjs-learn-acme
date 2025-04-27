@@ -6,13 +6,16 @@ import { resolvers } from "./resolvers";
 import { connectToDatabase } from "@/lib/mongodb";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
+import depthLimit from "graphql-depth-limit"; // ✨ Энэ нэмэгдэнэ
 
 await connectToDatabase();
 
 const server = new ApolloServer({
   resolvers,
   typeDefs,
-  introspection: true,
+  introspection: process.env.NODE_ENV !== "production",
+  allowBatchedHttpRequests: true,
+  validationRules: [depthLimit(5)],
 });
 
 const handler = startServerAndCreateNextHandler<NextRequest>(server, {
