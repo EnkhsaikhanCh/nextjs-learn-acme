@@ -16,13 +16,13 @@ import { toast } from "sonner";
 import { PaymentInformation } from "./payment/PaymentInformation";
 import { PaymentVerification } from "./payment/PaymentVerification";
 import { ListChecks, Loader } from "lucide-react";
-import { useCachedSession } from "@/hooks/useCachedSession";
+import { useUserStore } from "@/store/UserStoreState";
 
 export function PaymentDialog({ course }: { course: Course }) {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const { user } = useUserStore();
 
-  const { session } = useCachedSession();
-  const userId = session?.user._id;
+  const userId = user?._id;
 
   const [createPayment] = useCreatePaymentMutation();
 

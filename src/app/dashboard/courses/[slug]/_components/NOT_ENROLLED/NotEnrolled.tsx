@@ -41,7 +41,7 @@ import clsx from "clsx";
 import { format } from "date-fns";
 import { CourseHeroSection } from "./CourseHeroSection";
 import { CourseOverviewSection } from "./CourseOverviewSection";
-import { useCachedSession } from "@/hooks/useCachedSession";
+import { useUserStore } from "@/store/UserStoreState";
 
 interface PaymentDetails {
   bankName: string;
@@ -59,11 +59,11 @@ export const NotEnrolled = ({ course }: { course: Course }) => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
-  const { session } = useCachedSession();
+  const { user } = useUserStore();
 
   const { data: userData } = useGetUserV2ByIdQuery({
-    variables: { id: session?.user._id as string },
-    skip: !session?.user._id,
+    variables: { id: user?._id as string },
+    skip: !user?._id,
     fetchPolicy: "cache-first",
   });
 
@@ -71,7 +71,7 @@ export const NotEnrolled = ({ course }: { course: Course }) => {
 
   const { data: existingPaymentData, refetch: refetchExistingPayment } =
     useGetPaymentByUserAndCourseQuery({
-      variables: { courseId: course._id, userId: session?.user._id as string },
+      variables: { courseId: course._id, userId: user?._id as string },
       fetchPolicy: "network-only",
     });
 
@@ -113,7 +113,7 @@ export const NotEnrolled = ({ course }: { course: Course }) => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             paymentId: data.createPayment._id,
-            userEmail: session?.user.email,
+            userEmail: user?._id,
             courseTitle: course.title,
             transactionNote,
           }),
@@ -234,7 +234,7 @@ export const NotEnrolled = ({ course }: { course: Course }) => {
                         />
                         <InfoRow
                           label="И-мэйл хаяг"
-                          value={session?.user.email || "Мэдээлэл байхгүй"}
+                          value={user?.email || "Мэдээлэл байхгүй"}
                         />
                         <InfoRow
                           label="Сургалтын нэр"

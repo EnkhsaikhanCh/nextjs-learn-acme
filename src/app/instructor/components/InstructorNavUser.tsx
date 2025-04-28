@@ -13,13 +13,14 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { useCachedSession } from "@/hooks/useCachedSession";
+import { useUserStore } from "@/store/UserStoreState";
 import { ChevronUp, CircleUserRound, LogOut, SquareUser } from "lucide-react";
 import { signOut } from "next-auth/react";
 
 export function InstructorNavUser() {
   const { isMobile } = useSidebar();
-  const { session } = useCachedSession();
+  const { user } = useUserStore();
+  const { clearUser } = useUserStore.getState();
 
   return (
     <SidebarMenu>
@@ -28,7 +29,7 @@ export function InstructorNavUser() {
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton>
               <CircleUserRound />
-              {session?.user.email}
+              {user?.email}
               <ChevronUp className="ml-auto" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
@@ -41,9 +42,7 @@ export function InstructorNavUser() {
             <DropdownMenuLabel>
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate text-xs">
-                    {session?.user.email}
-                  </span>
+                  <span className="truncate text-xs">{user?.email}</span>
                 </div>
               </div>
             </DropdownMenuLabel>
@@ -53,6 +52,7 @@ export function InstructorNavUser() {
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={async () => {
+                clearUser();
                 await signOut();
               }}
             >

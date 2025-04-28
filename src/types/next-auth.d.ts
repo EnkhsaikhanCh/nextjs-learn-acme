@@ -1,4 +1,5 @@
 // types/next-auth.d.ts
+import { UserV2Role } from "@/generated/graphql";
 import NextAuth from "next-auth";
 
 declare module "next-auth" {
@@ -6,7 +7,7 @@ declare module "next-auth" {
     user: {
       _id: string;
       email: string;
-      role: "student" | "admin";
+      role: UserV2Role;
       isVerified: boolean;
     };
   }
@@ -14,7 +15,7 @@ declare module "next-auth" {
   interface User {
     id: string;
     email: string;
-    role: "student" | "admin";
+    role: UserV2Role;
     isVerified: boolean;
   }
 }
