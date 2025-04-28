@@ -1,18 +1,18 @@
 // src/lib/auth
 import NextAuth, { NextAuthOptions } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import { UserModel } from "@/app/api/graphql/models";
+import { UserV2Model } from "@/app/api/graphql/models";
 import argon2 from "argon2";
 import { JWT } from "next-auth/jwt";
 import { connectToDatabase } from "./mongodb";
 import { redis } from "@/lib/redis";
 import dotenv from "dotenv";
+import { UserV2Role } from "@/generated/graphql";
 dotenv.config();
 
 interface ExtendedJWT extends JWT {
   _id?: string;
-  role?: "STUDENT" | "INSTRUCTOR" | "ADMIN";
-  studentId?: string;
+  role?: UserV2Role;
   isVerified?: boolean;
 }
 
@@ -37,7 +37,7 @@ export const authOptions: NextAuthOptions = {
           throw new Error("И-мэйл хаяг шаардлагатай.");
         }
 
-        const user = await UserModel.findOne({
+        const user = await UserV2Model.findOne({
           email: credentials.email,
         }).exec();
 
@@ -58,7 +58,6 @@ export const authOptions: NextAuthOptions = {
             return {
               id: user._id.toString(),
               email: user.email,
-              studentId: user.studentId,
               role: user.role,
               isVerified: user.isVerified,
             };
@@ -86,7 +85,6 @@ export const authOptions: NextAuthOptions = {
         return {
           id: user._id.toString(),
           email: user.email,
-          studentId: user.studentId,
           role: user.role,
           isVerified: user.isVerified,
         };
@@ -102,7 +100,6 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.email = user.email;
         token.role = user.role || "STUDENT";
-        token.studentId = user.studentId;
         token.isVerified = user.isVerified; // Нөхцөлгүйгээр шууд хадгал
       }
 
@@ -123,7 +120,6 @@ export const authOptions: NextAuthOptions = {
           _id: token.id,
           email: token.email,
           role: token.role,
-          studentId: token.studentId,
           isVerified: token.isVerified,
         };
       }

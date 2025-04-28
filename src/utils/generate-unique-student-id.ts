@@ -1,4 +1,4 @@
-import { UserModel } from "../app/api/graphql/models/user.model";
+import { UserV2Model } from "../app/api/graphql/models";
 
 /**
  * Бүртгэлтэй байгаа эсэхийг давхар шалгаж, давтагдашгүй 6 оронтой оюутны ID үүсгэх функц
@@ -12,7 +12,7 @@ export const generateUniqueStudentId = async (): Promise<string> => {
     try {
       // 100000 - 999999 хооронд санамсаргүй 6 оронтой тоо үүсгэх
       const studentId = Math.floor(100000 + Math.random() * 900000).toString();
-      const existingUser = await UserModel.findOne({ studentId });
+      const existingUser = await UserV2Model.findOne({ studentId });
 
       if (!existingUser) {
         return studentId; // олдоогүй бол энэ studentId-г буцаана

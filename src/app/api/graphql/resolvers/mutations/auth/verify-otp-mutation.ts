@@ -1,6 +1,6 @@
 import { GraphQLError } from "graphql";
 import { redis } from "@/lib/redis";
-import { UserModel } from "@/app/api/graphql/models";
+import { UserV2Model } from "@/app/api/graphql/models";
 import { v4 as uuidv4 } from "uuid";
 import { normalizeEmail, validateEmail } from "@/utils/validation";
 
@@ -60,7 +60,7 @@ export const verifyOTP = async (
     }
 
     // Update the user's verification status in the database
-    const updateResult = await UserModel.updateOne(
+    const updateResult = await UserV2Model.updateOne(
       { email: normalizedEmail },
       { $set: { isVerified: true } },
     );

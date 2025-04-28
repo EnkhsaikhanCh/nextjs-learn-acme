@@ -7,7 +7,6 @@ declare module "next-auth" {
       _id: string;
       email: string;
       role: "student" | "admin";
-      studentId: string;
       isVerified: boolean;
     };
   }
@@ -16,7 +15,6 @@ declare module "next-auth" {
     id: string;
     email: string;
     role: "student" | "admin";
-    studentId: string;
     isVerified: boolean;
   }
 }

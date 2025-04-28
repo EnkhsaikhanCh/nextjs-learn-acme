@@ -1,5 +1,5 @@
 import { GraphQLError } from "graphql";
-import { CourseModel, PaymentModel, UserModel } from "../../../models";
+import { CourseModel, PaymentModel, UserV2Model } from "../../../models";
 import { CreatePaymentInput, User } from "@/generated/graphql";
 import { requireAuthAndRoles } from "@/lib/auth-utils";
 
@@ -23,7 +23,7 @@ export const createPayment = async (
   }
 
   try {
-    const userExists = await UserModel.findById(userId);
+    const userExists = await UserV2Model.findById(userId);
     if (!userExists) {
       throw new GraphQLError("User not found", {
         extensions: { code: "USER_NOT_FOUND" },

@@ -1,6 +1,6 @@
 import { getAllUser } from "../../../../../src/app/api/graphql/resolvers/queries/user/get-all-users-query";
 import { requireAuthAndRoles } from "@/lib/auth-utils";
-import { UserModel } from "../../../../../src/app/api/graphql/models/user.model";
+import { UserV2Model } from "../../../../../src/app/api/graphql/models";
 import { GraphQLError } from "graphql";
 import { Role, User } from "../../../../../src/generated/graphql";
 
@@ -9,8 +9,8 @@ jest.mock("../../../../../src/lib/auth-utils", () => ({
   requireAuthAndRoles: jest.fn(),
 }));
 
-jest.mock("../../../../../src/app/api/graphql/models/user.model", () => ({
-  UserModel: {
+jest.mock("../../../../../src/app/api/graphql/models", () => ({
+  UserV2Model: {
     find: jest.fn(),
     countDocuments: jest.fn(),
   },
@@ -73,8 +73,8 @@ describe("getAllUser", () => {
     };
 
     // Since the projection is applied via .select(), find() should be called with only the query.
-    (UserModel.find as jest.Mock).mockReturnValue(findMock);
-    (UserModel.countDocuments as jest.Mock).mockResolvedValue(fakeCount);
+    (UserV2Model.find as jest.Mock).mockReturnValue(findMock);
+    (UserV2Model.countDocuments as jest.Mock).mockResolvedValue(fakeCount);
 
     const args = {
       limit: 10,
@@ -87,12 +87,12 @@ describe("getAllUser", () => {
     const result = await getAllUser(null, args, { user: adminUser });
 
     // buildUserQuery(filter) returns {} when filter is empty
-    expect(UserModel.find).toHaveBeenCalledWith({});
+    expect(UserV2Model.find).toHaveBeenCalledWith({});
     expect(findMock.skip).toHaveBeenCalledWith(0);
     expect(findMock.limit).toHaveBeenCalledWith(10);
     expect(findMock.sort).toHaveBeenCalledWith({ createdAt: -1 });
     expect(findMock.select).toHaveBeenCalledWith("-password");
-    expect(UserModel.countDocuments).toHaveBeenCalledWith({});
+    expect(UserV2Model.countDocuments).toHaveBeenCalledWith({});
     expect(result.users).toEqual(fakeUsers);
     expect(result.totalCount).toEqual(fakeCount);
     expect(result.hasNextPage).toBe(true); // 0 + 10 < 20
@@ -111,8 +111,8 @@ describe("getAllUser", () => {
       select: jest.fn().mockResolvedValue(fakeUsers),
     };
 
-    (UserModel.find as jest.Mock).mockReturnValue(findMock);
-    (UserModel.countDocuments as jest.Mock).mockResolvedValue(fakeCount);
+    (UserV2Model.find as jest.Mock).mockReturnValue(findMock);
+    (UserV2Model.countDocuments as jest.Mock).mockResolvedValue(fakeCount);
 
     const args = {
       limit: 10,
@@ -140,8 +140,8 @@ describe("getAllUser", () => {
       select: jest.fn().mockResolvedValue(fakeUsers),
     };
 
-    (UserModel.find as jest.Mock).mockReturnValue(findMock);
-    (UserModel.countDocuments as jest.Mock).mockResolvedValue(fakeCount);
+    (UserV2Model.find as jest.Mock).mockReturnValue(findMock);
+    (UserV2Model.countDocuments as jest.Mock).mockResolvedValue(fakeCount);
 
     const searchTerm = "test";
     const args = { filter: { search: searchTerm } };
@@ -153,8 +153,8 @@ describe("getAllUser", () => {
         { studentId: { $regex: searchTerm, $options: "i" } },
       ],
     };
-    expect(UserModel.find).toHaveBeenCalledWith(expectedQuery);
-    expect(UserModel.countDocuments).toHaveBeenCalledWith(expectedQuery);
+    expect(UserV2Model.find).toHaveBeenCalledWith(expectedQuery);
+    expect(UserV2Model.countDocuments).toHaveBeenCalledWith(expectedQuery);
   });
 
   // 5. Error test: throws an error if database query fails
@@ -168,8 +168,8 @@ describe("getAllUser", () => {
       sort: jest.fn().mockReturnThis(),
       select: jest.fn().mockRejectedValue(new Error("Database error")),
     };
-    (UserModel.find as jest.Mock).mockReturnValue(findMock);
-    (UserModel.countDocuments as jest.Mock).mockResolvedValue(0);
+    (UserV2Model.find as jest.Mock).mockReturnValue(findMock);
+    (UserV2Model.countDocuments as jest.Mock).mockResolvedValue(0);
 
     const args = {
       limit: 10,
@@ -199,8 +199,8 @@ describe("getAllUser", () => {
       select: jest.fn().mockResolvedValue(fakeUsers),
     };
 
-    (UserModel.find as jest.Mock).mockReturnValue(findMock);
-    (UserModel.countDocuments as jest.Mock).mockResolvedValue(fakeCount);
+    (UserV2Model.find as jest.Mock).mockReturnValue(findMock);
+    (UserV2Model.countDocuments as jest.Mock).mockResolvedValue(fakeCount);
 
     const args = { filter: { role: "student", isVerified: true } };
 
@@ -211,9 +211,9 @@ describe("getAllUser", () => {
     };
 
     // Expect find to be called with the query only.
-    expect(UserModel.find).toHaveBeenCalledWith(expectedQuery);
+    expect(UserV2Model.find).toHaveBeenCalledWith(expectedQuery);
     // And check that select("-password") was called on the chain.
     expect(findMock.select).toHaveBeenCalledWith("-password");
-    expect(UserModel.countDocuments).toHaveBeenCalledWith(expectedQuery);
+    expect(UserV2Model.countDocuments).toHaveBeenCalledWith(expectedQuery);
   });
 });
