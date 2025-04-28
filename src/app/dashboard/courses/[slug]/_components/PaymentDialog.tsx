@@ -20,7 +20,15 @@ import { useUserStore } from "@/store/UserStoreState";
 
 export function PaymentDialog({ course }: { course: Course }) {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
   const { user } = useUserStore();
+  if (!user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader className="animate-spin" />
+      </div>
+    );
+  }
 
   const userId = user?._id;
 

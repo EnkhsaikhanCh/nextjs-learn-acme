@@ -53,6 +53,14 @@ export const Enrolled = ({ course }: { course: Course }) => {
   const [isVideoLoading, setIsVideoLoading] = useState<boolean>(true);
 
   const { user } = useUserStore();
+  if (!user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader className="animate-spin" />
+      </div>
+    );
+  }
+
   const userId = user?._id;
 
   const [markLessonAsCompleted] = useMarkLessonAsCompletedMutation();

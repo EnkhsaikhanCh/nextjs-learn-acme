@@ -5,9 +5,18 @@ import { MyCoursesSection } from "@/components/dashboard/home/MyCoursesSection";
 import { MyCourseSummary } from "@/components/dashboard/home/MyCourseSummary";
 import { WelcomeSection } from "@/components/dashboard/home/WelcomeSection";
 import { useUserStore } from "@/store/UserStoreState";
+import { Loader } from "lucide-react";
 
 export default function Page() {
   const { user } = useUserStore();
+  if (!user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader className="animate-spin" />
+      </div>
+    );
+  }
+
   const userId = user?._id;
 
   return (

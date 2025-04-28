@@ -29,6 +29,7 @@ import {
   ClipboardCheck,
   CreditCard,
   ListChecks,
+  Loader,
   Loader2,
   MailCheck,
   Tag,
@@ -59,6 +60,8 @@ export const NotEnrolled = ({ course }: { course: Course }) => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
+  const [createPayment] = useCreatePaymentMutation();
+
   const { user } = useUserStore();
 
   const { data: userData } = useGetUserV2ByIdQuery({
@@ -67,7 +70,13 @@ export const NotEnrolled = ({ course }: { course: Course }) => {
     fetchPolicy: "cache-first",
   });
 
-  const [createPayment] = useCreatePaymentMutation();
+  if (!user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader className="animate-spin" />
+      </div>
+    );
+  }
 
   const { data: existingPaymentData, refetch: refetchExistingPayment } =
     useGetPaymentByUserAndCourseQuery({

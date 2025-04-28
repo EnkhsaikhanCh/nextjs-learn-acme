@@ -25,9 +25,9 @@ import { toast } from "sonner";
 
 export default function InstructorAccountPage() {
   const [isProfileUpdating, setIsProfileUpdating] = useState<boolean>(false);
+  const [updateInstructorUserV2] = useUpdateInstructorUserV2Mutation();
 
   const { user } = useUserStore();
-  const [updateInstructorUserV2] = useUpdateInstructorUserV2Mutation();
 
   const {
     data: userData,
@@ -47,17 +47,12 @@ export default function InstructorAccountPage() {
     formState: { isSubmitting, isDirty },
   } = useForm({
     defaultValues: {
-      fullName:
-        userData?.getUserV2ById.__typename === "InstructorUserV2"
-          ? userData.getUserV2ById.fullName || ""
-          : "",
-      bio:
-        userData?.getUserV2ById.__typename === "InstructorUserV2"
-          ? userData.getUserV2ById.bio || ""
-          : "",
+      fullName: "",
+      bio: "",
     },
   });
 
+  // userData ирсний дараа form утгуудыг populate хийх
   useEffect(() => {
     if (userData?.getUserV2ById.__typename === "InstructorUserV2") {
       reset({
@@ -66,6 +61,14 @@ export default function InstructorAccountPage() {
       });
     }
   }, [userData, reset]);
+
+  if (!user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader className="animate-spin" />
+      </div>
+    );
+  }
 
   const onSubmit = async (values: { fullName: string; bio: string }) => {
     setIsProfileUpdating(true);

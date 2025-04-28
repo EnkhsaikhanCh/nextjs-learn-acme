@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronUp, CircleUserRound } from "lucide-react";
+import { ChevronUp, CircleUserRound, Loader } from "lucide-react";
 
 import {
   IconCreditCard,
@@ -30,6 +30,15 @@ import { useUserStore } from "@/store/UserStoreState";
 export function NavUser() {
   const { isMobile } = useSidebar();
   const { user } = useUserStore();
+
+  if (!user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader className="animate-spin" />
+      </div>
+    );
+  }
+
   const { clearUser } = useUserStore.getState();
 
   return (

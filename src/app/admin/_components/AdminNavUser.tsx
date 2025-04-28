@@ -14,12 +14,27 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useUserStore } from "@/store/UserStoreState";
-import { ChevronUp, CircleUserRound, LogOut, SquareUser } from "lucide-react";
+import {
+  ChevronUp,
+  CircleUserRound,
+  Loader,
+  LogOut,
+  SquareUser,
+} from "lucide-react";
 import { signOut } from "next-auth/react";
 
 export function AdminNavUser() {
   const { isMobile } = useSidebar();
+
   const { user } = useUserStore();
+  if (!user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader className="animate-spin" />
+      </div>
+    );
+  }
+
   const { clearUser } = useUserStore.getState();
 
   return (
