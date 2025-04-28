@@ -1,0 +1,12 @@
+mutation RegisterUserV2($input: RegisterUserV2Input!) {
+  registerUserV2(input: $input) {
+    success
+    message
+    userV2 {
+      _id
+      email
+      isVerified
+      role
+    }
+  }
+}

@@ -18,6 +18,17 @@ export type Scalars = {
   DateTime: { input: Date; output: Date; }
 };
 
+export type AdminUserV2 = UserV2 & {
+  __typename?: 'AdminUserV2';
+  _id: Scalars['ID']['output'];
+  adminLevel?: Maybe<Scalars['Int']['output']>;
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  email: Scalars['String']['output'];
+  isVerified: Scalars['Boolean']['output'];
+  role: UserV2Role;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
 export type AssignmentLesson = LessonV2 & {
   __typename?: 'AssignmentLesson';
   _id: Scalars['ID']['output'];
@@ -243,6 +254,18 @@ export type GetUserEnrolledCoursesCountResponse = {
   totalCourses: Scalars['Int']['output'];
 };
 
+export type InstructorUserV2 = UserV2 & {
+  __typename?: 'InstructorUserV2';
+  _id: Scalars['ID']['output'];
+  bio?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  email: Scalars['String']['output'];
+  isVerified: Scalars['Boolean']['output'];
+  profilePicture?: Maybe<Scalars['String']['output']>;
+  role: UserV2Role;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
 export type Lesson = {
   __typename?: 'Lesson';
   _id: Scalars['ID']['output'];
@@ -294,6 +317,7 @@ export type Mutation = {
   deleteUser: User;
   generateTempToken: GenerateTempTokenResponse;
   markLessonAsCompleted?: Maybe<Enrollment>;
+  registerUserV2: RegisterUserV2Response;
   sendOTP: SendOtpResponse;
   undoLessonCompletion?: Maybe<Enrollment>;
   updateAssignmentLessonV2: UpdateLessonV2Response;
@@ -394,6 +418,11 @@ export type MutationGenerateTempTokenArgs = {
 
 export type MutationMarkLessonAsCompletedArgs = {
   input?: InputMaybe<MarkLessonAsCompletedInput>;
+};
+
+
+export type MutationRegisterUserV2Args = {
+  input: RegisterUserV2Input;
 };
 
 
@@ -584,6 +613,7 @@ export type Query = {
   getAllPayments: PaymentPaginationResult;
   getAllSubscribers: SubscriberPaginationResult;
   getAllUser: UserPaginationResult;
+  getAllUsersV2: UserV2PaginationResult;
   getCourseBasicInfoForEdit?: Maybe<Course>;
   getCourseDetailsForInstructor?: Maybe<GetCourseDetailsForInstructorResponse>;
   getCourseForUser: CourseForUserPayload;
@@ -604,6 +634,7 @@ export type Query = {
   getUserEnrolledCourses?: Maybe<Array<Maybe<Enrollment>>>;
   getUserEnrolledCoursesCount: GetUserEnrolledCoursesCountResponse;
   getUserNotEnrolledCourses?: Maybe<Array<Maybe<Course>>>;
+  getUserV2ById: UserV2;
 };
 
 
@@ -628,6 +659,15 @@ export type QueryGetAllSubscribersArgs = {
 
 export type QueryGetAllUserArgs = {
   filter?: InputMaybe<UserFilterInput>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  sortBy?: InputMaybe<Scalars['String']['input']>;
+  sortOrder?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryGetAllUsersV2Args = {
+  filter?: InputMaybe<UserV2FilterInput>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
   sortBy?: InputMaybe<Scalars['String']['input']>;
@@ -736,6 +776,11 @@ export type QueryGetUserNotEnrolledCoursesArgs = {
   userId: Scalars['ID']['input'];
 };
 
+
+export type QueryGetUserV2ByIdArgs = {
+  _id: Scalars['ID']['input'];
+};
+
 export type QuizLesson = LessonV2 & {
   __typename?: 'QuizLesson';
   _id: Scalars['ID']['output'];
@@ -774,6 +819,18 @@ export type RegisterResponse = {
   user: User;
 };
 
+export type RegisterUserV2Input = {
+  email: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+};
+
+export type RegisterUserV2Response = {
+  __typename?: 'RegisterUserV2Response';
+  message: Scalars['String']['output'];
+  success: Scalars['Boolean']['output'];
+  userV2?: Maybe<UserV2>;
+};
+
 export enum Role {
   Admin = 'ADMIN',
   Instructor = 'INSTRUCTOR',
@@ -796,6 +853,17 @@ export type SendOtpResponse = {
   __typename?: 'SendOTPResponse';
   message?: Maybe<Scalars['String']['output']>;
   success: Scalars['Boolean']['output'];
+};
+
+export type StudentUserV2 = UserV2 & {
+  __typename?: 'StudentUserV2';
+  _id: Scalars['ID']['output'];
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  email: Scalars['String']['output'];
+  isVerified: Scalars['Boolean']['output'];
+  role: UserV2Role;
+  studentId?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type SubscribeInput = {
@@ -929,6 +997,11 @@ export type UpdateUserInput = {
   role?: InputMaybe<Role>;
 };
 
+export type UpdateUserV2Input = {
+  email?: InputMaybe<Scalars['String']['input']>;
+  isVerified?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
 export type User = {
   __typename?: 'User';
   _id: Scalars['ID']['output'];
@@ -952,6 +1025,34 @@ export type UserPaginationResult = {
   totalCount: Scalars['Int']['output'];
   users: Array<User>;
 };
+
+export type UserV2 = {
+  _id: Scalars['ID']['output'];
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  email: Scalars['String']['output'];
+  isVerified: Scalars['Boolean']['output'];
+  role: UserV2Role;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type UserV2FilterInput = {
+  isVerified?: InputMaybe<Scalars['Boolean']['input']>;
+  role?: InputMaybe<UserV2Role>;
+  search?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UserV2PaginationResult = {
+  __typename?: 'UserV2PaginationResult';
+  hasNextPage: Scalars['Boolean']['output'];
+  totalCount: Scalars['Int']['output'];
+  users: Array<UserV2>;
+};
+
+export enum UserV2Role {
+  Admin = 'ADMIN',
+  Instructor = 'INSTRUCTOR',
+  Student = 'STUDENT'
+}
 
 export type VerifyOtpResponse = {
   __typename?: 'VerifyOTPResponse';
@@ -1345,6 +1446,13 @@ export type GetUserByIdQueryVariables = Exact<{
 
 
 export type GetUserByIdQuery = { __typename?: 'Query', getUserById: { __typename?: 'User', _id: string, email: string, studentId?: string | null, role: Role, isVerified: boolean } };
+
+export type RegisterUserV2MutationVariables = Exact<{
+  input: RegisterUserV2Input;
+}>;
+
+
+export type RegisterUserV2Mutation = { __typename?: 'Mutation', registerUserV2: { __typename?: 'RegisterUserV2Response', success: boolean, message: string, userV2?: { __typename?: 'AdminUserV2', _id: string, email: string, isVerified: boolean, role: UserV2Role } | { __typename?: 'InstructorUserV2', _id: string, email: string, isVerified: boolean, role: UserV2Role } | { __typename?: 'StudentUserV2', _id: string, email: string, isVerified: boolean, role: UserV2Role } | null } };
 
 
 export const GenerateTempTokenDocument = gql`
@@ -3384,3 +3492,43 @@ export type GetUserByIdQueryHookResult = ReturnType<typeof useGetUserByIdQuery>;
 export type GetUserByIdLazyQueryHookResult = ReturnType<typeof useGetUserByIdLazyQuery>;
 export type GetUserByIdSuspenseQueryHookResult = ReturnType<typeof useGetUserByIdSuspenseQuery>;
 export type GetUserByIdQueryResult = Apollo.QueryResult<GetUserByIdQuery, GetUserByIdQueryVariables>;
+export const RegisterUserV2Document = gql`
+    mutation RegisterUserV2($input: RegisterUserV2Input!) {
+  registerUserV2(input: $input) {
+    success
+    message
+    userV2 {
+      _id
+      email
+      isVerified
+      role
+    }
+  }
+}
+    `;
+export type RegisterUserV2MutationFn = Apollo.MutationFunction<RegisterUserV2Mutation, RegisterUserV2MutationVariables>;
+
+/**
+ * __useRegisterUserV2Mutation__
+ *
+ * To run a mutation, you first call `useRegisterUserV2Mutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRegisterUserV2Mutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [registerUserV2Mutation, { data, loading, error }] = useRegisterUserV2Mutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useRegisterUserV2Mutation(baseOptions?: Apollo.MutationHookOptions<RegisterUserV2Mutation, RegisterUserV2MutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RegisterUserV2Mutation, RegisterUserV2MutationVariables>(RegisterUserV2Document, options);
+      }
+export type RegisterUserV2MutationHookResult = ReturnType<typeof useRegisterUserV2Mutation>;
+export type RegisterUserV2MutationResult = Apollo.MutationResult<RegisterUserV2Mutation>;
+export type RegisterUserV2MutationOptions = Apollo.BaseMutationOptions<RegisterUserV2Mutation, RegisterUserV2MutationVariables>;
