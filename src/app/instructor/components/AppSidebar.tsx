@@ -13,7 +13,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { BookOpenText, Globe, House, Settings } from "lucide-react";
+import { BookOpenText, Globe, House, SquareUser } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { InstructorNavSecondary } from "./InstructorNavSecondary";
 import { InstructorNavUser } from "./InstructorNavUser";
@@ -30,9 +30,9 @@ const items = [
     icon: BookOpenText,
   },
   {
-    title: "Settings",
-    url: "/instructor/settings",
-    icon: Settings,
+    title: "Account",
+    url: "/instructor/account",
+    icon: SquareUser,
   },
 ];
 
