@@ -21,6 +21,7 @@ import {
   PaymentMethod,
   useCreatePaymentMutation,
   useGetPaymentByUserAndCourseQuery,
+  useGetUserV2ByIdQuery,
 } from "@/generated/graphql";
 import {
   Banknote,
@@ -60,6 +61,12 @@ export const NotEnrolled = ({ course }: { course: Course }) => {
 
   const { session } = useCachedSession();
 
+  const { data: userData } = useGetUserV2ByIdQuery({
+    variables: { id: session?.user._id as string },
+    skip: !session?.user._id,
+    fetchPolicy: "cache-first",
+  });
+
   const [createPayment] = useCreatePaymentMutation();
 
   const { data: existingPaymentData, refetch: refetchExistingPayment } =
@@ -71,6 +78,11 @@ export const NotEnrolled = ({ course }: { course: Course }) => {
   const payment = existingPaymentData?.getPaymentByUserAndCourse;
   const isPending = payment?.status === "PENDING";
   const validPayment = isPending ? payment : null;
+
+  const transactionNote =
+    userData?.getUserV2ById.__typename === "StudentUserV2"
+      ? `${userData.getUserV2ById.studentId}-${course.courseCode}`
+      : `${userData?.getUserV2ById.email}-${course.courseCode}`;
 
   const handleCreatePayment = async () => {
     if (validPayment) {
@@ -84,11 +96,11 @@ export const NotEnrolled = ({ course }: { course: Course }) => {
       const { data } = await createPayment({
         variables: {
           input: {
-            userId: session?.user._id as string,
+            userId: userData?.getUserV2ById._id as string,
             courseId: course._id,
             amount: course.price?.amount ?? 0,
             paymentMethod: PaymentMethod.BankTransfer,
-            transactionNote: `${session?.user.studentId}-${course.courseCode}`,
+            transactionNote,
           },
         },
       });
@@ -103,7 +115,7 @@ export const NotEnrolled = ({ course }: { course: Course }) => {
             paymentId: data.createPayment._id,
             userEmail: session?.user.email,
             courseTitle: course.title,
-            transactionNote: `${session?.user.studentId}-${course.courseCode}`,
+            transactionNote,
           }),
         });
 
@@ -218,7 +230,7 @@ export const NotEnrolled = ({ course }: { course: Course }) => {
                         />
                         <InfoRow
                           label="Гүйлгээний утга"
-                          value={`${session?.user.studentId}-${course.courseCode}`}
+                          value={transactionNote}
                         />
                         <InfoRow
                           label="И-мэйл хаяг"
@@ -332,14 +344,11 @@ export const NotEnrolled = ({ course }: { course: Course }) => {
 
                         <CopyableField
                           label="Гүйлгээний утга"
-                          value={`${session?.user.studentId}-${course.courseCode}`}
+                          value={transactionNote}
                           fieldName="reference"
                           copiedField={copiedField}
                           onClick={() =>
-                            handleCopy(
-                              `${session?.user.studentId}-${course.courseCode}`,
-                              "reference",
-                            )
+                            handleCopy(transactionNote, "reference")
                           }
                           icon={
                             <ClipboardCheck className="h-[18px] w-[18px]" />
