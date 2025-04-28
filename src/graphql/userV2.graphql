@@ -1,3 +1,4 @@
+# Mutation
 mutation RegisterUserV2($input: RegisterUserV2Input!) {
   registerUserV2(input: $input) {
     success
@@ -7,6 +8,26 @@ mutation RegisterUserV2($input: RegisterUserV2Input!) {
       email
       isVerified
       role
+    }
+  }
+}
+
+# Query
+query GetUserV2ById($id: ID!) {
+  getUserV2ById(_id: $id) {
+    _id
+    email
+    isVerified
+    role
+    ... on StudentUserV2 {
+      studentId
+    }
+    ... on InstructorUserV2 {
+      bio
+      profilePicture
+    }
+    ... on AdminUserV2 {
+      adminLevel
     }
   }
 }

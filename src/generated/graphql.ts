@@ -1454,6 +1454,13 @@ export type RegisterUserV2MutationVariables = Exact<{
 
 export type RegisterUserV2Mutation = { __typename?: 'Mutation', registerUserV2: { __typename?: 'RegisterUserV2Response', success: boolean, message: string, userV2?: { __typename?: 'AdminUserV2', _id: string, email: string, isVerified: boolean, role: UserV2Role } | { __typename?: 'InstructorUserV2', _id: string, email: string, isVerified: boolean, role: UserV2Role } | { __typename?: 'StudentUserV2', _id: string, email: string, isVerified: boolean, role: UserV2Role } | null } };
 
+export type GetUserV2ByIdQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type GetUserV2ByIdQuery = { __typename?: 'Query', getUserV2ById: { __typename?: 'AdminUserV2', adminLevel?: number | null, _id: string, email: string, isVerified: boolean, role: UserV2Role } | { __typename?: 'InstructorUserV2', bio?: string | null, profilePicture?: string | null, _id: string, email: string, isVerified: boolean, role: UserV2Role } | { __typename?: 'StudentUserV2', studentId?: string | null, _id: string, email: string, isVerified: boolean, role: UserV2Role } };
+
 
 export const GenerateTempTokenDocument = gql`
     mutation GenerateTempToken($email: String!) {
@@ -3532,3 +3539,56 @@ export function useRegisterUserV2Mutation(baseOptions?: Apollo.MutationHookOptio
 export type RegisterUserV2MutationHookResult = ReturnType<typeof useRegisterUserV2Mutation>;
 export type RegisterUserV2MutationResult = Apollo.MutationResult<RegisterUserV2Mutation>;
 export type RegisterUserV2MutationOptions = Apollo.BaseMutationOptions<RegisterUserV2Mutation, RegisterUserV2MutationVariables>;
+export const GetUserV2ByIdDocument = gql`
+    query GetUserV2ById($id: ID!) {
+  getUserV2ById(_id: $id) {
+    _id
+    email
+    isVerified
+    role
+    ... on StudentUserV2 {
+      studentId
+    }
+    ... on InstructorUserV2 {
+      bio
+      profilePicture
+    }
+    ... on AdminUserV2 {
+      adminLevel
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetUserV2ByIdQuery__
+ *
+ * To run a query within a React component, call `useGetUserV2ByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUserV2ByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetUserV2ByIdQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetUserV2ByIdQuery(baseOptions: Apollo.QueryHookOptions<GetUserV2ByIdQuery, GetUserV2ByIdQueryVariables> & ({ variables: GetUserV2ByIdQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetUserV2ByIdQuery, GetUserV2ByIdQueryVariables>(GetUserV2ByIdDocument, options);
+      }
+export function useGetUserV2ByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUserV2ByIdQuery, GetUserV2ByIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetUserV2ByIdQuery, GetUserV2ByIdQueryVariables>(GetUserV2ByIdDocument, options);
+        }
+export function useGetUserV2ByIdSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetUserV2ByIdQuery, GetUserV2ByIdQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetUserV2ByIdQuery, GetUserV2ByIdQueryVariables>(GetUserV2ByIdDocument, options);
+        }
+export type GetUserV2ByIdQueryHookResult = ReturnType<typeof useGetUserV2ByIdQuery>;
+export type GetUserV2ByIdLazyQueryHookResult = ReturnType<typeof useGetUserV2ByIdLazyQuery>;
+export type GetUserV2ByIdSuspenseQueryHookResult = ReturnType<typeof useGetUserV2ByIdSuspenseQuery>;
+export type GetUserV2ByIdQueryResult = Apollo.QueryResult<GetUserV2ByIdQuery, GetUserV2ByIdQueryVariables>;
