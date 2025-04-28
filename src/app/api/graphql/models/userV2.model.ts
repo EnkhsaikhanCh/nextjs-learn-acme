@@ -44,11 +44,22 @@ export const StudentUserV2 = discriminator(
 );
 
 // --- InstructorUserV2 schema ---
+const ProfilePicture = new Schema(
+  {
+    publicId: { type: String, required: true },
+    width: { type: Number },
+    height: { type: Number },
+    format: { type: String },
+  },
+  { _id: false },
+);
+
 export const InstructorUserV2 = discriminator(
   UserV2Role.Instructor,
   new Schema({
+    fullName: { type: String },
     bio: { type: String },
-    profilePicture: { type: String },
+    profilePicture: { type: ProfilePicture },
   }),
 );
 

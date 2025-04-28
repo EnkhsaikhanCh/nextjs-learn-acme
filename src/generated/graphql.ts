@@ -260,8 +260,9 @@ export type InstructorUserV2 = UserV2 & {
   bio?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   email: Scalars['String']['output'];
+  fullName?: Maybe<Scalars['String']['output']>;
   isVerified: Scalars['Boolean']['output'];
-  profilePicture?: Maybe<Scalars['String']['output']>;
+  profilePicture?: Maybe<ProfilePicture>;
   role: UserV2Role;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
@@ -328,6 +329,8 @@ export type Mutation = {
   updateCourseWhatYouWillLearn: Course;
   updateEnrollment?: Maybe<Enrollment>;
   updateFileLessonV2: UpdateLessonV2Response;
+  updateInstructorProfilePicture?: Maybe<UpdateUserV2Response>;
+  updateInstructorUserV2: UpdateUserV2Response;
   updateLesson: Lesson;
   updateLessonV2GeneralInfo: UpdateLessonV2Response;
   updateLessonV2Video: UpdateLessonV2Response;
@@ -482,6 +485,18 @@ export type MutationUpdateFileLessonV2Args = {
 };
 
 
+export type MutationUpdateInstructorProfilePictureArgs = {
+  _id: Scalars['ID']['input'];
+  input?: InputMaybe<UploadProfilePictureInput>;
+};
+
+
+export type MutationUpdateInstructorUserV2Args = {
+  _id: Scalars['ID']['input'];
+  input: UpdateInstructorUserV2Input;
+};
+
+
 export type MutationUpdateLessonArgs = {
   _id: Scalars['ID']['input'];
   input: UpdateLessonInput;
@@ -602,6 +617,14 @@ export type PricingPlanInput = {
   currency?: InputMaybe<Currency>;
   description?: InputMaybe<Scalars['String']['input']>;
   planTitle?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type ProfilePicture = {
+  __typename?: 'ProfilePicture';
+  format?: Maybe<Scalars['String']['output']>;
+  height?: Maybe<Scalars['Int']['output']>;
+  publicId: Scalars['String']['output'];
+  width?: Maybe<Scalars['Int']['output']>;
 };
 
 export type Query = {
@@ -950,6 +973,11 @@ export type UpdateFileLessonV2Input = {
   fileUrl: Scalars['String']['input'];
 };
 
+export type UpdateInstructorUserV2Input = {
+  bio?: InputMaybe<Scalars['String']['input']>;
+  fullName?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type UpdateLessonInput = {
   content?: InputMaybe<Scalars['String']['input']>;
   isPublished?: InputMaybe<Scalars['Boolean']['input']>;
@@ -997,9 +1025,17 @@ export type UpdateUserInput = {
   role?: InputMaybe<Role>;
 };
 
-export type UpdateUserV2Input = {
-  email?: InputMaybe<Scalars['String']['input']>;
-  isVerified?: InputMaybe<Scalars['Boolean']['input']>;
+export type UpdateUserV2Response = {
+  __typename?: 'UpdateUserV2Response';
+  message: Scalars['String']['output'];
+  success: Scalars['Boolean']['output'];
+};
+
+export type UploadProfilePictureInput = {
+  format?: InputMaybe<Scalars['String']['input']>;
+  height?: InputMaybe<Scalars['Int']['input']>;
+  publicId: Scalars['String']['input'];
+  width?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type User = {
@@ -1454,12 +1490,20 @@ export type RegisterUserV2MutationVariables = Exact<{
 
 export type RegisterUserV2Mutation = { __typename?: 'Mutation', registerUserV2: { __typename?: 'RegisterUserV2Response', success: boolean, message: string, userV2?: { __typename?: 'AdminUserV2', _id: string, email: string, isVerified: boolean, role: UserV2Role } | { __typename?: 'InstructorUserV2', _id: string, email: string, isVerified: boolean, role: UserV2Role } | { __typename?: 'StudentUserV2', _id: string, email: string, isVerified: boolean, role: UserV2Role } | null } };
 
+export type UpdateInstructorUserV2MutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+  input: UpdateInstructorUserV2Input;
+}>;
+
+
+export type UpdateInstructorUserV2Mutation = { __typename?: 'Mutation', updateInstructorUserV2: { __typename?: 'UpdateUserV2Response', success: boolean, message: string } };
+
 export type GetUserV2ByIdQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
 
-export type GetUserV2ByIdQuery = { __typename?: 'Query', getUserV2ById: { __typename?: 'AdminUserV2', adminLevel?: number | null, _id: string, email: string, isVerified: boolean, role: UserV2Role } | { __typename?: 'InstructorUserV2', bio?: string | null, profilePicture?: string | null, _id: string, email: string, isVerified: boolean, role: UserV2Role } | { __typename?: 'StudentUserV2', studentId?: string | null, _id: string, email: string, isVerified: boolean, role: UserV2Role } };
+export type GetUserV2ByIdQuery = { __typename?: 'Query', getUserV2ById: { __typename?: 'AdminUserV2', adminLevel?: number | null, _id: string, email: string, isVerified: boolean, role: UserV2Role } | { __typename?: 'InstructorUserV2', fullName?: string | null, bio?: string | null, _id: string, email: string, isVerified: boolean, role: UserV2Role, profilePicture?: { __typename?: 'ProfilePicture', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null } | { __typename?: 'StudentUserV2', studentId?: string | null, _id: string, email: string, isVerified: boolean, role: UserV2Role } };
 
 
 export const GenerateTempTokenDocument = gql`
@@ -3539,6 +3583,41 @@ export function useRegisterUserV2Mutation(baseOptions?: Apollo.MutationHookOptio
 export type RegisterUserV2MutationHookResult = ReturnType<typeof useRegisterUserV2Mutation>;
 export type RegisterUserV2MutationResult = Apollo.MutationResult<RegisterUserV2Mutation>;
 export type RegisterUserV2MutationOptions = Apollo.BaseMutationOptions<RegisterUserV2Mutation, RegisterUserV2MutationVariables>;
+export const UpdateInstructorUserV2Document = gql`
+    mutation UpdateInstructorUserV2($id: ID!, $input: UpdateInstructorUserV2Input!) {
+  updateInstructorUserV2(_id: $id, input: $input) {
+    success
+    message
+  }
+}
+    `;
+export type UpdateInstructorUserV2MutationFn = Apollo.MutationFunction<UpdateInstructorUserV2Mutation, UpdateInstructorUserV2MutationVariables>;
+
+/**
+ * __useUpdateInstructorUserV2Mutation__
+ *
+ * To run a mutation, you first call `useUpdateInstructorUserV2Mutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateInstructorUserV2Mutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateInstructorUserV2Mutation, { data, loading, error }] = useUpdateInstructorUserV2Mutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateInstructorUserV2Mutation(baseOptions?: Apollo.MutationHookOptions<UpdateInstructorUserV2Mutation, UpdateInstructorUserV2MutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateInstructorUserV2Mutation, UpdateInstructorUserV2MutationVariables>(UpdateInstructorUserV2Document, options);
+      }
+export type UpdateInstructorUserV2MutationHookResult = ReturnType<typeof useUpdateInstructorUserV2Mutation>;
+export type UpdateInstructorUserV2MutationResult = Apollo.MutationResult<UpdateInstructorUserV2Mutation>;
+export type UpdateInstructorUserV2MutationOptions = Apollo.BaseMutationOptions<UpdateInstructorUserV2Mutation, UpdateInstructorUserV2MutationVariables>;
 export const GetUserV2ByIdDocument = gql`
     query GetUserV2ById($id: ID!) {
   getUserV2ById(_id: $id) {
@@ -3550,8 +3629,14 @@ export const GetUserV2ByIdDocument = gql`
       studentId
     }
     ... on InstructorUserV2 {
+      fullName
       bio
-      profilePicture
+      profilePicture {
+        publicId
+        width
+        height
+        format
+      }
     }
     ... on AdminUserV2 {
       adminLevel

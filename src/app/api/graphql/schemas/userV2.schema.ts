@@ -40,8 +40,9 @@ export const typeDefs = gql`
     updatedAt: Date
     role: UserV2Role!
 
+    fullName: String
     bio: String
-    profilePicture: String
+    profilePicture: ProfilePicture
   }
 
   type AdminUserV2 implements UserV2 {
@@ -53,6 +54,13 @@ export const typeDefs = gql`
     role: UserV2Role!
 
     adminLevel: Int
+  }
+
+  type ProfilePicture {
+    publicId: String!
+    width: Int
+    height: Int
+    format: String
   }
 
   # --- Pagination Result ---
@@ -68,10 +76,16 @@ export const typeDefs = gql`
     password: String!
   }
 
-  input UpdateUserV2Input {
-    email: String
-    isVerified: Boolean
-    # Future: add more fields if necessary
+  input UpdateInstructorUserV2Input {
+    fullName: String
+    bio: String
+  }
+
+  input UploadProfilePictureInput {
+    publicId: String!
+    width: Int
+    height: Int
+    format: String
   }
 
   input UserV2FilterInput {
@@ -95,6 +109,14 @@ export const typeDefs = gql`
   # --- Mutations ---
   type Mutation {
     registerUserV2(input: RegisterUserV2Input!): RegisterUserV2Response!
+    updateInstructorUserV2(
+      _id: ID!
+      input: UpdateInstructorUserV2Input!
+    ): UpdateUserV2Response!
+    updateInstructorProfilePicture(
+      _id: ID!
+      input: UploadProfilePictureInput
+    ): UpdateUserV2Response
   }
 
   # --- Mutation Responses ---
@@ -102,5 +124,10 @@ export const typeDefs = gql`
     success: Boolean!
     message: String!
     userV2: UserV2
+  }
+
+  type UpdateUserV2Response {
+    success: Boolean!
+    message: String!
   }
 `;
