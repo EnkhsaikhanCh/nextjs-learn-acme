@@ -12,6 +12,16 @@ mutation RegisterUserV2($input: RegisterUserV2Input!) {
   }
 }
 
+mutation UpdateInstructorUserV2(
+  $id: ID!
+  $input: UpdateInstructorUserV2Input!
+) {
+  updateInstructorUserV2(_id: $id, input: $input) {
+    success
+    message
+  }
+}
+
 # Query
 query GetUserV2ById($id: ID!) {
   getUserV2ById(_id: $id) {
@@ -23,8 +33,14 @@ query GetUserV2ById($id: ID!) {
       studentId
     }
     ... on InstructorUserV2 {
+      fullName
       bio
-      profilePicture
+      profilePicture {
+        publicId
+        width
+        height
+        format
+      }
     }
     ... on AdminUserV2 {
       adminLevel
