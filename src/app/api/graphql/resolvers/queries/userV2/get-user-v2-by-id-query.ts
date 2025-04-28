@@ -9,20 +9,24 @@ export const getUserV2ById = async (
   context: { user?: User },
 ) => {
   const { user } = context;
-  await requireAuthAndRoles(user, [UserV2Role.Student]);
+  await requireAuthAndRoles(user, [
+    UserV2Role.Student,
+    UserV2Role.Instructor,
+    UserV2Role.Admin,
+  ]);
 
   try {
     const existingUser = await UserV2Model.findById(_id);
 
     if (!existingUser) {
       throw new GraphQLError("User not found.", {
-        extensions: { code: "USER_NOT_FOUND", http: { status: 404 } },
+        extensions: { code: "USER_NOT_FOUND" },
       });
     }
 
     if (user?._id !== existingUser._id) {
       throw new GraphQLError("Access denied.", {
-        extensions: { code: "FORBIDDEN", http: { status: 403 } },
+        extensions: { code: "FORBIDDEN" },
       });
     }
 
@@ -32,7 +36,7 @@ export const getUserV2ById = async (
       throw error;
     }
     throw new GraphQLError("Failed to fetch user.", {
-      extensions: { code: "INTERNAL_SERVER_ERROR", http: { status: 500 } },
+      extensions: { code: "INTERNAL_SERVER_ERROR" },
     });
   }
 };
