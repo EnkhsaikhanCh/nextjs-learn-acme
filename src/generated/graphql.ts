@@ -329,7 +329,7 @@ export type Mutation = {
   updateCourseWhatYouWillLearn: Course;
   updateEnrollment?: Maybe<Enrollment>;
   updateFileLessonV2: UpdateLessonV2Response;
-  updateInstructorProfilePicture?: Maybe<UpdateUserV2Response>;
+  updateInstructorProfilePicture: UpdateUserV2Response;
   updateInstructorUserV2: UpdateUserV2Response;
   updateLesson: Lesson;
   updateLessonV2GeneralInfo: UpdateLessonV2Response;
@@ -487,7 +487,7 @@ export type MutationUpdateFileLessonV2Args = {
 
 export type MutationUpdateInstructorProfilePictureArgs = {
   _id: Scalars['ID']['input'];
-  input?: InputMaybe<UploadProfilePictureInput>;
+  input: UploadProfilePictureInput;
 };
 
 
@@ -1497,6 +1497,14 @@ export type UpdateInstructorUserV2MutationVariables = Exact<{
 
 
 export type UpdateInstructorUserV2Mutation = { __typename?: 'Mutation', updateInstructorUserV2: { __typename?: 'UpdateUserV2Response', success: boolean, message: string } };
+
+export type UpdateInstructorProfilePictureMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+  input: UploadProfilePictureInput;
+}>;
+
+
+export type UpdateInstructorProfilePictureMutation = { __typename?: 'Mutation', updateInstructorProfilePicture: { __typename?: 'UpdateUserV2Response', success: boolean, message: string } };
 
 export type GetUserV2ByIdQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -3618,6 +3626,41 @@ export function useUpdateInstructorUserV2Mutation(baseOptions?: Apollo.MutationH
 export type UpdateInstructorUserV2MutationHookResult = ReturnType<typeof useUpdateInstructorUserV2Mutation>;
 export type UpdateInstructorUserV2MutationResult = Apollo.MutationResult<UpdateInstructorUserV2Mutation>;
 export type UpdateInstructorUserV2MutationOptions = Apollo.BaseMutationOptions<UpdateInstructorUserV2Mutation, UpdateInstructorUserV2MutationVariables>;
+export const UpdateInstructorProfilePictureDocument = gql`
+    mutation UpdateInstructorProfilePicture($id: ID!, $input: UploadProfilePictureInput!) {
+  updateInstructorProfilePicture(_id: $id, input: $input) {
+    success
+    message
+  }
+}
+    `;
+export type UpdateInstructorProfilePictureMutationFn = Apollo.MutationFunction<UpdateInstructorProfilePictureMutation, UpdateInstructorProfilePictureMutationVariables>;
+
+/**
+ * __useUpdateInstructorProfilePictureMutation__
+ *
+ * To run a mutation, you first call `useUpdateInstructorProfilePictureMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateInstructorProfilePictureMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateInstructorProfilePictureMutation, { data, loading, error }] = useUpdateInstructorProfilePictureMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateInstructorProfilePictureMutation(baseOptions?: Apollo.MutationHookOptions<UpdateInstructorProfilePictureMutation, UpdateInstructorProfilePictureMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateInstructorProfilePictureMutation, UpdateInstructorProfilePictureMutationVariables>(UpdateInstructorProfilePictureDocument, options);
+      }
+export type UpdateInstructorProfilePictureMutationHookResult = ReturnType<typeof useUpdateInstructorProfilePictureMutation>;
+export type UpdateInstructorProfilePictureMutationResult = Apollo.MutationResult<UpdateInstructorProfilePictureMutation>;
+export type UpdateInstructorProfilePictureMutationOptions = Apollo.BaseMutationOptions<UpdateInstructorProfilePictureMutation, UpdateInstructorProfilePictureMutationVariables>;
 export const GetUserV2ByIdDocument = gql`
     query GetUserV2ById($id: ID!) {
   getUserV2ById(_id: $id) {

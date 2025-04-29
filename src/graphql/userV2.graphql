@@ -1,4 +1,4 @@
-# Mutation
+# Mutations
 mutation RegisterUserV2($input: RegisterUserV2Input!) {
   registerUserV2(input: $input) {
     success
@@ -17,6 +17,16 @@ mutation UpdateInstructorUserV2(
   $input: UpdateInstructorUserV2Input!
 ) {
   updateInstructorUserV2(_id: $id, input: $input) {
+    success
+    message
+  }
+}
+
+mutation UpdateInstructorProfilePicture(
+  $id: ID!
+  $input: UploadProfilePictureInput!
+) {
+  updateInstructorProfilePicture(_id: $id, input: $input) {
     success
     message
   }

@@ -115,8 +115,8 @@ export const typeDefs = gql`
     ): UpdateUserV2Response!
     updateInstructorProfilePicture(
       _id: ID!
-      input: UploadProfilePictureInput
-    ): UpdateUserV2Response
+      input: UploadProfilePictureInput!
+    ): UpdateUserV2Response!
   }
 
   # --- Mutation Responses ---

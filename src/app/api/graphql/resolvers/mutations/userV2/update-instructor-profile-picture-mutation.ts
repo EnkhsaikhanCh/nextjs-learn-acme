@@ -1,0 +1,91 @@
+import {
+  UpdateUserV2Response,
+  UploadProfilePictureInput,
+  User,
+  UserV2Role,
+} from "@/generated/graphql";
+import { requireAuthAndRoles } from "@/lib/auth-utils";
+import { z } from "zod";
+import { UserV2Model } from "../../../models";
+import { cloudinary } from "@/lib/cloudinary";
+
+const ThumbnailSchema = z.object({
+  publicId: z.string().min(5).max(255),
+  width: z.number().positive(),
+  height: z.number().positive(),
+  format: z.enum(["jpg", "jpeg", "png"]),
+});
+
+export const updateInstructorProfilePicture = async (
+  _: unknown,
+  { _id, input }: { _id: string; input: UploadProfilePictureInput },
+  context: { user?: User },
+): Promise<UpdateUserV2Response> => {
+  const { user } = context;
+  await requireAuthAndRoles(user, [UserV2Role.Instructor]);
+
+  if (!_id) {
+    return {
+      success: false,
+      message: "User ID is missing.",
+    };
+  }
+
+  // Validate input
+  const parsed = ThumbnailSchema.safeParse(input);
+  if (!parsed.success) {
+    const msg = parsed.error.errors[0]?.message || "Invalid thumbnail data.";
+    return { success: false, message: msg };
+  }
+
+  try {
+    const existingUser = await UserV2Model.findById(_id);
+    if (!existingUser) {
+      return {
+        success: false,
+        message: "User not found.",
+      };
+    }
+
+    // Ensure owner
+    if (existingUser._id !== user!._id) {
+      return {
+        success: false,
+        message: "Access denied: cannot update another instructor’s picture.",
+      };
+    }
+
+    if (
+      existingUser.profilePicture?.publicId &&
+      existingUser.profilePicture.publicId !== input.publicId
+    ) {
+      try {
+        await cloudinary.uploader.destroy(existingUser.profilePicture.publicId);
+      } catch {
+        return {
+          success: false,
+          message: "Failed to delete previous thumbnail.",
+        };
+      }
+    }
+
+    existingUser.profilePicture = {
+      publicId: input.publicId,
+      width: input.width,
+      height: input.height,
+      format: input.format,
+    };
+
+    await existingUser.save();
+
+    return {
+      success: true,
+      message: "Profile picture updated successfully.",
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: "Internal error: " + (error as Error).message,
+    };
+  }
+};
