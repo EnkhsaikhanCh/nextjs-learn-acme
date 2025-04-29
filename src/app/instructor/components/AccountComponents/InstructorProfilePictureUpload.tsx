@@ -109,7 +109,7 @@ export function InstructorProfilePictureUpload({
     <div className="space-y-2">
       <Label htmlFor="avatar">Profile Picture</Label>
       <div className="flex items-center gap-4">
-        <Avatar>
+        <Avatar className="rounded-md">
           <AvatarImage
             src={
               profilePicturePublicId

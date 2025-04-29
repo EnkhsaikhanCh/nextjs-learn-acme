@@ -139,7 +139,7 @@ export default function InstructorAccountPage() {
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="flex flex-col items-center space-y-4">
-                    <Avatar className="h-24 w-24">
+                    <Avatar className="h-24 w-24 rounded-md">
                       <AvatarImage
                         src={
                           userData?.getUserV2ById.__typename ===
