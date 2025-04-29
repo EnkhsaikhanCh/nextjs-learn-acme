@@ -12,16 +12,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Upload, CreditCard, Lock, User, Loader } from "lucide-react";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { CreditCard, Lock, User, Loader } from "lucide-react";
 import { useUserStore } from "@/store/UserStoreState";
 import {
   useGetUserV2ByIdQuery,
+  UserV2,
   useUpdateInstructorUserV2Mutation,
 } from "@/generated/graphql";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { InstructorProfilePictureUpload } from "../components/AccountComponents/InstructorProfilePictureUpload";
 
 export default function InstructorAccountPage() {
   const [isProfileUpdating, setIsProfileUpdating] = useState<boolean>(false);
@@ -139,10 +141,15 @@ export default function InstructorAccountPage() {
                   <div className="flex flex-col items-center space-y-4">
                     <Avatar className="h-24 w-24">
                       <AvatarImage
-                        //   src="/placeholder.svg?height=96&width=96"
-                        alt="Profile"
+                        src={
+                          userData?.getUserV2ById.__typename ===
+                            "InstructorUserV2" &&
+                          userData?.getUserV2ById.profilePicture
+                            ? `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/${userData.getUserV2ById.profilePicture.publicId}.${userData.getUserV2ById.profilePicture.format}`
+                            : undefined
+                        }
+                        alt="Instructor Profile Picture"
                       />
-                      <AvatarFallback>JD</AvatarFallback>
                     </Avatar>
                     <div className="text-center">
                       <h3 className="text-xl font-semibold">
@@ -208,6 +215,11 @@ export default function InstructorAccountPage() {
 
                     {/* Profile Update Form */}
                     <TabsContent value="profile" className="space-y-4 pt-4">
+                      <InstructorProfilePictureUpload
+                        userData={userData?.getUserV2ById as UserV2}
+                        refetch={refetch}
+                      />
+
                       <form onSubmit={handleSubmit(onSubmit)}>
                         <div className="space-y-4">
                           <div className="space-y-2">
@@ -228,20 +240,6 @@ export default function InstructorAccountPage() {
                           <div className="space-y-2">
                             <Label htmlFor="bio">Bio</Label>
                             <Textarea id="bio" rows={4} {...register("bio")} />
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label htmlFor="avatar">Profile Picture</Label>
-                            <div className="flex items-center gap-4">
-                              <Avatar>
-                                <AvatarImage alt="Profile" />
-                                <AvatarFallback>JD</AvatarFallback>
-                              </Avatar>
-                              <Button variant="outline" size="sm">
-                                <Upload className="mr-2 h-4 w-4" />
-                                Upload New
-                              </Button>
-                            </div>
                           </div>
 
                           <Button
