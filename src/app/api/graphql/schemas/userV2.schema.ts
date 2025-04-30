@@ -94,6 +94,11 @@ export const typeDefs = gql`
     isVerified: Boolean
   }
 
+  input ChangePasswordInput {
+    oldPassword: String!
+    newPassword: String!
+  }
+
   # --- Queries ---
   type Query {
     getUserV2ById(_id: ID!): UserV2!
@@ -117,6 +122,7 @@ export const typeDefs = gql`
       _id: ID!
       input: UploadProfilePictureInput!
     ): UpdateUserV2Response!
+    changeUserPassword(input: ChangePasswordInput!): ChangePasswordResponse!
   }
 
   # --- Mutation Responses ---
@@ -127,6 +133,11 @@ export const typeDefs = gql`
   }
 
   type UpdateUserV2Response {
+    success: Boolean!
+    message: String!
+  }
+
+  type ChangePasswordResponse {
     success: Boolean!
     message: String!
   }

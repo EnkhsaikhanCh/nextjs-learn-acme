@@ -32,6 +32,13 @@ mutation UpdateInstructorProfilePicture(
   }
 }
 
+mutation ChangeUserPassword($input: ChangePasswordInput!) {
+  changeUserPassword(input: $input) {
+    success
+    message
+  }
+}
+
 # Query
 query GetUserV2ById($id: ID!) {
   getUserV2ById(_id: $id) {

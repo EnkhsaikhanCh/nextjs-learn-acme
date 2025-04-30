@@ -43,6 +43,17 @@ export type AssignmentLesson = LessonV2 & {
   updatedAt: Scalars['DateTime']['output'];
 };
 
+export type ChangePasswordInput = {
+  newPassword: Scalars['String']['input'];
+  oldPassword: Scalars['String']['input'];
+};
+
+export type ChangePasswordResponse = {
+  __typename?: 'ChangePasswordResponse';
+  message: Scalars['String']['output'];
+  success: Scalars['Boolean']['output'];
+};
+
 export type Course = {
   __typename?: 'Course';
   _id: Scalars['ID']['output'];
@@ -302,6 +313,7 @@ export type LessonV2 = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  changeUserPassword: ChangePasswordResponse;
   createCourse: Course;
   createEnrollment?: Maybe<Enrollment>;
   createLesson: CreateLessonResponse;
@@ -340,6 +352,11 @@ export type Mutation = {
   updateTextLessonV2: UpdateLessonV2Response;
   updateUser: User;
   verifyOTP: VerifyOtpResponse;
+};
+
+
+export type MutationChangeUserPasswordArgs = {
+  input: ChangePasswordInput;
 };
 
 
@@ -1505,6 +1522,13 @@ export type UpdateInstructorProfilePictureMutationVariables = Exact<{
 
 
 export type UpdateInstructorProfilePictureMutation = { __typename?: 'Mutation', updateInstructorProfilePicture: { __typename?: 'UpdateUserV2Response', success: boolean, message: string } };
+
+export type ChangeUserPasswordMutationVariables = Exact<{
+  input: ChangePasswordInput;
+}>;
+
+
+export type ChangeUserPasswordMutation = { __typename?: 'Mutation', changeUserPassword: { __typename?: 'ChangePasswordResponse', success: boolean, message: string } };
 
 export type GetUserV2ByIdQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -3661,6 +3685,40 @@ export function useUpdateInstructorProfilePictureMutation(baseOptions?: Apollo.M
 export type UpdateInstructorProfilePictureMutationHookResult = ReturnType<typeof useUpdateInstructorProfilePictureMutation>;
 export type UpdateInstructorProfilePictureMutationResult = Apollo.MutationResult<UpdateInstructorProfilePictureMutation>;
 export type UpdateInstructorProfilePictureMutationOptions = Apollo.BaseMutationOptions<UpdateInstructorProfilePictureMutation, UpdateInstructorProfilePictureMutationVariables>;
+export const ChangeUserPasswordDocument = gql`
+    mutation ChangeUserPassword($input: ChangePasswordInput!) {
+  changeUserPassword(input: $input) {
+    success
+    message
+  }
+}
+    `;
+export type ChangeUserPasswordMutationFn = Apollo.MutationFunction<ChangeUserPasswordMutation, ChangeUserPasswordMutationVariables>;
+
+/**
+ * __useChangeUserPasswordMutation__
+ *
+ * To run a mutation, you first call `useChangeUserPasswordMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useChangeUserPasswordMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [changeUserPasswordMutation, { data, loading, error }] = useChangeUserPasswordMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useChangeUserPasswordMutation(baseOptions?: Apollo.MutationHookOptions<ChangeUserPasswordMutation, ChangeUserPasswordMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ChangeUserPasswordMutation, ChangeUserPasswordMutationVariables>(ChangeUserPasswordDocument, options);
+      }
+export type ChangeUserPasswordMutationHookResult = ReturnType<typeof useChangeUserPasswordMutation>;
+export type ChangeUserPasswordMutationResult = Apollo.MutationResult<ChangeUserPasswordMutation>;
+export type ChangeUserPasswordMutationOptions = Apollo.BaseMutationOptions<ChangeUserPasswordMutation, ChangeUserPasswordMutationVariables>;
 export const GetUserV2ByIdDocument = gql`
     query GetUserV2ById($id: ID!) {
   getUserV2ById(_id: $id) {
