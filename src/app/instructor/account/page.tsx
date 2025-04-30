@@ -16,6 +16,7 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { CreditCard, Lock, User, Loader } from "lucide-react";
 import { useUserStore } from "@/store/UserStoreState";
 import {
+  useChangeUserPasswordMutation,
   useGetUserV2ByIdQuery,
   UserV2,
   useUpdateInstructorUserV2Mutation,
@@ -24,10 +25,13 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { InstructorProfilePictureUpload } from "../components/AccountComponents/InstructorProfilePictureUpload";
+import { signOut } from "next-auth/react";
+const { clearUser } = useUserStore.getState();
 
 export default function InstructorAccountPage() {
   const [isProfileUpdating, setIsProfileUpdating] = useState<boolean>(false);
   const [updateInstructorUserV2] = useUpdateInstructorUserV2Mutation();
+  const [changeUserPassword] = useChangeUserPasswordMutation();
 
   const { user } = useUserStore();
 
@@ -51,6 +55,19 @@ export default function InstructorAccountPage() {
     defaultValues: {
       fullName: "",
       bio: "",
+    },
+  });
+
+  const {
+    register: registerPassword,
+    handleSubmit: handleSubmitPassword,
+    reset: resetPasswordForm,
+    formState: { isSubmitting: isSubmittingPassword, isDirty: isDirtyPassword },
+  } = useForm({
+    defaultValues: {
+      oldPassword: "",
+      newPassword: "",
+      confirmPassword: "",
     },
   });
 
@@ -93,6 +110,43 @@ export default function InstructorAccountPage() {
       });
     } finally {
       setIsProfileUpdating(false);
+    }
+  };
+
+  const onSubmitPasswordChange = async (values: {
+    oldPassword: string;
+    newPassword: string;
+    confirmPassword: string;
+  }) => {
+    if (values.newPassword !== values.confirmPassword) {
+      toast.error("New passwords do not match.");
+      return;
+    }
+
+    try {
+      const { data } = await changeUserPassword({
+        variables: {
+          input: {
+            oldPassword: values.oldPassword,
+            newPassword: values.newPassword,
+          },
+        },
+      });
+
+      if (data?.changeUserPassword.success) {
+        toast.success("Password updated successfully. Please log in again.");
+        resetPasswordForm();
+        clearUser();
+        await signOut();
+      } else {
+        toast.error(
+          data?.changeUserPassword.message || "Password update failed.",
+        );
+      }
+    } catch (error) {
+      toast.error("Internal error occurred.", {
+        description: (error as Error).message,
+      });
     }
   };
 
@@ -261,28 +315,54 @@ export default function InstructorAccountPage() {
 
                     {/* Password Update Form */}
                     <TabsContent value="password" className="space-y-4 pt-4">
-                      <div className="space-y-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="current-password">
-                            Current Password
-                          </Label>
-                          <Input id="current-password" type="password" />
-                        </div>
+                      <form
+                        onSubmit={handleSubmitPassword(onSubmitPasswordChange)}
+                      >
+                        <div className="space-y-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="current-password">
+                              Current Password
+                            </Label>
+                            <Input
+                              id="current-password"
+                              type="password"
+                              {...registerPassword("oldPassword")}
+                            />
+                          </div>
 
-                        <div className="space-y-2">
-                          <Label htmlFor="new-password">New Password</Label>
-                          <Input id="new-password" type="password" />
-                        </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="new-password">New Password</Label>
+                            <Input
+                              id="new-password"
+                              type="password"
+                              {...registerPassword("newPassword")}
+                            />
+                          </div>
 
-                        <div className="space-y-2">
-                          <Label htmlFor="confirm-password">
-                            Confirm New Password
-                          </Label>
-                          <Input id="confirm-password" type="password" />
-                        </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="confirm-password">
+                              Confirm New Password
+                            </Label>
+                            <Input
+                              id="confirm-password"
+                              type="password"
+                              {...registerPassword("confirmPassword")}
+                            />
+                          </div>
 
-                        <Button className="mt-4">Update Password</Button>
-                      </div>
+                          <Button
+                            type="submit"
+                            className="mt-4"
+                            disabled={isSubmittingPassword || !isDirtyPassword}
+                          >
+                            {isSubmittingPassword ? (
+                              <Loader className="h-4 w-4 animate-spin" />
+                            ) : (
+                              "Update Password"
+                            )}
+                          </Button>
+                        </div>
+                      </form>
                     </TabsContent>
 
                     {/* Payout Setup Form */}
