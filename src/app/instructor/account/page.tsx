@@ -16,70 +16,117 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { CreditCard, Lock, User, Loader } from "lucide-react";
 import { useUserStore } from "@/store/UserStoreState";
 import {
+  BankName,
+  InstructorUserV2,
+  PayoutMethod,
   useChangeUserPasswordMutation,
-  useGetUserV2ByIdQuery,
-  UserV2,
+  useGetInstructorUserV2InfoByIdQuery,
+  useUpdateInstructorPayoutInfoMutation,
   useUpdateInstructorUserV2Mutation,
 } from "@/generated/graphql";
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { InstructorProfilePictureUpload } from "../components/AccountComponents/InstructorProfilePictureUpload";
 import { signOut } from "next-auth/react";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 const { clearUser } = useUserStore.getState();
 
 export default function InstructorAccountPage() {
-  const [isProfileUpdating, setIsProfileUpdating] = useState<boolean>(false);
+  const [isProfileUpdating, setIsProfileUpdating] = useState(false);
+
   const [updateInstructorUserV2] = useUpdateInstructorUserV2Mutation();
   const [changeUserPassword] = useChangeUserPasswordMutation();
+  const [updateInstructorPayoutInfo] = useUpdateInstructorPayoutInfoMutation();
 
   const { user } = useUserStore();
 
   const {
-    data: userData,
-    loading,
-    error,
-    refetch,
-  } = useGetUserV2ByIdQuery({
+    data: instructorData,
+    loading: instructorLoading,
+    error: instructorError,
+    refetch: instructorRefetch,
+  } = useGetInstructorUserV2InfoByIdQuery({
     variables: { id: user?._id as string },
     skip: !user?._id,
     fetchPolicy: "cache-first",
   });
 
+  // Profile form
   const {
     register,
     handleSubmit,
     reset,
     formState: { isSubmitting, isDirty },
-  } = useForm({
-    defaultValues: {
-      fullName: "",
-      bio: "",
-    },
+  } = useForm<{ fullName: string; bio: string }>({
+    defaultValues: { fullName: "", bio: "" },
   });
 
+  // Password form
   const {
     register: registerPassword,
     handleSubmit: handleSubmitPassword,
     reset: resetPasswordForm,
     formState: { isSubmitting: isSubmittingPassword, isDirty: isDirtyPassword },
-  } = useForm({
+  } = useForm<{
+    oldPassword: string;
+    newPassword: string;
+    confirmPassword: string;
+  }>({
+    defaultValues: { oldPassword: "", newPassword: "", confirmPassword: "" },
+  });
+
+  // Payout form
+  const {
+    register: registerPayout,
+    handleSubmit: handleSubmitPayout,
+    control,
+    reset: resetPayoutForm,
+    formState: { isSubmitting: isSubmittingPayout, isDirty: isDirtyPayout },
+  } = useForm<{
+    payoutMethod: string;
+    bankName: string;
+    accountHolderName: string;
+    accountNumber: string;
+  }>({
     defaultValues: {
-      oldPassword: "",
-      newPassword: "",
-      confirmPassword: "",
+      payoutMethod: PayoutMethod.BankTransfer,
+      bankName: "",
+      accountHolderName: "",
+      accountNumber: "",
     },
   });
 
-  // userData ирсний дараа form утгуудыг populate хийх
+  // Profile form populate
   useEffect(() => {
-    if (userData?.getUserV2ById.__typename === "InstructorUserV2") {
+    if (instructorData?.getInstructorUserV2InfoById) {
       reset({
-        fullName: userData.getUserV2ById.fullName || "",
-        bio: userData.getUserV2ById.bio || "",
+        fullName: instructorData.getInstructorUserV2InfoById.fullName || "",
+        bio: instructorData.getInstructorUserV2InfoById.bio || "",
       });
     }
-  }, [userData, reset]);
+  }, [instructorData, reset]);
+
+  // Payout form populate
+  useEffect(() => {
+    const payout = instructorData?.getInstructorUserV2InfoById.payout;
+    if (payout) {
+      resetPayoutForm({
+        payoutMethod: payout.payoutMethod || PayoutMethod.BankTransfer,
+        bankName: payout.bankName || "",
+        accountHolderName: payout.accountHolderName || "",
+        accountNumber: payout.accountNumber || "",
+      });
+    }
+  }, [instructorData, resetPayoutForm]);
 
   if (!user) {
     return (
@@ -89,52 +136,46 @@ export default function InstructorAccountPage() {
     );
   }
 
-  const onSubmit = async (values: { fullName: string; bio: string }) => {
+  const onSubmitProfile = async (vals: { fullName: string; bio: string }) => {
     setIsProfileUpdating(true);
     try {
       await updateInstructorUserV2({
         variables: {
-          id: user?._id as string,
-          input: {
-            fullName: values.fullName,
-            bio: values.bio,
-          },
+          id: user._id,
+          input: { fullName: vals.fullName, bio: vals.bio },
         },
       });
-
-      await refetch();
+      await instructorRefetch();
       toast.success("Profile updated successfully!");
-    } catch (error) {
+    } catch (err) {
       toast.error("Failed to update profile", {
-        description: (error as Error).message,
+        description: (err as Error).message,
       });
     } finally {
       setIsProfileUpdating(false);
     }
   };
 
-  const onSubmitPasswordChange = async (values: {
+  const onSubmitPassword = async (vals: {
     oldPassword: string;
     newPassword: string;
     confirmPassword: string;
   }) => {
-    if (values.newPassword !== values.confirmPassword) {
+    if (vals.newPassword !== vals.confirmPassword) {
       toast.error("New passwords do not match.");
       return;
     }
-
     try {
       const { data } = await changeUserPassword({
         variables: {
           input: {
-            oldPassword: values.oldPassword,
-            newPassword: values.newPassword,
+            oldPassword: vals.oldPassword,
+            newPassword: vals.newPassword,
           },
         },
       });
-
       if (data?.changeUserPassword.success) {
-        toast.success("Password updated successfully. Please log in again.");
+        toast.success("Password updated. Please log in again.");
         resetPasswordForm();
         clearUser();
         await signOut();
@@ -143,14 +184,38 @@ export default function InstructorAccountPage() {
           data?.changeUserPassword.message || "Password update failed.",
         );
       }
-    } catch (error) {
-      toast.error("Internal error occurred.", {
-        description: (error as Error).message,
+    } catch (err) {
+      toast.error("Internal error.", { description: (err as Error).message });
+    }
+  };
+
+  const onSubmitPayoutForm = async (vals: {
+    payoutMethod: string;
+    bankName: string;
+    accountHolderName: string;
+    accountNumber: string;
+  }) => {
+    try {
+      await updateInstructorPayoutInfo({
+        variables: {
+          input: {
+            payoutMethod: vals.payoutMethod as PayoutMethod,
+            bankName: vals.bankName as BankName,
+            accountHolderName: vals.accountHolderName,
+            accountNumber: vals.accountNumber,
+          },
+        },
+      });
+      await instructorRefetch();
+      toast.success("Payout information updated.");
+    } catch (err) {
+      toast.error("Failed to update payout info", {
+        description: (err as Error).message,
       });
     }
   };
 
-  if (!user?._id || loading) {
+  if (!user._id || instructorLoading) {
     return (
       <div className="text-muted-foreground flex items-center justify-center gap-2 p-6 text-sm">
         <p>Loading user account</p>
@@ -158,12 +223,10 @@ export default function InstructorAccountPage() {
       </div>
     );
   }
-
-  if (error) {
-    const errorMessage = (error as Error).message;
+  if (instructorError) {
     return (
       <div className="flex items-center justify-center gap-2 p-6 text-sm text-red-500">
-        <p>Failed to load user account: ${errorMessage}</p>
+        <p>Failed to load user account: {(instructorError as Error).message}</p>
       </div>
     );
   }
@@ -181,10 +244,8 @@ export default function InstructorAccountPage() {
                 </p>
               </div>
             </div>
-
-            <div className="grid gap-5 md:grid-cols-3">
-              {/* Profile Overview Card */}
-              <Card className="md:col-span-1">
+            <div className="gap-6 space-y-4 md:flex md:items-start md:justify-start">
+              <Card className="w-full md:w-1/3 md:max-w-[420px]">
                 <CardHeader>
                   <CardTitle>Profile Overview</CardTitle>
                   <CardDescription>
@@ -196,10 +257,9 @@ export default function InstructorAccountPage() {
                     <Avatar className="h-24 w-24 rounded-md">
                       <AvatarImage
                         src={
-                          userData?.getUserV2ById.__typename ===
-                            "InstructorUserV2" &&
-                          userData?.getUserV2ById.profilePicture
-                            ? `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/${userData.getUserV2ById.profilePicture.publicId}.${userData.getUserV2ById.profilePicture.format}`
+                          instructorData?.getInstructorUserV2InfoById
+                            .profilePicture
+                            ? `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/${instructorData.getInstructorUserV2InfoById.profilePicture.publicId}.${instructorData.getInstructorUserV2InfoById.profilePicture.format}`
                             : undefined
                         }
                         alt="Instructor Profile Picture"
@@ -207,43 +267,31 @@ export default function InstructorAccountPage() {
                     </Avatar>
                     <div className="text-center">
                       <h3 className="text-xl font-semibold">
-                        {userData?.getUserV2ById.role === "INSTRUCTOR" &&
-                          userData?.getUserV2ById.__typename ===
-                            "InstructorUserV2" &&
-                          userData?.getUserV2ById.fullName}
+                        {instructorData?.getInstructorUserV2InfoById.fullName}
                       </h3>
                     </div>
                   </div>
-
                   <div className="space-y-4">
                     <div>
                       <Label className="text-muted-foreground text-xs">
                         Email
                       </Label>
                       <p className="text-sm font-medium">
-                        {userData?.getUserV2ById.email}
+                        {instructorData?.getInstructorUserV2InfoById.email}
                       </p>
                     </div>
-
                     <div>
                       <Label className="text-muted-foreground text-xs">
                         Bio
                       </Label>
                       <p className="text-sm">
-                        {userData?.getUserV2ById.role === "INSTRUCTOR" &&
-                        userData?.getUserV2ById.__typename ===
-                          "InstructorUserV2"
-                          ? userData?.getUserV2ById.bio ||
-                            "No bio provided yet."
-                          : null}
+                        {instructorData?.getInstructorUserV2InfoById.bio}
                       </p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
-
-              {/* Settings Tabs */}
-              <Card className="md:col-span-2">
+              <Card className="flex-1">
                 <CardHeader>
                   <CardTitle>Settings</CardTitle>
                   <CardDescription>
@@ -255,47 +303,46 @@ export default function InstructorAccountPage() {
                     <TabsList className="grid w-full grid-cols-3">
                       <TabsTrigger value="profile">
                         <User className="mr-2 h-4 w-4" />
-                        <span className="hidden sm:inline">Profile</span>
+                        Profile
                       </TabsTrigger>
                       <TabsTrigger value="password">
                         <Lock className="mr-2 h-4 w-4" />
-                        <span className="hidden sm:inline">Password</span>
+                        Password
                       </TabsTrigger>
                       <TabsTrigger value="payout">
                         <CreditCard className="mr-2 h-4 w-4" />
-                        <span className="hidden sm:inline">Payout</span>
+                        Payout
                       </TabsTrigger>
                     </TabsList>
-
-                    {/* Profile Update Form */}
                     <TabsContent value="profile" className="space-y-4 pt-4">
                       <InstructorProfilePictureUpload
-                        userData={userData?.getUserV2ById as UserV2}
-                        refetch={refetch}
+                        userData={
+                          instructorData?.getInstructorUserV2InfoById as InstructorUserV2
+                        }
+                        refetch={instructorRefetch}
                       />
-
-                      <form onSubmit={handleSubmit(onSubmit)}>
+                      <form onSubmit={handleSubmit(onSubmitProfile)}>
                         <div className="space-y-4">
                           <div className="space-y-2">
                             <Label htmlFor="name">Full Name</Label>
                             <Input id="name" {...register("fullName")} />
                           </div>
-
                           <div className="space-y-2">
                             <Label htmlFor="email">Email</Label>
                             <Input
                               id="email"
                               type="email"
                               disabled
-                              defaultValue={userData?.getUserV2ById.email}
+                              defaultValue={
+                                instructorData?.getInstructorUserV2InfoById
+                                  .email
+                              }
                             />
                           </div>
-
                           <div className="space-y-2">
                             <Label htmlFor="bio">Bio</Label>
                             <Textarea id="bio" rows={4} {...register("bio")} />
                           </div>
-
                           <Button
                             type="submit"
                             disabled={
@@ -312,12 +359,8 @@ export default function InstructorAccountPage() {
                         </div>
                       </form>
                     </TabsContent>
-
-                    {/* Password Update Form */}
                     <TabsContent value="password" className="space-y-4 pt-4">
-                      <form
-                        onSubmit={handleSubmitPassword(onSubmitPasswordChange)}
-                      >
+                      <form onSubmit={handleSubmitPassword(onSubmitPassword)}>
                         <div className="space-y-4">
                           <div className="space-y-2">
                             <Label htmlFor="current-password">
@@ -329,7 +372,6 @@ export default function InstructorAccountPage() {
                               {...registerPassword("oldPassword")}
                             />
                           </div>
-
                           <div className="space-y-2">
                             <Label htmlFor="new-password">New Password</Label>
                             <Input
@@ -338,7 +380,6 @@ export default function InstructorAccountPage() {
                               {...registerPassword("newPassword")}
                             />
                           </div>
-
                           <div className="space-y-2">
                             <Label htmlFor="confirm-password">
                               Confirm New Password
@@ -349,7 +390,6 @@ export default function InstructorAccountPage() {
                               {...registerPassword("confirmPassword")}
                             />
                           </div>
-
                           <Button
                             type="submit"
                             className="mt-4"
@@ -364,54 +404,126 @@ export default function InstructorAccountPage() {
                         </div>
                       </form>
                     </TabsContent>
-
-                    {/* Payout Setup Form */}
                     <TabsContent value="payout" className="space-y-4 pt-4">
-                      <div className="space-y-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="payout-method">Payout Method</Label>
-                          <select
-                            id="payout-method"
-                            className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                      <form onSubmit={handleSubmitPayout(onSubmitPayoutForm)}>
+                        <div className="space-y-4">
+                          {/* Payout Method */}
+                          <div className="space-y-2">
+                            <Label htmlFor="payout-method">Payout Method</Label>
+                            <Controller
+                              name="payoutMethod"
+                              control={control}
+                              render={({ field }) => (
+                                <Select
+                                  onValueChange={field.onChange}
+                                  value={field.value}
+                                >
+                                  <SelectTrigger className="bg-background">
+                                    <SelectValue placeholder="Payout Method" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectGroup>
+                                      <SelectItem
+                                        value={PayoutMethod.BankTransfer}
+                                      >
+                                        Bank Transfer
+                                      </SelectItem>
+                                    </SelectGroup>
+                                  </SelectContent>
+                                </Select>
+                              )}
+                            />
+                          </div>
+
+                          {/* Bank Name */}
+                          <div className="space-y-2">
+                            <Label htmlFor="bankName">Bank Name</Label>
+                            <Controller
+                              name="bankName"
+                              control={control}
+                              render={({ field }) => (
+                                <Select
+                                  onValueChange={field.onChange}
+                                  value={field.value}
+                                >
+                                  <SelectTrigger className="bg-background">
+                                    <SelectValue placeholder="Select Bank" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectGroup>
+                                      <SelectItem value={BankName.KhanBank}>
+                                        KHAN BANK
+                                      </SelectItem>
+                                      <SelectItem value={BankName.GolomtBank}>
+                                        GOLOMT BANK
+                                      </SelectItem>
+                                      <SelectItem
+                                        value={BankName.TradeAndDevelopmentBank}
+                                      >
+                                        TRADE AND DEVELOPMENT BANK
+                                      </SelectItem>
+                                      <SelectItem value={BankName.XacBank}>
+                                        XAC BANK
+                                      </SelectItem>
+                                      <SelectItem
+                                        value={BankName.StateBankOfMongolia}
+                                      >
+                                        STATE BANK OF MONGOLIA
+                                      </SelectItem>
+                                      <SelectItem value={BankName.MBank}>
+                                        M BANK
+                                      </SelectItem>
+                                      <SelectItem value={BankName.ArigBank}>
+                                        ARIG BANK
+                                      </SelectItem>
+                                      <SelectItem value={BankName.CapitronBank}>
+                                        CAPITRON BANK
+                                      </SelectItem>
+                                      <SelectItem value={BankName.BogdBank}>
+                                        BOGD BANK
+                                      </SelectItem>
+                                    </SelectGroup>
+                                  </SelectContent>
+                                </Select>
+                              )}
+                            />
+                          </div>
+
+                          {/* Account Holder Name */}
+                          <div className="space-y-2">
+                            <Label htmlFor="account-name">
+                              Account Holder Name
+                            </Label>
+                            <Input
+                              id="account-name"
+                              {...registerPayout("accountHolderName")}
+                            />
+                          </div>
+
+                          {/* Account Number */}
+                          <div className="space-y-2">
+                            <Label htmlFor="account-number">
+                              Account Number
+                            </Label>
+                            <Input
+                              id="account-number"
+                              {...registerPayout("accountNumber")}
+                            />
+                          </div>
+
+                          <Button
+                            type="submit"
+                            disabled={isSubmittingPayout || !isDirtyPayout}
+                            className="mt-4"
                           >
-                            <option value="bank">Bank Transfer</option>
-                            <option value="paypal">PayPal</option>
-                            <option value="stripe">Stripe</option>
-                          </select>
+                            {isSubmittingPayout ? (
+                              <Loader className="h-4 w-4 animate-spin" />
+                            ) : (
+                              "Save Payout Information"
+                            )}
+                          </Button>
                         </div>
-
-                        <div className="space-y-2">
-                          <Label htmlFor="account-name">
-                            Account Holder Name
-                          </Label>
-                          <Input id="account-name" defaultValue="Jane Doe" />
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label htmlFor="account-number">Account Number</Label>
-                          <Input
-                            id="account-number"
-                            defaultValue="XXXX-XXXX-XXXX-4321"
-                          />
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label htmlFor="routing-number">Routing Number</Label>
-                          <Input
-                            id="routing-number"
-                            defaultValue="XXX-XXX-XXX"
-                          />
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label htmlFor="tax-id">Tax ID (Optional)</Label>
-                          <Input id="tax-id" placeholder="Enter your tax ID" />
-                        </div>
-
-                        <Button className="mt-4">
-                          Save Payout Information
-                        </Button>
-                      </div>
+                      </form>
                     </TabsContent>
                   </Tabs>
                 </CardContent>
