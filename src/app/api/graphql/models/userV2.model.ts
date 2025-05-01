@@ -1,4 +1,4 @@
-import { UserV2Role } from "@/generated/graphql";
+import { BankName, PayoutMethod, UserV2Role } from "@/generated/graphql";
 import { Schema, model, models } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 
@@ -54,12 +54,23 @@ const ProfilePicture = new Schema(
   { _id: false },
 );
 
+const InstructorPayout = new Schema(
+  {
+    payoutMethod: { type: String, enum: PayoutMethod },
+    bankName: { type: String, enum: BankName },
+    accountHolderName: { type: String },
+    accountNumber: { type: String },
+  },
+  { _id: false },
+);
+
 export const InstructorUserV2 = discriminator(
   UserV2Role.Instructor,
   new Schema({
     fullName: { type: String },
     bio: { type: String },
     profilePicture: { type: ProfilePicture },
+    payout: { type: InstructorPayout },
   }),
 );
 
