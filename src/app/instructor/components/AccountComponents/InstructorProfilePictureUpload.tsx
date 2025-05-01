@@ -134,8 +134,17 @@ export function InstructorProfilePictureUpload({
           onClick={handleUploadClick}
           disabled={isUploading}
         >
-          <Upload className="mr-2 h-4 w-4" />
-          {isUploading ? "Uploading..." : "Upload New"}
+          {isUploading ? (
+            <>
+              <Loader className="animate-spin" />
+              Uploading...
+            </>
+          ) : (
+            <>
+              <Upload />
+              Upload New
+            </>
+          )}
         </Button>
         <input
           ref={fileInputRef}
