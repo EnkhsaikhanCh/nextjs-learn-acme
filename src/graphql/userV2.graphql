@@ -39,6 +39,13 @@ mutation ChangeUserPassword($input: ChangePasswordInput!) {
   }
 }
 
+mutation UpdateInstructorPayoutInfo($input: UpdateInstructorPayoutInfoInput!) {
+  updateInstructorPayoutInfo(input: $input) {
+    success
+    message
+  }
+}
+
 # Query
 query GetUserV2ById($id: ID!) {
   getUserV2ById(_id: $id) {
@@ -61,6 +68,31 @@ query GetUserV2ById($id: ID!) {
     }
     ... on AdminUserV2 {
       adminLevel
+    }
+  }
+}
+
+query GetInstructorUserV2InfoById($id: ID!) {
+  getInstructorUserV2InfoById(_id: $id) {
+    _id
+    email
+    isVerified
+    createdAt
+    updatedAt
+    role
+    fullName
+    bio
+    profilePicture {
+      publicId
+      width
+      height
+      format
+    }
+    payout {
+      payoutMethod
+      bankName
+      accountHolderName
+      accountNumber
     }
   }
 }

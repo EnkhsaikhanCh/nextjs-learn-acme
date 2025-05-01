@@ -43,6 +43,18 @@ export type AssignmentLesson = LessonV2 & {
   updatedAt: Scalars['DateTime']['output'];
 };
 
+export enum BankName {
+  ArigBank = 'ARIG_BANK',
+  BogdBank = 'BOGD_BANK',
+  CapitronBank = 'CAPITRON_BANK',
+  GolomtBank = 'GOLOMT_BANK',
+  KhanBank = 'KHAN_BANK',
+  MBank = 'M_BANK',
+  StateBankOfMongolia = 'STATE_BANK_OF_MONGOLIA',
+  TradeAndDevelopmentBank = 'TRADE_AND_DEVELOPMENT_BANK',
+  XacBank = 'XAC_BANK'
+}
+
 export type ChangePasswordInput = {
   newPassword: Scalars['String']['input'];
   oldPassword: Scalars['String']['input'];
@@ -265,6 +277,14 @@ export type GetUserEnrolledCoursesCountResponse = {
   totalCourses: Scalars['Int']['output'];
 };
 
+export type InstructorPayoutInfo = {
+  __typename?: 'InstructorPayoutInfo';
+  accountHolderName?: Maybe<Scalars['String']['output']>;
+  accountNumber?: Maybe<Scalars['String']['output']>;
+  bankName?: Maybe<BankName>;
+  payoutMethod?: Maybe<PayoutMethod>;
+};
+
 export type InstructorUserV2 = UserV2 & {
   __typename?: 'InstructorUserV2';
   _id: Scalars['ID']['output'];
@@ -273,6 +293,7 @@ export type InstructorUserV2 = UserV2 & {
   email: Scalars['String']['output'];
   fullName?: Maybe<Scalars['String']['output']>;
   isVerified: Scalars['Boolean']['output'];
+  payout?: Maybe<InstructorPayoutInfo>;
   profilePicture?: Maybe<ProfilePicture>;
   role: UserV2Role;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
@@ -341,6 +362,7 @@ export type Mutation = {
   updateCourseWhatYouWillLearn: Course;
   updateEnrollment?: Maybe<Enrollment>;
   updateFileLessonV2: UpdateLessonV2Response;
+  updateInstructorPayoutInfo: UpdateUserV2Response;
   updateInstructorProfilePicture: UpdateUserV2Response;
   updateInstructorUserV2: UpdateUserV2Response;
   updateLesson: Lesson;
@@ -502,6 +524,11 @@ export type MutationUpdateFileLessonV2Args = {
 };
 
 
+export type MutationUpdateInstructorPayoutInfoArgs = {
+  input: UpdateInstructorPayoutInfoInput;
+};
+
+
 export type MutationUpdateInstructorProfilePictureArgs = {
   _id: Scalars['ID']['input'];
   input: UploadProfilePictureInput;
@@ -616,6 +643,10 @@ export enum PaymentStatus {
   Refunded = 'REFUNDED'
 }
 
+export enum PayoutMethod {
+  BankTransfer = 'BANK_TRANSFER'
+}
+
 export enum PlaybackPolicy {
   Public = 'PUBLIC',
   Signed = 'SIGNED'
@@ -662,6 +693,7 @@ export type Query = {
   getEnrollmentsByCourse: Array<Enrollment>;
   getEnrollmentsByUser: Array<Enrollment>;
   getInstructorCourseContent?: Maybe<Course>;
+  getInstructorUserV2InfoById: InstructorUserV2;
   getLessonById: Lesson;
   getLessonV2ByIdForInstructor: LessonV2;
   getLessonV2byIdForStudent: LessonV2;
@@ -753,6 +785,11 @@ export type QueryGetEnrollmentsByUserArgs = {
 
 export type QueryGetInstructorCourseContentArgs = {
   slug: Scalars['String']['input'];
+};
+
+
+export type QueryGetInstructorUserV2InfoByIdArgs = {
+  _id: Scalars['ID']['input'];
 };
 
 
@@ -988,6 +1025,13 @@ export type UpdateEnrollmentInput = {
 
 export type UpdateFileLessonV2Input = {
   fileUrl: Scalars['String']['input'];
+};
+
+export type UpdateInstructorPayoutInfoInput = {
+  accountHolderName?: InputMaybe<Scalars['String']['input']>;
+  accountNumber?: InputMaybe<Scalars['String']['input']>;
+  bankName?: InputMaybe<BankName>;
+  payoutMethod?: InputMaybe<PayoutMethod>;
 };
 
 export type UpdateInstructorUserV2Input = {
@@ -1530,12 +1574,26 @@ export type ChangeUserPasswordMutationVariables = Exact<{
 
 export type ChangeUserPasswordMutation = { __typename?: 'Mutation', changeUserPassword: { __typename?: 'ChangePasswordResponse', success: boolean, message: string } };
 
+export type UpdateInstructorPayoutInfoMutationVariables = Exact<{
+  input: UpdateInstructorPayoutInfoInput;
+}>;
+
+
+export type UpdateInstructorPayoutInfoMutation = { __typename?: 'Mutation', updateInstructorPayoutInfo: { __typename?: 'UpdateUserV2Response', success: boolean, message: string } };
+
 export type GetUserV2ByIdQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
 
 export type GetUserV2ByIdQuery = { __typename?: 'Query', getUserV2ById: { __typename?: 'AdminUserV2', adminLevel?: number | null, _id: string, email: string, isVerified: boolean, role: UserV2Role } | { __typename?: 'InstructorUserV2', fullName?: string | null, bio?: string | null, _id: string, email: string, isVerified: boolean, role: UserV2Role, profilePicture?: { __typename?: 'ProfilePicture', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null } | { __typename?: 'StudentUserV2', studentId?: string | null, _id: string, email: string, isVerified: boolean, role: UserV2Role } };
+
+export type GetInstructorUserV2InfoByIdQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type GetInstructorUserV2InfoByIdQuery = { __typename?: 'Query', getInstructorUserV2InfoById: { __typename?: 'InstructorUserV2', _id: string, email: string, isVerified: boolean, createdAt?: Date | null, updatedAt?: Date | null, role: UserV2Role, fullName?: string | null, bio?: string | null, profilePicture?: { __typename?: 'ProfilePicture', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null, payout?: { __typename?: 'InstructorPayoutInfo', payoutMethod?: PayoutMethod | null, bankName?: BankName | null, accountHolderName?: string | null, accountNumber?: string | null } | null } };
 
 
 export const GenerateTempTokenDocument = gql`
@@ -3719,6 +3777,40 @@ export function useChangeUserPasswordMutation(baseOptions?: Apollo.MutationHookO
 export type ChangeUserPasswordMutationHookResult = ReturnType<typeof useChangeUserPasswordMutation>;
 export type ChangeUserPasswordMutationResult = Apollo.MutationResult<ChangeUserPasswordMutation>;
 export type ChangeUserPasswordMutationOptions = Apollo.BaseMutationOptions<ChangeUserPasswordMutation, ChangeUserPasswordMutationVariables>;
+export const UpdateInstructorPayoutInfoDocument = gql`
+    mutation UpdateInstructorPayoutInfo($input: UpdateInstructorPayoutInfoInput!) {
+  updateInstructorPayoutInfo(input: $input) {
+    success
+    message
+  }
+}
+    `;
+export type UpdateInstructorPayoutInfoMutationFn = Apollo.MutationFunction<UpdateInstructorPayoutInfoMutation, UpdateInstructorPayoutInfoMutationVariables>;
+
+/**
+ * __useUpdateInstructorPayoutInfoMutation__
+ *
+ * To run a mutation, you first call `useUpdateInstructorPayoutInfoMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateInstructorPayoutInfoMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateInstructorPayoutInfoMutation, { data, loading, error }] = useUpdateInstructorPayoutInfoMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateInstructorPayoutInfoMutation(baseOptions?: Apollo.MutationHookOptions<UpdateInstructorPayoutInfoMutation, UpdateInstructorPayoutInfoMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateInstructorPayoutInfoMutation, UpdateInstructorPayoutInfoMutationVariables>(UpdateInstructorPayoutInfoDocument, options);
+      }
+export type UpdateInstructorPayoutInfoMutationHookResult = ReturnType<typeof useUpdateInstructorPayoutInfoMutation>;
+export type UpdateInstructorPayoutInfoMutationResult = Apollo.MutationResult<UpdateInstructorPayoutInfoMutation>;
+export type UpdateInstructorPayoutInfoMutationOptions = Apollo.BaseMutationOptions<UpdateInstructorPayoutInfoMutation, UpdateInstructorPayoutInfoMutationVariables>;
 export const GetUserV2ByIdDocument = gql`
     query GetUserV2ById($id: ID!) {
   getUserV2ById(_id: $id) {
@@ -3778,3 +3870,62 @@ export type GetUserV2ByIdQueryHookResult = ReturnType<typeof useGetUserV2ByIdQue
 export type GetUserV2ByIdLazyQueryHookResult = ReturnType<typeof useGetUserV2ByIdLazyQuery>;
 export type GetUserV2ByIdSuspenseQueryHookResult = ReturnType<typeof useGetUserV2ByIdSuspenseQuery>;
 export type GetUserV2ByIdQueryResult = Apollo.QueryResult<GetUserV2ByIdQuery, GetUserV2ByIdQueryVariables>;
+export const GetInstructorUserV2InfoByIdDocument = gql`
+    query GetInstructorUserV2InfoById($id: ID!) {
+  getInstructorUserV2InfoById(_id: $id) {
+    _id
+    email
+    isVerified
+    createdAt
+    updatedAt
+    role
+    fullName
+    bio
+    profilePicture {
+      publicId
+      width
+      height
+      format
+    }
+    payout {
+      payoutMethod
+      bankName
+      accountHolderName
+      accountNumber
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetInstructorUserV2InfoByIdQuery__
+ *
+ * To run a query within a React component, call `useGetInstructorUserV2InfoByIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetInstructorUserV2InfoByIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetInstructorUserV2InfoByIdQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetInstructorUserV2InfoByIdQuery(baseOptions: Apollo.QueryHookOptions<GetInstructorUserV2InfoByIdQuery, GetInstructorUserV2InfoByIdQueryVariables> & ({ variables: GetInstructorUserV2InfoByIdQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetInstructorUserV2InfoByIdQuery, GetInstructorUserV2InfoByIdQueryVariables>(GetInstructorUserV2InfoByIdDocument, options);
+      }
+export function useGetInstructorUserV2InfoByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetInstructorUserV2InfoByIdQuery, GetInstructorUserV2InfoByIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetInstructorUserV2InfoByIdQuery, GetInstructorUserV2InfoByIdQueryVariables>(GetInstructorUserV2InfoByIdDocument, options);
+        }
+export function useGetInstructorUserV2InfoByIdSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetInstructorUserV2InfoByIdQuery, GetInstructorUserV2InfoByIdQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetInstructorUserV2InfoByIdQuery, GetInstructorUserV2InfoByIdQueryVariables>(GetInstructorUserV2InfoByIdDocument, options);
+        }
+export type GetInstructorUserV2InfoByIdQueryHookResult = ReturnType<typeof useGetInstructorUserV2InfoByIdQuery>;
+export type GetInstructorUserV2InfoByIdLazyQueryHookResult = ReturnType<typeof useGetInstructorUserV2InfoByIdLazyQuery>;
+export type GetInstructorUserV2InfoByIdSuspenseQueryHookResult = ReturnType<typeof useGetInstructorUserV2InfoByIdSuspenseQuery>;
+export type GetInstructorUserV2InfoByIdQueryResult = Apollo.QueryResult<GetInstructorUserV2InfoByIdQuery, GetInstructorUserV2InfoByIdQueryVariables>;

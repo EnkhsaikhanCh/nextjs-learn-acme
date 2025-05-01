@@ -11,6 +11,22 @@ export const typeDefs = gql`
     ADMIN
   }
 
+  enum PayoutMethod {
+    BANK_TRANSFER
+  }
+
+  enum BankName {
+    KHAN_BANK
+    GOLOMT_BANK
+    TRADE_AND_DEVELOPMENT_BANK
+    XAC_BANK
+    STATE_BANK_OF_MONGOLIA
+    M_BANK
+    ARIG_BANK
+    CAPITRON_BANK
+    BOGD_BANK
+  }
+
   interface UserV2 {
     _id: ID!
     email: String!
@@ -43,6 +59,7 @@ export const typeDefs = gql`
     fullName: String
     bio: String
     profilePicture: ProfilePicture
+    payout: InstructorPayoutInfo
   }
 
   type AdminUserV2 implements UserV2 {
@@ -61,6 +78,13 @@ export const typeDefs = gql`
     width: Int
     height: Int
     format: String
+  }
+
+  type InstructorPayoutInfo {
+    payoutMethod: PayoutMethod
+    bankName: BankName
+    accountHolderName: String
+    accountNumber: String
   }
 
   # --- Pagination Result ---
@@ -99,9 +123,17 @@ export const typeDefs = gql`
     newPassword: String!
   }
 
+  input UpdateInstructorPayoutInfoInput {
+    payoutMethod: PayoutMethod
+    bankName: BankName
+    accountHolderName: String
+    accountNumber: String
+  }
+
   # --- Queries ---
   type Query {
     getUserV2ById(_id: ID!): UserV2!
+    getInstructorUserV2InfoById(_id: ID!): InstructorUserV2!
     getAllUsersV2(
       limit: Int
       offset: Int
@@ -123,6 +155,9 @@ export const typeDefs = gql`
       input: UploadProfilePictureInput!
     ): UpdateUserV2Response!
     changeUserPassword(input: ChangePasswordInput!): ChangePasswordResponse!
+    updateInstructorPayoutInfo(
+      input: UpdateInstructorPayoutInfoInput!
+    ): UpdateUserV2Response!
   }
 
   # --- Mutation Responses ---
