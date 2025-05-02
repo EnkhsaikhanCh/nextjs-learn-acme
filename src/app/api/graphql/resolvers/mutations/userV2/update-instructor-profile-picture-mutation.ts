@@ -1,13 +1,13 @@
 import {
   UpdateUserV2Response,
   UploadProfilePictureInput,
-  User,
+  UserV2,
   UserV2Role,
 } from "@/generated/graphql";
-import { requireAuthAndRoles } from "@/lib/auth-utils";
 import { z } from "zod";
 import { UserV2Model } from "../../../models";
 import { cloudinary } from "@/lib/cloudinary";
+import { requireAuthAndRolesV2 } from "@/lib/auth-userV2-utils";
 
 const ThumbnailSchema = z.object({
   publicId: z.string().min(5).max(255),
@@ -19,10 +19,10 @@ const ThumbnailSchema = z.object({
 export const updateInstructorProfilePicture = async (
   _: unknown,
   { _id, input }: { _id: string; input: UploadProfilePictureInput },
-  context: { user?: User },
+  context: { user?: UserV2 },
 ): Promise<UpdateUserV2Response> => {
   const { user } = context;
-  await requireAuthAndRoles(user, [UserV2Role.Instructor]);
+  await requireAuthAndRolesV2(user, [UserV2Role.Instructor]);
 
   if (!_id) {
     return {

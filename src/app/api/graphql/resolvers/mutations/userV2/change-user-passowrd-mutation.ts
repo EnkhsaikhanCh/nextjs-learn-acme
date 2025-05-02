@@ -2,12 +2,12 @@ import { z } from "zod";
 import {
   ChangePasswordInput,
   ChangePasswordResponse,
-  User,
+  UserV2,
   UserV2Role,
 } from "@/generated/graphql";
-import { requireAuthAndRoles } from "@/lib/auth-utils";
 import { UserV2Model } from "../../../models";
 import argon2 from "argon2";
+import { requireAuthAndRolesV2 } from "@/lib/auth-userV2-utils";
 
 const ChangePasswordSchema = z.object({
   oldPassword: z
@@ -23,10 +23,10 @@ const ChangePasswordSchema = z.object({
 export const changeUserPassword = async (
   _: unknown,
   { input }: { input: ChangePasswordInput },
-  context: { user?: User },
+  context: { user?: UserV2 },
 ): Promise<ChangePasswordResponse> => {
   const { user } = context;
-  await requireAuthAndRoles(user, [
+  await requireAuthAndRolesV2(user, [
     UserV2Role.Admin,
     UserV2Role.Instructor,
     UserV2Role.Student,

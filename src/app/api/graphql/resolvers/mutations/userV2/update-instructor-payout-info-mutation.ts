@@ -1,19 +1,19 @@
 import {
   UpdateInstructorPayoutInfoInput,
   UpdateUserV2Response,
-  User,
+  UserV2,
   UserV2Role,
 } from "@/generated/graphql";
-import { requireAuthAndRoles } from "@/lib/auth-utils";
 import { InstructorUserV2 } from "../../../models";
+import { requireAuthAndRolesV2 } from "@/lib/auth-userV2-utils";
 
 export const updateInstructorPayoutInfo = async (
   _: unknown,
   { input }: { input: UpdateInstructorPayoutInfoInput },
-  context: { user?: User },
+  context: { user?: UserV2 },
 ): Promise<UpdateUserV2Response> => {
   const { user } = context;
-  await requireAuthAndRoles(user, [UserV2Role.Instructor]);
+  await requireAuthAndRolesV2(user, [UserV2Role.Instructor]);
 
   try {
     const existingInstructor = await InstructorUserV2.findById(user?._id);
