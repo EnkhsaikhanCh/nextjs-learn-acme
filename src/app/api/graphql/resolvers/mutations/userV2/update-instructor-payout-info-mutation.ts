@@ -1,4 +1,6 @@
 import {
+  BankName,
+  PayoutMethod,
   UpdateInstructorPayoutInfoInput,
   UpdateUserV2Response,
   UserV2,
@@ -6,6 +8,27 @@ import {
 } from "@/generated/graphql";
 import { InstructorUserV2 } from "../../../models";
 import { requireAuthAndRolesV2 } from "@/lib/auth-userV2-utils";
+import { z } from "zod";
+
+const updateInstructorPayoutInfoSchema = z.object({
+  accountHolderName: z
+    .string()
+    .min(1, { message: "Account holder name is required." })
+    .optional(),
+  accountNumber: z
+    .string({
+      required_error: "Account number is required.",
+      invalid_type_error: "Account number must be a string of digits.",
+    })
+    .regex(/^\d+$/, { message: "Account number must contain only digits." })
+    .min(10, { message: "Account number must be at least 10 digits long." })
+    .max(20, {
+      message: "Account number must be at most 20 digits long.",
+    })
+    .optional(),
+  bankName: z.nativeEnum(BankName).optional(),
+  payoutMethod: z.nativeEnum(PayoutMethod).optional(),
+});
 
 export const updateInstructorPayoutInfo = async (
   _: unknown,
@@ -14,6 +37,14 @@ export const updateInstructorPayoutInfo = async (
 ): Promise<UpdateUserV2Response> => {
   const { user } = context;
   await requireAuthAndRolesV2(user, [UserV2Role.Instructor]);
+
+  const validation = updateInstructorPayoutInfoSchema.safeParse(input);
+  if (!validation.success) {
+    return {
+      success: false,
+      message: validation.error.errors[0]?.message,
+    };
+  }
 
   try {
     const existingInstructor = await InstructorUserV2.findById(user?._id);
@@ -33,7 +64,6 @@ export const updateInstructorPayoutInfo = async (
 
     for (const field of fields) {
       if (input[field] !== undefined) {
-        existingInstructor.payout = existingInstructor.payout || {};
         existingInstructor.payout[field] = input[field];
       }
     }

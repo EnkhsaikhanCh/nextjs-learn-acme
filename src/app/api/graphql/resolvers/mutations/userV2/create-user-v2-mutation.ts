@@ -22,10 +22,19 @@ export const registerUserV2 = async (
   _: unknown,
   { input }: { input: RegisterUserV2Input },
 ): Promise<RegisterUserV2Response> => {
+  const { email, password } = input;
+
+  const parsed = registerUserV2Schema.safeParse({ email, password });
+  if (!parsed.success) {
+    return {
+      success: false,
+      message: parsed.error.errors[0].message,
+      userV2: null,
+    };
+  }
+
   try {
     registerUserV2Schema.parse(input);
-
-    const { email, password } = input;
     const normalizedEmail = email.toLowerCase();
 
     const existingUser = await UserV2Model.findOne({ email: normalizedEmail });
@@ -60,15 +69,6 @@ export const registerUserV2 = async (
       userV2: newUser,
     };
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      const firstErrorMessage = error.errors[0]?.message || "Invalid input.";
-      return {
-        success: false,
-        message: firstErrorMessage,
-        userV2: null,
-      };
-    }
-
     return {
       success: false,
       message: "Internal error: " + (error as Error).message,

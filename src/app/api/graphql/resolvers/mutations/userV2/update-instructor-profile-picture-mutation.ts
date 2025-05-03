@@ -9,7 +9,7 @@ import { UserV2Model } from "../../../models";
 import { cloudinary } from "@/lib/cloudinary";
 import { requireAuthAndRolesV2 } from "@/lib/auth-userV2-utils";
 
-const ThumbnailSchema = z.object({
+const ProfilePictureSchema = z.object({
   publicId: z.string().min(5).max(255),
   width: z.number().positive(),
   height: z.number().positive(),
@@ -32,10 +32,12 @@ export const updateInstructorProfilePicture = async (
   }
 
   // Validate input
-  const parsed = ThumbnailSchema.safeParse(input);
-  if (!parsed.success) {
-    const msg = parsed.error.errors[0]?.message || "Invalid thumbnail data.";
-    return { success: false, message: msg };
+  const validation = ProfilePictureSchema.safeParse(input);
+  if (!validation.success) {
+    return {
+      success: false,
+      message: validation.error.errors[0]?.message,
+    };
   }
 
   try {
