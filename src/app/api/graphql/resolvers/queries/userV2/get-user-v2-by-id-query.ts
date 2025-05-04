@@ -1,15 +1,15 @@
 import { GraphQLError } from "graphql";
 import { UserV2Model } from "../../../models";
-import { User, UserV2Role } from "@/generated/graphql";
-import { requireAuthAndRoles } from "@/lib/auth-utils";
+import { UserV2, UserV2Role } from "@/generated/graphql";
+import { requireAuthAndRolesV2 } from "@/lib/auth-userV2-utils";
 
 export const getUserV2ById = async (
   _: unknown,
   { _id }: { _id: string },
-  context: { user?: User },
+  context: { user?: UserV2 },
 ) => {
   const { user } = context;
-  await requireAuthAndRoles(user, [
+  await requireAuthAndRolesV2(user, [
     UserV2Role.Student,
     UserV2Role.Instructor,
     UserV2Role.Admin,

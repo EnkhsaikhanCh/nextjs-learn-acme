@@ -156,7 +156,6 @@ const config: Config = {
     "src/app/api/graphql/resolvers/queries/enrollment/get-enrollment-by-user-and-course.ts",
     "src/app/api/graphql/resolvers/queries/section",
     "src/app/api/graphql/resolvers/queries/payment",
-    "src/app/api/graphql/resolvers/queries/userV2",
 
     // api
     "src/app/api/mux/token",
