@@ -2,7 +2,7 @@ import { createPayment } from "../../../../../src/app/api/graphql/resolvers/muta
 import {
   CourseModel,
   PaymentModel,
-  UserModel,
+  UserV2Model,
 } from "../../../../../src/app/api/graphql/models";
 import { requireAuthAndRoles } from "../../../../../src/lib/auth-utils";
 import { GraphQLError } from "graphql";
@@ -19,7 +19,7 @@ jest.mock("../../../../../src/lib/auth-utils", () => ({
 }));
 
 jest.mock("../../../../../src/app/api/graphql/models", () => ({
-  UserModel: {
+  UserV2Model: {
     findById: jest.fn(),
   },
   CourseModel: {
@@ -90,7 +90,7 @@ describe("createPayment", () => {
   // 3. User Not Found Test
   it("throws USER_NOT_FOUND if the user does not exist", async () => {
     (requireAuthAndRoles as jest.Mock).mockResolvedValue(undefined);
-    (UserModel.findById as jest.Mock).mockResolvedValue(null);
+    (UserV2Model.findById as jest.Mock).mockResolvedValue(null);
 
     await expect(
       createPayment(null, { input: validInput }, { user: mockUser }),
@@ -103,7 +103,7 @@ describe("createPayment", () => {
   // 4. Course Not Found Test
   it("throws COURSE_NOT_FOUND if the course does not exist", async () => {
     (requireAuthAndRoles as jest.Mock).mockResolvedValue(undefined);
-    (UserModel.findById as jest.Mock).mockResolvedValue({
+    (UserV2Model.findById as jest.Mock).mockResolvedValue({
       _id: validInput.userId,
     });
     (CourseModel.findById as jest.Mock).mockResolvedValue(null);
@@ -120,7 +120,7 @@ describe("createPayment", () => {
   it("creates payment successfully with valid input", async () => {
     (requireAuthAndRoles as jest.Mock).mockResolvedValue(undefined);
     // Симуляц: user болон course байгаа гэж үзье
-    (UserModel.findById as jest.Mock).mockResolvedValue({
+    (UserV2Model.findById as jest.Mock).mockResolvedValue({
       _id: validInput.userId,
     });
     (CourseModel.findById as jest.Mock).mockResolvedValue({
@@ -164,7 +164,7 @@ describe("createPayment", () => {
   // 6. Unexpected Error Test
   it("throws INTERNAL_SERVER_ERROR on unexpected errors", async () => {
     (requireAuthAndRoles as jest.Mock).mockResolvedValue(undefined);
-    (UserModel.findById as jest.Mock).mockResolvedValue({
+    (UserV2Model.findById as jest.Mock).mockResolvedValue({
       _id: validInput.userId,
     });
     (CourseModel.findById as jest.Mock).mockResolvedValue({

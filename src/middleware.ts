@@ -1,6 +1,7 @@
 // src/middleware.ts
 import { getToken } from "next-auth/jwt";
 import { NextResponse, NextRequest } from "next/server";
+import { UserV2Role } from "./generated/graphql";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -12,7 +13,7 @@ export async function middleware(request: NextRequest) {
   });
 
   // Define allowed roles
-  type Role = "ADMIN" | "INSTRUCTOR" | "STUDENT";
+  type Role = UserV2Role;
   const role: Role = (token?.role as Role) || "";
   const isVerified = token?.isVerified ?? false;
 
@@ -52,11 +53,15 @@ export async function middleware(request: NextRequest) {
 
   // 🔄 Define allowed roles for each route.
   const routeRoleMap: { pathPrefix: string; allowedRoles: Role[] }[] = [
-    { pathPrefix: "/admin", allowedRoles: ["ADMIN"] },
-    { pathPrefix: "/instructor", allowedRoles: ["INSTRUCTOR"] },
+    { pathPrefix: "/admin", allowedRoles: [UserV2Role.Admin] },
+    { pathPrefix: "/instructor", allowedRoles: [UserV2Role.Instructor] },
     {
       pathPrefix: "/dashboard",
-      allowedRoles: ["STUDENT", "ADMIN", "INSTRUCTOR"],
+      allowedRoles: [
+        UserV2Role.Student,
+        UserV2Role.Admin,
+        UserV2Role.Instructor,
+      ],
     },
   ];
 

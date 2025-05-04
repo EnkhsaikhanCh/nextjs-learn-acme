@@ -21,6 +21,7 @@ import {
   PaymentMethod,
   useCreatePaymentMutation,
   useGetPaymentByUserAndCourseQuery,
+  useGetUserV2ByIdQuery,
 } from "@/generated/graphql";
 import {
   Banknote,
@@ -28,6 +29,7 @@ import {
   ClipboardCheck,
   CreditCard,
   ListChecks,
+  Loader,
   Loader2,
   MailCheck,
   Tag,
@@ -40,7 +42,7 @@ import clsx from "clsx";
 import { format } from "date-fns";
 import { CourseHeroSection } from "./CourseHeroSection";
 import { CourseOverviewSection } from "./CourseOverviewSection";
-import { useCachedSession } from "@/hooks/useCachedSession";
+import { useUserStore } from "@/store/UserStoreState";
 
 interface PaymentDetails {
   bankName: string;
@@ -58,19 +60,38 @@ export const NotEnrolled = ({ course }: { course: Course }) => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
-  const { session } = useCachedSession();
-
   const [createPayment] = useCreatePaymentMutation();
+
+  const { user } = useUserStore();
+
+  const { data: userData } = useGetUserV2ByIdQuery({
+    variables: { id: user?._id as string },
+    skip: !user?._id,
+    fetchPolicy: "cache-first",
+  });
+
+  if (!user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader className="animate-spin" />
+      </div>
+    );
+  }
 
   const { data: existingPaymentData, refetch: refetchExistingPayment } =
     useGetPaymentByUserAndCourseQuery({
-      variables: { courseId: course._id, userId: session?.user._id as string },
+      variables: { courseId: course._id, userId: user?._id as string },
       fetchPolicy: "network-only",
     });
 
   const payment = existingPaymentData?.getPaymentByUserAndCourse;
   const isPending = payment?.status === "PENDING";
   const validPayment = isPending ? payment : null;
+
+  const transactionNote =
+    userData?.getUserV2ById.__typename === "StudentUserV2"
+      ? `${userData.getUserV2ById.studentId}-${course.courseCode}`
+      : `${userData?.getUserV2ById.email}-${course.courseCode}`;
 
   const handleCreatePayment = async () => {
     if (validPayment) {
@@ -84,11 +105,11 @@ export const NotEnrolled = ({ course }: { course: Course }) => {
       const { data } = await createPayment({
         variables: {
           input: {
-            userId: session?.user._id as string,
+            userId: userData?.getUserV2ById._id as string,
             courseId: course._id,
             amount: course.price?.amount ?? 0,
             paymentMethod: PaymentMethod.BankTransfer,
-            transactionNote: `${session?.user.studentId}-${course.courseCode}`,
+            transactionNote,
           },
         },
       });
@@ -101,9 +122,9 @@ export const NotEnrolled = ({ course }: { course: Course }) => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             paymentId: data.createPayment._id,
-            userEmail: session?.user.email,
+            userEmail: user?._id,
             courseTitle: course.title,
-            transactionNote: `${session?.user.studentId}-${course.courseCode}`,
+            transactionNote,
           }),
         });
 
@@ -218,11 +239,11 @@ export const NotEnrolled = ({ course }: { course: Course }) => {
                         />
                         <InfoRow
                           label="Гүйлгээний утга"
-                          value={`${session?.user.studentId}-${course.courseCode}`}
+                          value={transactionNote}
                         />
                         <InfoRow
                           label="И-мэйл хаяг"
-                          value={session?.user.email || "Мэдээлэл байхгүй"}
+                          value={user?.email || "Мэдээлэл байхгүй"}
                         />
                         <InfoRow
                           label="Сургалтын нэр"
@@ -332,14 +353,11 @@ export const NotEnrolled = ({ course }: { course: Course }) => {
 
                         <CopyableField
                           label="Гүйлгээний утга"
-                          value={`${session?.user.studentId}-${course.courseCode}`}
+                          value={transactionNote}
                           fieldName="reference"
                           copiedField={copiedField}
                           onClick={() =>
-                            handleCopy(
-                              `${session?.user.studentId}-${course.courseCode}`,
-                              "reference",
-                            )
+                            handleCopy(transactionNote, "reference")
                           }
                           icon={
                             <ClipboardCheck className="h-[18px] w-[18px]" />

@@ -4,11 +4,20 @@ import { DiscoverCoursesSection } from "@/components/dashboard/home/DiscoverCour
 import { MyCoursesSection } from "@/components/dashboard/home/MyCoursesSection";
 import { MyCourseSummary } from "@/components/dashboard/home/MyCourseSummary";
 import { WelcomeSection } from "@/components/dashboard/home/WelcomeSection";
-import { useCachedSession } from "@/hooks/useCachedSession";
+import { useUserStore } from "@/store/UserStoreState";
+import { Loader } from "lucide-react";
 
 export default function Page() {
-  const { session } = useCachedSession();
-  const userId = session?.user._id;
+  const { user } = useUserStore();
+  if (!user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader className="animate-spin" />
+      </div>
+    );
+  }
+
+  const userId = user?._id;
 
   return (
     <main className="p-5 lg:p-8">
