@@ -71,7 +71,7 @@ export type Course = {
   _id: Scalars['ID']['output'];
   category?: Maybe<Scalars['String']['output']>;
   courseCode?: Maybe<Scalars['String']['output']>;
-  createdBy?: Maybe<User>;
+  createdBy?: Maybe<InstructorUserV2>;
   description?: Maybe<Scalars['String']['output']>;
   difficulty?: Maybe<Difficulty>;
   isEnrolled?: Maybe<Scalars['Boolean']['output']>;
@@ -695,6 +695,7 @@ export type Query = {
   getCourseBasicInfoForEdit?: Maybe<Course>;
   getCourseDetailsForInstructor?: Maybe<GetCourseDetailsForInstructorResponse>;
   getCourseForUser: CourseForUserPayload;
+  getCoursePreviewData?: Maybe<GetCoursePreviewDataResponse>;
   getEmailFromToken: GetEmailFromTokenResponse;
   getEnrollmentByUserAndCourse?: Maybe<Enrollment>;
   getEnrollmentsByCourse: Array<Enrollment>;
@@ -765,6 +766,11 @@ export type QueryGetCourseDetailsForInstructorArgs = {
 
 
 export type QueryGetCourseForUserArgs = {
+  slug: Scalars['String']['input'];
+};
+
+
+export type QueryGetCoursePreviewDataArgs = {
   slug: Scalars['String']['input'];
 };
 
@@ -1198,6 +1204,14 @@ export type GetCourseDetailsForInstructorResponse = {
   totalSections?: Maybe<Scalars['Int']['output']>;
 };
 
+export type GetCoursePreviewDataResponse = {
+  __typename?: 'getCoursePreviewDataResponse';
+  course?: Maybe<Course>;
+  totalAllLessonsVideosHours?: Maybe<Scalars['Int']['output']>;
+  totalLessons?: Maybe<Scalars['Int']['output']>;
+  totalSections?: Maybe<Scalars['Int']['output']>;
+};
+
 export type MarkLessonAsCompletedInput = {
   enrollmentId: Scalars['ID']['input'];
   lessonId: Scalars['ID']['input'];
@@ -1347,6 +1361,13 @@ export type GetCourseBasicInfoForEditQueryVariables = Exact<{
 
 
 export type GetCourseBasicInfoForEditQuery = { __typename?: 'Query', getCourseBasicInfoForEdit?: { __typename?: 'Course', _id: string, title: string, subtitle?: string | null, slug?: string | null, description?: string | null, requirements?: string | null, courseCode?: string | null, difficulty?: Difficulty | null, category?: string | null, status?: CourseStatus | null, updatedAt?: Date | null, whoIsThisFor?: string | null, whatYouWillLearn?: Array<string | null> | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: Array<string | null> | null, amount?: number | null, currency?: Currency | null } | null } | null };
+
+export type GetCoursePreviewDataQueryVariables = Exact<{
+  slug: Scalars['String']['input'];
+}>;
+
+
+export type GetCoursePreviewDataQuery = { __typename?: 'Query', getCoursePreviewData?: { __typename?: 'getCoursePreviewDataResponse', totalSections?: number | null, totalLessons?: number | null, totalAllLessonsVideosHours?: number | null, course?: { __typename?: 'Course', _id: string, title: string, subtitle?: string | null, slug?: string | null, description?: string | null, requirements?: string | null, courseCode?: string | null, difficulty?: Difficulty | null, category?: string | null, whatYouWillLearn?: Array<string | null> | null, whoIsThisFor?: string | null, updatedAt?: Date | null, createdBy?: { __typename?: 'InstructorUserV2', email: string, role: UserV2Role, fullName?: string | null, bio?: string | null, profilePicture?: { __typename?: 'ProfilePicture', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null } | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: Array<string | null> | null, amount?: number | null, currency?: Currency | null } | null, sectionId?: Array<{ __typename?: 'Section', _id: string, title?: string | null, description?: string | null, order?: number | null, lessonId?: Array<{ __typename?: 'AssignmentLesson', _id: string, title: string, order: number, type: LessonType } | { __typename?: 'FileLesson', _id: string, title: string, order: number, type: LessonType } | { __typename?: 'QuizLesson', _id: string, title: string, order: number, type: LessonType } | { __typename?: 'TextLesson', _id: string, title: string, order: number, type: LessonType } | { __typename?: 'VideoLesson', _id: string, title: string, order: number, type: LessonType } | null> | null } | null> | null } | null } | null };
 
 export type MarkLessonAsCompletedMutationVariables = Exact<{
   input?: InputMaybe<MarkLessonAsCompletedInput>;
@@ -2424,6 +2445,92 @@ export type GetCourseBasicInfoForEditQueryHookResult = ReturnType<typeof useGetC
 export type GetCourseBasicInfoForEditLazyQueryHookResult = ReturnType<typeof useGetCourseBasicInfoForEditLazyQuery>;
 export type GetCourseBasicInfoForEditSuspenseQueryHookResult = ReturnType<typeof useGetCourseBasicInfoForEditSuspenseQuery>;
 export type GetCourseBasicInfoForEditQueryResult = Apollo.QueryResult<GetCourseBasicInfoForEditQuery, GetCourseBasicInfoForEditQueryVariables>;
+export const GetCoursePreviewDataDocument = gql`
+    query GetCoursePreviewData($slug: String!) {
+  getCoursePreviewData(slug: $slug) {
+    course {
+      _id
+      createdBy {
+        email
+        role
+        fullName
+        bio
+        profilePicture {
+          publicId
+          width
+          height
+          format
+        }
+      }
+      title
+      subtitle
+      slug
+      description
+      requirements
+      courseCode
+      difficulty
+      price {
+        planTitle
+        description
+        amount
+        currency
+      }
+      category
+      whatYouWillLearn
+      whoIsThisFor
+      updatedAt
+      sectionId {
+        _id
+        title
+        description
+        order
+        lessonId {
+          _id
+          title
+          order
+          type
+        }
+      }
+    }
+    totalSections
+    totalLessons
+    totalAllLessonsVideosHours
+  }
+}
+    `;
+
+/**
+ * __useGetCoursePreviewDataQuery__
+ *
+ * To run a query within a React component, call `useGetCoursePreviewDataQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetCoursePreviewDataQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetCoursePreviewDataQuery({
+ *   variables: {
+ *      slug: // value for 'slug'
+ *   },
+ * });
+ */
+export function useGetCoursePreviewDataQuery(baseOptions: Apollo.QueryHookOptions<GetCoursePreviewDataQuery, GetCoursePreviewDataQueryVariables> & ({ variables: GetCoursePreviewDataQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetCoursePreviewDataQuery, GetCoursePreviewDataQueryVariables>(GetCoursePreviewDataDocument, options);
+      }
+export function useGetCoursePreviewDataLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCoursePreviewDataQuery, GetCoursePreviewDataQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetCoursePreviewDataQuery, GetCoursePreviewDataQueryVariables>(GetCoursePreviewDataDocument, options);
+        }
+export function useGetCoursePreviewDataSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetCoursePreviewDataQuery, GetCoursePreviewDataQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetCoursePreviewDataQuery, GetCoursePreviewDataQueryVariables>(GetCoursePreviewDataDocument, options);
+        }
+export type GetCoursePreviewDataQueryHookResult = ReturnType<typeof useGetCoursePreviewDataQuery>;
+export type GetCoursePreviewDataLazyQueryHookResult = ReturnType<typeof useGetCoursePreviewDataLazyQuery>;
+export type GetCoursePreviewDataSuspenseQueryHookResult = ReturnType<typeof useGetCoursePreviewDataSuspenseQuery>;
+export type GetCoursePreviewDataQueryResult = Apollo.QueryResult<GetCoursePreviewDataQuery, GetCoursePreviewDataQueryVariables>;
 export const MarkLessonAsCompletedDocument = gql`
     mutation MarkLessonAsCompleted($input: markLessonAsCompletedInput) {
   markLessonAsCompleted(input: $input) {

@@ -213,3 +213,55 @@ query GetCourseBasicInfoForEdit($slug: String!) {
     whatYouWillLearn
   }
 }
+
+query GetCoursePreviewData($slug: String!) {
+  getCoursePreviewData(slug: $slug) {
+    course {
+      _id
+      createdBy {
+        email
+        role
+        fullName
+        bio
+        profilePicture {
+          publicId
+          width
+          height
+          format
+        }
+      }
+      title
+      subtitle
+      slug
+      description
+      requirements
+      courseCode
+      difficulty
+      price {
+        planTitle
+        description
+        amount
+        currency
+      }
+      category
+      whatYouWillLearn
+      whoIsThisFor
+      updatedAt
+      sectionId {
+        _id
+        title
+        description
+        order
+        lessonId {
+          _id
+          title
+          order
+          type
+        }
+      }
+    }
+    totalSections
+    totalLessons
+    totalAllLessonsVideosHours
+  }
+}
