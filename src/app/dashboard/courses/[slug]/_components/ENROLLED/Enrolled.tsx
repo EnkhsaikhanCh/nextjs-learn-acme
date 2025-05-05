@@ -29,7 +29,7 @@ import {
   useMarkLessonAsCompletedMutation,
   useUndoLessonCompletionMutation,
 } from "@/generated/graphql";
-import { useCachedSession } from "@/hooks/useCachedSession";
+import { useUserStore } from "@/store/UserStoreState";
 import MuxPlayer from "@mux/mux-player-react";
 import {
   ArrowDown,
@@ -52,8 +52,16 @@ export const Enrolled = ({ course }: { course: Course }) => {
   const [tokenLoading, setTokenLoading] = useState<boolean>(false);
   const [isVideoLoading, setIsVideoLoading] = useState<boolean>(true);
 
-  const { session } = useCachedSession();
-  const userId = session?.user?._id;
+  const { user } = useUserStore();
+  if (!user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader className="animate-spin" />
+      </div>
+    );
+  }
+
+  const userId = user?._id;
 
   const [markLessonAsCompleted] = useMarkLessonAsCompletedMutation();
   const [undoLessonCompletion] = useUndoLessonCompletionMutation();

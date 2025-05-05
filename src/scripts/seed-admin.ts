@@ -1,5 +1,5 @@
 import argon2 from "argon2";
-import { UserModel } from "../app/api/graphql/models/user.model";
+import { UserV2Model } from "../app/api/graphql/models";
 import { connectToDatabase } from "../lib/mongodb";
 import { GraphQLError } from "graphql";
 import dotenv from "dotenv";
@@ -15,7 +15,7 @@ export const seedAdmin = async () => {
   }
 
   try {
-    const existingAdmin = await UserModel.findOne({ email: ADMIN_EMAIL });
+    const existingAdmin = await UserV2Model.findOne({ email: ADMIN_EMAIL });
     if (existingAdmin) {
       return "Admin already exists!";
     }
@@ -28,7 +28,7 @@ export const seedAdmin = async () => {
       hashLength: 32,
     });
 
-    const admin = new UserModel({
+    const admin = new UserV2Model({
       email: ADMIN_EMAIL,
       studentId: ADMIN_STUDENT_ID,
       role: "ADMIN",

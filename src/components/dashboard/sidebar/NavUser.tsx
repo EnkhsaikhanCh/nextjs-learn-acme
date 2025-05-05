@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronUp, CircleUserRound } from "lucide-react";
+import { ChevronUp, CircleUserRound, Loader } from "lucide-react";
 
 import {
   IconCreditCard,
@@ -25,11 +25,21 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { signOut } from "next-auth/react";
-import { useCachedSession } from "@/hooks/useCachedSession";
+import { useUserStore } from "@/store/UserStoreState";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
-  const { session } = useCachedSession();
+  const { user } = useUserStore();
+
+  if (!user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader className="animate-spin" />
+      </div>
+    );
+  }
+
+  const { clearUser } = useUserStore.getState();
 
   return (
     <SidebarMenu>
@@ -44,11 +54,9 @@ export function NavUser() {
                 <CircleUserRound />
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">
-                  {session?.user.email}
-                </span>
+                <span className="truncate font-medium">{user?.email}</span>
                 <span className="text-muted-foreground truncate text-xs">
-                  Student ID: {session?.user.studentId}
+                  Student ID: N/A
                 </span>
               </div>
               <ChevronUp className="ml-auto size-4" />
@@ -63,11 +71,9 @@ export function NavUser() {
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">
-                    {session?.user.email}
-                  </span>
+                  <span className="truncate font-medium">{user?.email}</span>
                   <span className="text-muted-foreground truncate text-xs">
-                    Student ID: {session?.user.studentId}
+                    Student ID: N/A
                   </span>
                 </div>
               </div>
@@ -90,6 +96,7 @@ export function NavUser() {
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={async () => {
+                clearUser();
                 await signOut();
               }}
             >

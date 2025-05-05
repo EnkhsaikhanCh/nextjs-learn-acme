@@ -1,6 +1,6 @@
 // src/app/api/auth/reset-password/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { UserModel } from "@/app/api/graphql/models";
+import { UserV2Model } from "@/app/api/graphql/models";
 import argon2 from "argon2";
 import { connectToDatabase } from "@/lib/mongodb";
 import { redis } from "@/lib/redis";
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
 
     // Нууц үгийг шинэчлэх
     const hashedPassword = await argon2.hash(password);
-    const updateResult = await UserModel.updateOne(
+    const updateResult = await UserV2Model.updateOne(
       { email },
       { $set: { password: hashedPassword } },
     );

@@ -78,7 +78,7 @@ export const typeDefs = gql`
 
   type PricingPlan {
     planTitle: String
-    description: String
+    description: [String]
     amount: Int
     currency: Currency
   }
@@ -119,7 +119,7 @@ export const typeDefs = gql`
 
   input PricingPlanInput {
     planTitle: String
-    description: String
+    description: [String]
     amount: Int
     currency: Currency
   }
@@ -136,7 +136,7 @@ export const typeDefs = gql`
 
   input UpdateCoursePricingInput {
     planTitle: String
-    description: String
+    description: [String]
     amount: Int
     currency: Currency
   }
@@ -173,5 +173,17 @@ export const typeDefs = gql`
     ): Course!
     createCourse(input: CreateCourseInput!): Course!
     deleteCourse(id: ID!): Boolean!
+
+    # V2
+    updateCoursePricingV2(
+      courseId: ID!
+      input: UpdateCoursePricingInput!
+    ): UpdateCourseResponse!
+  }
+
+  # --- Mutation Response ---
+  type UpdateCourseResponse {
+    success: Boolean!
+    message: String!
   }
 `;

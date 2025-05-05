@@ -1,0 +1,98 @@
+# Mutations
+mutation RegisterUserV2($input: RegisterUserV2Input!) {
+  registerUserV2(input: $input) {
+    success
+    message
+    userV2 {
+      _id
+      email
+      isVerified
+      role
+    }
+  }
+}
+
+mutation UpdateInstructorUserV2(
+  $id: ID!
+  $input: UpdateInstructorUserV2Input!
+) {
+  updateInstructorUserV2(_id: $id, input: $input) {
+    success
+    message
+  }
+}
+
+mutation UpdateInstructorProfilePicture(
+  $id: ID!
+  $input: UploadProfilePictureInput!
+) {
+  updateInstructorProfilePicture(_id: $id, input: $input) {
+    success
+    message
+  }
+}
+
+mutation ChangeUserPassword($input: ChangePasswordInput!) {
+  changeUserPassword(input: $input) {
+    success
+    message
+  }
+}
+
+mutation UpdateInstructorPayoutInfo($input: UpdateInstructorPayoutInfoInput!) {
+  updateInstructorPayoutInfo(input: $input) {
+    success
+    message
+  }
+}
+
+# Query
+query GetUserV2ById($id: ID!) {
+  getUserV2ById(_id: $id) {
+    _id
+    email
+    isVerified
+    role
+    ... on StudentUserV2 {
+      studentId
+    }
+    ... on InstructorUserV2 {
+      fullName
+      bio
+      profilePicture {
+        publicId
+        width
+        height
+        format
+      }
+    }
+    ... on AdminUserV2 {
+      adminLevel
+    }
+  }
+}
+
+query GetInstructorUserV2InfoById($id: ID!) {
+  getInstructorUserV2InfoById(_id: $id) {
+    _id
+    email
+    isVerified
+    createdAt
+    updatedAt
+    role
+    fullName
+    bio
+    profilePicture {
+      publicId
+      width
+      height
+      format
+    }
+    payout {
+      payoutMethod
+      bankName
+      accountHolderName
+      accountNumber
+    }
+  }
+}

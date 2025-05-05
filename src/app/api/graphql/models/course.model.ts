@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 
 export type PricingPlan = {
   planTitle: string; // "Basic", "Premium", "Lifetime" гэх мэт
-  description?: string; // UI-д товч тайлбар
+  description?: [string]; // UI-д товч тайлбар
   amount: number; // үнэлгээ (₮)
   currency: "MNT";
 };
@@ -37,7 +37,7 @@ export type Course = {
 const PricingPlanSchema = new Schema(
   {
     planTitle: { type: String, required: true },
-    description: { type: String },
+    description: { type: [String] },
     amount: { type: Number, required: true },
     currency: { type: String, enum: ["MNT"], required: true },
   },
