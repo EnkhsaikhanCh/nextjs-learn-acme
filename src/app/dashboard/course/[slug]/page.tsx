@@ -10,6 +10,7 @@ import { useParams } from "next/navigation";
 import { CourseHero } from "./components/CourseHero";
 import { CourseInstructor } from "./components/CourseInstructor";
 import { CourseDescription } from "./components/CourseDescription";
+import { CourseLearningOutcomes } from "./components/CourseLearningOutcomes";
 
 export default function CoursePage() {
   const { slug } = useParams();
@@ -65,6 +66,7 @@ export default function CoursePage() {
               courseInstructor={courseInstructor as InstructorUserV2}
             />
             <CourseDescription course={course as Course} />
+            <CourseLearningOutcomes course={course as Course} />
           </div>
         </div>
       </div>
