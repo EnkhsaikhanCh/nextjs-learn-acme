@@ -1,9 +1,14 @@
 "use client";
 
-import { Course, useGetCoursePreviewDataQuery } from "@/generated/graphql";
+import {
+  Course,
+  InstructorUserV2,
+  useGetCoursePreviewDataQuery,
+} from "@/generated/graphql";
 import { Loader } from "lucide-react";
 import { useParams } from "next/navigation";
 import { CourseHero } from "./components/CourseHero";
+import { CourseInstructor } from "./components/CourseInstructor";
 
 export default function CoursePage() {
   const { slug } = useParams();
@@ -43,6 +48,7 @@ export default function CoursePage() {
   const course = data.getCoursePreviewData.course;
   const totalAllLessonsVideosHours =
     data.getCoursePreviewData.totalAllLessonsVideosHours;
+  const courseInstructor = data.getCoursePreviewData.course.createdBy;
 
   return (
     <div>
@@ -50,6 +56,16 @@ export default function CoursePage() {
         course={course as Course}
         totalAllLessonsVideosHours={totalAllLessonsVideosHours as number}
       />
+
+      <div className="mx-auto max-w-7xl px-4 pb-24 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-8 py-8 lg:grid-cols-3">
+          <div className="space-y-8 lg:col-span-2">
+            <CourseInstructor
+              courseInstructor={courseInstructor as InstructorUserV2}
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
