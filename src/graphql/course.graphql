@@ -22,6 +22,16 @@ mutation UpdateCoursePricing(
   }
 }
 
+mutation UpdateCoursePricingV2(
+  $courseId: ID!
+  $input: UpdateCoursePricingInput!
+) {
+  updateCoursePricingV2(courseId: $courseId, input: $input) {
+    success
+    message
+  }
+}
+
 mutation UpdateCourseThumbnail($courseId: ID!, $input: ThumbnailInput!) {
   updateCourseThumbnail(courseId: $courseId, input: $input) {
     _id

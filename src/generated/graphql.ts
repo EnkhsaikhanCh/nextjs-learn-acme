@@ -357,6 +357,7 @@ export type Mutation = {
   updateAssignmentLessonV2: UpdateLessonV2Response;
   updateCourseBasicInfo: Course;
   updateCoursePricing: Course;
+  updateCoursePricingV2: UpdateCourseResponse;
   updateCourseThumbnail: Course;
   updateCourseVisibilityAndAccess: Course;
   updateCourseWhatYouWillLearn: Course;
@@ -491,6 +492,12 @@ export type MutationUpdateCourseBasicInfoArgs = {
 
 
 export type MutationUpdateCoursePricingArgs = {
+  courseId: Scalars['ID']['input'];
+  input: UpdateCoursePricingInput;
+};
+
+
+export type MutationUpdateCoursePricingV2Args = {
   courseId: Scalars['ID']['input'];
   input: UpdateCoursePricingInput;
 };
@@ -656,14 +663,14 @@ export type PricingPlan = {
   __typename?: 'PricingPlan';
   amount?: Maybe<Scalars['Int']['output']>;
   currency?: Maybe<Currency>;
-  description?: Maybe<Scalars['String']['output']>;
+  description?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
   planTitle?: Maybe<Scalars['String']['output']>;
 };
 
 export type PricingPlanInput = {
   amount?: InputMaybe<Scalars['Int']['input']>;
   currency?: InputMaybe<Currency>;
-  description?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   planTitle?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -1004,8 +1011,14 @@ export type UpdateAssignmentLessonV2Input = {
 export type UpdateCoursePricingInput = {
   amount?: InputMaybe<Scalars['Int']['input']>;
   currency?: InputMaybe<Currency>;
-  description?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   planTitle?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateCourseResponse = {
+  __typename?: 'UpdateCourseResponse';
+  message: Scalars['String']['output'];
+  success: Scalars['Boolean']['output'];
 };
 
 export type UpdateCourseVisibilityAndAccessInput = {
@@ -1254,6 +1267,14 @@ export type UpdateCoursePricingMutationVariables = Exact<{
 
 export type UpdateCoursePricingMutation = { __typename?: 'Mutation', updateCoursePricing: { __typename?: 'Course', _id: string } };
 
+export type UpdateCoursePricingV2MutationVariables = Exact<{
+  courseId: Scalars['ID']['input'];
+  input: UpdateCoursePricingInput;
+}>;
+
+
+export type UpdateCoursePricingV2Mutation = { __typename?: 'Mutation', updateCoursePricingV2: { __typename?: 'UpdateCourseResponse', success: boolean, message: string } };
+
 export type UpdateCourseThumbnailMutationVariables = Exact<{
   courseId: Scalars['ID']['input'];
   input: ThumbnailInput;
@@ -1292,7 +1313,7 @@ export type GetCourseForUserQueryVariables = Exact<{
 }>;
 
 
-export type GetCourseForUserQuery = { __typename?: 'Query', getCourseForUser: { __typename?: 'CourseForUserPayload', status: CourseAccessStatus, fullContent?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, status?: CourseStatus | null, sectionId?: Array<{ __typename?: 'Section', _id: string, title?: string | null, description?: string | null, order?: number | null, lessonId?: Array<{ __typename?: 'AssignmentLesson', _id: string, title: string, order: number, isPublished: boolean, type: LessonType } | { __typename?: 'FileLesson', _id: string, title: string, order: number, isPublished: boolean, type: LessonType } | { __typename?: 'QuizLesson', _id: string, title: string, order: number, isPublished: boolean, type: LessonType } | { __typename?: 'TextLesson', _id: string, title: string, order: number, isPublished: boolean, type: LessonType } | { __typename?: 'VideoLesson', _id: string, title: string, order: number, isPublished: boolean, type: LessonType } | null> | null } | null> | null } | null, coursePreviewData?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, description?: string | null, courseCode?: string | null, difficulty?: Difficulty | null, category?: string | null, status?: CourseStatus | null, whatYouWillLearn?: Array<string | null> | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: string | null, amount?: number | null, currency?: Currency | null } | null } | null } };
+export type GetCourseForUserQuery = { __typename?: 'Query', getCourseForUser: { __typename?: 'CourseForUserPayload', status: CourseAccessStatus, fullContent?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, status?: CourseStatus | null, sectionId?: Array<{ __typename?: 'Section', _id: string, title?: string | null, description?: string | null, order?: number | null, lessonId?: Array<{ __typename?: 'AssignmentLesson', _id: string, title: string, order: number, isPublished: boolean, type: LessonType } | { __typename?: 'FileLesson', _id: string, title: string, order: number, isPublished: boolean, type: LessonType } | { __typename?: 'QuizLesson', _id: string, title: string, order: number, isPublished: boolean, type: LessonType } | { __typename?: 'TextLesson', _id: string, title: string, order: number, isPublished: boolean, type: LessonType } | { __typename?: 'VideoLesson', _id: string, title: string, order: number, isPublished: boolean, type: LessonType } | null> | null } | null> | null } | null, coursePreviewData?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, description?: string | null, courseCode?: string | null, difficulty?: Difficulty | null, category?: string | null, status?: CourseStatus | null, whatYouWillLearn?: Array<string | null> | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: Array<string | null> | null, amount?: number | null, currency?: Currency | null } | null } | null } };
 
 export type GetUserEnrolledCoursesCountQueryVariables = Exact<{
   userId: Scalars['ID']['input'];
@@ -1306,7 +1327,7 @@ export type GetUserNotEnrolledCoursesQueryVariables = Exact<{
 }>;
 
 
-export type GetUserNotEnrolledCoursesQuery = { __typename?: 'Query', getUserNotEnrolledCourses?: Array<{ __typename?: 'Course', _id: string, title: string, slug?: string | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: string | null, amount?: number | null, currency?: Currency | null } | null } | null> | null };
+export type GetUserNotEnrolledCoursesQuery = { __typename?: 'Query', getUserNotEnrolledCourses?: Array<{ __typename?: 'Course', _id: string, title: string, slug?: string | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: Array<string | null> | null, amount?: number | null, currency?: Currency | null } | null } | null> | null };
 
 export type GetAllCoursesByInstructurIdQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1325,7 +1346,7 @@ export type GetCourseBasicInfoForEditQueryVariables = Exact<{
 }>;
 
 
-export type GetCourseBasicInfoForEditQuery = { __typename?: 'Query', getCourseBasicInfoForEdit?: { __typename?: 'Course', _id: string, title: string, subtitle?: string | null, slug?: string | null, description?: string | null, requirements?: string | null, courseCode?: string | null, difficulty?: Difficulty | null, category?: string | null, status?: CourseStatus | null, updatedAt?: Date | null, whoIsThisFor?: string | null, whatYouWillLearn?: Array<string | null> | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: string | null, amount?: number | null, currency?: Currency | null } | null } | null };
+export type GetCourseBasicInfoForEditQuery = { __typename?: 'Query', getCourseBasicInfoForEdit?: { __typename?: 'Course', _id: string, title: string, subtitle?: string | null, slug?: string | null, description?: string | null, requirements?: string | null, courseCode?: string | null, difficulty?: Difficulty | null, category?: string | null, status?: CourseStatus | null, updatedAt?: Date | null, whoIsThisFor?: string | null, whatYouWillLearn?: Array<string | null> | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: Array<string | null> | null, amount?: number | null, currency?: Currency | null } | null } | null };
 
 export type MarkLessonAsCompletedMutationVariables = Exact<{
   input?: InputMaybe<MarkLessonAsCompletedInput>;
@@ -1840,6 +1861,41 @@ export function useUpdateCoursePricingMutation(baseOptions?: Apollo.MutationHook
 export type UpdateCoursePricingMutationHookResult = ReturnType<typeof useUpdateCoursePricingMutation>;
 export type UpdateCoursePricingMutationResult = Apollo.MutationResult<UpdateCoursePricingMutation>;
 export type UpdateCoursePricingMutationOptions = Apollo.BaseMutationOptions<UpdateCoursePricingMutation, UpdateCoursePricingMutationVariables>;
+export const UpdateCoursePricingV2Document = gql`
+    mutation UpdateCoursePricingV2($courseId: ID!, $input: UpdateCoursePricingInput!) {
+  updateCoursePricingV2(courseId: $courseId, input: $input) {
+    success
+    message
+  }
+}
+    `;
+export type UpdateCoursePricingV2MutationFn = Apollo.MutationFunction<UpdateCoursePricingV2Mutation, UpdateCoursePricingV2MutationVariables>;
+
+/**
+ * __useUpdateCoursePricingV2Mutation__
+ *
+ * To run a mutation, you first call `useUpdateCoursePricingV2Mutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateCoursePricingV2Mutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateCoursePricingV2Mutation, { data, loading, error }] = useUpdateCoursePricingV2Mutation({
+ *   variables: {
+ *      courseId: // value for 'courseId'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateCoursePricingV2Mutation(baseOptions?: Apollo.MutationHookOptions<UpdateCoursePricingV2Mutation, UpdateCoursePricingV2MutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateCoursePricingV2Mutation, UpdateCoursePricingV2MutationVariables>(UpdateCoursePricingV2Document, options);
+      }
+export type UpdateCoursePricingV2MutationHookResult = ReturnType<typeof useUpdateCoursePricingV2Mutation>;
+export type UpdateCoursePricingV2MutationResult = Apollo.MutationResult<UpdateCoursePricingV2Mutation>;
+export type UpdateCoursePricingV2MutationOptions = Apollo.BaseMutationOptions<UpdateCoursePricingV2Mutation, UpdateCoursePricingV2MutationVariables>;
 export const UpdateCourseThumbnailDocument = gql`
     mutation UpdateCourseThumbnail($courseId: ID!, $input: ThumbnailInput!) {
   updateCourseThumbnail(courseId: $courseId, input: $input) {
