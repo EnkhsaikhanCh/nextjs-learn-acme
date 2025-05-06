@@ -20,7 +20,7 @@ export default function Page() {
   const userId = user?._id;
 
   return (
-    <main className="p-5 lg:p-8">
+    <main className="space-y-3 p-5 lg:p-8">
       <WelcomeSection />
 
       {/* Dashboard Overview */}

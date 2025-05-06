@@ -70,7 +70,7 @@ export const CourseCurriculum: React.FC<CourseCurriculumProps> = ({
             >
               <AccordionTrigger className="px-4 py-3">
                 <div className="flex flex-col gap-1 text-left sm:flex-row sm:items-center sm:gap-4">
-                  <span className="font-medium">{section?.title}</span>
+                  <span className="font-semibold">{section?.title}</span>
                 </div>
               </AccordionTrigger>
               <AccordionContent className="data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up border-t pb-0">

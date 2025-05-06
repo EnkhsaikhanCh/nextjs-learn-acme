@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Course } from "@/generated/graphql";
 import { cn } from "@/lib/utils";
-import { CircleCheck } from "lucide-react";
+import { CircleCheck, GraduationCap } from "lucide-react";
 
 interface CourseEnrollCTAProps {
   course: Course;
@@ -31,6 +31,7 @@ export function CourseEnrollCTA({ course, className }: CourseEnrollCTAProps) {
             className="w-full border border-emerald-800 bg-emerald-100 py-6 text-base font-bold text-emerald-600 hover:bg-emerald-200 hover:text-emerald-700 active:bg-emerald-300 dark:border-emerald-700 dark:bg-emerald-900 dark:text-emerald-200 dark:hover:bg-emerald-800 dark:hover:text-white dark:active:bg-emerald-700"
             size="lg"
           >
+            <GraduationCap />
             Enroll Now
           </Button>
 

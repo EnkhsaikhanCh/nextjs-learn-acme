@@ -31,10 +31,10 @@ export const CourseHero = ({
       </div>
 
       <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
-        <div className="flex flex-col gap-8 md:flex-row">
+        <div className="flex flex-col gap-8">
           <div
             className={cn(
-              "flex transform flex-col gap-4 transition-all duration-700 md:w-3/5",
+              "flex transform flex-col gap-4 transition-all duration-700",
             )}
           >
             <div className="space-y-1">
@@ -49,16 +49,17 @@ export const CourseHero = ({
               </p>
             </div>
 
-            <div className="mt-4 flex flex-wrap gap-4 text-sm text-emerald-50">
-              <div className="flex items-center gap-1.5">
+            <div className="mt-4 flex flex-wrap gap-2 text-sm text-emerald-50">
+              <div className="flex items-center gap-1.5 rounded-md bg-white/30 px-3 py-1 backdrop-blur-sm dark:bg-black/30">
                 <BarChart className="h-4 w-4" />
                 <span>{course.difficulty}</span>
               </div>
-              <div className="flex items-center gap-1.5">
+
+              <div className="flex items-center gap-1.5 rounded-md bg-white/30 px-3 py-1 backdrop-blur-sm dark:bg-black/30">
                 <Clock className="h-4 w-4" />
                 <span>{totalAllLessonsVideosHours} hours of content</span>
               </div>
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1.5 rounded-md bg-white/30 px-3 py-1 backdrop-blur-sm dark:bg-black/30">
                 <Calendar className="h-4 w-4" />
                 <span>
                   {course.updatedAt
