@@ -11,6 +11,7 @@ import { CourseHero } from "./components/CourseHero";
 import { CourseInstructor } from "./components/CourseInstructor";
 import { CourseDescription } from "./components/CourseDescription";
 import { CourseLearningOutcomes } from "./components/CourseLearningOutcomes";
+import { CourseCurriculum } from "./components/CourseCurriculum";
 
 export default function CoursePage() {
   const { slug } = useParams();
@@ -48,9 +49,11 @@ export default function CoursePage() {
   }
 
   const course = data.getCoursePreviewData.course;
+  const courseInstructor = data.getCoursePreviewData.course.createdBy;
+  const totalSections = data.getCoursePreviewData.totalSections;
+  const totalLessons = data.getCoursePreviewData.totalLessons;
   const totalAllLessonsVideosHours =
     data.getCoursePreviewData.totalAllLessonsVideosHours;
-  const courseInstructor = data.getCoursePreviewData.course.createdBy;
 
   return (
     <div>
@@ -67,6 +70,12 @@ export default function CoursePage() {
             />
             <CourseDescription course={course as Course} />
             <CourseLearningOutcomes course={course as Course} />
+            <CourseCurriculum
+              course={course as Course}
+              totalSections={totalSections as number}
+              totalLessons={totalLessons as number}
+              totalAllLessonsVideosHours={totalAllLessonsVideosHours as number}
+            />
           </div>
         </div>
       </div>
