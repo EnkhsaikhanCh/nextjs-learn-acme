@@ -12,6 +12,7 @@ import { CourseInstructor } from "./components/CourseInstructor";
 import { CourseDescription } from "./components/CourseDescription";
 import { CourseLearningOutcomes } from "./components/CourseLearningOutcomes";
 import { CourseCurriculum } from "./components/CourseCurriculum";
+import { CourseEnrollCTA } from "./components/CourseEnrollCTA";
 
 export default function CoursePage() {
   const { slug } = useParams();
@@ -64,6 +65,7 @@ export default function CoursePage() {
 
       <div className="mx-auto max-w-7xl px-4 pb-24 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-8 py-8 lg:grid-cols-3">
+          {/* Main content */}
           <div className="space-y-8 lg:col-span-2">
             <CourseInstructor
               courseInstructor={courseInstructor as InstructorUserV2}
@@ -76,6 +78,19 @@ export default function CoursePage() {
               totalLessons={totalLessons as number}
               totalAllLessonsVideosHours={totalAllLessonsVideosHours as number}
             />
+
+            {/* Mobile - only visible on mobile */}
+            <CourseEnrollCTA course={course as Course} className="lg:hidden" />
+          </div>
+
+          {/* Sidebar - only visible on desktop */}
+          <div className="hidden lg:block">
+            <div className="sticky top-8">
+              <CourseEnrollCTA
+                course={course as Course}
+                className="hidden lg:block"
+              />
+            </div>
           </div>
         </div>
       </div>
