@@ -5,7 +5,7 @@ import {
   InstructorUserV2,
   useGetCoursePreviewDataQuery,
 } from "@/generated/graphql";
-import { Loader } from "lucide-react";
+import { ArrowLeft, Loader } from "lucide-react";
 import { useParams } from "next/navigation";
 import { CourseHero } from "./components/CourseHero";
 import { CourseInstructor } from "./components/CourseInstructor";
@@ -13,14 +13,14 @@ import { CourseDescription } from "./components/CourseDescription";
 import { CourseLearningOutcomes } from "./components/CourseLearningOutcomes";
 import { CourseCurriculum } from "./components/CourseCurriculum";
 import { CourseEnrollCTA } from "./components/CourseEnrollCTA";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function CoursePage() {
   const { slug } = useParams();
 
-  const { data, loading, error } = useGetCoursePreviewDataQuery({
-    variables: {
-      slug: slug as string,
-    },
+  const { data, loading } = useGetCoursePreviewDataQuery({
+    variables: { slug: slug as string },
     fetchPolicy: "cache-first",
   });
 
@@ -33,28 +33,38 @@ export default function CoursePage() {
     );
   }
 
-  if (error) {
+  const response = data?.getCoursePreviewData;
+
+  if (
+    !response?.success ||
+    !response.course ||
+    !response.course.createdBy ||
+    response.totalSections === null ||
+    response.totalLessons === null ||
+    response.totalAllLessonsVideosHours === null
+  ) {
     return (
-      <div className="flex items-center justify-center gap-2 p-6 text-sm text-red-500">
-        <p>Failed to load course data</p>
+      <div className="flex flex-col items-center justify-center gap-2 p-6">
+        <p className="font-semibold">
+          {response?.message || "Something went wrong."}
+        </p>
+        <Link href="/dashboard">
+          <Button size={"sm"} variant={"outline"}>
+            <ArrowLeft />
+            Back to Home
+          </Button>
+        </Link>
       </div>
     );
   }
 
-  if (!data?.getCoursePreviewData?.course) {
-    return (
-      <div className="flex items-center justify-center gap-2 p-6 text-sm text-red-500">
-        <p>Course not found</p>
-      </div>
-    );
-  }
-
-  const course = data.getCoursePreviewData.course;
-  const courseInstructor = data.getCoursePreviewData.course.createdBy;
-  const totalSections = data.getCoursePreviewData.totalSections;
-  const totalLessons = data.getCoursePreviewData.totalLessons;
-  const totalAllLessonsVideosHours =
-    data.getCoursePreviewData.totalAllLessonsVideosHours;
+  const {
+    course,
+    course: { createdBy: courseInstructor },
+    totalSections,
+    totalLessons,
+    totalAllLessonsVideosHours,
+  } = response;
 
   return (
     <div>
@@ -71,6 +81,7 @@ export default function CoursePage() {
               courseInstructor={courseInstructor as InstructorUserV2}
             />
             <CourseDescription course={course as Course} />
+
             <CourseLearningOutcomes course={course as Course} />
             <CourseCurriculum
               course={course as Course}
@@ -78,12 +89,10 @@ export default function CoursePage() {
               totalLessons={totalLessons as number}
               totalAllLessonsVideosHours={totalAllLessonsVideosHours as number}
             />
-
-            {/* Mobile - only visible on mobile */}
             <CourseEnrollCTA course={course as Course} className="lg:hidden" />
           </div>
 
-          {/* Sidebar - only visible on desktop */}
+          {/* Sidebar */}
           <div className="hidden lg:block">
             <div className="sticky top-8">
               <CourseEnrollCTA

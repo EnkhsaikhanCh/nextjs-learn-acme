@@ -216,6 +216,8 @@ query GetCourseBasicInfoForEdit($slug: String!) {
 
 query GetCoursePreviewData($slug: String!) {
   getCoursePreviewData(slug: $slug) {
+    success
+    message
     course {
       _id
       createdBy {

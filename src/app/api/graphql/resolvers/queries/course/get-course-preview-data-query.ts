@@ -1,4 +1,3 @@
-import { GraphQLError } from "graphql";
 import { CourseModel, LessonV2Model, SectionModel } from "../../../models";
 import { GetCoursePreviewDataResponse } from "@/generated/graphql";
 
@@ -8,17 +7,26 @@ export const getCoursePreviewData = async (
 ): Promise<GetCoursePreviewDataResponse> => {
   try {
     if (!slug) {
-      throw new GraphQLError("Course slug is required", {
-        extensions: { code: "BAD_USER_INPUT" },
-      });
+      return {
+        success: false,
+        message: "Course slug is required.",
+        course: null,
+        totalSections: null,
+        totalLessons: null,
+        totalAllLessonsVideosHours: null,
+      };
     }
 
     const course = await CourseModel.findOne({ slug });
-
     if (!course) {
-      throw new GraphQLError("Course not found", {
-        extensions: { code: "COURSE_NOT_FOUND" },
-      });
+      return {
+        success: false,
+        message: "Course not found.",
+        course: null,
+        totalSections: null,
+        totalLessons: null,
+        totalAllLessonsVideosHours: null,
+      };
     }
 
     await course.populate([
@@ -56,19 +64,21 @@ export const getCoursePreviewData = async (
     const totalHours = Math.floor(totalVideosDuration / 3600);
 
     return {
-      course: course,
+      success: true,
+      message: "Course preview data fetched successfully.",
+      course,
       totalSections,
       totalLessons,
       totalAllLessonsVideosHours: totalHours,
     };
-  } catch (error) {
-    if (error instanceof GraphQLError) {
-      throw error;
-    }
-    throw new GraphQLError("Internal server error", {
-      extensions: {
-        code: "INTERNAL_SERVER_ERROR",
-      },
-    });
+  } catch {
+    return {
+      success: false,
+      message: "Unexpected server error.",
+      course: null,
+      totalSections: null,
+      totalLessons: null,
+      totalAllLessonsVideosHours: null,
+    };
   }
 };

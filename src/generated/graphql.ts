@@ -1207,6 +1207,8 @@ export type GetCourseDetailsForInstructorResponse = {
 export type GetCoursePreviewDataResponse = {
   __typename?: 'getCoursePreviewDataResponse';
   course?: Maybe<Course>;
+  message?: Maybe<Scalars['String']['output']>;
+  success: Scalars['Boolean']['output'];
   totalAllLessonsVideosHours?: Maybe<Scalars['Int']['output']>;
   totalLessons?: Maybe<Scalars['Int']['output']>;
   totalSections?: Maybe<Scalars['Int']['output']>;
@@ -1367,7 +1369,7 @@ export type GetCoursePreviewDataQueryVariables = Exact<{
 }>;
 
 
-export type GetCoursePreviewDataQuery = { __typename?: 'Query', getCoursePreviewData?: { __typename?: 'getCoursePreviewDataResponse', totalSections?: number | null, totalLessons?: number | null, totalAllLessonsVideosHours?: number | null, course?: { __typename?: 'Course', _id: string, title: string, subtitle?: string | null, slug?: string | null, description?: string | null, requirements?: string | null, courseCode?: string | null, difficulty?: Difficulty | null, category?: string | null, whatYouWillLearn?: Array<string | null> | null, whoIsThisFor?: string | null, updatedAt?: Date | null, createdBy?: { __typename?: 'InstructorUserV2', email: string, role: UserV2Role, fullName?: string | null, bio?: string | null, profilePicture?: { __typename?: 'ProfilePicture', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null } | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: Array<string | null> | null, amount?: number | null, currency?: Currency | null } | null, sectionId?: Array<{ __typename?: 'Section', _id: string, title?: string | null, description?: string | null, order?: number | null, lessonId?: Array<{ __typename?: 'AssignmentLesson', _id: string, title: string, order: number, type: LessonType } | { __typename?: 'FileLesson', _id: string, title: string, order: number, type: LessonType } | { __typename?: 'QuizLesson', _id: string, title: string, order: number, type: LessonType } | { __typename?: 'TextLesson', _id: string, title: string, order: number, type: LessonType } | { __typename?: 'VideoLesson', _id: string, title: string, order: number, type: LessonType } | null> | null } | null> | null } | null } | null };
+export type GetCoursePreviewDataQuery = { __typename?: 'Query', getCoursePreviewData?: { __typename?: 'getCoursePreviewDataResponse', success: boolean, message?: string | null, totalSections?: number | null, totalLessons?: number | null, totalAllLessonsVideosHours?: number | null, course?: { __typename?: 'Course', _id: string, title: string, subtitle?: string | null, slug?: string | null, description?: string | null, requirements?: string | null, courseCode?: string | null, difficulty?: Difficulty | null, category?: string | null, whatYouWillLearn?: Array<string | null> | null, whoIsThisFor?: string | null, updatedAt?: Date | null, createdBy?: { __typename?: 'InstructorUserV2', email: string, role: UserV2Role, fullName?: string | null, bio?: string | null, profilePicture?: { __typename?: 'ProfilePicture', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null } | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: Array<string | null> | null, amount?: number | null, currency?: Currency | null } | null, sectionId?: Array<{ __typename?: 'Section', _id: string, title?: string | null, description?: string | null, order?: number | null, lessonId?: Array<{ __typename?: 'AssignmentLesson', _id: string, title: string, order: number, type: LessonType } | { __typename?: 'FileLesson', _id: string, title: string, order: number, type: LessonType } | { __typename?: 'QuizLesson', _id: string, title: string, order: number, type: LessonType } | { __typename?: 'TextLesson', _id: string, title: string, order: number, type: LessonType } | { __typename?: 'VideoLesson', _id: string, title: string, order: number, type: LessonType } | null> | null } | null> | null } | null } | null };
 
 export type MarkLessonAsCompletedMutationVariables = Exact<{
   input?: InputMaybe<MarkLessonAsCompletedInput>;
@@ -2448,6 +2450,8 @@ export type GetCourseBasicInfoForEditQueryResult = Apollo.QueryResult<GetCourseB
 export const GetCoursePreviewDataDocument = gql`
     query GetCoursePreviewData($slug: String!) {
   getCoursePreviewData(slug: $slug) {
+    success
+    message
     course {
       _id
       createdBy {

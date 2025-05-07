@@ -116,6 +116,8 @@ export const typeDefs = gql`
   }
 
   type getCoursePreviewDataResponse {
+    success: Boolean!
+    message: String
     course: Course
     totalSections: Int
     totalLessons: Int
