@@ -1,3 +1,5 @@
+"use client";
+
 import { Globe } from "lucide-react";
 import {
   Sidebar,
@@ -7,25 +9,33 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "../../ui/sidebar";
 import { NavUser } from "./NavUser";
 import { NavMain } from "./NavMain";
 import { NavSecondary } from "./NavSecondary";
 
 export function AppSidebar() {
+  const { open } = useSidebar();
+
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
-              asChild
-              className="data-[slot=sidebar-menu-button]:p-1.5!"
+              size="lg"
+              className="data-[state=open]:bg-sidebar-accent bg-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <a href="#">
-                <Globe className="!size-5" />
-                <span className="text-base font-semibold">Acme</span>
-              </a>
+              <div
+                className={`bg-sidebar-primary ${open ? "ml-0" : "-ml-2"} text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg`}
+              >
+                <Globe className="size-4" />
+              </div>
+              <div className="grid flex-1 text-left text-sm leading-tight">
+                <span className="truncate font-semibold">BOXOD</span>
+                <span className="truncate text-xs">User Dashboard</span>
+              </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
