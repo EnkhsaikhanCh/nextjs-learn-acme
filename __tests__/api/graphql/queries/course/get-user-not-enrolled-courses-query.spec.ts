@@ -99,7 +99,10 @@ describe("getUserNotEnrolledCourses", () => {
       { user: adminUser },
     );
 
-    expect(EnrollmentModel.find).toHaveBeenCalledWith({ userId: testUserId });
+    expect(EnrollmentModel.find).toHaveBeenCalledWith({
+      userId: testUserId,
+      status: "ACTIVE",
+    });
     expect(CourseModel.find).toHaveBeenCalledWith({
       _id: { $nin: ["course-1", "course-2"] },
     });
@@ -130,7 +133,10 @@ describe("getUserNotEnrolledCourses", () => {
       { user: studentUser },
     );
 
-    expect(EnrollmentModel.find).toHaveBeenCalledWith({ userId: testUserId });
+    expect(EnrollmentModel.find).toHaveBeenCalledWith({
+      userId: testUserId,
+      status: "ACTIVE",
+    });
     expect(CourseModel.find).toHaveBeenCalledWith({
       _id: { $nin: ["course-1", "course-2"] },
       status: "PUBLISHED",
@@ -157,7 +163,10 @@ describe("getUserNotEnrolledCourses", () => {
       { user: studentUser },
     );
 
-    expect(EnrollmentModel.find).toHaveBeenCalledWith({ userId: testUserId });
+    expect(EnrollmentModel.find).toHaveBeenCalledWith({
+      userId: testUserId,
+      status: "ACTIVE",
+    });
     expect(CourseModel.find).toHaveBeenCalledWith({ status: "PUBLISHED" });
     expect(result).toEqual(fakeCourses);
   });

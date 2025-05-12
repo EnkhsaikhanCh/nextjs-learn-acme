@@ -18,7 +18,10 @@ export const getUserNotEnrolledCourses = async (
     }
 
     // Хэрэглэгчийн enroll хийсэн курсүүдийг авах
-    const enrollments = await EnrollmentModel.find({ userId });
+    const enrollments = await EnrollmentModel.find({
+      userId,
+      status: "ACTIVE",
+    });
     const enrolledCourseIds = enrollments.map(
       (enrollment) => enrollment.courseId,
     );
