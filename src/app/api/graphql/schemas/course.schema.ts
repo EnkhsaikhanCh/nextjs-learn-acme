@@ -113,6 +113,13 @@ export const typeDefs = gql`
     getAllCoursesByInstructurId: [Course]
 
     getCoursePreviewData(slug: String!): getCoursePreviewDataResponse
+    getCourseForEnrollment(slug: String!): CourseForEnrollmentResponse
+  }
+
+  type CourseForEnrollmentResponse {
+    success: Boolean!
+    message: String
+    fullContent: Course
   }
 
   type getCoursePreviewDataResponse {

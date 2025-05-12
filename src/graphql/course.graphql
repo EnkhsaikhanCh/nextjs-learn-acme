@@ -267,3 +267,49 @@ query GetCoursePreviewData($slug: String!) {
     totalAllLessonsVideosHours
   }
 }
+
+query GetCourseForEnrollment($slug: String!) {
+  getCourseForEnrollment(slug: $slug) {
+    success
+    message
+    fullContent {
+      _id
+      title
+      subtitle
+      slug
+      sectionId {
+        _id
+        title
+        description
+        order
+        lessonId {
+          _id
+          title
+          order
+          isPublished
+          type
+          ... on VideoLesson {
+            muxPlaybackId
+            duration
+          }
+          ... on TextLesson {
+            content
+          }
+          ... on FileLesson {
+            fileUrl
+          }
+          ... on QuizLesson {
+            quizQuestions {
+              question
+              answers
+              correctAnswer
+            }
+          }
+          ... on AssignmentLesson {
+            assignmentDetails
+          }
+        }
+      }
+    }
+  }
+}
