@@ -54,7 +54,7 @@ export const MyCoursesSection = ({ userId }: { userId?: string }) => {
           )}
           {data?.getUserEnrolledCourses?.map((course) => (
             <Link
-              href={`/dashboard/courses/${course?.courseId?.slug}`}
+              href={`/dashboard/course/${course?.courseId?.slug}/learn`}
               key={course?._id}
               className="group"
             >
