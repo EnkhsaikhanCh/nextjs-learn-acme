@@ -266,6 +266,7 @@ query GetCoursePreviewData($slug: String!) {
     totalLessons
     totalLessonDurationSeconds
     totalLessonDurationHours
+    isEnrolled
   }
 }
 

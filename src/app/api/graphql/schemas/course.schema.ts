@@ -130,6 +130,7 @@ export const typeDefs = gql`
     totalLessons: Int
     totalLessonDurationSeconds: Int
     totalLessonDurationHours: Int
+    isEnrolled: Boolean
   }
 
   input CreateCourseInput {

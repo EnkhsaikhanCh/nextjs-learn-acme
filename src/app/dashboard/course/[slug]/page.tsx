@@ -65,6 +65,7 @@ export default function CoursePage() {
     totalSections,
     totalLessons,
     totalLessonDurationHours,
+    isEnrolled,
   } = response;
 
   return (
@@ -99,6 +100,7 @@ export default function CoursePage() {
               <CourseEnrollCTA
                 course={course as Course}
                 className="hidden lg:block"
+                isEnrolled={isEnrolled as boolean}
               />
             </div>
           </div>

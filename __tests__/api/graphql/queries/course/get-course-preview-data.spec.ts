@@ -1,27 +1,58 @@
-// __tests__/api/graphql/queries/course/get-course-preview-data.spec.ts
-
-import { getCoursePreviewData } from "@/app/api/graphql/resolvers/queries/course/get-course-preview-data-query";
+// __tests__/api/graphql/queries/course/get-course-preview-data-v2-query.spec.ts
 import {
   CourseModel,
   SectionModel,
   LessonV2Model,
-} from "../../../../../src/app/api/graphql/models";
-import { GetCoursePreviewDataResponse } from "@/generated/graphql";
+  EnrollmentModel,
+} from "@/app/api/graphql/models";
+import { requireAuthAndRolesV2 } from "@/lib/auth-userV2-utils";
+import {
+  UserV2Role,
+  GetCoursePreviewDataResponse,
+  UserV2,
+} from "@/generated/graphql";
+import { getCoursePreviewData } from "@/app/api/graphql/resolvers/queries/course/get-course-preview-data-query";
 
 jest.mock("../../../../../src/app/api/graphql/models", () => ({
   CourseModel: { findOne: jest.fn() },
   SectionModel: { find: jest.fn() },
   LessonV2Model: { find: jest.fn() },
+  EnrollmentModel: { exists: jest.fn() },
 }));
 
-describe("getCoursePreviewData", () => {
+jest.mock("../../../../../src/lib/auth-userV2-utils", () => ({
+  requireAuthAndRolesV2: jest.fn(),
+}));
+
+describe("getCoursePreviewData (v2)", () => {
+  const mockUser: UserV2 = {
+    _id: "user-1",
+    email: "u@example.com",
+    role: UserV2Role.Student,
+    isVerified: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+
   beforeEach(() => {
     jest.clearAllMocks();
+    (requireAuthAndRolesV2 as jest.Mock).mockResolvedValue(undefined);
+  });
+
+  it("throws if not authorized", async () => {
+    (requireAuthAndRolesV2 as jest.Mock).mockRejectedValue(new Error("nope"));
+    await expect(
+      getCoursePreviewData(null, { slug: "s" }, { user: mockUser }),
+    ).rejects.toThrow("nope");
   });
 
   it("returns error when slug is missing", async () => {
-    const result = await getCoursePreviewData(null, { slug: "" });
-    expect(result).toEqual<GetCoursePreviewDataResponse>({
+    const res = await getCoursePreviewData(
+      null,
+      { slug: "" },
+      { user: mockUser },
+    );
+    expect(res).toEqual<GetCoursePreviewDataResponse>({
       success: false,
       message: "Course slug is required.",
       course: null,
@@ -29,6 +60,7 @@ describe("getCoursePreviewData", () => {
       totalLessons: null,
       totalLessonDurationSeconds: null,
       totalLessonDurationHours: null,
+      isEnrolled: null,
     });
   });
 
@@ -36,9 +68,13 @@ describe("getCoursePreviewData", () => {
     (CourseModel.findOne as jest.Mock).mockReturnValue({
       populate: jest.fn().mockResolvedValue(null),
     });
-    const result = await getCoursePreviewData(null, { slug: "slug1" });
-    expect(CourseModel.findOne).toHaveBeenCalledWith({ slug: "slug1" });
-    expect(result).toEqual<GetCoursePreviewDataResponse>({
+    const res = await getCoursePreviewData(
+      null,
+      { slug: "abc" },
+      { user: mockUser },
+    );
+    expect(CourseModel.findOne).toHaveBeenCalledWith({ slug: "abc" });
+    expect(res).toEqual<GetCoursePreviewDataResponse>({
       success: false,
       message: "Course not found.",
       course: null,
@@ -46,6 +82,7 @@ describe("getCoursePreviewData", () => {
       totalLessons: null,
       totalLessonDurationSeconds: null,
       totalLessonDurationHours: null,
+      isEnrolled: null,
     });
   });
 
@@ -75,11 +112,13 @@ describe("getCoursePreviewData", () => {
       lean: jest.fn().mockResolvedValue(fakeLessons),
     });
 
-    const result = await getCoursePreviewData(null, {
-      slug: "slug-null-durations",
-    });
+    const res = await getCoursePreviewData(
+      null,
+      { slug: "abc" },
+      { user: mockUser },
+    );
 
-    expect(result).toEqual({
+    expect(res).toEqual({
       success: true,
       message: "Course preview data fetched successfully.",
       course: { _id: "cid", sectionId: ["sec1"] },
@@ -87,11 +126,12 @@ describe("getCoursePreviewData", () => {
       totalLessons: 2,
       totalLessonDurationSeconds: 0,
       totalLessonDurationHours: 0,
+      isEnrolled: false,
     });
   });
 
-  it("returns correct preview data for published lessons", async () => {
-    const fakeCourseDoc = {
+  it("returns correct preview data including enrollment and durations", async () => {
+    const fakeCourse = {
       _id: "cid",
       sectionId: ["sec1", "sec2"],
       populate: jest.fn().mockResolvedValue({
@@ -99,63 +139,78 @@ describe("getCoursePreviewData", () => {
         sectionId: ["sec1", "sec2"],
       }),
     };
-    (CourseModel.findOne as jest.Mock).mockReturnValue(fakeCourseDoc);
-
-    const fakeSections = [{}, {}];
+    (CourseModel.findOne as jest.Mock).mockReturnValue(fakeCourse);
+    (EnrollmentModel.exists as jest.Mock).mockResolvedValue({ _id: "e1" });
+    const mockSections = [{}, {}, {}];
     (SectionModel.find as jest.Mock).mockReturnValue({
       populate: jest.fn().mockReturnValue({
-        lean: jest.fn().mockResolvedValue(fakeSections),
+        lean: jest.fn().mockResolvedValue(mockSections),
       }),
     });
-
-    const fakeLessons = [
+    const mockLessons = [
       { duration: "01:00:00", isPublished: true },
       { duration: "00:30:00", isPublished: false },
-      { duration: "05:30", isPublished: true },
+      { duration: "02:15", isPublished: true },
     ];
     (LessonV2Model.find as jest.Mock).mockReturnValue({
       lean: jest
         .fn()
-        .mockResolvedValue(fakeLessons.filter((l) => l.isPublished)),
+        .mockResolvedValue(mockLessons.filter((l) => l.isPublished)),
     });
 
-    const result = await getCoursePreviewData(null, { slug: "slug1" });
+    const res = await getCoursePreviewData(
+      null,
+      { slug: "abc" },
+      { user: mockUser },
+    );
 
-    expect(fakeCourseDoc.populate).toHaveBeenCalledWith([
+    expect(requireAuthAndRolesV2).toHaveBeenCalledWith(mockUser, [
+      UserV2Role.Admin,
+      UserV2Role.Instructor,
+      UserV2Role.Student,
+    ]);
+    expect(fakeCourse.populate).toHaveBeenCalledWith([
       { path: "createdBy", model: "UserV2" },
       {
         path: "sectionId",
         model: "Section",
-        populate: {
-          path: "lessonId",
-          model: "LessonV2",
-        },
+        populate: { path: "lessonId", model: "LessonV2" },
       },
     ]);
+    expect(EnrollmentModel.exists).toHaveBeenCalledWith({
+      courseId: "cid",
+      userId: "user-1",
+      status: "ACTIVE",
+    });
     expect(SectionModel.find).toHaveBeenCalledWith({ courseId: "cid" });
     expect(LessonV2Model.find).toHaveBeenCalledWith({
       sectionId: { $in: ["sec1", "sec2"] },
       isPublished: true,
     });
 
-    const expectedSeconds = 3600 + 330; // 1h + 5m30s
-    expect(result).toEqual({
+    // durations: 3600 + 135 seconds = 3735 total, hours = 1
+    expect(res).toEqual({
       success: true,
       message: "Course preview data fetched successfully.",
       course: { _id: "cid", sectionId: ["sec1", "sec2"] },
-      totalSections: 2,
+      totalSections: 3,
       totalLessons: 2,
-      totalLessonDurationSeconds: expectedSeconds,
-      totalLessonDurationHours: Math.floor(expectedSeconds / 3600),
+      totalLessonDurationSeconds: 3735,
+      totalLessonDurationHours: 1,
+      isEnrolled: true,
     });
   });
 
   it("handles unexpected errors gracefully", async () => {
     (CourseModel.findOne as jest.Mock).mockImplementation(() => {
-      throw new Error("DB fail");
+      throw new Error("fail");
     });
-    const result = await getCoursePreviewData(null, { slug: "slug1" });
-    expect(result).toEqual<GetCoursePreviewDataResponse>({
+    const res = await getCoursePreviewData(
+      null,
+      { slug: "abc" },
+      { user: mockUser },
+    );
+    expect(res).toEqual<GetCoursePreviewDataResponse>({
       success: false,
       message: "Unexpected server error.",
       course: null,
@@ -163,6 +218,7 @@ describe("getCoursePreviewData", () => {
       totalLessons: null,
       totalLessonDurationSeconds: null,
       totalLessonDurationHours: null,
+      isEnrolled: null,
     });
   });
 });

@@ -1,11 +1,29 @@
 import { parseDurationToSeconds } from "@/utils/parseDurationToSeconds";
-import { CourseModel, LessonV2Model, SectionModel } from "../../../models";
-import { GetCoursePreviewDataResponse } from "@/generated/graphql";
+import {
+  CourseModel,
+  EnrollmentModel,
+  LessonV2Model,
+  SectionModel,
+} from "../../../models";
+import {
+  GetCoursePreviewDataResponse,
+  UserV2,
+  UserV2Role,
+} from "@/generated/graphql";
+import { requireAuthAndRolesV2 } from "@/lib/auth-userV2-utils";
 
 export const getCoursePreviewData = async (
   _: unknown,
   { slug }: { slug: string },
+  context: { user?: UserV2 },
 ): Promise<GetCoursePreviewDataResponse> => {
+  const { user } = context;
+  await requireAuthAndRolesV2(user, [
+    UserV2Role.Admin,
+    UserV2Role.Instructor,
+    UserV2Role.Student,
+  ]);
+
   if (!slug) {
     return {
       success: false,
@@ -15,6 +33,7 @@ export const getCoursePreviewData = async (
       totalLessons: null,
       totalLessonDurationSeconds: null,
       totalLessonDurationHours: null,
+      isEnrolled: null,
     };
   }
 
@@ -40,8 +59,15 @@ export const getCoursePreviewData = async (
         totalLessons: null,
         totalLessonDurationSeconds: null,
         totalLessonDurationHours: null,
+        isEnrolled: null,
       };
     }
+
+    const isEnrolled = await EnrollmentModel.exists({
+      courseId: course._id,
+      userId: user?._id,
+      status: "ACTIVE",
+    });
 
     const sections = await SectionModel.find({ courseId: course._id })
       .populate({ path: "lessonId", model: "LessonV2" })
@@ -74,6 +100,7 @@ export const getCoursePreviewData = async (
       totalLessons,
       totalLessonDurationSeconds,
       totalLessonDurationHours,
+      isEnrolled: Boolean(isEnrolled),
     };
   } catch {
     return {
@@ -84,6 +111,7 @@ export const getCoursePreviewData = async (
       totalLessons: null,
       totalLessonDurationSeconds: null,
       totalLessonDurationHours: null,
+      isEnrolled: null,
     };
   }
 };
