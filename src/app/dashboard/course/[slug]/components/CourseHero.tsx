@@ -8,12 +8,12 @@ import { format } from "date-fns";
 
 interface CourseHeroProps {
   course: Course;
-  totalAllLessonsVideosHours: number;
+  totalLessonDurationHours: number;
 }
 
 export const CourseHero = ({
   course,
-  totalAllLessonsVideosHours,
+  totalLessonDurationHours,
 }: CourseHeroProps) => {
   return (
     <div className="relative overflow-hidden bg-gradient-to-r from-emerald-900 to-emerald-700 text-white">
@@ -57,7 +57,7 @@ export const CourseHero = ({
 
               <div className="flex items-center gap-1.5 rounded-md bg-white/30 px-3 py-1 backdrop-blur-sm dark:bg-black/30">
                 <Clock className="h-4 w-4" />
-                <span>{totalAllLessonsVideosHours} hours of content</span>
+                <span>{totalLessonDurationHours} hours of content</span>
               </div>
               <div className="flex items-center gap-1.5 rounded-md bg-white/30 px-3 py-1 backdrop-blur-sm dark:bg-black/30">
                 <Calendar className="h-4 w-4" />

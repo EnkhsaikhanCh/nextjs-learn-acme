@@ -41,7 +41,8 @@ export default function CoursePage() {
     !response.course.createdBy ||
     response.totalSections === null ||
     response.totalLessons === null ||
-    response.totalAllLessonsVideosHours === null
+    response.totalLessonDurationSeconds === null ||
+    response.totalLessonDurationHours === null
   ) {
     return (
       <div className="flex flex-col items-center justify-center gap-2 p-6">
@@ -63,14 +64,14 @@ export default function CoursePage() {
     course: { createdBy: courseInstructor },
     totalSections,
     totalLessons,
-    totalAllLessonsVideosHours,
+    totalLessonDurationHours,
   } = response;
 
   return (
     <div>
       <CourseHero
         course={course as Course}
-        totalAllLessonsVideosHours={totalAllLessonsVideosHours as number}
+        totalLessonDurationHours={totalLessonDurationHours as number}
       />
 
       <div className="mx-auto max-w-7xl px-4 pb-24 sm:px-6 lg:px-8">
@@ -87,7 +88,7 @@ export default function CoursePage() {
               course={course as Course}
               totalSections={totalSections as number}
               totalLessons={totalLessons as number}
-              totalAllLessonsVideosHours={totalAllLessonsVideosHours as number}
+              totalLessonDurationHours={totalLessonDurationHours as number}
             />
             <CourseEnrollCTA course={course as Course} className="lg:hidden" />
           </div>

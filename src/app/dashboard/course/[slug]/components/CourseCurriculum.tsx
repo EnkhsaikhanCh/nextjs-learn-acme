@@ -17,14 +17,14 @@ interface CourseCurriculumProps {
   course: Course;
   totalSections: number;
   totalLessons: number;
-  totalAllLessonsVideosHours: number;
+  totalLessonDurationHours: number;
 }
 
 export const CourseCurriculum: React.FC<CourseCurriculumProps> = ({
   course,
   totalSections,
   totalLessons,
-  totalAllLessonsVideosHours,
+  totalLessonDurationHours,
 }) => {
   const [expandedAll, setExpandedAll] = useState(false);
 
@@ -47,7 +47,7 @@ export const CourseCurriculum: React.FC<CourseCurriculumProps> = ({
             <h2 className="text-xl font-semibold">Course Curriculum</h2>
             <p className="text-sm text-gray-500">
               {totalSections} sections • {totalLessons} lessons •{" "}
-              {totalAllLessonsVideosHours} total hours
+              {totalLessonDurationHours} total hours
             </p>
           </div>
           <Button variant="outline" size="sm" onClick={toggleExpandAll}>

@@ -128,7 +128,8 @@ export const typeDefs = gql`
     course: Course
     totalSections: Int
     totalLessons: Int
-    totalAllLessonsVideosHours: Int
+    totalLessonDurationSeconds: Int
+    totalLessonDurationHours: Int
   }
 
   input CreateCourseInput {

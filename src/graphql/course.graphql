@@ -264,7 +264,8 @@ query GetCoursePreviewData($slug: String!) {
     }
     totalSections
     totalLessons
-    totalAllLessonsVideosHours
+    totalLessonDurationSeconds
+    totalLessonDurationHours
   }
 }
 

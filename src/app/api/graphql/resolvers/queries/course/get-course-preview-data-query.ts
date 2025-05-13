@@ -1,3 +1,4 @@
+import { parseDurationToSeconds } from "@/utils/parseDurationToSeconds";
 import { CourseModel, LessonV2Model, SectionModel } from "../../../models";
 import { GetCoursePreviewDataResponse } from "@/generated/graphql";
 
@@ -5,31 +6,20 @@ export const getCoursePreviewData = async (
   _: unknown,
   { slug }: { slug: string },
 ): Promise<GetCoursePreviewDataResponse> => {
+  if (!slug) {
+    return {
+      success: false,
+      message: "Course slug is required.",
+      course: null,
+      totalSections: null,
+      totalLessons: null,
+      totalLessonDurationSeconds: null,
+      totalLessonDurationHours: null,
+    };
+  }
+
   try {
-    if (!slug) {
-      return {
-        success: false,
-        message: "Course slug is required.",
-        course: null,
-        totalSections: null,
-        totalLessons: null,
-        totalAllLessonsVideosHours: null,
-      };
-    }
-
-    const course = await CourseModel.findOne({ slug });
-    if (!course) {
-      return {
-        success: false,
-        message: "Course not found.",
-        course: null,
-        totalSections: null,
-        totalLessons: null,
-        totalAllLessonsVideosHours: null,
-      };
-    }
-
-    await course.populate([
+    const course = await CourseModel.findOne({ slug }).populate([
       { path: "createdBy", model: "UserV2" },
       {
         path: "sectionId",
@@ -41,6 +31,18 @@ export const getCoursePreviewData = async (
       },
     ]);
 
+    if (!course) {
+      return {
+        success: false,
+        message: "Course not found.",
+        course: null,
+        totalSections: null,
+        totalLessons: null,
+        totalLessonDurationSeconds: null,
+        totalLessonDurationHours: null,
+      };
+    }
+
     const sections = await SectionModel.find({ courseId: course._id })
       .populate({ path: "lessonId", model: "LessonV2" })
       .lean();
@@ -50,18 +52,19 @@ export const getCoursePreviewData = async (
     const lessons = await LessonV2Model.find({
       sectionId: { $in: course.sectionId },
       isPublished: true,
-    });
+    }).lean();
 
     const totalLessons = lessons.length;
 
-    const totalVideosDuration = lessons.reduce((total, lesson) => {
-      if (lesson.duration) {
-        const [minutes, seconds] = lesson.duration.split(":").map(Number);
-        return total + minutes * 60 + seconds;
-      }
-      return total;
+    const totalLessonDurationSeconds = lessons.reduce((sum, lesson) => {
+      return (
+        sum + (lesson.duration ? parseDurationToSeconds(lesson.duration) : 0)
+      );
     }, 0);
-    const totalHours = Math.floor(totalVideosDuration / 3600);
+
+    const totalLessonDurationHours = Math.floor(
+      totalLessonDurationSeconds / 3600,
+    );
 
     return {
       success: true,
@@ -69,7 +72,8 @@ export const getCoursePreviewData = async (
       course,
       totalSections,
       totalLessons,
-      totalAllLessonsVideosHours: totalHours,
+      totalLessonDurationSeconds,
+      totalLessonDurationHours,
     };
   } catch {
     return {
@@ -78,7 +82,8 @@ export const getCoursePreviewData = async (
       course: null,
       totalSections: null,
       totalLessons: null,
-      totalAllLessonsVideosHours: null,
+      totalLessonDurationSeconds: null,
+      totalLessonDurationHours: null,
     };
   }
 };
