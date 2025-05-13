@@ -1358,7 +1358,7 @@ export type GetUserNotEnrolledCoursesQueryVariables = Exact<{
 }>;
 
 
-export type GetUserNotEnrolledCoursesQuery = { __typename?: 'Query', getUserNotEnrolledCourses?: Array<{ __typename?: 'Course', _id: string, title: string, slug?: string | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: Array<string | null> | null, amount?: number | null, currency?: Currency | null } | null } | null> | null };
+export type GetUserNotEnrolledCoursesQuery = { __typename?: 'Query', getUserNotEnrolledCourses?: Array<{ __typename?: 'Course', _id: string, title: string, subtitle?: string | null, slug?: string | null, createdBy?: { __typename?: 'InstructorUserV2', _id: string, fullName?: string | null, profilePicture?: { __typename?: 'ProfilePicture', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null } | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: Array<string | null> | null, amount?: number | null, currency?: Currency | null } | null } | null> | null };
 
 export type GetAllCoursesByInstructurIdQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2263,7 +2263,18 @@ export const GetUserNotEnrolledCoursesDocument = gql`
   getUserNotEnrolledCourses(userId: $userId) {
     _id
     title
+    subtitle
     slug
+    createdBy {
+      _id
+      fullName
+      profilePicture {
+        publicId
+        width
+        height
+        format
+      }
+    }
     thumbnail {
       publicId
       width

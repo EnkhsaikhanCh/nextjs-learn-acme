@@ -142,7 +142,18 @@ query GetUserNotEnrolledCourses($userId: ID!) {
   getUserNotEnrolledCourses(userId: $userId) {
     _id
     title
+    subtitle
     slug
+    createdBy {
+      _id
+      fullName
+      profilePicture {
+        publicId
+        width
+        height
+        format
+      }
+    }
     thumbnail {
       publicId
       width

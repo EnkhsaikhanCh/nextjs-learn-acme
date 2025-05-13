@@ -1,4 +1,11 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { useGetUserNotEnrolledCoursesQuery } from "@/generated/graphql";
 import { CldImage } from "next-cloudinary";
 import Link from "next/link";
@@ -62,6 +69,24 @@ export const DiscoverCoursesSection = ({ userId }: { userId?: string }) => {
                   <CardTitle className="line-clamp-1 text-lg font-bold">
                     {course?.title}
                   </CardTitle>
+                  <CardDescription>{course?.subtitle}</CardDescription>
+                  <div className="mt-4 flex items-center gap-2">
+                    <div className="flex items-center gap-2">
+                      <Avatar className="h-5 w-5">
+                        <AvatarImage
+                          src={`https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload/${course?.createdBy?.profilePicture?.publicId}.${course?.createdBy?.profilePicture?.format}`}
+                          alt="Instructor Profile Picture"
+                          className="block"
+                        />
+                        <AvatarFallback></AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="text-xs font-medium">
+                          {course?.createdBy?.fullName}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </Link>

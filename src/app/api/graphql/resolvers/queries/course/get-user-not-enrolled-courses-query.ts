@@ -34,7 +34,10 @@ export const getUserNotEnrolledCourses = async (
       ? { _id: { $nin: enrolledCourseIds }, ...statusFilter }
       : { ...statusFilter };
 
-    const coursesNotEnrolled = await CourseModel.find(query);
+    const coursesNotEnrolled = await CourseModel.find(query).populate({
+      path: "createdBy",
+      model: "UserV2",
+    });
 
     return coursesNotEnrolled;
   } catch (error) {
