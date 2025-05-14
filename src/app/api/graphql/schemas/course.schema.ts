@@ -57,7 +57,7 @@ export const typeDefs = gql`
 
   type Course {
     _id: ID!
-    createdBy: User
+    createdBy: InstructorUserV2
     title: String!
     subtitle: String
     slug: String
@@ -111,6 +111,26 @@ export const typeDefs = gql`
     getUserNotEnrolledCourses(userId: ID!): [Course]
 
     getAllCoursesByInstructurId: [Course]
+
+    getCoursePreviewData(slug: String!): getCoursePreviewDataResponse
+    getCourseForEnrollment(slug: String!): CourseForEnrollmentResponse
+  }
+
+  type CourseForEnrollmentResponse {
+    success: Boolean!
+    message: String
+    fullContent: Course
+  }
+
+  type getCoursePreviewDataResponse {
+    success: Boolean!
+    message: String
+    course: Course
+    totalSections: Int
+    totalLessons: Int
+    totalLessonDurationSeconds: Int
+    totalLessonDurationHours: Int
+    isEnrolled: Boolean
   }
 
   input CreateCourseInput {

@@ -142,7 +142,18 @@ query GetUserNotEnrolledCourses($userId: ID!) {
   getUserNotEnrolledCourses(userId: $userId) {
     _id
     title
+    subtitle
     slug
+    createdBy {
+      _id
+      fullName
+      profilePicture {
+        publicId
+        width
+        height
+        format
+      }
+    }
     thumbnail {
       publicId
       width
@@ -211,5 +222,107 @@ query GetCourseBasicInfoForEdit($slug: String!) {
     updatedAt
     whoIsThisFor
     whatYouWillLearn
+  }
+}
+
+query GetCoursePreviewData($slug: String!) {
+  getCoursePreviewData(slug: $slug) {
+    success
+    message
+    course {
+      _id
+      createdBy {
+        email
+        role
+        fullName
+        bio
+        profilePicture {
+          publicId
+          width
+          height
+          format
+        }
+      }
+      title
+      subtitle
+      slug
+      description
+      requirements
+      courseCode
+      difficulty
+      price {
+        planTitle
+        description
+        amount
+        currency
+      }
+      category
+      whatYouWillLearn
+      whoIsThisFor
+      updatedAt
+      sectionId {
+        _id
+        title
+        description
+        order
+        lessonId {
+          _id
+          title
+          order
+          type
+        }
+      }
+    }
+    totalSections
+    totalLessons
+    totalLessonDurationSeconds
+    totalLessonDurationHours
+    isEnrolled
+  }
+}
+
+query GetCourseForEnrollment($slug: String!) {
+  getCourseForEnrollment(slug: $slug) {
+    success
+    message
+    fullContent {
+      _id
+      title
+      subtitle
+      slug
+      sectionId {
+        _id
+        title
+        description
+        order
+        lessonId {
+          _id
+          title
+          order
+          isPublished
+          type
+          ... on VideoLesson {
+            muxPlaybackId
+            duration
+          }
+          ... on TextLesson {
+            content
+          }
+          ... on FileLesson {
+            fileUrl
+          }
+          ... on QuizLesson {
+            quizQuestions {
+              question
+              answers
+              correctAnswer
+            }
+          }
+          ... on AssignmentLesson {
+            assignmentDetails
+          }
+        }
+      }
+    }
   }
 }
