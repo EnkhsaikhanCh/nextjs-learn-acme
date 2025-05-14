@@ -40,7 +40,7 @@ export default function Courses() {
       {data && (
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {data?.getAllCourseWithEnrollment.map((course, index) => (
-            <Link href={`/dashboard/courses/${course.slug}`} key={index}>
+            <Link href={`/dashboard/course/${course.slug}`} key={index}>
               <Card className="shadow-none">
                 <CardHeader className="p-0">
                   <div className="relative w-full overflow-hidden">

@@ -1,6 +1,6 @@
 // src/app/api/graphql/resolver/queries/user/get-all-users.ts
 import { User } from "@/generated/graphql";
-import { UserModel } from "../../../models";
+import { UserV2Model } from "../../../models";
 import { GraphQLError } from "graphql";
 import { requireAuthAndRoles } from "@/lib/auth-utils";
 import type { FilterQuery } from "mongoose";
@@ -67,12 +67,12 @@ export const getAllUser = async (
     const sortDirection = sortOrder === "asc" ? 1 : -1;
 
     const [users, totalCount] = await Promise.all([
-      UserModel.find(query)
+      UserV2Model.find(query)
         .skip(offset)
         .limit(maxLimit)
         .sort({ [safeSortField]: sortDirection })
         .select("-password"),
-      UserModel.countDocuments(query),
+      UserV2Model.countDocuments(query),
     ]);
 
     return {

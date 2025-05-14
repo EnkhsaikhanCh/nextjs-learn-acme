@@ -6,7 +6,7 @@ import { ActionButton } from "@/components/ActionButton";
 import Link from "next/link";
 import { PasswordInput } from "@/components/PasswordInput";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useHandleRegister } from "../features/useHandleRegister";
+import { useHandleRegisterV2 } from "../features/useHandleRegisterV2";
 
 export default function SignUp() {
   const {
@@ -19,7 +19,7 @@ export default function SignUp() {
     setErrors,
     handleRegister,
     strength,
-  } = useHandleRegister();
+  } = useHandleRegisterV2();
 
   return (
     <main className="grid h-screen grid-cols-1 lg:grid-cols-2">

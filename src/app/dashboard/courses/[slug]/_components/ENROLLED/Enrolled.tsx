@@ -29,7 +29,7 @@ import {
   useMarkLessonAsCompletedMutation,
   useUndoLessonCompletionMutation,
 } from "@/generated/graphql";
-import { useCachedSession } from "@/hooks/useCachedSession";
+import { useUserStore } from "@/store/UserStoreState";
 import MuxPlayer from "@mux/mux-player-react";
 import {
   ArrowDown,
@@ -52,8 +52,16 @@ export const Enrolled = ({ course }: { course: Course }) => {
   const [tokenLoading, setTokenLoading] = useState<boolean>(false);
   const [isVideoLoading, setIsVideoLoading] = useState<boolean>(true);
 
-  const { session } = useCachedSession();
-  const userId = session?.user?._id;
+  const { user } = useUserStore();
+  if (!user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader className="animate-spin" />
+      </div>
+    );
+  }
+
+  const userId = user?._id;
 
   const [markLessonAsCompleted] = useMarkLessonAsCompletedMutation();
   const [undoLessonCompletion] = useUndoLessonCompletionMutation();
@@ -81,7 +89,7 @@ export const Enrolled = ({ course }: { course: Course }) => {
 
   // Detect Mobile
   useEffect(() => {
-    const checkViewport = () => setIsMobile(window.innerWidth < 760);
+    const checkViewport = () => setIsMobile(window.innerWidth < 1024);
     checkViewport();
     window.addEventListener("resize", checkViewport);
     return () => window.removeEventListener("resize", checkViewport);
@@ -465,7 +473,7 @@ export const Enrolled = ({ course }: { course: Course }) => {
                       className="mx-2 border-b px-4 py-2"
                       defaultOpen={section?.order === 1}
                     >
-                      <CollapsibleTrigger className="group hover:text-primary flex w-full items-center justify-between py-2 font-medium">
+                      <CollapsibleTrigger className="group hover:text-primary lg:text0ms=f flex w-full items-center justify-between py-2 text-sm font-medium lg:text-base">
                         <span>{section?.title}</span>
                         <ChevronDown className="h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-180" />
                       </CollapsibleTrigger>

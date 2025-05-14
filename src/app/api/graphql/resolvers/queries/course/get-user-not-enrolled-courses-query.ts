@@ -18,7 +18,10 @@ export const getUserNotEnrolledCourses = async (
     }
 
     // Хэрэглэгчийн enroll хийсэн курсүүдийг авах
-    const enrollments = await EnrollmentModel.find({ userId });
+    const enrollments = await EnrollmentModel.find({
+      userId,
+      status: "ACTIVE",
+    });
     const enrolledCourseIds = enrollments.map(
       (enrollment) => enrollment.courseId,
     );
@@ -31,7 +34,10 @@ export const getUserNotEnrolledCourses = async (
       ? { _id: { $nin: enrolledCourseIds }, ...statusFilter }
       : { ...statusFilter };
 
-    const coursesNotEnrolled = await CourseModel.find(query);
+    const coursesNotEnrolled = await CourseModel.find(query).populate({
+      path: "createdBy",
+      model: "UserV2",
+    });
 
     return coursesNotEnrolled;
   } catch (error) {

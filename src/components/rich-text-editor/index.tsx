@@ -7,14 +7,19 @@ import TextAlgin from "@tiptap/extension-text-align";
 
 interface RichTextEditorTestProps {
   value: string;
-  onChange: (content: string) => void;
+  onChange?: (content: string) => void;
+  editable?: boolean;
 }
 
 export default function RichTextEditorTest({
   value,
   onChange,
+  editable = true,
 }: RichTextEditorTestProps) {
+  const isEditable = editable ?? true;
+
   const editor = useEditor({
+    editable: isEditable,
     extensions: [
       StarterKit.configure({
         bulletList: {
@@ -35,17 +40,21 @@ export default function RichTextEditorTest({
     content: value,
     editorProps: {
       attributes: {
-        class: "min-h-[156px] border rounded-md dark:bg-black py-2 px-3",
+        class: isEditable
+          ? "min-h-[156px] border rounded-md dark:bg-black py-2 px-3"
+          : "",
       },
     },
     onUpdate: ({ editor }) => {
-      onChange(editor.getHTML());
+      if (onChange) {
+        onChange(editor.getHTML());
+      }
     },
   });
 
   return (
     <>
-      <MenuBar editor={editor} />
+      {isEditable && <MenuBar editor={editor} />}
       <EditorContent editor={editor} />
     </>
   );

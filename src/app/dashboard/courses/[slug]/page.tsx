@@ -3,10 +3,9 @@
 
 import { Course, useGetCourseForUserQuery } from "@/generated/graphql";
 import { useParams } from "next/navigation";
-import { NotEnrolled } from "./_components/NOT_ENROLLED/NotEnrolled";
-import { LoadingScreen } from "@/components/LoadingScreen";
 import CourseNotFound from "@/components/CourseNotFound";
 import { Enrolled } from "./_components/ENROLLED/Enrolled";
+import { Loader } from "lucide-react";
 
 export default function CourseDetailPage() {
   const { slug } = useParams();
@@ -17,8 +16,14 @@ export default function CourseDetailPage() {
   });
 
   if (loading) {
-    return <LoadingScreen label="Loading courses..." />;
+    return (
+      <div className="text-muted-foreground flex items-center justify-center gap-2 p-6 text-sm">
+        <p>Loading course data</p>
+        <Loader className="h-4 w-4 animate-spin" />
+      </div>
+    );
   }
+
   if (error?.graphQLErrors?.length) {
     const notFoundError = error.graphQLErrors.find((err) =>
       err.message.includes("Course not found"),
@@ -34,14 +39,8 @@ export default function CourseDetailPage() {
   }
 
   switch (courseForUser.status) {
-    case "ADMIN_ENROLLED":
     case "ENROLLED":
       return <Enrolled course={courseForUser.fullContent as Course} />;
-
-    case "ADMIN_NOT_ENROLLED":
-    case "NOT_ENROLLED":
-    case "GUEST":
-      return <NotEnrolled course={courseForUser.coursePreviewData as Course} />;
 
     default:
       return <div>Unhandled status: {courseForUser.status}</div>;
