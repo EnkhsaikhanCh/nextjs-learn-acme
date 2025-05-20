@@ -1,26 +1,22 @@
-import { User } from "@/generated/graphql";
-import { requireAuthAndRoles } from "@/lib/auth-utils";
+import { UserV2, UserV2Role } from "@/generated/graphql";
 import { GraphQLError } from "graphql";
-import { CourseModel, EnrollmentModel } from "../../../models";
+import { CourseModel, EnrollmentV2Model } from "../../../models";
+import { requireAuthAndRolesV2 } from "@/lib/auth-userV2-utils";
 
 export const getUserNotEnrolledCourses = async (
   _: unknown,
   { userId }: { userId: string },
-  context: { user?: User },
+  context: { user?: UserV2 },
 ) => {
   try {
     const { user } = context;
-    await requireAuthAndRoles(user, ["STUDENT", "ADMIN"]);
-
-    // Зөвхөн өөрийн эсвэл ADMIN хэрэглэгч харах боломжтой
-    if (user?.role !== "ADMIN" && user?._id !== userId) {
-      throw new GraphQLError("Та зөвхөн өөрийн хичээлүүдийг харах боломжтой");
-    }
+    await requireAuthAndRolesV2(user, [UserV2Role.Student]);
 
     // Хэрэглэгчийн enroll хийсэн курсүүдийг авах
-    const enrollments = await EnrollmentModel.find({
+    const enrollments = await EnrollmentV2Model.find({
       userId,
-      status: "ACTIVE",
+      status: ["ACTIVE", "COMPLETED"],
+      isDeleted: false,
     });
     const enrolledCourseIds = enrollments.map(
       (enrollment) => enrollment.courseId,

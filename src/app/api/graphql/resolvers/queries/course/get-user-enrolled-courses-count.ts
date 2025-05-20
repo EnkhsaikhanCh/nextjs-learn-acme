@@ -1,13 +1,13 @@
 import { requireAuthAndRoles } from "@/lib/auth-utils";
-import { EnrollmentModel } from "../../../models";
+import { EnrollmentV2Model } from "../../../models";
 import { GraphQLError } from "graphql";
-import { User } from "@/generated/graphql";
+import { GetUserEnrolledCoursesCountResponse, User } from "@/generated/graphql";
 
 export const getUserEnrolledCoursesCount = async (
   _: unknown,
   { userId }: { userId: string },
   context: { user?: User },
-) => {
+): Promise<GetUserEnrolledCoursesCountResponse> => {
   try {
     const user = context?.user;
     await requireAuthAndRoles(user, ["STUDENT", "ADMIN"]);
@@ -15,12 +15,12 @@ export const getUserEnrolledCoursesCount = async (
     // inProgressCount: "ACTIVE" статустай курсүүд
     // completedCount: "COMPLETED" статустай курсүүд
     const [inProgressCount, completedCount] = await Promise.all([
-      EnrollmentModel.countDocuments({
+      EnrollmentV2Model.countDocuments({
         userId,
         status: "ACTIVE",
         isDeleted: false,
       }),
-      EnrollmentModel.countDocuments({
+      EnrollmentV2Model.countDocuments({
         userId,
         status: "COMPLETED",
         isDeleted: false,

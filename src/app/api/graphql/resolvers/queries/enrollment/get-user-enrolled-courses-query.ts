@@ -1,7 +1,7 @@
 import { User } from "@/generated/graphql";
 import { requireAuthAndRoles } from "@/lib/auth-utils";
 import { GraphQLError } from "graphql";
-import { EnrollmentModel } from "../../../models";
+import { EnrollmentV2Model } from "../../../models";
 
 export const getUserEnrolledCourses = async (
   _: unknown,
@@ -19,7 +19,7 @@ export const getUserEnrolledCourses = async (
     // Хэрэглэгчийн enroll хийсэн хичээлүүдийг олох:
     // - isDeleted: false гэдэг нь устгасан мэдээллийг гаргаахгүй.
     // - status: ACTIVE эсвэл COMPLETED гэсэн фильтр тавиад зөвхөн идэвхтэй буюу дууссан курсуудыг авах.
-    const enrollments = await EnrollmentModel.find({
+    const enrollments = await EnrollmentV2Model.find({
       userId,
       isDeleted: false,
       status: { $in: ["ACTIVE", "COMPLETED"] },

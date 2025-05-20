@@ -1,6 +1,6 @@
 import { GraphQLError } from "graphql";
 import { User } from "@/generated/graphql";
-import { CourseModel, EnrollmentModel } from "../../../models";
+import { CourseModel, EnrollmentV2Model } from "../../../models";
 import { requireAuthAndRoles } from "@/lib/auth-utils";
 
 /**
@@ -32,7 +32,7 @@ export const getCourseForUser = async (
 
     // Admin enrollment check
     if (user?.role === "ADMIN") {
-      const enrollment = await EnrollmentModel.findOne({
+      const enrollment = await EnrollmentV2Model.findOne({
         courseId: course._id,
         userId: user._id,
       });
@@ -55,7 +55,7 @@ export const getCourseForUser = async (
     }
 
     // 2. Хэрэглэгч нэвтэрсэн бол Enrollment-ийг шалгах
-    const enrollment = await EnrollmentModel.findOne({
+    const enrollment = await EnrollmentV2Model.findOne({
       courseId: course._id,
       userId: user?._id,
     });
