@@ -1,8 +1,8 @@
 import { GraphQLError } from "graphql";
 import { PaymentModel } from "../../../models";
-import { PaymentStatus, User } from "@/generated/graphql";
-import { requireAuthAndRoles } from "@/lib/auth-utils";
+import { PaymentStatus, UserV2, UserV2Role } from "@/generated/graphql";
 import { updateOrCreateEnrollment } from "./updateOrCreateEnrollment";
+import { requireAuthAndRolesV2 } from "@/lib/auth-userV2-utils";
 
 export const updatePaymentStatus = async (
   _: unknown,
@@ -15,12 +15,10 @@ export const updatePaymentStatus = async (
     status: PaymentStatus;
     refundReason?: string;
   },
-  context: { user?: User },
+  context: { user?: UserV2 },
 ) => {
   const { user } = context;
-
-  // Зөвхөн ADMIN хэрэглэгчдэд зөвшөөрнө
-  await requireAuthAndRoles(user, ["ADMIN"]);
+  await requireAuthAndRolesV2(user, [UserV2Role.Admin]);
 
   // Payment ID шаардлагатай
   if (!_id) {

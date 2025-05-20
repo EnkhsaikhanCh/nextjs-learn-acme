@@ -19,7 +19,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Payment,
   PaymentStatus,
-  useUpdatePaymentStatusMutation,
+  useUpdatePaymentStatusV2Mutation,
 } from "@/generated/graphql";
 import { ListTodo, Loader } from "lucide-react";
 import { useState } from "react";
@@ -51,8 +51,8 @@ export const UpdatePaymentStatus: React.FC<UpdatePaymentStatusProps> = ({
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [newStatus, setNewStatus] = useState<string>(currentStatus);
   const [refundReason, setRefundReason] = useState<string>(currentRefundReason);
-  const [updatePaymentStatus, { loading, error }] =
-    useUpdatePaymentStatusMutation();
+  const [updatePaymentStatusV2, { loading, error }] =
+    useUpdatePaymentStatusV2Mutation();
 
   const handleSendEmail = async (paymentId: string) => {
     try {
@@ -75,11 +75,13 @@ export const UpdatePaymentStatus: React.FC<UpdatePaymentStatusProps> = ({
 
   const handleUpdate = async () => {
     try {
-      await updatePaymentStatus({
+      await updatePaymentStatusV2({
         variables: {
-          id: paymentId,
-          status: newStatus as PaymentStatus,
-          refundReason: newStatus === "REFUNDED" ? refundReason : null,
+          input: {
+            paymentId: paymentId,
+            status: newStatus as PaymentStatus,
+            refundReason: newStatus === "REFUNDED" ? refundReason : null,
+          },
         },
       });
 

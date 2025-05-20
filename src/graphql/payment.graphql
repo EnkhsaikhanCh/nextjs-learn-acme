@@ -15,6 +15,20 @@ mutation UpdatePaymentStatus(
   }
 }
 
+mutation CreatePaymentCheckRequest($input: CreatePaymentCheckRequest) {
+  createPaymentCheckRequest(input: $input) {
+    success
+    message
+  }
+}
+
+mutation UpdatePaymentStatusV2($input: UpdatePaymentStatusV2Input) {
+  updatePaymentStatusV2(input: $input) {
+    success
+    message
+  }
+}
+
 # Query
 query GetAllPayments($limit: Int, $offset: Int, $filter: PaymentFilterInput) {
   getAllPayments(limit: $limit, offset: $offset, filter: $filter) {
@@ -58,5 +72,29 @@ query GetPaymentByUserAndCourse($userId: ID!, $courseId: ID!) {
     paymentMethod
     refundReason
     createdAt
+  }
+}
+
+query GetCourseCheckoutData($slug: String!) {
+  getCourseCheckoutData(slug: $slug) {
+    success
+    message
+    course {
+      _id
+      title
+      subtitle
+      courseCode
+      price {
+        planTitle
+        amount
+        currency
+      }
+    }
+    user {
+      email
+      studentId
+    }
+    isPaid
+    isEnrolled
   }
 }

@@ -1,7 +1,7 @@
-import { Role, User } from "@/generated/graphql";
+import { EnrollmentV2Status, Role, User } from "@/generated/graphql";
 import { requireAuthAndRoles } from "@/lib/auth-utils";
 import { GraphQLError } from "graphql";
-import { EnrollmentModel, LessonV2Model } from "../../../models";
+import { EnrollmentV2Model, LessonV2Model } from "../../../models";
 
 export const getLessonV2byIdForStudent = async (
   _: unknown,
@@ -43,10 +43,12 @@ export const getLessonV2byIdForStudent = async (
     }
 
     // Enrollment шалгах
-    const enrollment = await EnrollmentModel.findOne({
+    const enrollment = await EnrollmentV2Model.findOne({
       userId: user?._id,
       courseId: courseId,
-      status: { $in: ["ACTIVE", "COMPLETED"] },
+      status: {
+        $in: [EnrollmentV2Status.Active, EnrollmentV2Status.Completed],
+      },
       isDeleted: { $ne: true },
     });
 

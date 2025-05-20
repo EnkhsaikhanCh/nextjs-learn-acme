@@ -45,7 +45,7 @@ export const getAllPayments = async (
 
     const [payments, totalCount, totalAmountAgg] = await Promise.all([
       PaymentModel.find(query)
-        .populate({ path: "userId", model: "User" })
+        .populate({ path: "userId", model: "UserV2" })
         .populate({ path: "courseId", model: "Course" })
         .skip(offset)
         .limit(maxLimit),
