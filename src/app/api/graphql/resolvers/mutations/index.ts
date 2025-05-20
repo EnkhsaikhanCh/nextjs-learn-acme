@@ -9,3 +9,4 @@ export * from "./subscriber";
 export * from "./auth";
 export * from "./lessonV2";
 export * from "./userV2";
+export * from "./enrollmentV2";
