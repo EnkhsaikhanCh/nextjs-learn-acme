@@ -86,6 +86,14 @@ export const updateLessonCompletionStatus = async (
       updatedAt: now,
     });
 
+    if (enrollment.progress >= 100) {
+      enrollment.status = "COMPLETED";
+    } else if (enrollment.status === "COMPLETED") {
+      enrollment.status = "ACTIVE";
+    }
+
+    enrollment.isCompleted = enrollment.progress >= 100;
+
     await enrollment.save();
 
     return {
