@@ -434,6 +434,7 @@ export type Mutation = {
   updateInstructorProfilePicture: UpdateUserV2Response;
   updateInstructorUserV2: UpdateUserV2Response;
   updateLesson: Lesson;
+  updateLessonCompletionStatus: EnrollmentV2MutationResponse;
   updateLessonV2GeneralInfo: UpdateLessonV2Response;
   updateLessonV2Video: UpdateLessonV2Response;
   updatePaymentStatus?: Maybe<Payment>;
@@ -629,6 +630,11 @@ export type MutationUpdateInstructorUserV2Args = {
 export type MutationUpdateLessonArgs = {
   _id: Scalars['ID']['input'];
   input: UpdateLessonInput;
+};
+
+
+export type MutationUpdateLessonCompletionStatusArgs = {
+  input: UpdateLessonCompletionStatusInput;
 };
 
 
@@ -1166,6 +1172,12 @@ export type UpdateInstructorUserV2Input = {
   fullName?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type UpdateLessonCompletionStatusInput = {
+  completed?: InputMaybe<Scalars['Boolean']['input']>;
+  enrollmentId: Scalars['ID']['input'];
+  lessonId: Scalars['ID']['input'];
+};
+
 export type UpdateLessonInput = {
   content?: InputMaybe<Scalars['String']['input']>;
   isPublished?: InputMaybe<Scalars['Boolean']['input']>;
@@ -1535,6 +1547,13 @@ export type GetUserEnrolledCoursesQueryVariables = Exact<{
 
 
 export type GetUserEnrolledCoursesQuery = { __typename?: 'Query', getUserEnrolledCourses?: Array<{ __typename?: 'Enrollment', _id: string, progress?: number | null, lastAccessedAt?: Date | null, courseId?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null } | null } | null> | null };
+
+export type UpdateLessonCompletionStatusMutationVariables = Exact<{
+  input: UpdateLessonCompletionStatusInput;
+}>;
+
+
+export type UpdateLessonCompletionStatusMutation = { __typename?: 'Mutation', updateLessonCompletionStatus: { __typename?: 'EnrollmentV2MutationResponse', success: boolean, message?: string | null } };
 
 export type GetInstructorCourseContentQueryVariables = Exact<{
   slug: Scalars['String']['input'];
@@ -2989,6 +3008,40 @@ export type GetUserEnrolledCoursesQueryHookResult = ReturnType<typeof useGetUser
 export type GetUserEnrolledCoursesLazyQueryHookResult = ReturnType<typeof useGetUserEnrolledCoursesLazyQuery>;
 export type GetUserEnrolledCoursesSuspenseQueryHookResult = ReturnType<typeof useGetUserEnrolledCoursesSuspenseQuery>;
 export type GetUserEnrolledCoursesQueryResult = Apollo.QueryResult<GetUserEnrolledCoursesQuery, GetUserEnrolledCoursesQueryVariables>;
+export const UpdateLessonCompletionStatusDocument = gql`
+    mutation UpdateLessonCompletionStatus($input: UpdateLessonCompletionStatusInput!) {
+  updateLessonCompletionStatus(input: $input) {
+    success
+    message
+  }
+}
+    `;
+export type UpdateLessonCompletionStatusMutationFn = Apollo.MutationFunction<UpdateLessonCompletionStatusMutation, UpdateLessonCompletionStatusMutationVariables>;
+
+/**
+ * __useUpdateLessonCompletionStatusMutation__
+ *
+ * To run a mutation, you first call `useUpdateLessonCompletionStatusMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateLessonCompletionStatusMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateLessonCompletionStatusMutation, { data, loading, error }] = useUpdateLessonCompletionStatusMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateLessonCompletionStatusMutation(baseOptions?: Apollo.MutationHookOptions<UpdateLessonCompletionStatusMutation, UpdateLessonCompletionStatusMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateLessonCompletionStatusMutation, UpdateLessonCompletionStatusMutationVariables>(UpdateLessonCompletionStatusDocument, options);
+      }
+export type UpdateLessonCompletionStatusMutationHookResult = ReturnType<typeof useUpdateLessonCompletionStatusMutation>;
+export type UpdateLessonCompletionStatusMutationResult = Apollo.MutationResult<UpdateLessonCompletionStatusMutation>;
+export type UpdateLessonCompletionStatusMutationOptions = Apollo.BaseMutationOptions<UpdateLessonCompletionStatusMutation, UpdateLessonCompletionStatusMutationVariables>;
 export const GetInstructorCourseContentDocument = gql`
     query GetInstructorCourseContent($slug: String!) {
   getInstructorCourseContent(slug: $slug) {

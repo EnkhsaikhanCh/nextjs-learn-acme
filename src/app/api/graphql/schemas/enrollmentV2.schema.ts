@@ -46,9 +46,18 @@ export const typeDefs = gql`
     courseId: ID!
   }
 
+  input UpdateLessonCompletionStatusInput {
+    enrollmentId: ID!
+    lessonId: ID!
+    completed: Boolean
+  }
+
   extend type Mutation {
     createEnrollmentV2(
       input: CreateEnrollmentV2Input!
+    ): EnrollmentV2MutationResponse!
+    updateLessonCompletionStatus(
+      input: UpdateLessonCompletionStatusInput!
     ): EnrollmentV2MutationResponse!
   }
 
