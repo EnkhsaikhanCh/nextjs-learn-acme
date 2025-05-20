@@ -19,6 +19,15 @@ export type IEnrollmentV2 = {
   isDeleted: boolean;
 };
 
+const EnrollmentV2HistorySchema = new Schema(
+  {
+    status: { type: String, required: true },
+    progress: { type: Number, required: true },
+    updatedAt: { type: Date, default: Date.now },
+  },
+  { _id: false },
+);
+
 const EnrollmentV2Schema = new Schema<IEnrollmentV2>(
   {
     _id: { type: String, default: () => uuidv4() },
@@ -47,13 +56,10 @@ const EnrollmentV2Schema = new Schema<IEnrollmentV2>(
     completedLessons: { type: [String], default: [] },
     lastAccessedAt: { type: Date, default: null },
     expiryDate: { type: Date, default: null },
-    history: [
-      {
-        status: { type: String, required: true },
-        progress: { type: Number, required: true },
-        updatedAt: { type: Date, default: Date.now },
-      },
-    ],
+    history: {
+      type: [EnrollmentV2HistorySchema],
+      default: [],
+    },
     isDeleted: { type: Boolean, default: false },
   },
   {
