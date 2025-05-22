@@ -54,25 +54,6 @@ export const UpdatePaymentStatus: React.FC<UpdatePaymentStatusProps> = ({
   const [updatePaymentStatusV2, { loading, error }] =
     useUpdatePaymentStatusV2Mutation();
 
-  const handleSendEmail = async (paymentId: string) => {
-    try {
-      const response = await fetch("/api/payment/send-confirmation-email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ paymentId }),
-      });
-
-      const data = await response.json();
-      if (response.ok) {
-        toast.success("Имэйл амжилттай илгээгдлээ!");
-      } else {
-        toast.error(`Имэйл илгээхэд алдаа гарлаа: ${data.error}`);
-      }
-    } catch {
-      toast.error("Имэйл илгээхэд алдаа гарлаа.");
-    }
-  };
-
   const handleUpdate = async () => {
     try {
       await updatePaymentStatusV2({
@@ -87,10 +68,6 @@ export const UpdatePaymentStatus: React.FC<UpdatePaymentStatusProps> = ({
 
       refetch();
       toast.success("Төлбөрийн төлөв амжилттай шинэчлэгдлээ!");
-
-      if (newStatus === "APPROVED") {
-        await handleSendEmail(paymentId); // Имэйл илгээх
-      }
 
       setIsOpen(false);
     } catch (error) {

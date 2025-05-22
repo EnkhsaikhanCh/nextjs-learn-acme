@@ -1,16 +1,13 @@
 "use client";
 
 import type React from "react";
-
 import { useState } from "react";
 import {
   BanknoteIcon,
   CheckCircle,
   CreditCard,
-  Info,
   Clock,
   Copy,
-  HelpCircle,
   AlertCircle,
   Loader,
   TriangleAlert,
@@ -21,7 +18,6 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -107,7 +103,7 @@ export default function CheckoutPage() {
   if (loading) {
     return (
       <div className="text-muted-foreground flex items-center justify-center gap-2 p-6 text-sm">
-        <p>Loading course data</p>
+        <p>Курсын мэдээлэл ачааллаж байна...</p>
         <Loader className="h-4 w-4 animate-spin" />
       </div>
     );
@@ -118,12 +114,12 @@ export default function CheckoutPage() {
       <div className="flex flex-col items-center justify-center gap-2 p-6 text-sm">
         <p className="text-destructive flex items-center gap-2 font-semibold">
           <TriangleAlert className="h-4 w-4" />
-          {response?.message || "Something went wrong."}
+          {response?.message || "Алдаа гарлаа."}
         </p>
         <Link href="/dashboard">
           <Button size={"sm"} variant={"outline"}>
             <ArrowLeft />
-            Back to Home
+            Нүүр хуудас руу буцах
           </Button>
         </Link>
       </div>
@@ -137,20 +133,19 @@ export default function CheckoutPage() {
           <CheckCircle className="h-8 w-8 text-green-600 dark:text-green-300" />
         </div>
         <h2 className="text-2xl font-semibold text-green-700 dark:text-green-300">
-          Payment Request Received
+          Төлбөрийн хүсэлт хүлээн авсан
         </h2>
         <p className="text-muted-foreground mt-2 text-sm">
-          We're reviewing your payment. You'll receive an email once it's been
-          confirmed.
+          Төлбөрийг шалгаж байна. Баталгаажсаны дараа танд имэйл очно.
         </p>
         <p className="text-muted-foreground mt-2 max-w-md text-sm">
-          After approval, full course access will be unlocked for your account.
+          Баталгаажсаны дараа бүрэн хандалт идэвхжих болно.
         </p>
 
         <Link href={`/dashboard/course/${slug}`} className="mt-6">
           <Button variant="outline" className="flex items-center gap-2">
             <ArrowLeft className="h-4 w-4" />
-            Back to Course Preview
+            Сургалтийн хуудас руу буцах
           </Button>
         </Link>
       </div>
@@ -162,12 +157,12 @@ export default function CheckoutPage() {
       <div className="flex flex-col items-center justify-center gap-2 p-6 text-sm">
         <p className="text-muted-foreground flex items-center gap-2 font-semibold">
           <CheckCircle className="h-4 w-4 text-green-500" />
-          You are already enrolled in this course.
+          Та энэ сургалтанд аль хэдийн бүртгүүлсэн байна.
         </p>
         <Link href={`/dashboard/course/${slug}/learn`}>
           <Button size={"sm"} variant={"outline"}>
             <ArrowLeft />
-            Go to Course
+            Сургалт руу орох
           </Button>
         </Link>
       </div>
@@ -176,15 +171,20 @@ export default function CheckoutPage() {
 
   return (
     <div className="mx-auto mt-4 max-w-7xl px-4 pb-24 sm:px-6 lg:px-8">
-      <div className="mb-8 space-y-3 text-center">
-        <h1 className="text-2xl font-bold md:text-3xl">
-          Complete Your Purchase
-        </h1>
-        <p className="text-muted-foreground mx-auto max-w-md">
-          You're just one step away from accessing your course
+      <div className="mb-6">
+        <Link href={`/dashboard/course/${slug}`}>
+          <Button variant="outline" className="flex items-center gap-2">
+            <ArrowLeft className="h-4 w-4" />
+            Сургалтын хуудас руу буцах
+          </Button>
+        </Link>
+      </div>
+      <div className="mb-8 space-y-2">
+        <h1 className="text-2xl font-bold md:text-3xl">Төлбөр төлөх заавар</h1>
+        <p className="text-muted-foreground">
+          Сургалтын төлбөрийг төлөхийн тулд та доорх мэдээллийг ашиглана уу.
         </p>
       </div>
-
       <div className="grid gap-6 md:grid-cols-[1fr_350px]">
         <div className="space-y-6">
           {/* Course Summary Card */}
@@ -192,7 +192,7 @@ export default function CheckoutPage() {
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center text-lg">
                 <CreditCard className="text-primary mr-2 h-5 w-5" />
-                Course Summary
+                Сургалтын мэдээлэл
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -206,7 +206,7 @@ export default function CheckoutPage() {
                   <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex items-center">
                       <Clock className="text-muted-foreground mr-2 h-4 w-4" />
-                      <span className="text-sm">1-month access</span>
+                      <span className="text-sm">1 сарын эрх</span>
                     </div>
                     <Badge variant="secondary" className="w-fit">
                       {course?.price?.planTitle}
@@ -219,22 +219,19 @@ export default function CheckoutPage() {
 
           {/* Bank Transfer Instructions Card */}
           <Card>
-            <CardHeader className="bg-primary/5 border-b pb-3">
+            <CardHeader className="bg-primary/5 rounded-t-md border-b pb-3">
               <CardTitle className="flex items-center text-lg">
                 <BanknoteIcon className="text-primary mr-2 h-5 w-5" />
-                Bank Transfer Instructions
+                Дансаар шилжүүлэх
               </CardTitle>
-              <CardDescription>
-                Please transfer the exact amount to complete your purchase
-              </CardDescription>
             </CardHeader>
             <CardContent className="pt-6">
               <div className="space-y-5">
                 <div className="bg-muted/30 border-muted grid grid-cols-1 gap-4 rounded-lg border p-4">
                   {[
-                    { label: "Bank Name", value: "ХААН БАНК" },
-                    { label: "Account Number", value: "5000-XXXX-XXXX" },
-                    { label: "Account Name", value: "ABC" },
+                    { label: "Банк", value: "ХААН БАНК" },
+                    { label: "Дансны дугаар", value: "5000-XXXX-XXXX" },
+                    { label: "Дансны нэр", value: "ABC" },
                     {
                       label: "Гүйлгээний утга",
                       value: `${user?.studentId}-${course?.courseCode}`,
@@ -278,7 +275,7 @@ export default function CheckoutPage() {
                     className="flex items-center justify-between"
                   >
                     <div className="text-muted-foreground text-sm font-medium">
-                      Amount:
+                      Хичээлийн үнэ:
                     </div>
                     <div className="flex items-center font-medium">
                       ₮{course?.price?.amount?.toLocaleString("en-US")}
@@ -310,28 +307,37 @@ export default function CheckoutPage() {
 
                 <Alert>
                   <AlertCircle className="h-4 w-4" />
-                  <AlertTitle>Important</AlertTitle>
+                  <AlertTitle>Анхааруулга</AlertTitle>
                   <AlertDescription>
-                    Please use your email or name as the transaction reference
-                    so we can identify your payment.
+                    Та төлбөрөө шилжүүлсний дараа доорх "Төлбөр шалгах хүсэлт
+                    илгээх" товчийг дарна уу. Таны төлбөрийг 24 цагийн дотор
+                    шалгаж, баталгаажуулна. Баталгаажсаны дараа сургалтад
+                    бүртгэгдэх боломжтой болно.
                   </AlertDescription>
                 </Alert>
+
                 <form onSubmit={handleSubmit} className="space-y-5">
                   <Button
                     type="submit"
-                    className="h-12 w-full"
+                    className="h-12 w-full border border-emerald-800 bg-emerald-100 py-6 text-base font-bold text-emerald-600 hover:bg-emerald-200 hover:text-emerald-700 active:bg-emerald-300 dark:border-emerald-700 dark:bg-emerald-900 dark:text-emerald-200 dark:hover:bg-emerald-800 dark:hover:text-white dark:active:bg-emerald-700"
                     disabled={isSubmitting}
                   >
-                    {isSubmitting ? "Processing..." : "Submit Payment Proof"}
-                    {!isSubmitting && <Send />}
+                    {isSubmitting
+                      ? "Processing..."
+                      : "Төлбөр шалгах хүсэлт илгээх"}
+                    {isSubmitting ? (
+                      <Loader className="animate-spin" />
+                    ) : (
+                      <Send />
+                    )}
                   </Button>
                 </form>
               </div>
             </CardContent>
             <CardFooter className="flex flex-col items-center gap-3 border-t pt-4 pb-5">
               <div className="text-muted-foreground flex items-center text-sm">
-                <Clock className="mr-2 h-4 w-4 text-green-500" />
-                Your payment will be reviewed within 24 hours
+                <Clock className="mr-2 h-4 w-4" />
+                Таны төлбөрийг 24 цагийн дотор шалгаж баталгаажуулна
               </div>
             </CardFooter>
           </Card>
@@ -341,11 +347,11 @@ export default function CheckoutPage() {
           {/* Order Summary Card */}
           <Card>
             <CardHeader className="bg-muted/30 border-b pb-3">
-              <CardTitle className="text-lg">Order Summary</CardTitle>
+              <CardTitle className="text-lg">Захиалгын хураангуй</CardTitle>
             </CardHeader>
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
-                <span className="text-lg font-bold">Course Price</span>
+                <span className="text-lg font-bold">Хичээлийн үнэ</span>
                 <span className="text-primary text-lg font-bold">
                   ₮{course?.price?.amount?.toLocaleString("en-US")}
                 </span>
@@ -353,39 +359,13 @@ export default function CheckoutPage() {
             </CardContent>
             <CardFooter className="flex-col items-start pt-0">
               <Alert className="mt-2">
-                <Info className="h-4 w-4" />
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Буцаалтын нөхцөл:</AlertTitle>
                 <AlertDescription className="text-xs">
-                  <span className="font-medium">Refund Policy:</span> Full
-                  refund available within 7 days
+                  Төлбөрийг 7 хоногийн дотор бүрэн буцаах боломжтой
                 </AlertDescription>
               </Alert>
             </CardFooter>
-          </Card>
-
-          {/* Help/Contact Card */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center text-base">
-                <HelpCircle className="mr-2 h-4 w-4" />
-                Need Help?
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground mb-4 text-sm">
-                If you have any questions or issues with your payment, our
-                support team is here to help.
-              </p>
-              <div className="flex flex-col gap-2">
-                <Button variant="outline" className="w-full justify-start">
-                  <Info className="mr-2 h-4 w-4" />
-                  Payment FAQ
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <HelpCircle className="mr-2 h-4 w-4" />
-                  Contact Support
-                </Button>
-              </div>
-            </CardContent>
           </Card>
         </div>
       </div>

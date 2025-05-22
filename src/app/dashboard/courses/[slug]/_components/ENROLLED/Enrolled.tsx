@@ -33,7 +33,6 @@ import MuxPlayer from "@mux/mux-player-react";
 import {
   ArrowDown,
   ArrowRight,
-  CheckCircle,
   ChevronDown,
   CircleCheck,
   Loader,
@@ -256,7 +255,7 @@ export const Enrolled = ({ course }: { course: Course }) => {
     }
 
     return (
-      <Card className="flex h-full flex-col rounded-sm">
+      <Card className="bg-sidebar flex h-full flex-col rounded-sm">
         <CardHeader>
           <div className="flex items-start justify-between">
             <div>
@@ -369,7 +368,7 @@ export const Enrolled = ({ course }: { course: Course }) => {
       {isMobile ? (
         <>
           {/* -- Mobile: Table of Contents -- */}
-          <Card>
+          <Card className="bg-sidebar">
             <CardHeader>
               <CardTitle className="text-lg">Course Content</CardTitle>
             </CardHeader>
@@ -403,7 +402,10 @@ export const Enrolled = ({ course }: { course: Course }) => {
                               {completedLessons.includes(
                                 lesson?._id ?? null,
                               ) && (
-                                <CheckCircle className="text-primary ml-2 h-4 w-4 flex-shrink-0" />
+                                // mobile: checkmark
+                                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
+                                  <CircleCheck className="h-4 w-4 flex-shrink-0 text-green-600 dark:text-green-300" />
+                                </div>
                               )}
                             </button>
                           </li>
@@ -444,7 +446,7 @@ export const Enrolled = ({ course }: { course: Course }) => {
         /* -- Desktop: 2-column grid with contents + detail -- */
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           <div className="lg:col-span-1">
-            <Card className="rounded-sm">
+            <Card className="bg-sidebar rounded-sm">
               <CardHeader>
                 <CardTitle className="text-lg">Course Content</CardTitle>
               </CardHeader>
