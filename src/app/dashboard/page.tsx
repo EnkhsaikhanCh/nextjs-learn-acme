@@ -28,7 +28,7 @@ export default function Page() {
       </section>
 
       <MyCoursesSection userId={userId} />
-      <DiscoverCoursesSection userId={userId} />
+      <DiscoverCoursesSection />
     </main>
   );
 }

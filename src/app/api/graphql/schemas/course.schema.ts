@@ -108,12 +108,18 @@ export const typeDefs = gql`
     getUserEnrolledCoursesCount(
       userId: ID!
     ): GetUserEnrolledCoursesCountResponse!
-    getUserNotEnrolledCourses(userId: ID!): [Course]
+    getAllNotEnrolledCourses: CoursesQueryResponse
 
     getAllCoursesByInstructurId: [Course]
 
     getCoursePreviewData(slug: String!): getCoursePreviewDataResponse
     getCourseForEnrollment(slug: String!): CourseForEnrollmentResponse
+  }
+
+  type CoursesQueryResponse {
+    success: Boolean!
+    message: String
+    courses: [Course]
   }
 
   type CourseForEnrollmentResponse {
