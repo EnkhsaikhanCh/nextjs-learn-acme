@@ -1,5 +1,5 @@
 import { CourseModel } from "@/app/api/graphql/models/course.model";
-import { EnrollmentModel } from "@/app/api/graphql/models/enrollment.model";
+import { EnrollmentV2Model } from "@/app/api/graphql/models/enrollmentV2.model";
 import { getCourseForEnrollment } from "@/app/api/graphql/resolvers/queries/course/get-course-for-enrollment-query";
 import {
   EnrollmentStatus,
@@ -14,9 +14,12 @@ jest.mock("../../../../../src/lib/auth-userV2-utils", () => ({
 jest.mock("../../../../../src/app/api/graphql/models/course.model", () => ({
   CourseModel: { findOne: jest.fn() },
 }));
-jest.mock("../../../../../src/app/api/graphql/models/enrollment.model", () => ({
-  EnrollmentModel: { findOne: jest.fn() },
-}));
+jest.mock(
+  "../../../../../src/app/api/graphql/models/enrollmentV2.model",
+  () => ({
+    EnrollmentV2Model: { findOne: jest.fn() },
+  }),
+);
 
 describe("getCourseForEnrollment", () => {
   const studentUser: StudentUserV2 = {
@@ -77,7 +80,7 @@ describe("getCourseForEnrollment", () => {
       populate: jest.fn().mockResolvedValue(undefined),
     };
     (CourseModel.findOne as jest.Mock).mockResolvedValue(fakeCourse);
-    (EnrollmentModel.findOne as jest.Mock).mockResolvedValue(null);
+    (EnrollmentV2Model.findOne as jest.Mock).mockResolvedValue(null);
     const res = await getCourseForEnrollment(
       null,
       { slug: "slug1" },
@@ -97,7 +100,7 @@ describe("getCourseForEnrollment", () => {
       populate: jest.fn().mockResolvedValue(undefined),
     };
     (CourseModel.findOne as jest.Mock).mockResolvedValue(fakeCourse);
-    (EnrollmentModel.findOne as jest.Mock).mockResolvedValue({
+    (EnrollmentV2Model.findOne as jest.Mock).mockResolvedValue({
       status: EnrollmentStatus.Expired,
       expiryDate: undefined,
     });
@@ -115,7 +118,7 @@ describe("getCourseForEnrollment", () => {
       populate: jest.fn().mockResolvedValue(undefined),
     };
     (CourseModel.findOne as jest.Mock).mockResolvedValue(fakeCourse);
-    (EnrollmentModel.findOne as jest.Mock).mockResolvedValue({
+    (EnrollmentV2Model.findOne as jest.Mock).mockResolvedValue({
       status: EnrollmentStatus.Active,
       expiryDate: new Date(Date.now() - 1000),
     });
@@ -133,7 +136,7 @@ describe("getCourseForEnrollment", () => {
       populate: jest.fn().mockResolvedValue(undefined),
     };
     (CourseModel.findOne as jest.Mock).mockResolvedValue(fakeCourse);
-    (EnrollmentModel.findOne as jest.Mock).mockResolvedValue({
+    (EnrollmentV2Model.findOne as jest.Mock).mockResolvedValue({
       status: EnrollmentStatus.Active,
       expiryDate: new Date(Date.now() + 100000),
     });
