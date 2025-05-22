@@ -1,10 +1,4 @@
 # Mutation
-mutation CreatePayment($input: CreatePaymentInput!) {
-  createPayment(input: $input) {
-    _id
-  }
-}
-
 mutation CreatePaymentCheckRequest($input: CreatePaymentCheckRequest) {
   createPaymentCheckRequest(input: $input) {
     success

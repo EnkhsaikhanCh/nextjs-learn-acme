@@ -63,14 +63,6 @@ export const typeDefs = gql`
     status: PaymentStatus
   }
 
-  input CreatePaymentInput {
-    userId: ID!
-    courseId: ID!
-    amount: Float!
-    transactionNote: String
-    paymentMethod: PaymentMethod!
-  }
-
   input CreatePaymentCheckRequest {
     courseId: ID!
     amount: Float!
@@ -84,7 +76,6 @@ export const typeDefs = gql`
   }
 
   type Mutation {
-    createPayment(input: CreatePaymentInput!): Payment
     createPaymentCheckRequest(
       input: CreatePaymentCheckRequest
     ): PaymentMutationResponse

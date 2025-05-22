@@ -190,14 +190,6 @@ export type CreatePaymentCheckRequest = {
   transactionNote?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type CreatePaymentInput = {
-  amount: Scalars['Float']['input'];
-  courseId: Scalars['ID']['input'];
-  paymentMethod: PaymentMethod;
-  transactionNote?: InputMaybe<Scalars['String']['input']>;
-  userId: Scalars['ID']['input'];
-};
-
 export type CreateSectionInput = {
   courseId: Scalars['ID']['input'];
   title: Scalars['String']['input'];
@@ -413,7 +405,6 @@ export type Mutation = {
   createLesson: CreateLessonResponse;
   createLessonV2: CreateLessonV2Response;
   createMuxUploadUrl: MuxUpload;
-  createPayment?: Maybe<Payment>;
   createPaymentCheckRequest?: Maybe<PaymentMutationResponse>;
   createSection: CreateSectionResponse;
   createSubscriber: SubscribeResponse;
@@ -486,11 +477,6 @@ export type MutationCreateLessonV2Args = {
 export type MutationCreateMuxUploadUrlArgs = {
   corsOrigin?: InputMaybe<Scalars['String']['input']>;
   playbackPolicy?: InputMaybe<Array<PlaybackPolicy>>;
-};
-
-
-export type MutationCreatePaymentArgs = {
-  input: CreatePaymentInput;
 };
 
 
@@ -1619,13 +1605,6 @@ export type GetLessonV2byIdForStudentQueryVariables = Exact<{
 
 
 export type GetLessonV2byIdForStudentQuery = { __typename?: 'Query', getLessonV2byIdForStudent: { __typename?: 'AssignmentLesson', assignmentDetails?: string | null, _id: string, title: string, order: number, type: LessonType } | { __typename?: 'FileLesson', fileUrl?: string | null, _id: string, title: string, order: number, type: LessonType } | { __typename?: 'QuizLesson', _id: string, title: string, order: number, type: LessonType, quizQuestions: Array<{ __typename?: 'QuizQuestion', question: string, answers: Array<string>, correctAnswer: string }> } | { __typename?: 'TextLesson', content?: string | null, _id: string, title: string, order: number, type: LessonType } | { __typename?: 'VideoLesson', muxPlaybackId?: string | null, _id: string, title: string, order: number, type: LessonType } };
-
-export type CreatePaymentMutationVariables = Exact<{
-  input: CreatePaymentInput;
-}>;
-
-
-export type CreatePaymentMutation = { __typename?: 'Mutation', createPayment?: { __typename?: 'Payment', _id: string } | null };
 
 export type CreatePaymentCheckRequestMutationVariables = Exact<{
   input?: InputMaybe<CreatePaymentCheckRequest>;
@@ -3548,39 +3527,6 @@ export type GetLessonV2byIdForStudentQueryHookResult = ReturnType<typeof useGetL
 export type GetLessonV2byIdForStudentLazyQueryHookResult = ReturnType<typeof useGetLessonV2byIdForStudentLazyQuery>;
 export type GetLessonV2byIdForStudentSuspenseQueryHookResult = ReturnType<typeof useGetLessonV2byIdForStudentSuspenseQuery>;
 export type GetLessonV2byIdForStudentQueryResult = Apollo.QueryResult<GetLessonV2byIdForStudentQuery, GetLessonV2byIdForStudentQueryVariables>;
-export const CreatePaymentDocument = gql`
-    mutation CreatePayment($input: CreatePaymentInput!) {
-  createPayment(input: $input) {
-    _id
-  }
-}
-    `;
-export type CreatePaymentMutationFn = Apollo.MutationFunction<CreatePaymentMutation, CreatePaymentMutationVariables>;
-
-/**
- * __useCreatePaymentMutation__
- *
- * To run a mutation, you first call `useCreatePaymentMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useCreatePaymentMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [createPaymentMutation, { data, loading, error }] = useCreatePaymentMutation({
- *   variables: {
- *      input: // value for 'input'
- *   },
- * });
- */
-export function useCreatePaymentMutation(baseOptions?: Apollo.MutationHookOptions<CreatePaymentMutation, CreatePaymentMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreatePaymentMutation, CreatePaymentMutationVariables>(CreatePaymentDocument, options);
-      }
-export type CreatePaymentMutationHookResult = ReturnType<typeof useCreatePaymentMutation>;
-export type CreatePaymentMutationResult = Apollo.MutationResult<CreatePaymentMutation>;
-export type CreatePaymentMutationOptions = Apollo.BaseMutationOptions<CreatePaymentMutation, CreatePaymentMutationVariables>;
 export const CreatePaymentCheckRequestDocument = gql`
     mutation CreatePaymentCheckRequest($input: CreatePaymentCheckRequest) {
   createPaymentCheckRequest(input: $input) {
