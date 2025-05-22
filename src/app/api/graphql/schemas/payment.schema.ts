@@ -88,11 +88,6 @@ export const typeDefs = gql`
     createPaymentCheckRequest(
       input: CreatePaymentCheckRequest
     ): PaymentMutationResponse
-    updatePaymentStatus(
-      _id: ID!
-      status: PaymentStatus!
-      refundReason: String
-    ): Payment
     updatePaymentStatusV2(
       input: UpdatePaymentStatusV2Input
     ): PaymentMutationResponse

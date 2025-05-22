@@ -138,37 +138,6 @@ query GetUserEnrolledCoursesCount($userId: ID!) {
   }
 }
 
-query GetUserNotEnrolledCourses($userId: ID!) {
-  getUserNotEnrolledCourses(userId: $userId) {
-    _id
-    title
-    subtitle
-    slug
-    createdBy {
-      _id
-      fullName
-      profilePicture {
-        publicId
-        width
-        height
-        format
-      }
-    }
-    thumbnail {
-      publicId
-      width
-      height
-      format
-    }
-    price {
-      planTitle
-      description
-      amount
-      currency
-    }
-  }
-}
-
 query GetAllCoursesByInstructurId {
   getAllCoursesByInstructurId {
     _id
@@ -322,6 +291,35 @@ query GetCourseForEnrollment($slug: String!) {
             assignmentDetails
           }
         }
+      }
+    }
+  }
+}
+
+query GetAllNotEnrolledCourses {
+  getAllNotEnrolledCourses {
+    success
+    message
+    courses {
+      _id
+      title
+      subtitle
+      slug
+      createdBy {
+        fullName
+        profilePicture {
+          publicId
+          format
+        }
+      }
+      thumbnail {
+        publicId
+      }
+      price {
+        planTitle
+        description
+        amount
+        currency
       }
     }
   }

@@ -5,16 +5,6 @@ mutation CreatePayment($input: CreatePaymentInput!) {
   }
 }
 
-mutation UpdatePaymentStatus(
-  $id: ID!
-  $status: PaymentStatus!
-  $refundReason: String
-) {
-  updatePaymentStatus(_id: $id, status: $status, refundReason: $refundReason) {
-    _id
-  }
-}
-
 mutation CreatePaymentCheckRequest($input: CreatePaymentCheckRequest) {
   createPaymentCheckRequest(input: $input) {
     success
