@@ -6,3 +6,24 @@ mutation UpdateLessonCompletionStatus(
     message
   }
 }
+
+query MyEnrolledCoursesV2 {
+  myEnrolledCoursesV2 {
+    success
+    message
+    enrollments {
+      _id
+      courseId {
+        title
+        subtitle
+        slug
+        thumbnail {
+          publicId
+          format
+        }
+      }
+      progress
+      lastAccessedAt
+    }
+  }
+}

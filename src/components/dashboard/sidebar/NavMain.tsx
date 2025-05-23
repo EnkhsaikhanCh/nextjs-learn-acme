@@ -7,14 +7,11 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { BookOpen, House } from "lucide-react";
+import { House } from "lucide-react";
 import Link from "next/link";
 
 export function NavMain() {
-  const links = [
-    { href: "/dashboard", label: "Нүүр", icon: House },
-    { href: "/dashboard/courses", label: "Бүх сургалт", icon: BookOpen },
-  ];
+  const links = [{ href: "/dashboard", label: "Нүүр", icon: House }];
 
   return (
     <>
