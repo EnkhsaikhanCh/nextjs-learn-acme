@@ -1,12 +1,12 @@
 import { GraphQLError } from "graphql";
-import { EnrollmentModel } from "../../../models";
+import { EnrollmentV2Model } from "../../../models";
 
 export const getEnrollmentByUserAndCourse = async (
   _: unknown,
   { userId, courseId }: { userId: string; courseId: string },
 ) => {
   try {
-    const enrollment = await EnrollmentModel.findOne({ userId, courseId });
+    const enrollment = await EnrollmentV2Model.findOne({ userId, courseId });
 
     if (!enrollment) {
       throw new GraphQLError("Course not found", {

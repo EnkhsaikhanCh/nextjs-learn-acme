@@ -1,5 +1,5 @@
 import { GraphQLError } from "graphql";
-import { CourseModel, EnrollmentModel } from "../../../models";
+import { CourseModel, EnrollmentV2Model } from "../../../models";
 import { User } from "@/generated/graphql";
 import { requireAuthAndRoles } from "@/lib/auth-utils";
 
@@ -18,7 +18,7 @@ export const getAllCourseWithEnrollment = async (
     const courses = await CourseModel.find(filter).lean();
 
     // Хэрэглэгчийн бүртгэлтэй курсүүдийг олж авах
-    const enrollments = await EnrollmentModel.find({
+    const enrollments = await EnrollmentV2Model.find({
       userId: user!._id,
     }).select("courseId");
 

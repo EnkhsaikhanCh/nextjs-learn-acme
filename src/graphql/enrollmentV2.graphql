@@ -1,0 +1,8 @@
+mutation UpdateLessonCompletionStatus(
+  $input: UpdateLessonCompletionStatusInput!
+) {
+  updateLessonCompletionStatus(input: $input) {
+    success
+    message
+  }
+}

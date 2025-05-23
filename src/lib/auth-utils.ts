@@ -1,6 +1,6 @@
 // src/lib/auth-utils.ts
 import { GraphQLError } from "graphql";
-import { EnrollmentModel } from "@/app/api/graphql/models";
+import { EnrollmentV2Model } from "@/app/api/graphql/models";
 import { User } from "@/generated/graphql";
 
 export const requireAuthAndRoles = async (
@@ -25,7 +25,7 @@ export const requireAuthAndRoles = async (
     user.role === "STUDENT" &&
     options.courseId
   ) {
-    const enrollment = await EnrollmentModel.findOne({
+    const enrollment = await EnrollmentV2Model.findOne({
       userId: user._id,
       courseId: options.courseId,
       isDeleted: false,

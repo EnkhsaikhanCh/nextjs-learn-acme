@@ -1,5 +1,5 @@
 import { GraphQLError } from "graphql";
-import { CourseModel, EnrollmentModel } from "../../../models";
+import { CourseModel, EnrollmentV2Model } from "../../../models";
 import { UndoLessonCompletionInput } from "@/generated/graphql";
 
 type Section = {
@@ -20,7 +20,7 @@ export const undoLessonCompletion = async (
     }
 
     // Fetch and validate the enrollment
-    const enrollment = await EnrollmentModel.findById(enrollmentId);
+    const enrollment = await EnrollmentV2Model.findById(enrollmentId);
     if (!enrollment) {
       throw new GraphQLError("Enrollment not found", {
         extensions: {

@@ -1,10 +1,10 @@
 // src/app/api/graphql/resolver/queries/user/get-user-by-id.ts
 import { GraphQLError } from "graphql";
-import { UserModel } from "../../../models";
+import { UserV2Model } from "../../../models";
 
 export const getUserById = async (_: unknown, { _id }: { _id: string }) => {
   try {
-    const user = await UserModel.findById(_id);
+    const user = await UserV2Model.findById(_id);
 
     if (!user) {
       throw new GraphQLError("User not found", {

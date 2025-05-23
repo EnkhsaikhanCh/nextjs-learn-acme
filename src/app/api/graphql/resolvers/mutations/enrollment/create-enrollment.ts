@@ -1,6 +1,6 @@
 // src/app/api/graphql/resolvers/mutations/enrollment/create-enrollemnt.ts
 import { GraphQLError } from "graphql";
-import { CourseModel, EnrollmentModel, UserModel } from "../../../models";
+import { CourseModel, EnrollmentModel, UserV2Model } from "../../../models";
 import { CreateEnrollmentInput } from "@/generated/graphql";
 
 export const createEnrollment = async (
@@ -17,7 +17,7 @@ export const createEnrollment = async (
     }
 
     // Validate user and course existence
-    const user = await UserModel.findById(userId);
+    const user = await UserV2Model.findById(userId);
     if (!user) {
       throw new GraphQLError("User not found", {
         extensions: { code: "USER_NOT_FOUND" },

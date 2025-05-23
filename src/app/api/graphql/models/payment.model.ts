@@ -9,6 +9,7 @@ export type Payment = {
   transactionNote: string;
   paymentMethod: "QPAY" | "CREDIT_CARD" | "BANK_TRANSFER" | "OTHER";
   status: "PENDING" | "APPROVED" | "FAILED" | "REFUNDED";
+  usedForEnrollment: boolean;
   createdAt: Date;
   updatedAt: Date;
   refundReason?: string;
@@ -41,6 +42,10 @@ const PaymentSchema = new Schema<Payment>(
       enum: ["PENDING", "APPROVED", "FAILED", "REFUNDED"],
       required: true,
       default: "PENDING",
+    },
+    usedForEnrollment: {
+      type: Boolean,
+      default: false,
     },
     paymentMethod: {
       type: String,

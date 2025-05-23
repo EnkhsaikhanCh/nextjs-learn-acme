@@ -27,7 +27,6 @@ export default function Courses() {
           <div className="bg-muted aspect-video animate-pulse rounded-xl" />
         </div>
       )}
-
       {error && (
         <div className="flex h-[calc(100vh-4rem)] flex-col items-center justify-center">
           <h1 className="text-4xl font-bold text-gray-800">Алдаа гарлаа!</h1>
@@ -36,11 +35,10 @@ export default function Courses() {
           </p>
         </div>
       )}
-
       {data && (
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {data?.getAllCourseWithEnrollment.map((course, index) => (
-            <Link href={`/dashboard/courses/${course.slug}`} key={index}>
+            <Link href={`/dashboard/course/${course.slug}`} key={index}>
               <Card className="shadow-none">
                 <CardHeader className="p-0">
                   <div className="relative w-full overflow-hidden">

@@ -1,7 +1,7 @@
 import { User } from "@/generated/graphql";
 import { requireAuthAndRoles } from "@/lib/auth-utils";
 import { GraphQLError } from "graphql";
-import { CourseModel, EnrollmentModel, SectionModel } from "../../../models";
+import { CourseModel, EnrollmentV2Model, SectionModel } from "../../../models";
 
 export const getCourseDetailsForInstructor = async (
   _: unknown,
@@ -50,7 +50,7 @@ export const getCourseDetailsForInstructor = async (
       return sum + (section.lessonId?.length || 0);
     }, 0);
 
-    const totalEnrollment = await EnrollmentModel.countDocuments({
+    const totalEnrollment = await EnrollmentV2Model.countDocuments({
       courseId: course._id,
     });
 

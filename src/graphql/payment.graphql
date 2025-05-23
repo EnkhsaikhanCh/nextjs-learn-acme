@@ -1,17 +1,15 @@
 # Mutation
-mutation CreatePayment($input: CreatePaymentInput!) {
-  createPayment(input: $input) {
-    _id
+mutation CreatePaymentCheckRequest($input: CreatePaymentCheckRequest) {
+  createPaymentCheckRequest(input: $input) {
+    success
+    message
   }
 }
 
-mutation UpdatePaymentStatus(
-  $id: ID!
-  $status: PaymentStatus!
-  $refundReason: String
-) {
-  updatePaymentStatus(_id: $id, status: $status, refundReason: $refundReason) {
-    _id
+mutation UpdatePaymentStatusV2($input: UpdatePaymentStatusV2Input) {
+  updatePaymentStatusV2(input: $input) {
+    success
+    message
   }
 }
 
@@ -58,5 +56,29 @@ query GetPaymentByUserAndCourse($userId: ID!, $courseId: ID!) {
     paymentMethod
     refundReason
     createdAt
+  }
+}
+
+query GetCourseCheckoutData($slug: String!) {
+  getCourseCheckoutData(slug: $slug) {
+    success
+    message
+    course {
+      _id
+      title
+      subtitle
+      courseCode
+      price {
+        planTitle
+        amount
+        currency
+      }
+    }
+    user {
+      email
+      studentId
+    }
+    isPaid
+    isEnrolled
   }
 }

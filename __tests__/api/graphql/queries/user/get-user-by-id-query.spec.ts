@@ -1,10 +1,10 @@
 // Jest test for getUserById
 import { getUserById } from "../../../../../src/app/api/graphql/resolvers/queries/user";
-import { UserModel } from "../../../../../src/app/api/graphql/models/user.model";
+import { UserV2Model } from "../../../../../src/app/api/graphql/models/user.model";
 import { GraphQLError } from "graphql";
 
 jest.mock("../../../../../src/app/api/graphql/models/user.model", () => ({
-  UserModel: {
+  UserV2Model: {
     findById: jest.fn(),
   },
 }));
@@ -16,27 +16,27 @@ describe("getUserById", () => {
 
   it("should return the user if found", async () => {
     const mockUser = { _id: "123", name: "Test User" };
-    (UserModel.findById as jest.Mock).mockResolvedValue(mockUser);
+    (UserV2Model.findById as jest.Mock).mockResolvedValue(mockUser);
 
     const result = await getUserById({}, { _id: "123" });
 
-    expect(UserModel.findById).toHaveBeenCalledWith("123");
+    expect(UserV2Model.findById).toHaveBeenCalledWith("123");
     expect(result).toEqual(mockUser);
   });
 
   it("should throw a USER_NOT_FOUND error if user is not found", async () => {
-    (UserModel.findById as jest.Mock).mockResolvedValue(null);
+    (UserV2Model.findById as jest.Mock).mockResolvedValue(null);
 
     await expect(getUserById({}, { _id: "123" })).rejects.toThrow(GraphQLError);
     await expect(getUserById({}, { _id: "123" })).rejects.toThrow(
       "User not found",
     );
 
-    expect(UserModel.findById).toHaveBeenCalledWith("123");
+    expect(UserV2Model.findById).toHaveBeenCalledWith("123");
   });
 
   it("should throw an INTERNAL_SERVER_ERROR if an unexpected error occurs", async () => {
-    (UserModel.findById as jest.Mock).mockRejectedValue(
+    (UserV2Model.findById as jest.Mock).mockRejectedValue(
       new Error("Database error"),
     );
 
@@ -45,6 +45,6 @@ describe("getUserById", () => {
       "Failed to fetch user",
     );
 
-    expect(UserModel.findById).toHaveBeenCalledWith("123");
+    expect(UserV2Model.findById).toHaveBeenCalledWith("123");
   });
 });

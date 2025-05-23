@@ -1,7 +1,6 @@
 "use client";
 
-import { ChevronUp, CircleUserRound } from "lucide-react";
-
+import { ChevronUp, Loader } from "lucide-react";
 import {
   IconCreditCard,
   IconLogout,
@@ -25,11 +24,32 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { signOut } from "next-auth/react";
-import { useCachedSession } from "@/hooks/useCachedSession";
+import { useUserStore } from "@/store/UserStoreState";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useGetUserV2ByIdQuery } from "@/generated/graphql";
 
 export function NavUser() {
-  const { isMobile } = useSidebar();
-  const { session } = useCachedSession();
+  const { isMobile, open } = useSidebar();
+  const { user } = useUserStore();
+  const { clearUser } = useUserStore.getState();
+
+  const { data: userData, loading } = useGetUserV2ByIdQuery({
+    variables: { id: user?._id as string },
+    skip: !user?._id,
+    fetchPolicy: "cache-first",
+  });
+
+  if (!user || loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader className="animate-spin" />
+      </div>
+    );
+  }
+
+  const userV2 = userData?.getUserV2ById;
+  const isStudent = userV2?.__typename === "StudentUserV2";
+  const studentId = isStudent ? userV2.studentId : "N/A";
 
   return (
     <SidebarMenu>
@@ -40,15 +60,17 @@ export function NavUser() {
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <div className="flex h-5 w-5 items-center justify-center grayscale">
-                <CircleUserRound />
-              </div>
+              <Avatar
+                className={`${open ? "ml-0" : "-ml-2"} h-8 w-8 rounded-md`}
+              >
+                <AvatarFallback>
+                  {userV2?.email?.charAt(0).toUpperCase() || "?"}
+                </AvatarFallback>
+              </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">
-                  {session?.user.email}
-                </span>
+                <span className="truncate font-medium">{user.email}</span>
                 <span className="text-muted-foreground truncate text-xs">
-                  Student ID: {session?.user.studentId}
+                  Student ID: {studentId}
                 </span>
               </div>
               <ChevronUp className="ml-auto size-4" />
@@ -63,11 +85,9 @@ export function NavUser() {
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">
-                    {session?.user.email}
-                  </span>
+                  <span className="truncate font-medium">{user.email}</span>
                   <span className="text-muted-foreground truncate text-xs">
-                    Student ID: {session?.user.studentId}
+                    Student ID: {studentId}
                   </span>
                 </div>
               </div>
@@ -90,6 +110,7 @@ export function NavUser() {
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={async () => {
+                clearUser();
                 await signOut();
               }}
             >

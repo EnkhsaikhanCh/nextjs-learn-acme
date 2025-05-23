@@ -1,5 +1,5 @@
 import { GraphQLError } from "graphql";
-import { CourseModel, EnrollmentModel } from "../../../models";
+import { CourseModel, EnrollmentV2Model } from "../../../models";
 import { User } from "@/generated/graphql";
 import { requireAuthAndRoles } from "@/lib/auth-utils";
 
@@ -28,7 +28,7 @@ export const checkEnrollment = async (
 
   try {
     // Fetch enrollment
-    const enrollment = await EnrollmentModel.findOne({
+    const enrollment = await EnrollmentV2Model.findOne({
       courseId,
       userId: currentUserId,
     })

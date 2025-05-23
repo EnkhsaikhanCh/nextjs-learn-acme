@@ -1,4 +1,4 @@
-import { EnrollmentModel } from "@/app/api/graphql/models/enrollment.model";
+import { EnrollmentV2Model } from "@/app/api/graphql/models/enrollmentV2.model";
 import { getUserEnrolledCourses } from "@/app/api/graphql/resolvers/queries/enrollment/get-user-enrolled-courses-query";
 import { Role, User } from "@/generated/graphql";
 import { requireAuthAndRoles } from "@/lib/auth-utils";
@@ -9,11 +9,14 @@ jest.mock("../../../../../src/lib/auth-utils", () => ({
   requireAuthAndRoles: jest.fn(),
 }));
 
-jest.mock("../../../../../src/app/api/graphql/models/enrollment.model", () => ({
-  EnrollmentModel: {
-    find: jest.fn(),
-  },
-}));
+jest.mock(
+  "../../../../../src/app/api/graphql/models/enrollmentV2.model",
+  () => ({
+    EnrollmentV2Model: {
+      find: jest.fn(),
+    },
+  }),
+);
 
 describe("getUserEnrolledCourses", () => {
   const testUserId = "user123";
@@ -80,7 +83,7 @@ describe("getUserEnrolledCourses", () => {
     const findMock = {
       populate: jest.fn().mockResolvedValue(fakeEnrollments),
     };
-    (EnrollmentModel.find as jest.Mock).mockReturnValue(findMock);
+    (EnrollmentV2Model.find as jest.Mock).mockReturnValue(findMock);
 
     const result = await getUserEnrolledCourses(
       null,
@@ -92,7 +95,7 @@ describe("getUserEnrolledCourses", () => {
       "STUDENT",
       "ADMIN",
     ]);
-    expect(EnrollmentModel.find).toHaveBeenCalledWith({
+    expect(EnrollmentV2Model.find).toHaveBeenCalledWith({
       userId: testUserId,
       isDeleted: false,
       status: { $in: ["ACTIVE", "COMPLETED"] },
@@ -115,7 +118,7 @@ describe("getUserEnrolledCourses", () => {
     const findMock = {
       populate: jest.fn().mockResolvedValue(fakeEnrollments),
     };
-    (EnrollmentModel.find as jest.Mock).mockReturnValue(findMock);
+    (EnrollmentV2Model.find as jest.Mock).mockReturnValue(findMock);
 
     const result = await getUserEnrolledCourses(
       null,
@@ -123,7 +126,7 @@ describe("getUserEnrolledCourses", () => {
       { user: studentUser },
     );
 
-    expect(EnrollmentModel.find).toHaveBeenCalledWith({
+    expect(EnrollmentV2Model.find).toHaveBeenCalledWith({
       userId: testUserId,
       isDeleted: false,
       status: { $in: ["ACTIVE", "COMPLETED"] },
@@ -138,7 +141,7 @@ describe("getUserEnrolledCourses", () => {
   // 5. Throws INTERNAL_SERVER_ERROR if EnrollmentModel.find or populate fails
   it("throws INTERNAL_SERVER_ERROR if the enrollment query fails", async () => {
     (requireAuthAndRoles as jest.Mock).mockResolvedValue(undefined);
-    (EnrollmentModel.find as jest.Mock).mockReturnValue({
+    (EnrollmentV2Model.find as jest.Mock).mockReturnValue({
       populate: jest.fn().mockRejectedValue(new Error("DB error")),
     });
 
