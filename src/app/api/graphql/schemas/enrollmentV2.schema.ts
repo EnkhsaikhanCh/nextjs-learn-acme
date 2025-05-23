@@ -13,9 +13,9 @@ export const typeDefs = gql`
 
   type EnrollmentV2 {
     _id: ID!
-    userId: ID!
-    courseId: ID!
-    status: EnrollmentV2Status!
+    userId: User
+    courseId: Course
+    status: EnrollmentV2Status
     progress: Float
     isCompleted: Boolean
     completedLessons: [ID]
@@ -35,6 +35,13 @@ export const typeDefs = gql`
 
   extend type Query {
     checkEnrollmentV2(courseId: ID!): checkEnrollmentV2Response
+    myEnrolledCoursesV2: MyEnrolledCoursesV2Response
+  }
+
+  type MyEnrolledCoursesV2Response {
+    success: Boolean!
+    message: String
+    enrollments: [EnrollmentV2]
   }
 
   type checkEnrollmentV2Response {
