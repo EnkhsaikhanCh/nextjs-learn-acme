@@ -20,41 +20,6 @@ export const typeDefs = gql`
     ARCHIVED
   }
 
-  """
-  Хэрэглэгч курсэд нэвтэрсэн байдал болон бусад төлөв:
-  GUEST         - Одоогоор нэвтрээгүй буюу бүртгэлгүй
-  NOT_ENROLLED  - Нэвтэрсэн боловч курсэд бүртгэлгүй (эсвэл хугацаа дууссан)
-  ENROLLED      - Курсэд бүрэн эрхтэй
-  EXPIRED       - Бүртгэл байсан ч хугацаа дууссан
-  """
-  enum CourseAccessStatus {
-    ADMIN_ENROLLED
-    ADMIN_NOT_ENROLLED
-    GUEST
-    NOT_ENROLLED
-    ENROLLED
-    EXPIRED
-  }
-
-  """
-  Нэг Query-д буцах нэгдсэн бүтэц
-    - status: Хэрэглэгчийн төлөв
-    - coursePreviewData: Хэрэв GUEST эсвэл NOT_ENROLLED бол үзүүлэх 'preview' талын мэдээлэл
-    - fullContent: Хэрэв ENROLLED бол үзүүлэх курсийн бүрэн агуулга
-  """
-  type CourseForUserPayload {
-    status: CourseAccessStatus!
-    coursePreviewData: Course
-    fullContent: Course
-  }
-
-  type Thumbnail {
-    publicId: String!
-    width: Int
-    height: Int
-    format: String
-  }
-
   type Course {
     _id: ID!
     createdBy: InstructorUserV2
@@ -74,6 +39,13 @@ export const typeDefs = gql`
     whoIsThisFor: String
     isEnrolled: Boolean
     updatedAt: Date
+  }
+
+  type Thumbnail {
+    publicId: String!
+    width: Int
+    height: Int
+    format: String
   }
 
   type PricingPlan {
@@ -103,15 +75,11 @@ export const typeDefs = gql`
       slug: String!
     ): getCourseDetailsForInstructorResponse
     getAllCourse: [Course!]!
-    getAllCourseWithEnrollment: [Course!]!
-    getCourseForUser(slug: String!): CourseForUserPayload!
     getUserEnrolledCoursesCount(
       userId: ID!
     ): GetUserEnrolledCoursesCountResponse!
     getAllNotEnrolledCourses: CoursesQueryResponse
-
     getAllCoursesByInstructurId: [Course]
-
     getCoursePreviewData(slug: String!): getCoursePreviewDataResponse
     getCourseForEnrollment(slug: String!): CourseForEnrollmentResponse
   }
