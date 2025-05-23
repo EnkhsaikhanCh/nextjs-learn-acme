@@ -1,6 +1,6 @@
 import {
   EnrollmentV2Status,
-  MyEnrolledCoursesResponse,
+  MyEnrolledCoursesV2Response,
   UserV2,
   UserV2Role,
 } from "@/generated/graphql";
@@ -11,7 +11,7 @@ export const myEnrolledCoursesV2 = async (
   _: unknown,
   __: unknown,
   context: { user?: UserV2 },
-): Promise<MyEnrolledCoursesResponse> => {
+): Promise<MyEnrolledCoursesV2Response> => {
   const { user } = context;
   await requireAuthAndRolesV2(user, [UserV2Role.Student]);
 
