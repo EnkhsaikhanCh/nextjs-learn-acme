@@ -3,7 +3,7 @@ import {
   CourseModel,
   SectionModel,
   LessonV2Model,
-  EnrollmentModel,
+  EnrollmentV2Model,
 } from "@/app/api/graphql/models";
 import { requireAuthAndRolesV2 } from "@/lib/auth-userV2-utils";
 import {
@@ -17,7 +17,7 @@ jest.mock("../../../../../src/app/api/graphql/models", () => ({
   CourseModel: { findOne: jest.fn() },
   SectionModel: { find: jest.fn() },
   LessonV2Model: { find: jest.fn() },
-  EnrollmentModel: { exists: jest.fn() },
+  EnrollmentV2Model: { exists: jest.fn() },
 }));
 
 jest.mock("../../../../../src/lib/auth-userV2-utils", () => ({
@@ -140,7 +140,7 @@ describe("getCoursePreviewData (v2)", () => {
       }),
     };
     (CourseModel.findOne as jest.Mock).mockReturnValue(fakeCourse);
-    (EnrollmentModel.exists as jest.Mock).mockResolvedValue({ _id: "e1" });
+    (EnrollmentV2Model.exists as jest.Mock).mockResolvedValue({ _id: "e1" });
     const mockSections = [{}, {}, {}];
     (SectionModel.find as jest.Mock).mockReturnValue({
       populate: jest.fn().mockReturnValue({
@@ -177,7 +177,7 @@ describe("getCoursePreviewData (v2)", () => {
         populate: { path: "lessonId", model: "LessonV2" },
       },
     ]);
-    expect(EnrollmentModel.exists).toHaveBeenCalledWith({
+    expect(EnrollmentV2Model.exists).toHaveBeenCalledWith({
       courseId: "cid",
       userId: "user-1",
       status: "ACTIVE",

@@ -7,3 +7,4 @@ export * from "./payment.model";
 export * from "./subscriber.model";
 export * from "./lessonV2.model";
 export * from "./userV2.model";
+export * from "./enrollmentV2.model";

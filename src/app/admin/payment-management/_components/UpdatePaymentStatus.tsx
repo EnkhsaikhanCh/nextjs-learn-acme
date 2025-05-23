@@ -19,7 +19,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Payment,
   PaymentStatus,
-  useUpdatePaymentStatusMutation,
+  useUpdatePaymentStatusV2Mutation,
 } from "@/generated/graphql";
 import { ListTodo, Loader } from "lucide-react";
 import { useState } from "react";
@@ -51,44 +51,23 @@ export const UpdatePaymentStatus: React.FC<UpdatePaymentStatusProps> = ({
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [newStatus, setNewStatus] = useState<string>(currentStatus);
   const [refundReason, setRefundReason] = useState<string>(currentRefundReason);
-  const [updatePaymentStatus, { loading, error }] =
-    useUpdatePaymentStatusMutation();
-
-  const handleSendEmail = async (paymentId: string) => {
-    try {
-      const response = await fetch("/api/payment/send-confirmation-email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ paymentId }),
-      });
-
-      const data = await response.json();
-      if (response.ok) {
-        toast.success("Имэйл амжилттай илгээгдлээ!");
-      } else {
-        toast.error(`Имэйл илгээхэд алдаа гарлаа: ${data.error}`);
-      }
-    } catch {
-      toast.error("Имэйл илгээхэд алдаа гарлаа.");
-    }
-  };
+  const [updatePaymentStatusV2, { loading, error }] =
+    useUpdatePaymentStatusV2Mutation();
 
   const handleUpdate = async () => {
     try {
-      await updatePaymentStatus({
+      await updatePaymentStatusV2({
         variables: {
-          id: paymentId,
-          status: newStatus as PaymentStatus,
-          refundReason: newStatus === "REFUNDED" ? refundReason : null,
+          input: {
+            paymentId: paymentId,
+            status: newStatus as PaymentStatus,
+            refundReason: newStatus === "REFUNDED" ? refundReason : null,
+          },
         },
       });
 
       refetch();
       toast.success("Төлбөрийн төлөв амжилттай шинэчлэгдлээ!");
-
-      if (newStatus === "APPROVED") {
-        await handleSendEmail(paymentId); // Имэйл илгээх
-      }
 
       setIsOpen(false);
     } catch (error) {

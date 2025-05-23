@@ -5,7 +5,7 @@ import {
   UserV2Role,
 } from "@/generated/graphql";
 import { requireAuthAndRolesV2 } from "@/lib/auth-userV2-utils";
-import { CourseModel, EnrollmentModel } from "../../../models";
+import { CourseModel, EnrollmentV2Model } from "../../../models";
 
 export const getCourseForEnrollment = async (
   _: unknown,
@@ -43,7 +43,7 @@ export const getCourseForEnrollment = async (
       },
     });
 
-    const enrollment = await EnrollmentModel.findOne({
+    const enrollment = await EnrollmentV2Model.findOne({
       courseId: courseDoc._id,
       userId: user?._id,
     });

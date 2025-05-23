@@ -40,18 +40,20 @@ export function CourseEnrollCTA({
               <div className="flex items-baseline justify-between">
                 <div className="flex items-baseline gap-2">
                   <span className="text-3xl font-bold">
-                    ₮{course.price?.amount}
+                    ₮{course.price?.amount?.toLocaleString("en-US")}
                   </span>
                 </div>
               </div>
-              <Button
-                variant="outline"
-                className="w-full border border-emerald-800 bg-emerald-100 py-6 text-base font-bold text-emerald-600 hover:bg-emerald-200 hover:text-emerald-700 active:bg-emerald-300 dark:border-emerald-700 dark:bg-emerald-900 dark:text-emerald-200 dark:hover:bg-emerald-800 dark:hover:text-white dark:active:bg-emerald-700"
-                size="lg"
-              >
-                <GraduationCap />
-                Enroll Now
-              </Button>
+              <Link href={`/dashboard/course/${course.slug}/checkout`}>
+                <Button
+                  variant="outline"
+                  className="w-full border border-emerald-800 bg-emerald-100 py-6 text-base font-bold text-emerald-600 hover:bg-emerald-200 hover:text-emerald-700 active:bg-emerald-300 dark:border-emerald-700 dark:bg-emerald-900 dark:text-emerald-200 dark:hover:bg-emerald-800 dark:hover:text-white dark:active:bg-emerald-700"
+                  size="lg"
+                >
+                  <GraduationCap />
+                  Enroll Now
+                </Button>
+              </Link>
             </>
           )}
 

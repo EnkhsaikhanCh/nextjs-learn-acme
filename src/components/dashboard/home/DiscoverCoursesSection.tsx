@@ -6,17 +6,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useGetUserNotEnrolledCoursesQuery } from "@/generated/graphql";
+import { useGetAllNotEnrolledCoursesQuery } from "@/generated/graphql";
 import { CldImage } from "next-cloudinary";
 import Link from "next/link";
 
-export const DiscoverCoursesSection = ({ userId }: { userId?: string }) => {
-  const { data, loading } = useGetUserNotEnrolledCoursesQuery({
-    variables: {
-      userId: userId as string,
-    },
+export const DiscoverCoursesSection = () => {
+  const { data, loading, error } = useGetAllNotEnrolledCoursesQuery({
     fetchPolicy: "cache-first",
-    skip: !userId,
   });
 
   if (loading) {
@@ -29,8 +25,16 @@ export const DiscoverCoursesSection = ({ userId }: { userId?: string }) => {
     );
   }
 
-  if (!data?.getUserNotEnrolledCourses?.length) {
+  if (!data?.getAllNotEnrolledCourses?.courses?.length) {
     return;
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center">
+        <p className="text-red-500">Алдаа гарлаа</p>
+      </div>
+    );
   }
 
   return (
@@ -43,7 +47,7 @@ export const DiscoverCoursesSection = ({ userId }: { userId?: string }) => {
           </div>
         </div>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {data?.getUserNotEnrolledCourses?.map((course) => (
+          {data?.getAllNotEnrolledCourses?.courses.map((course) => (
             <Link href={`/dashboard/course/${course?.slug}`} key={course?._id}>
               <Card className="group w-full overflow-hidden ring-0 transition duration-200 hover:bg-emerald-50 hover:ring-2 hover:ring-emerald-500 focus:ring-2 dark:hover:bg-emerald-950">
                 <CardHeader className="w-full p-0">

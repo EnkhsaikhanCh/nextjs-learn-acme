@@ -1,4 +1,4 @@
-import { EnrollmentModel } from "@/app/api/graphql/models/enrollment.model";
+import { EnrollmentV2Model } from "@/app/api/graphql/models/enrollmentV2.model";
 import { getUserEnrolledCoursesCount } from "@/app/api/graphql/resolvers/queries/course/get-user-enrolled-courses-count";
 import { Role, User } from "@/generated/graphql";
 import { requireAuthAndRoles } from "@/lib/auth-utils";
@@ -9,11 +9,14 @@ jest.mock("../../../../../src/lib/auth-utils", () => ({
   requireAuthAndRoles: jest.fn(),
 }));
 
-jest.mock("../../../../../src/app/api/graphql/models/enrollment.model", () => ({
-  EnrollmentModel: {
-    countDocuments: jest.fn(),
-  },
-}));
+jest.mock(
+  "../../../../../src/app/api/graphql/models/enrollmentV2.model",
+  () => ({
+    EnrollmentV2Model: {
+      countDocuments: jest.fn(),
+    },
+  }),
+);
 
 describe("getUserEnrolledCoursesCount", () => {
   const testUserId = "user123";
@@ -36,7 +39,7 @@ describe("getUserEnrolledCoursesCount", () => {
     const activeCount = 3;
     const completedCount = 2;
     (requireAuthAndRoles as jest.Mock).mockResolvedValue(undefined);
-    (EnrollmentModel.countDocuments as jest.Mock)
+    (EnrollmentV2Model.countDocuments as jest.Mock)
       .mockImplementationOnce(() => Promise.resolve(activeCount))
       .mockImplementationOnce(() => Promise.resolve(completedCount));
 
@@ -61,7 +64,7 @@ describe("getUserEnrolledCoursesCount", () => {
 
   it("returns zero completion percentage when no courses are enrolled", async () => {
     (requireAuthAndRoles as jest.Mock).mockResolvedValue(undefined);
-    (EnrollmentModel.countDocuments as jest.Mock)
+    (EnrollmentV2Model.countDocuments as jest.Mock)
       .mockResolvedValueOnce(0) // active courses
       .mockResolvedValueOnce(0); // completed courses
 
@@ -105,7 +108,7 @@ describe("getUserEnrolledCoursesCount", () => {
 
   it("throws INTERNAL_SERVER_ERROR if countDocuments fails", async () => {
     (requireAuthAndRoles as jest.Mock).mockResolvedValue(undefined);
-    (EnrollmentModel.countDocuments as jest.Mock).mockRejectedValue(
+    (EnrollmentV2Model.countDocuments as jest.Mock).mockRejectedValue(
       new Error("DB error"),
     );
 

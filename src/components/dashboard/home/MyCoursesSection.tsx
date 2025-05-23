@@ -7,10 +7,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useGetUserEnrolledCoursesQuery } from "@/generated/graphql";
-import { Clock, Play } from "lucide-react";
+import { CirclePlay, Clock } from "lucide-react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
-import { mn } from "date-fns/locale"; // <- make sure to install this if not already
+import { mn } from "date-fns/locale";
 import { CldImage } from "next-cloudinary";
 
 export const MyCoursesSection = ({ userId }: { userId?: string }) => {
@@ -131,9 +131,9 @@ export const MyCoursesSection = ({ userId }: { userId?: string }) => {
                       : "N/A"}
                   </div>
                 </CardContent>
-                <CardFooter className="flex justify-end p-5 pt-0">
-                  <Button className="bg-violet-600 font-semibold text-white hover:bg-violet-700">
-                    <Play />
+                <CardFooter>
+                  <Button variant="outline" className="w-full">
+                    <CirclePlay />
                     Үргэлжлүүлэх
                   </Button>
                 </CardFooter>

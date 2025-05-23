@@ -1,7 +1,7 @@
 import { parseDurationToSeconds } from "@/utils/parseDurationToSeconds";
 import {
   CourseModel,
-  EnrollmentModel,
+  EnrollmentV2Model,
   LessonV2Model,
   SectionModel,
 } from "../../../models";
@@ -63,7 +63,7 @@ export const getCoursePreviewData = async (
       };
     }
 
-    const isEnrolled = await EnrollmentModel.exists({
+    const isEnrolled = await EnrollmentV2Model.exists({
       courseId: course._id,
       userId: user?._id,
       status: "ACTIVE",

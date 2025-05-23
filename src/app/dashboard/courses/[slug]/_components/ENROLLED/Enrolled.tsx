@@ -26,15 +26,13 @@ import {
   LessonType,
   useGetEnrollmentByUserAndCourseQuery,
   useGetLessonV2byIdForStudentLazyQuery,
-  useMarkLessonAsCompletedMutation,
-  useUndoLessonCompletionMutation,
+  useUpdateLessonCompletionStatusMutation,
 } from "@/generated/graphql";
 import { useUserStore } from "@/store/UserStoreState";
 import MuxPlayer from "@mux/mux-player-react";
 import {
   ArrowDown,
   ArrowRight,
-  CheckCircle,
   ChevronDown,
   CircleCheck,
   Loader,
@@ -63,8 +61,8 @@ export const Enrolled = ({ course }: { course: Course }) => {
 
   const userId = user?._id;
 
-  const [markLessonAsCompleted] = useMarkLessonAsCompletedMutation();
-  const [undoLessonCompletion] = useUndoLessonCompletionMutation();
+  const [updateLessonCompletionStatus] =
+    useUpdateLessonCompletionStatusMutation();
 
   const [
     fetchLessonById,
@@ -170,34 +168,10 @@ export const Enrolled = ({ course }: { course: Course }) => {
     }
   };
 
-  const handleMarkLessonAsCompleted = async (lessonId: string) => {
-    if (!enrollment?._id || !lessonId) {
-      return;
-    }
-    setLessonActionLoading(true);
-
-    try {
-      const response = await markLessonAsCompleted({
-        variables: {
-          input: {
-            enrollmentId: enrollment._id,
-            lessonId,
-          },
-        },
-      });
-
-      if (response.data?.markLessonAsCompleted) {
-        toast.success("Lesson marked as completed");
-        await enrollmentRefetch();
-      }
-    } catch {
-      toast.error("Failed to mark lesson as completed");
-    } finally {
-      setLessonActionLoading(false);
-    }
-  };
-
-  const handleUndoLessonCompletion = async (lessonId: string) => {
+  const handleToggleLessonCompletion = async (
+    lessonId: string,
+    completed: boolean,
+  ) => {
     if (!enrollment?._id || !lessonId) {
       return;
     }
@@ -205,21 +179,28 @@ export const Enrolled = ({ course }: { course: Course }) => {
     setLessonActionLoading(true);
 
     try {
-      const response = await undoLessonCompletion({
+      const response = await updateLessonCompletionStatus({
         variables: {
           input: {
             enrollmentId: enrollment._id,
             lessonId,
+            completed,
           },
         },
       });
 
-      if (response.data?.undoLessonCompletion) {
-        toast.success("Lesson undone");
+      if (response.data?.updateLessonCompletionStatus?.success) {
+        toast.success(
+          completed ? "Lesson marked as completed" : "Lesson unmarked",
+        );
         await enrollmentRefetch();
+      } else {
+        toast.error(
+          response.data?.updateLessonCompletionStatus?.message || "Failed",
+        );
       }
     } catch {
-      toast.error("Failed to undo lesson completion");
+      toast.error("Something went wrong. Please try again.");
     } finally {
       setLessonActionLoading(false);
     }
@@ -274,7 +255,7 @@ export const Enrolled = ({ course }: { course: Course }) => {
     }
 
     return (
-      <Card className="flex h-full flex-col rounded-sm">
+      <Card className="bg-sidebar flex h-full flex-col rounded-sm">
         <CardHeader>
           <div className="flex items-start justify-between">
             <div>
@@ -345,9 +326,10 @@ export const Enrolled = ({ course }: { course: Course }) => {
                 : "default"
             }
             onClick={() =>
-              completedLessons.includes(selectedLesson._id)
-                ? handleUndoLessonCompletion(selectedLesson._id)
-                : handleMarkLessonAsCompleted(selectedLesson._id)
+              handleToggleLessonCompletion(
+                selectedLesson._id,
+                !completedLessons.includes(selectedLesson._id),
+              )
             }
             disabled={isLessonActionLoading}
             className="flex w-full items-center justify-center sm:w-auto"
@@ -386,7 +368,7 @@ export const Enrolled = ({ course }: { course: Course }) => {
       {isMobile ? (
         <>
           {/* -- Mobile: Table of Contents -- */}
-          <Card>
+          <Card className="bg-sidebar">
             <CardHeader>
               <CardTitle className="text-lg">Course Content</CardTitle>
             </CardHeader>
@@ -420,7 +402,10 @@ export const Enrolled = ({ course }: { course: Course }) => {
                               {completedLessons.includes(
                                 lesson?._id ?? null,
                               ) && (
-                                <CheckCircle className="text-primary ml-2 h-4 w-4 flex-shrink-0" />
+                                // mobile: checkmark
+                                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
+                                  <CircleCheck className="h-4 w-4 flex-shrink-0 text-green-600 dark:text-green-300" />
+                                </div>
                               )}
                             </button>
                           </li>
@@ -461,7 +446,7 @@ export const Enrolled = ({ course }: { course: Course }) => {
         /* -- Desktop: 2-column grid with contents + detail -- */
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           <div className="lg:col-span-1">
-            <Card className="rounded-sm">
+            <Card className="bg-sidebar rounded-sm">
               <CardHeader>
                 <CardTitle className="text-lg">Course Content</CardTitle>
               </CardHeader>

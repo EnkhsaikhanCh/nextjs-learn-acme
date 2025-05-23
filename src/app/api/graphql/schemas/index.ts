@@ -11,6 +11,7 @@ import { typeDefs as AuthTypeDefs } from "./auth.schema";
 import { typeDefs as InstructorTypeDefs } from "./instructor.schema";
 import { typeDefs as LessonV2TypeDefs } from "./lessonV2.schema";
 import { typeDefs as UserV2TypeDefs } from "./userV2.schema";
+import { typeDefs as EnrollmentV2TypeDefs } from "./enrollmentV2.schema";
 
 export const typeDefs = mergeTypeDefs([
   UserTypeDefs,
@@ -24,4 +25,5 @@ export const typeDefs = mergeTypeDefs([
   InstructorTypeDefs,
   LessonV2TypeDefs,
   UserV2TypeDefs,
+  EnrollmentV2TypeDefs,
 ]);
