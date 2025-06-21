@@ -24,8 +24,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Course,
   LessonType,
-  useGetEnrollmentByUserAndCourseQuery,
   useGetLessonV2byIdForStudentLazyQuery,
+  useMyEnrollmentV2ForCourseQuery,
   useUpdateLessonCompletionStatusMutation,
 } from "@/generated/graphql";
 import { useUserStore } from "@/store/UserStoreState";
@@ -51,39 +51,37 @@ export const Enrolled = ({ course }: { course: Course }) => {
   const [isVideoLoading, setIsVideoLoading] = useState<boolean>(true);
 
   const { user } = useUserStore();
-  if (!user) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Loader className="animate-spin" />
-      </div>
-    );
-  }
 
-  const userId = user?._id;
+  /**
+   * Mutation and Queries
+   */
 
+  // Mutation to update lesson completion status
   const [updateLessonCompletionStatus] =
     useUpdateLessonCompletionStatusMutation();
 
+  // Lazy query to fetch lesson by ID
+  // This is used to load the lesson when a user clicks on it
+  // or when the page loads with a lesson ID in the URL
+  // This allows us to fetch the lesson details without loading all lessons at once
   const [
     fetchLessonById,
     { data: selectedLessonData, loading: selectedLessonLoading },
   ] = useGetLessonV2byIdForStudentLazyQuery();
   const selectedLesson = selectedLessonData?.getLessonV2byIdForStudent || null;
 
+  // Query to get enrollment data for the user in the current course
+  // This is used to check if the user is enrolled in the course
   const {
-    data: enrollmentData,
-    loading: enrollmentLoading,
-    refetch: enrollmentRefetch,
-  } = useGetEnrollmentByUserAndCourseQuery({
+    data: enrollmentDataV2,
+    loading: enrollmentLoadingV2,
+    refetch: enrollmentRefetchV2,
+  } = useMyEnrollmentV2ForCourseQuery({
     variables: {
-      userId: userId || "",
-      courseId: course?._id || "",
+      courseId: course?._id as string,
     },
-    skip: !userId || !course?._id,
+    skip: !user?._id || !course?._id,
   });
-
-  const enrollment = enrollmentData?.getEnrollmentByUserAndCourse;
-  const completedLessons = enrollment?.completedLessons || [];
 
   // Detect Mobile
   useEffect(() => {
@@ -93,6 +91,7 @@ export const Enrolled = ({ course }: { course: Course }) => {
     return () => window.removeEventListener("resize", checkViewport);
   }, []);
 
+  // Fetch Mux token for video playback
   const fetchMuxToken = async (muxPlaybackId: string) => {
     try {
       setTokenLoading(true);
@@ -172,7 +171,11 @@ export const Enrolled = ({ course }: { course: Course }) => {
     lessonId: string,
     completed: boolean,
   ) => {
-    if (!enrollment?._id || !lessonId) {
+    if (
+      !enrollmentDataV2?.myEnrollmentV2ForCourse?.enrollment?._id ||
+      !lessonId
+    ) {
+      toast.error("Enrollment data not found. Please try again.");
       return;
     }
 
@@ -182,7 +185,8 @@ export const Enrolled = ({ course }: { course: Course }) => {
       const response = await updateLessonCompletionStatus({
         variables: {
           input: {
-            enrollmentId: enrollment._id,
+            enrollmentId:
+              enrollmentDataV2?.myEnrollmentV2ForCourse?.enrollment?._id,
             lessonId,
             completed,
           },
@@ -193,11 +197,9 @@ export const Enrolled = ({ course }: { course: Course }) => {
         toast.success(
           completed ? "Lesson marked as completed" : "Lesson unmarked",
         );
-        await enrollmentRefetch();
+        await enrollmentRefetchV2();
       } else {
-        toast.error(
-          response.data?.updateLessonCompletionStatus?.message || "Failed",
-        );
+        toast.error("Failed to update lesson status");
       }
     } catch {
       toast.error("Something went wrong. Please try again.");
@@ -226,7 +228,10 @@ export const Enrolled = ({ course }: { course: Course }) => {
 
   const nextLesson = getNextLesson();
 
-  if (!enrollmentLoading && !enrollment) {
+  if (
+    !enrollmentLoadingV2 &&
+    !enrollmentDataV2?.myEnrollmentV2ForCourse?.enrollment
+  ) {
     return (
       <div className="flex h-screen items-center justify-center">
         <p>Энэ хэрэглэгч энэ курст бүртгэлгүй байна.</p>
@@ -261,7 +266,9 @@ export const Enrolled = ({ course }: { course: Course }) => {
             <div>
               <CardTitle>{selectedLesson.title}</CardTitle>
             </div>
-            {completedLessons.includes(selectedLesson._id) && (
+            {enrollmentDataV2?.myEnrollmentV2ForCourse?.enrollment?.completedLessons?.includes(
+              selectedLesson._id,
+            ) && (
               <Badge
                 variant="secondary"
                 className="ml-2 border border-green-600 bg-green-100 text-green-600 transition-colors dark:border-green-400 dark:bg-green-900 dark:text-green-300"
@@ -321,14 +328,18 @@ export const Enrolled = ({ course }: { course: Course }) => {
         <CardFooter className="flex flex-col gap-3 border-t py-3 sm:flex-row">
           <Button
             variant={
-              completedLessons.includes(selectedLesson._id)
+              enrollmentDataV2?.myEnrollmentV2ForCourse?.enrollment?.completedLessons?.includes(
+                selectedLesson._id,
+              )
                 ? "outline"
                 : "default"
             }
             onClick={() =>
               handleToggleLessonCompletion(
                 selectedLesson._id,
-                !completedLessons.includes(selectedLesson._id),
+                !enrollmentDataV2?.myEnrollmentV2ForCourse?.enrollment?.completedLessons?.includes(
+                  selectedLesson._id,
+                ),
               )
             }
             disabled={isLessonActionLoading}
@@ -341,7 +352,9 @@ export const Enrolled = ({ course }: { course: Course }) => {
             )}
             {isLessonActionLoading
               ? "Processing..."
-              : completedLessons.includes(selectedLesson._id)
+              : enrollmentDataV2?.myEnrollmentV2ForCourse?.enrollment?.completedLessons?.includes(
+                    selectedLesson._id,
+                  )
                 ? "Undo Completion"
                 : "Mark as Complete"}
           </Button>
@@ -399,7 +412,8 @@ export const Enrolled = ({ course }: { course: Course }) => {
                               <span className="flex-1 truncate">
                                 {lesson?.title}
                               </span>
-                              {completedLessons.includes(
+
+                              {enrollmentDataV2?.myEnrollmentV2ForCourse?.enrollment?.completedLessons?.includes(
                                 lesson?._id ?? null,
                               ) && (
                                 // mobile: checkmark
@@ -477,7 +491,7 @@ export const Enrolled = ({ course }: { course: Course }) => {
                                 <span className="flex-1 truncate">
                                   {lesson?.title}
                                 </span>
-                                {completedLessons.includes(
+                                {enrollmentDataV2?.myEnrollmentV2ForCourse?.enrollment?.completedLessons?.includes(
                                   lesson?._id ?? null,
                                 ) && (
                                   <div className="flex h-5 w-5 items-center justify-center rounded-full bg-green-100 dark:bg-green-900">

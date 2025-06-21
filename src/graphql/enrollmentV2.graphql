@@ -27,3 +27,16 @@ query MyEnrolledCoursesV2 {
     }
   }
 }
+
+query MyEnrollmentV2ForCourse($courseId: ID!) {
+  myEnrollmentV2ForCourse(courseId: $courseId) {
+    success
+    message
+    enrollment {
+      _id
+      progress
+      status
+      completedLessons
+    }
+  }
+}
