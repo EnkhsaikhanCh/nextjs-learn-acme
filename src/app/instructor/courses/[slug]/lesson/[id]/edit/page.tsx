@@ -241,14 +241,15 @@ export default function Page() {
                         variant={"outline"}
                         className="gap-1.5 border-orange-400 bg-orange-200 text-orange-900 dark:border-orange-900 dark:bg-orange-950 dark:text-orange-400"
                       >
-                        <LockOpen className="h-3 w-3 text-orange-700" /> FREE
+                        <LockOpen className="h-3 w-3 text-orange-700 dark:text-orange-400" />
+                        FREE
                       </Badge>
                     ) : (
                       <Badge
                         variant={"outline"}
                         className="gap-1.5 border-green-400 bg-green-200 text-green-700 dark:border-green-900 dark:bg-green-950 dark:text-green-400"
                       >
-                        <Lock className="h-3 w-3 text-green-700" />
+                        <Lock className="h-3 w-3 text-green-700 dark:text-green-400" />
                         Enrolled students only
                       </Badge>
                     )}
