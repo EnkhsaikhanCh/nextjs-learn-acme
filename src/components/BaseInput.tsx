@@ -19,6 +19,7 @@ interface BaseInputProp {
   tabIndex?: number;
   className?: string; // Контейнерын стиль
   inputClassName?: string; // Input-ийн стиль
+  disabled?: boolean; // Хэрэглэгчид disable хийх боломжтой болгох
 }
 
 export const BaseInput = ({
@@ -36,6 +37,7 @@ export const BaseInput = ({
   tabIndex,
   className,
   inputClassName,
+  disabled = false, // Хэрэглэгчид disable хийх боломжтой болгох
 }: BaseInputProp) => {
   const inputId = id || `input-${label.replace(/\s+/g, "-").toLowerCase()}`;
   const inputRef = useRef<HTMLInputElement>(null);
@@ -73,10 +75,11 @@ export const BaseInput = ({
         tabIndex={tabIndex}
         ref={inputRef}
         aria-invalid={!!error}
+        disabled={disabled}
         aria-describedby={ariaDescribedBy || undefined}
         className={`border bg-gray-50 ${
           error ? "border-red-500" : "border-gray-300"
-        } focus:outline-hidden focus:ring-2 focus:ring-blue-500 ${inputClassName || ""}`}
+        } focus:ring-2 focus:ring-blue-500 focus:outline-hidden ${inputClassName || ""}`}
       />
 
       {description && (
