@@ -44,6 +44,7 @@ import {
   Course,
   LessonType,
   useGetLessonV2byIdForStudentLazyQuery,
+  useGetMuxPlaybackTokenLazyQuery,
   useMyEnrollmentV2ForCourseQuery,
   useUpdateLessonCompletionStatusMutation,
 } from "@/generated/graphql";
@@ -111,28 +112,28 @@ export const Enrolled = ({ course }: { course: Course }) => {
     return () => window.removeEventListener("resize", checkViewport);
   }, []);
 
-  // Fetch Mux token for video playback
-  const fetchMuxToken = async (muxPlaybackId: string) => {
+  const [getMuxToken] = useGetMuxPlaybackTokenLazyQuery();
+
+  const fetchMuxToken = async (playbackId: string) => {
+    setTokenLoading(true);
+
     try {
-      setTokenLoading(true);
-
-      const response = await fetch("/api/mux/token", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ playbackId: muxPlaybackId }),
+      const { data } = await getMuxToken({
+        variables: { courseId: course._id, playbackId },
       });
+      const response = data?.getMuxPlaybackToken;
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch token");
+      if (response?.success && response.token) {
+        setToken(response.token);
+      } else {
+        toast.error("Unable to load the video. Please try again later.");
+        setToken(null);
       }
-
-      const json = await response.json();
-
-      setToken(json.token);
     } catch {
       toast.error(
-        "Failed to fetch secure video token. Please try again later.",
+        "Something went wrong while loading the video. Please try again.",
       );
+      setToken(null);
     } finally {
       setTokenLoading(false);
     }
@@ -315,7 +316,7 @@ export const Enrolled = ({ course }: { course: Course }) => {
                       <MediaPlayer autoHide>
                         <MediaPlayerVideo asChild>
                           <MuxVideo
-                            key={selectedLesson._id + "-" + token}
+                            key={`${selectedLesson._id}-${token ?? "no-token"}`}
                             playbackId={selectedLesson.muxPlaybackId as string}
                             tokens={{ playback: token }}
                             autoPlay={false}

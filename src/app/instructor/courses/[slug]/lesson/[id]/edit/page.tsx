@@ -5,6 +5,7 @@ import {
   useCreateMuxUploadUrlMutation,
   useGetInstructorCourseContentQuery,
   useGetLessonV2ByIdForInstructorQuery,
+  useGetMuxPlaybackTokenLazyQuery,
   useUpdateLessonV2GeneralInfoMutation,
   useUpdateLessonV2VideoMutation,
 } from "@/generated/graphql";
@@ -157,39 +158,40 @@ export default function Page() {
     }
   }, [lesson, reset]);
 
-  useEffect(() => {
-    const fetchToken = async () => {
-      if (
-        lesson?.type === LessonType.Video &&
-        "muxPlaybackId" in lesson &&
-        lesson.muxPlaybackId
-      ) {
-        try {
-          setTokenLoading(true);
-          const res = await fetch("/api/mux/token", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ playbackId: lesson.muxPlaybackId }),
-          });
+  const [getMuxToken] = useGetMuxPlaybackTokenLazyQuery();
 
-          if (!res.ok) {
-            throw new Error("Failed to fetch token");
-          }
+  const fetchMuxToken = async (playbackId: string) => {
+    try {
+      setTokenLoading(true);
+      const { data } = await getMuxToken({
+        variables: {
+          courseId: lesson?.sectionId.courseId?._id as string,
+          playbackId,
+        },
+      });
+      const token = data?.getMuxPlaybackToken?.token;
 
-          const json = await res.json();
-          setToken(json.token);
-          refetch();
-        } catch {
-          toast.error(
-            "Failed to fetch secure video token. Please try again later.",
-          );
-        } finally {
-          setTokenLoading(false);
-        }
+      if (token) {
+        setToken(token);
+      } else {
+        toast.error("Failed to retrieve Mux token");
       }
-    };
+    } catch {
+      toast.error("Error fetching token");
+    } finally {
+      setTokenLoading(false);
+    }
+  };
 
-    fetchToken();
+  useEffect(() => {
+    if (
+      lesson?.type === LessonType.Video &&
+      "muxPlaybackId" in lesson &&
+      lesson.muxPlaybackId
+    ) {
+      fetchMuxToken(lesson.muxPlaybackId);
+    }
+
     refetch();
   }, [lesson, refetch]);
 
