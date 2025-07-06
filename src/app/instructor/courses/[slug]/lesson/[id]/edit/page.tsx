@@ -483,163 +483,148 @@ export default function Page() {
                 </div>
 
                 <CardContent>
-                  <div
-                    className={cn(
-                      "bg-muted flex aspect-video min-h-48 grow items-center justify-center rounded-md",
-                    )}
-                  >
-                    {lesson.muxPlaybackId &&
-                      lesson.status === "ready" &&
-                      (token ? (
-                        <MediaPlayer autoHide>
-                          <MediaPlayerVideo asChild>
-                            <MuxVideo
-                              playbackId={lesson.muxPlaybackId}
-                              tokens={{ playback: token }}
-                              style={{ aspectRatio: "16/9" }}
-                              autoPlay={false}
-                              className="aspect-[16/9] overflow-hidden rounded-md"
-                            />
-                          </MediaPlayerVideo>
-                          <MediaPlayerLoading />
-                          <MediaPlayerError />
-                          <MediaPlayerVolumeIndicator />
-                          <MediaPlayerControls className="flex-col items-start gap-2.5">
-                            <MediaPlayerControlsOverlay />
-                            <MediaPlayerSeek />
-                            <div className="flex w-full items-center gap-2">
-                              <div className="flex flex-1 items-center gap-2">
-                                <MediaPlayerPlay />
-                                <MediaPlayerSeekBackward seconds={5} />
-                                <MediaPlayerSeekForward seconds={5} />
-                                <MediaPlayerVolume expandable />
-                                <MediaPlayerTime />
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <MediaPlayerCaptions />
-                                <MediaPlayerSettings />
-                                <MediaPlayerPiP />
-                                <MediaPlayerFullscreen />
-                              </div>
+                  {lesson.muxPlaybackId &&
+                    lesson.status === "ready" &&
+                    (token ? (
+                      <MediaPlayer autoHide>
+                        <MediaPlayerVideo asChild>
+                          <MuxVideo
+                            playbackId={lesson.muxPlaybackId}
+                            tokens={{ playback: token }}
+                            style={{ aspectRatio: "16/9" }}
+                            autoPlay={false}
+                            className="aspect-[16/9] overflow-hidden rounded-md"
+                          />
+                        </MediaPlayerVideo>
+                        <MediaPlayerLoading />
+                        <MediaPlayerError />
+                        <MediaPlayerVolumeIndicator />
+                        <MediaPlayerControls className="flex-col items-start gap-2.5">
+                          <MediaPlayerControlsOverlay />
+                          <MediaPlayerSeek />
+                          <div className="flex w-full items-center gap-2">
+                            <div className="flex flex-1 items-center gap-2">
+                              <MediaPlayerPlay />
+                              <MediaPlayerSeekBackward seconds={5} />
+                              <MediaPlayerSeekForward seconds={5} />
+                              <MediaPlayerVolume expandable />
+                              <MediaPlayerTime />
                             </div>
-                          </MediaPlayerControls>
-                        </MediaPlayer>
-                      ) : tokenLoading ? (
-                        <div className="text-muted-foreground text-sm">
-                          <Loader className="animate-spin" />
-                        </div>
-                      ) : (
-                        <div className="text-sm text-red-500">
-                          Failed to load video.
-                        </div>
-                      ))}
-
-                    {lesson.status === "preparing" && (
-                      <div className="text-background">
-                        <h4 className="text-xl font-semibold">Processing...</h4>
-                        <p className="mt-3 text-sm">
-                          This might take a few minutes!
-                        </p>
-                        <p className="text-sm">
-                          Make sure to save changes before leaving this page.
-                        </p>
-                      </div>
-                    )}
-
-                    {!lesson.muxPlaybackId && lesson.status !== "preparing" && (
-                      <div className="bg-muted flex aspect-video min-h-48 grow items-center justify-center rounded-md">
-                        <MuxUploaderDrop
-                          overlay
-                          overlayText="Drop to upload"
-                          muxUploader="my-uploader"
-                          className="h-full w-full rounded-md border-2 border-dashed [--overlay-background-color:#047857]"
-                        >
-                          <MuxUploader
-                            noDrop
-                            noProgress
-                            noRetry
-                            noStatus
-                            id="my-uploader"
-                            className="hidden"
-                            endpoint={async () => {
-                              const { data } = await createUpload();
-                              const { uploadId, uploadUrl, passthrough } =
-                                data?.createMuxUploadUrl ?? {};
-
-                              if (!uploadUrl || !uploadId || !passthrough) {
-                                throw new Error(
-                                  "Upload URL or passthrough missing",
-                                );
-                              }
-
-                              localStorage.setItem("uploadId", uploadId);
-                              localStorage.setItem("passthrough", passthrough);
-
-                              return uploadUrl;
-                            }}
-                            onSuccess={async () => {
-                              toast.success(
-                                "Upload complete! Mux is processing...",
-                              );
-
-                              const uploadId = localStorage.getItem("uploadId");
-                              const passthrough =
-                                localStorage.getItem("passthrough");
-
-                              if (!uploadId || !passthrough) {
-                                return toast.error(
-                                  "Upload ID or passthrough missing",
-                                );
-                              }
-
-                              await updateLessonV2Video({
-                                variables: {
-                                  id: lesson._id,
-                                  input: {
-                                    muxUploadId: uploadId,
-                                    passthrough: passthrough,
-                                  },
-                                },
-                              });
-
-                              toast.success(
-                                "Lesson updated with upload metadata",
-                              );
-                            }}
-                          ></MuxUploader>
-                          <h1 slot="heading">
-                            Drop a video file here to upload
-                          </h1>
-                          <span
-                            slot="separator"
-                            className="text-muted-foreground mt-2 text-sm italic"
-                          >
-                            — or —
-                          </span>
-                          <div>
-                            <MuxUploaderStatus muxUploader="my-uploader"></MuxUploaderStatus>
-
-                            <MuxUploaderProgress
-                              type="bar"
-                              muxUploader="my-uploader"
-                              className="w-full [--progress-bar-fill-color:#047857]"
-                            ></MuxUploaderProgress>
+                            <div className="flex items-center gap-2">
+                              <MediaPlayerCaptions />
+                              <MediaPlayerSettings />
+                              <MediaPlayerPiP />
+                              <MediaPlayerFullscreen />
+                            </div>
                           </div>
-                          <MuxUploaderFileSelect
-                            muxUploader="my-uploader"
-                            className="mt-4"
-                          >
-                            <Button variant={"outline"}>
-                              <Upload />
-                              <span className="sm:whitespace-nowrap">
-                                Select a file
-                              </span>
-                            </Button>
-                          </MuxUploaderFileSelect>
-                        </MuxUploaderDrop>
+                        </MediaPlayerControls>
+                      </MediaPlayer>
+                    ) : tokenLoading ? (
+                      <div className="text-muted-foreground text-sm">
+                        <Loader className="animate-spin" />
                       </div>
-                    )}
-                  </div>
+                    ) : (
+                      <div className="text-sm text-red-500">
+                        Failed to load video.
+                      </div>
+                    ))}
+
+                  {lesson.status === "preparing" && (
+                    <div className="text-background">
+                      <h4 className="text-xl font-semibold">Processing...</h4>
+                      <p className="mt-3 text-sm">
+                        This might take a few minutes!
+                      </p>
+                      <p className="text-sm">
+                        Make sure to save changes before leaving this page.
+                      </p>
+                    </div>
+                  )}
+
+                  {!lesson.muxPlaybackId && lesson.status !== "preparing" && (
+                    <div className="bg-muted flex aspect-video min-h-48 grow items-center justify-center rounded-md">
+                      <MuxUploaderDrop
+                        overlay
+                        overlayText="Drop to upload"
+                        muxUploader="my-uploader"
+                        className="h-full w-full rounded-md border-2 border-dashed [--overlay-background-color:#047857]"
+                      >
+                        <MuxUploader
+                          noDrop
+                          noProgress
+                          noRetry
+                          noStatus
+                          id="my-uploader"
+                          className="hidden"
+                          endpoint={async () => {
+                            const { data } = await createUpload();
+                            const { uploadId, uploadUrl, passthrough } =
+                              data?.createMuxUploadUrl ?? {};
+
+                            if (!uploadUrl || !uploadId || !passthrough) {
+                              throw new Error(
+                                "Upload URL or passthrough missing",
+                              );
+                            }
+
+                            localStorage.setItem("uploadId", uploadId);
+                            localStorage.setItem("passthrough", passthrough);
+
+                            return uploadUrl;
+                          }}
+                          onSuccess={async () => {
+                            toast.success(
+                              "Upload complete! Mux is processing...",
+                            );
+
+                            const uploadId = localStorage.getItem("uploadId");
+                            const passthrough =
+                              localStorage.getItem("passthrough");
+
+                            if (!uploadId || !passthrough) {
+                              return toast.error(
+                                "Upload ID or passthrough missing",
+                              );
+                            }
+
+                            await updateLessonV2Video({
+                              variables: {
+                                id: lesson._id,
+                                input: {
+                                  muxUploadId: uploadId,
+                                  passthrough: passthrough,
+                                },
+                              },
+                            });
+
+                            toast.success(
+                              "Lesson updated with upload metadata",
+                            );
+                          }}
+                        ></MuxUploader>
+
+                        <div>
+                          <MuxUploaderStatus muxUploader="my-uploader"></MuxUploaderStatus>
+                          <MuxUploaderProgress
+                            type="bar"
+                            muxUploader="my-uploader"
+                          ></MuxUploaderProgress>
+                        </div>
+
+                        <MuxUploaderFileSelect
+                          muxUploader="my-uploader"
+                          className="mt-4"
+                        >
+                          <Button variant={"outline"}>
+                            <Upload />
+                            <span className="sm:whitespace-nowrap">
+                              Select a video
+                            </span>
+                          </Button>
+                        </MuxUploaderFileSelect>
+                      </MuxUploaderDrop>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )}
@@ -647,7 +632,7 @@ export default function Page() {
             <Card className="border-destructive bg-destructive/10 text-destructive">
               <CardHeader>
                 <CardTitle>Delete this lesson</CardTitle>
-                <CardDescription>
+                <CardDescription className="font-semibold dark:text-white">
                   This action cannot be undone. All content and data will be
                   permanently deleted.
                 </CardDescription>
