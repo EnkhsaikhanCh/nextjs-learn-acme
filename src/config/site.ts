@@ -1,8 +1,14 @@
 export const siteConfig = {
   name: "BOXOD",
   description: "",
-  links: {
-    facebook: "https://www.facebook.com/",
-    instagram: "https://www.instagram.com/",
-  },
+  links: [
+    {
+      name: "@boxod.tips",
+      url: "https://www.facebook.com/boxod.tips",
+    },
+    {
+      name: "@boxod.tips",
+      url: "https://www.instagram.com/boxod.tips",
+    },
+  ],
 };
