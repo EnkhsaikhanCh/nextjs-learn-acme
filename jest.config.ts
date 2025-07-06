@@ -158,7 +158,6 @@ const config: Config = {
     "src/app/api/graphql/resolvers/queries/payment",
 
     // api
-    "src/app/api/mux/token",
     "src/app/api/webhook/mux",
 
     // Sentry
