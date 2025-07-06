@@ -1,0 +1,7 @@
+query GetMuxPlaybackToken($courseId: ID!, $playbackId: String!) {
+  getMuxPlaybackToken(courseId: $courseId, playbackId: $playbackId) {
+    success
+    message
+    token
+  }
+}

@@ -304,6 +304,13 @@ export type GetEmailFromTokenResponse = {
   email: Scalars['String']['output'];
 };
 
+export type GetMuxTokenResponse = {
+  __typename?: 'GetMuxTokenResponse';
+  message?: Maybe<Scalars['String']['output']>;
+  success: Scalars['Boolean']['output'];
+  token?: Maybe<Scalars['String']['output']>;
+};
+
 export type GetUserEnrolledCoursesCountResponse = {
   __typename?: 'GetUserEnrolledCoursesCountResponse';
   completedCount: Scalars['Int']['output'];
@@ -647,6 +654,11 @@ export type MutationVerifyOtpArgs = {
   otp: Scalars['String']['input'];
 };
 
+export type MuxSignedToken = {
+  __typename?: 'MuxSignedToken';
+  token: Scalars['String']['output'];
+};
+
 export type MuxUpload = {
   __typename?: 'MuxUpload';
   passthrough: Scalars['String']['output'];
@@ -773,6 +785,7 @@ export type Query = {
   getLessonV2byIdForStudent: LessonV2;
   getLessonsBySection: Array<Lesson>;
   getLessonsV2BySection: Array<LessonV2>;
+  getMuxPlaybackToken: GetMuxTokenResponse;
   getPaymentById?: Maybe<Payment>;
   getPaymentByUserAndCourse?: Maybe<Payment>;
   getPaymentsByUser?: Maybe<Array<Maybe<Payment>>>;
@@ -894,6 +907,12 @@ export type QueryGetLessonsBySectionArgs = {
 
 export type QueryGetLessonsV2BySectionArgs = {
   sectionId: Scalars['ID']['input'];
+};
+
+
+export type QueryGetMuxPlaybackTokenArgs = {
+  courseId: Scalars['ID']['input'];
+  playbackId: Scalars['String']['input'];
 };
 
 
@@ -1259,7 +1278,6 @@ export type VideoLesson = LessonV2 & {
   isPublished: Scalars['Boolean']['output'];
   muxAssetId?: Maybe<Scalars['String']['output']>;
   muxPlaybackId?: Maybe<Scalars['String']['output']>;
-  muxToken?: Maybe<Scalars['String']['output']>;
   muxUploadId?: Maybe<Scalars['String']['output']>;
   order: Scalars['Int']['output'];
   passthrough?: Maybe<Scalars['String']['output']>;
@@ -1578,6 +1596,14 @@ export type GetLessonV2byIdForStudentQueryVariables = Exact<{
 
 
 export type GetLessonV2byIdForStudentQuery = { __typename?: 'Query', getLessonV2byIdForStudent: { __typename?: 'AssignmentLesson', assignmentDetails?: string | null, _id: string, title: string, order: number, type: LessonType } | { __typename?: 'FileLesson', fileUrl?: string | null, _id: string, title: string, order: number, type: LessonType } | { __typename?: 'QuizLesson', _id: string, title: string, order: number, type: LessonType, quizQuestions: Array<{ __typename?: 'QuizQuestion', question: string, answers: Array<string>, correctAnswer: string }> } | { __typename?: 'TextLesson', content?: string | null, _id: string, title: string, order: number, type: LessonType } | { __typename?: 'VideoLesson', muxPlaybackId?: string | null, _id: string, title: string, order: number, type: LessonType } };
+
+export type GetMuxPlaybackTokenQueryVariables = Exact<{
+  courseId: Scalars['ID']['input'];
+  playbackId: Scalars['String']['input'];
+}>;
+
+
+export type GetMuxPlaybackTokenQuery = { __typename?: 'Query', getMuxPlaybackToken: { __typename?: 'GetMuxTokenResponse', success: boolean, message?: string | null, token?: string | null } };
 
 export type CreatePaymentCheckRequestMutationVariables = Exact<{
   input?: InputMaybe<CreatePaymentCheckRequest>;
@@ -3418,6 +3444,49 @@ export type GetLessonV2byIdForStudentQueryHookResult = ReturnType<typeof useGetL
 export type GetLessonV2byIdForStudentLazyQueryHookResult = ReturnType<typeof useGetLessonV2byIdForStudentLazyQuery>;
 export type GetLessonV2byIdForStudentSuspenseQueryHookResult = ReturnType<typeof useGetLessonV2byIdForStudentSuspenseQuery>;
 export type GetLessonV2byIdForStudentQueryResult = Apollo.QueryResult<GetLessonV2byIdForStudentQuery, GetLessonV2byIdForStudentQueryVariables>;
+export const GetMuxPlaybackTokenDocument = gql`
+    query GetMuxPlaybackToken($courseId: ID!, $playbackId: String!) {
+  getMuxPlaybackToken(courseId: $courseId, playbackId: $playbackId) {
+    success
+    message
+    token
+  }
+}
+    `;
+
+/**
+ * __useGetMuxPlaybackTokenQuery__
+ *
+ * To run a query within a React component, call `useGetMuxPlaybackTokenQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetMuxPlaybackTokenQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetMuxPlaybackTokenQuery({
+ *   variables: {
+ *      courseId: // value for 'courseId'
+ *      playbackId: // value for 'playbackId'
+ *   },
+ * });
+ */
+export function useGetMuxPlaybackTokenQuery(baseOptions: Apollo.QueryHookOptions<GetMuxPlaybackTokenQuery, GetMuxPlaybackTokenQueryVariables> & ({ variables: GetMuxPlaybackTokenQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetMuxPlaybackTokenQuery, GetMuxPlaybackTokenQueryVariables>(GetMuxPlaybackTokenDocument, options);
+      }
+export function useGetMuxPlaybackTokenLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMuxPlaybackTokenQuery, GetMuxPlaybackTokenQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetMuxPlaybackTokenQuery, GetMuxPlaybackTokenQueryVariables>(GetMuxPlaybackTokenDocument, options);
+        }
+export function useGetMuxPlaybackTokenSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetMuxPlaybackTokenQuery, GetMuxPlaybackTokenQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetMuxPlaybackTokenQuery, GetMuxPlaybackTokenQueryVariables>(GetMuxPlaybackTokenDocument, options);
+        }
+export type GetMuxPlaybackTokenQueryHookResult = ReturnType<typeof useGetMuxPlaybackTokenQuery>;
+export type GetMuxPlaybackTokenLazyQueryHookResult = ReturnType<typeof useGetMuxPlaybackTokenLazyQuery>;
+export type GetMuxPlaybackTokenSuspenseQueryHookResult = ReturnType<typeof useGetMuxPlaybackTokenSuspenseQuery>;
+export type GetMuxPlaybackTokenQueryResult = Apollo.QueryResult<GetMuxPlaybackTokenQuery, GetMuxPlaybackTokenQueryVariables>;
 export const CreatePaymentCheckRequestDocument = gql`
     mutation CreatePaymentCheckRequest($input: CreatePaymentCheckRequest) {
   createPaymentCheckRequest(input: $input) {
