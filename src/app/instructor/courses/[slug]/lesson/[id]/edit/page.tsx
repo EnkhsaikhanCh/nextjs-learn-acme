@@ -9,7 +9,6 @@ import {
   useUpdateLessonV2VideoMutation,
 } from "@/generated/graphql";
 import { useParams, useRouter } from "next/navigation";
-import MuxPlayer from "@mux/mux-player-react";
 import {
   ArrowLeft,
   Info,
@@ -55,6 +54,26 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Input } from "@/components/ui/input";
+import {
+  MediaPlayer,
+  MediaPlayerCaptions,
+  MediaPlayerControls,
+  MediaPlayerControlsOverlay,
+  MediaPlayerError,
+  MediaPlayerFullscreen,
+  MediaPlayerLoading,
+  MediaPlayerPiP,
+  MediaPlayerPlay,
+  MediaPlayerSeek,
+  MediaPlayerSeekBackward,
+  MediaPlayerSeekForward,
+  MediaPlayerSettings,
+  MediaPlayerTime,
+  MediaPlayerVideo,
+  MediaPlayerVolume,
+  MediaPlayerVolumeIndicator,
+} from "@/components/ui/media-player";
+import MuxVideo from "@mux/mux-video-react";
 
 const schema = z.object({
   title: z.string().optional(),
@@ -470,14 +489,39 @@ export default function Page() {
                     {lesson.muxPlaybackId &&
                       lesson.status === "ready" &&
                       (token ? (
-                        <MuxPlayer
-                          playbackId={lesson.muxPlaybackId}
-                          tokens={{ playback: token }}
-                          style={{ aspectRatio: "16/9" }}
-                          autoPlay={false}
-                          accentColor="#ac39f2"
-                          className="aspect-[16/9] overflow-hidden rounded-md"
-                        />
+                        <MediaPlayer autoHide>
+                          <MediaPlayerVideo asChild>
+                            <MuxVideo
+                              playbackId={lesson.muxPlaybackId}
+                              tokens={{ playback: token }}
+                              style={{ aspectRatio: "16/9" }}
+                              autoPlay={false}
+                              className="aspect-[16/9] overflow-hidden rounded-md"
+                            />
+                          </MediaPlayerVideo>
+                          <MediaPlayerLoading />
+                          <MediaPlayerError />
+                          <MediaPlayerVolumeIndicator />
+                          <MediaPlayerControls className="flex-col items-start gap-2.5">
+                            <MediaPlayerControlsOverlay />
+                            <MediaPlayerSeek />
+                            <div className="flex w-full items-center gap-2">
+                              <div className="flex flex-1 items-center gap-2">
+                                <MediaPlayerPlay />
+                                <MediaPlayerSeekBackward seconds={5} />
+                                <MediaPlayerSeekForward seconds={5} />
+                                <MediaPlayerVolume expandable />
+                                <MediaPlayerTime />
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <MediaPlayerCaptions />
+                                <MediaPlayerSettings />
+                                <MediaPlayerPiP />
+                                <MediaPlayerFullscreen />
+                              </div>
+                            </div>
+                          </MediaPlayerControls>
+                        </MediaPlayer>
                       ) : tokenLoading ? (
                         <div className="text-muted-foreground text-sm">
                           <Loader className="animate-spin" />

@@ -20,6 +20,25 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
+import {
+  MediaPlayer,
+  MediaPlayerCaptions,
+  MediaPlayerControls,
+  MediaPlayerControlsOverlay,
+  MediaPlayerError,
+  MediaPlayerFullscreen,
+  MediaPlayerLoading,
+  MediaPlayerPiP,
+  MediaPlayerPlay,
+  MediaPlayerSeek,
+  MediaPlayerSeekBackward,
+  MediaPlayerSeekForward,
+  MediaPlayerSettings,
+  MediaPlayerTime,
+  MediaPlayerVideo,
+  MediaPlayerVolume,
+  MediaPlayerVolumeIndicator,
+} from "@/components/ui/media-player";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Course,
@@ -29,7 +48,8 @@ import {
   useUpdateLessonCompletionStatusMutation,
 } from "@/generated/graphql";
 import { useUserStore } from "@/store/UserStoreState";
-import MuxPlayer from "@mux/mux-player-react";
+// import MuxPlayer from "@mux/mux-player-react";
+import MuxVideo from "@mux/mux-video-react";
 import {
   ArrowDown,
   ArrowRight,
@@ -292,20 +312,44 @@ export const Enrolled = ({ course }: { course: Course }) => {
                           <Loader className="h-6 w-6 animate-spin dark:text-white" />
                         </div>
                       )}
-                      <MuxPlayer
-                        key={selectedLesson._id + "-" + token}
-                        playbackId={selectedLesson.muxPlaybackId as string}
-                        tokens={{ playback: token }}
-                        style={{
-                          aspectRatio: "16/9",
-                          display: isVideoLoading ? "none" : "block",
-                        }}
-                        autoPlay={false}
-                        playsInline
-                        accentColor="#ac39f2"
-                        className="aspect-[16/9] overflow-hidden rounded-md"
-                        onCanPlay={() => setIsVideoLoading(false)}
-                      />
+                      <MediaPlayer autoHide>
+                        <MediaPlayerVideo asChild>
+                          <MuxVideo
+                            key={selectedLesson._id + "-" + token}
+                            playbackId={selectedLesson.muxPlaybackId as string}
+                            tokens={{ playback: token }}
+                            autoPlay={false}
+                            style={{
+                              aspectRatio: "16/9",
+                              display: isVideoLoading ? "none" : "block",
+                            }}
+                            className="aspect-[16/9] overflow-hidden rounded-md"
+                            onCanPlay={() => setIsVideoLoading(false)}
+                          />
+                        </MediaPlayerVideo>
+                        <MediaPlayerLoading />
+                        <MediaPlayerError />
+                        <MediaPlayerVolumeIndicator />
+                        <MediaPlayerControls className="flex-col items-start gap-2.5">
+                          <MediaPlayerControlsOverlay />
+                          <MediaPlayerSeek />
+                          <div className="flex w-full items-center gap-2">
+                            <div className="flex flex-1 items-center gap-2">
+                              <MediaPlayerPlay />
+                              <MediaPlayerSeekBackward seconds={5} />
+                              <MediaPlayerSeekForward seconds={5} />
+                              <MediaPlayerVolume expandable />
+                              <MediaPlayerTime />
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <MediaPlayerCaptions />
+                              <MediaPlayerSettings />
+                              <MediaPlayerPiP />
+                              <MediaPlayerFullscreen />
+                            </div>
+                          </div>
+                        </MediaPlayerControls>
+                      </MediaPlayer>
                     </>
                   ) : tokenLoading ? (
                     <div className="text-muted-foreground text-sm">
