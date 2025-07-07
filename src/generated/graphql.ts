@@ -252,9 +252,14 @@ export type EnrollmentV2 = {
 export type EnrollmentV2History = {
   __typename?: 'EnrollmentV2History';
   progress: Scalars['Float']['output'];
-  status: EnrollmentStatus;
+  status: EnrollmentV2HistoryStatus;
   updatedAt: Scalars['DateTime']['output'];
 };
+
+export enum EnrollmentV2HistoryStatus {
+  MarkedCompleted = 'MARKED_COMPLETED',
+  UnmarkedCompleted = 'UNMARKED_COMPLETED'
+}
 
 export type EnrollmentV2MutationResponse = {
   __typename?: 'EnrollmentV2MutationResponse';

@@ -17,6 +17,11 @@ export const typeDefs = gql`
     EXPIRED
   }
 
+  enum EnrollmentV2HistoryStatus {
+    MARKED_COMPLETED
+    UNMARKED_COMPLETED
+  }
+
   # ----------------------
   # Types
   # ----------------------
@@ -37,7 +42,7 @@ export const typeDefs = gql`
   }
 
   type EnrollmentV2History {
-    status: EnrollmentStatus!
+    status: EnrollmentV2HistoryStatus!
     progress: Float!
     updatedAt: Date!
   }

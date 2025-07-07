@@ -1,5 +1,7 @@
 import {
+  EnrollmentV2HistoryStatus,
   EnrollmentV2MutationResponse,
+  EnrollmentV2Status,
   UpdateLessonCompletionStatusInput,
   UserV2,
   UserV2Role,
@@ -81,15 +83,17 @@ export const updateLessonCompletionStatus = async (
     enrollment.updatedAt = now;
     enrollment.lastAccessedAt = now;
     enrollment.history.push({
-      status: completed ? "MARKED_COMPLETED" : "UNMARKED_COMPLETED",
+      status: completed
+        ? EnrollmentV2HistoryStatus.MarkedCompleted
+        : EnrollmentV2HistoryStatus.UnmarkedCompleted,
       progress: enrollment.progress,
       updatedAt: now,
     });
 
     if (enrollment.progress >= 100) {
-      enrollment.status = "COMPLETED";
-    } else if (enrollment.status === "COMPLETED") {
-      enrollment.status = "ACTIVE";
+      enrollment.status = EnrollmentV2Status.Completed;
+    } else if (enrollment.status === EnrollmentV2Status.Completed) {
+      enrollment.status = EnrollmentV2Status.Active;
     }
 
     enrollment.isCompleted = enrollment.progress >= 100;
