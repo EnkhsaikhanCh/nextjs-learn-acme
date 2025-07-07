@@ -84,7 +84,10 @@ export const getCoursePreviewData = async (
 
     const totalLessonDurationSeconds = lessons.reduce((sum, lesson) => {
       return (
-        sum + (lesson.duration ? parseDurationToSeconds(lesson.duration) : 0)
+        sum +
+        (typeof lesson.duration === "string"
+          ? parseDurationToSeconds(lesson.duration)
+          : 0)
       );
     }, 0);
 
