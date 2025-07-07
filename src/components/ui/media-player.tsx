@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { Badge } from "@/components/ui/badge";
@@ -778,10 +780,10 @@ function MediaPlayerRootImpl(props: MediaPlayerRootProps) {
         onKeyDown={onKeyDown}
         onKeyUp={onKeyUp}
         className={cn(
-          "dark relative isolate flex flex-col overflow-hidden rounded-lg bg-background outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_video]:relative [&_video]:object-contain",
+          "dark bg-background focus-visible:border-ring focus-visible:ring-ring/50 relative isolate flex flex-col overflow-hidden rounded-lg outline-none focus-visible:ring-[3px] data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_video]:relative [&_video]:object-contain",
           "data-[state=fullscreen]:[&_video]:size-full [:fullscreen_&]:flex [:fullscreen_&]:h-full [:fullscreen_&]:max-h-screen [:fullscreen_&]:flex-col [:fullscreen_&]:justify-between",
-          "[&_[data-slider]::before]:-top-4 [&_[data-slider]::before]:-bottom-2 [&_[data-slider]::before]:absolute [&_[data-slider]::before]:inset-x-0 [&_[data-slider]::before]:z-10 [&_[data-slider]::before]:h-8 [&_[data-slider]::before]:cursor-pointer [&_[data-slider]::before]:content-[''] [&_[data-slider]]:relative [&_[data-slot='media-player-seek']:not([data-hovering])::before]:cursor-default",
-          "[&_video::-webkit-media-text-track-display]:top-auto! [&_video::-webkit-media-text-track-display]:bottom-[4%]! [&_video::-webkit-media-text-track-display]:mb-0! data-[state=fullscreen]:data-[controls-visible]:[&_video::-webkit-media-text-track-display]:bottom-[9%]! data-[controls-visible]:[&_video::-webkit-media-text-track-display]:bottom-[13%]! data-[state=fullscreen]:[&_video::-webkit-media-text-track-display]:bottom-[7%]!",
+          "[&_[data-slider]]:relative [&_[data-slider]::before]:absolute [&_[data-slider]::before]:inset-x-0 [&_[data-slider]::before]:-top-4 [&_[data-slider]::before]:-bottom-2 [&_[data-slider]::before]:z-10 [&_[data-slider]::before]:h-8 [&_[data-slider]::before]:cursor-pointer [&_[data-slider]::before]:content-[''] [&_[data-slot='media-player-seek']:not([data-hovering])::before]:cursor-default",
+          "[&_video::-webkit-media-text-track-display]:top-auto! [&_video::-webkit-media-text-track-display]:bottom-[4%]! [&_video::-webkit-media-text-track-display]:mb-0! data-[controls-visible]:[&_video::-webkit-media-text-track-display]:bottom-[13%]! data-[state=fullscreen]:[&_video::-webkit-media-text-track-display]:bottom-[7%]! data-[state=fullscreen]:data-[controls-visible]:[&_video::-webkit-media-text-track-display]:bottom-[9%]!",
           className,
         )}
       >
@@ -911,6 +913,7 @@ function MediaPlayerLoading(props: MediaPlayerLoadingProps) {
     delayMs = 500,
     asChild,
     className,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     children,
     ...loadingProps
   } = props;
@@ -964,11 +967,11 @@ function MediaPlayerLoading(props: MediaPlayerLoadingProps) {
       data-slot="media-player-loading"
       {...loadingProps}
       className={cn(
-        "fade-in-0 zoom-in-95 pointer-events-none absolute inset-0 z-50 flex animate-in items-center justify-center duration-200",
+        "fade-in-0 zoom-in-95 animate-in pointer-events-none absolute inset-0 z-50 flex items-center justify-center duration-200",
         className,
       )}
     >
-      <Loader2Icon className="size-20 animate-spin stroke-[.0938rem] text-primary" />
+      <Loader2Icon className="text-primary size-20 animate-spin stroke-[.0938rem]" />
     </LoadingPrimitive>
   );
 }
@@ -1102,12 +1105,12 @@ function MediaPlayerError(props: MediaPlayerErrorProps) {
     >
       {children ?? (
         <div className="flex max-w-md flex-col items-center gap-4 px-6 py-8 text-center">
-          <AlertTriangleIcon className="size-12 text-destructive" />
+          <AlertTriangleIcon className="text-destructive size-12" />
           <div className="flex flex-col gap-px text-center">
-            <h3 className="font-semibold text-xl tracking-tight">
+            <h3 className="text-xl font-semibold tracking-tight">
               {errorLabel}
             </h3>
-            <p className="text-balance text-muted-foreground text-sm leading-relaxed">
+            <p className="text-muted-foreground text-sm leading-relaxed text-balance">
               {errorDescription}
             </p>
           </div>
@@ -1182,7 +1185,7 @@ function MediaPlayerVolumeIndicator(props: MediaPlayerVolumeIndicatorProps) {
         className,
       )}
     >
-      <div className="fade-in-0 zoom-in-95 flex animate-in flex-col items-center gap-3 rounded-lg bg-black/30 px-6 py-4 text-white backdrop-blur-xs duration-200">
+      <div className="fade-in-0 zoom-in-95 animate-in flex flex-col items-center gap-3 rounded-lg bg-black/30 px-6 py-4 text-white backdrop-blur-xs duration-200">
         <div className="flex items-center gap-2">
           {mediaVolumeLevel === "off" || mediaMuted ? (
             <VolumeXIcon className="size-6" />
@@ -1191,7 +1194,7 @@ function MediaPlayerVolumeIndicator(props: MediaPlayerVolumeIndicatorProps) {
           ) : (
             <Volume1Icon className="size-6" />
           )}
-          <span className="font-medium text-sm tabular-nums">
+          <span className="text-sm font-medium tabular-nums">
             {mediaMuted ? "Muted" : `${volumePercentage}%`}
           </span>
         </div>
@@ -1238,13 +1241,14 @@ function MediaPlayerControlsOverlay(props: MediaPlayerControlsOverlayProps) {
       data-visible={controlsVisible ? "" : undefined}
       {...overlayProps}
       className={cn(
-        "-z-10 pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 transition-opacity duration-200 data-[visible]:opacity-100",
+        "pointer-events-none absolute inset-0 -z-10 bg-gradient-to-t from-black/80 to-transparent opacity-0 transition-opacity duration-200 data-[visible]:opacity-100",
         className,
       )}
     />
   );
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface MediaPlayerPlayProps extends React.ComponentProps<typeof Button> {}
 
 function MediaPlayerPlay(props: MediaPlayerPlayProps) {
@@ -2083,7 +2087,7 @@ function MediaPlayerSeek(props: MediaPlayerSeekProps) {
         max={seekableEnd}
         step={0.01}
         className={cn(
-          "relative flex w-full touch-none select-none items-center data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+          "relative flex w-full touch-none items-center select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
           className,
         )}
         value={[displayValue]}
@@ -2093,19 +2097,19 @@ function MediaPlayerSeek(props: MediaPlayerSeekProps) {
         onPointerLeave={onPointerLeave}
         onPointerMove={onPointerMove}
       >
-        <SliderPrimitive.Track className="relative h-1 w-full grow overflow-hidden rounded-full bg-primary/40">
+        <SliderPrimitive.Track className="bg-primary/40 relative h-1 w-full grow overflow-hidden rounded-full">
           <div
             data-slot="media-player-seek-buffered"
-            className="absolute h-full bg-primary/70 will-change-[width]"
+            className="bg-primary/70 absolute h-full will-change-[width]"
             style={{
               width: `${bufferedProgress * 100}%`,
             }}
           />
-          <SliderPrimitive.Range className="absolute h-full bg-primary will-change-[width]" />
+          <SliderPrimitive.Range className="bg-primary absolute h-full will-change-[width]" />
           {seekState.isHovering && seekableEnd > 0 && (
             <div
               data-slot="media-player-seek-hover-range"
-              className="absolute h-full bg-primary/70 will-change-[width,opacity]"
+              className="bg-primary/70 absolute h-full will-change-[width,opacity]"
               style={{
                 width: `var(${SEEK_HOVER_PERCENT}, 0%)`,
                 transition: "opacity 150ms ease-out",
@@ -2114,7 +2118,7 @@ function MediaPlayerSeek(props: MediaPlayerSeekProps) {
           )}
           {chapterSeparators}
         </SliderPrimitive.Track>
-        <SliderPrimitive.Thumb className="relative z-10 block size-2.5 shrink-0 rounded-full bg-primary shadow-sm ring-ring/50 transition-[color,box-shadow] will-change-transform hover:ring-4 focus-visible:outline-hidden focus-visible:ring-4 disabled:pointer-events-none disabled:opacity-50" />
+        <SliderPrimitive.Thumb className="bg-primary ring-ring/50 relative z-10 block size-2.5 shrink-0 rounded-full shadow-sm transition-[color,box-shadow] will-change-transform hover:ring-4 focus-visible:ring-4 focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50" />
       </SliderPrimitive.Root>
       {!withoutTooltip &&
         !context.withoutTooltip &&
@@ -2123,7 +2127,7 @@ function MediaPlayerSeek(props: MediaPlayerSeekProps) {
           <MediaPlayerPortal>
             <div
               ref={tooltipRef}
-              className="pointer-events-none z-50 [backface-visibility:hidden] [contain:layout_style] [transition:opacity_150ms_ease-in-out]"
+              className="pointer-events-none z-50 [contain:layout_style] [backface-visibility:hidden] [transition:opacity_150ms_ease-in-out]"
               style={{
                 position: "fixed" as const,
                 left: `var(${SEEK_TOOLTIP_X}, 0rem)`,
@@ -2135,7 +2139,7 @@ function MediaPlayerSeek(props: MediaPlayerSeekProps) {
             >
               <div
                 className={cn(
-                  "flex flex-col items-center gap-1.5 rounded-md border bg-background text-foreground shadow-sm dark:bg-zinc-900",
+                  "bg-background text-foreground flex flex-col items-center gap-1.5 rounded-md border shadow-sm dark:bg-zinc-900",
                   thumbnail && "min-h-10",
                   !thumbnail && currentChapterCue && "px-3 py-1.5",
                 )}
@@ -2163,7 +2167,7 @@ function MediaPlayerSeek(props: MediaPlayerSeekProps) {
                 {currentChapterCue && (
                   <div
                     data-slot="media-player-seek-chapter-title"
-                    className="line-clamp-2 max-w-48 text-balance text-center text-xs"
+                    className="line-clamp-2 max-w-48 text-center text-xs text-balance"
                   >
                     {currentChapterCue.text}
                   </div>
@@ -2171,7 +2175,7 @@ function MediaPlayerSeek(props: MediaPlayerSeekProps) {
                 <div
                   data-slot="media-player-seek-time"
                   className={cn(
-                    "whitespace-nowrap text-center text-xs tabular-nums",
+                    "text-center text-xs whitespace-nowrap tabular-nums",
                     thumbnail && "pb-1.5",
                     !(thumbnail || currentChapterCue) && "px-2.5 py-1",
                   )}
@@ -2318,7 +2322,7 @@ function MediaPlayerVolume(props: MediaPlayerVolumeProps) {
         max={1}
         step={0.1}
         className={cn(
-          "relative flex touch-none select-none items-center",
+          "relative flex touch-none items-center select-none",
           expandable
             ? "w-0 opacity-0 transition-[width,opacity] duration-200 ease-in-out group-focus-within:w-16 group-focus-within:opacity-100 group-hover:w-16 group-hover:opacity-100"
             : "w-16",
@@ -2330,9 +2334,9 @@ function MediaPlayerVolume(props: MediaPlayerVolumeProps) {
         onValueCommit={onVolumeCommit}
       >
         <SliderPrimitive.Track className="relative h-1 w-full grow overflow-hidden rounded-full bg-zinc-500">
-          <SliderPrimitive.Range className="absolute h-full bg-primary will-change-[width]" />
+          <SliderPrimitive.Range className="bg-primary absolute h-full will-change-[width]" />
         </SliderPrimitive.Track>
-        <SliderPrimitive.Thumb className="block size-2.5 shrink-0 rounded-full bg-primary shadow-sm ring-ring/50 transition-[color,box-shadow] will-change-transform hover:ring-4 focus-visible:outline-hidden focus-visible:ring-4 disabled:pointer-events-none disabled:opacity-50" />
+        <SliderPrimitive.Thumb className="bg-primary ring-ring/50 block size-2.5 shrink-0 rounded-full shadow-sm transition-[color,box-shadow] will-change-transform hover:ring-4 focus-visible:ring-4 focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50" />
       </SliderPrimitive.Root>
     </div>
   );
@@ -2399,7 +2403,7 @@ function MediaPlayerTime(props: MediaPlayerTimeProps) {
       dir={context.dir}
       {...timeProps}
       className={cn(
-        "flex items-center gap-1 text-foreground/80 text-sm",
+        "text-foreground/80 flex items-center gap-1 text-sm",
         className,
       )}
     >
@@ -2478,7 +2482,7 @@ function MediaPlayerPlaybackSpeed(props: MediaPlayerPlaybackSpeedProps) {
             variant="ghost"
             size="icon"
             className={cn(
-              "h-8 w-16 aria-[expanded=true]:bg-accent/50",
+              "aria-[expanded=true]:bg-accent/50 h-8 w-16",
               className,
             )}
           >
@@ -2932,7 +2936,7 @@ function MediaPlayerSettings(props: MediaPlayerSettingsProps) {
             variant="ghost"
             size="icon"
             className={cn(
-              "size-8 aria-[expanded=true]:bg-accent/50",
+              "aria-[expanded=true]:bg-accent/50 size-8",
               className,
             )}
           >
@@ -3106,7 +3110,7 @@ function MediaPlayerTooltip(props: MediaPlayerTooltipProps) {
       <TooltipContent
         container={context.portalContainer}
         sideOffset={tooltipSideOffset}
-        className="flex items-center gap-2 border bg-accent px-2 py-1 font-medium text-foreground data-[side=top]:mb-3.5 dark:bg-zinc-900 [&>span]:hidden"
+        className="bg-accent text-foreground flex items-center gap-2 border px-2 py-1 font-medium data-[side=top]:mb-3.5 dark:bg-zinc-900 [&>span]:hidden"
       >
         <p>{tooltip}</p>
         {Array.isArray(shortcut) ? (
@@ -3114,7 +3118,7 @@ function MediaPlayerTooltip(props: MediaPlayerTooltipProps) {
             {shortcut.map((shortcutKey) => (
               <kbd
                 key={shortcutKey}
-                className="select-none rounded border bg-secondary px-1.5 py-0.5 font-mono text-[11.2px] text-foreground shadow-xs"
+                className="bg-secondary text-foreground rounded border px-1.5 py-0.5 font-mono text-[11.2px] shadow-xs select-none"
               >
                 <abbr title={shortcutKey} className="no-underline">
                   {shortcutKey}
@@ -3126,7 +3130,7 @@ function MediaPlayerTooltip(props: MediaPlayerTooltipProps) {
           shortcut && (
             <kbd
               key={shortcut}
-              className="select-none rounded border bg-secondary px-1.5 py-px font-mono text-[11.2px] text-foreground shadow-xs"
+              className="bg-secondary text-foreground rounded border px-1.5 py-px font-mono text-[11.2px] shadow-xs select-none"
             >
               <abbr title={shortcut} className="no-underline">
                 {shortcut}
