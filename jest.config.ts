@@ -52,7 +52,7 @@ const config: Config = {
     "src/store/UserStoreState.ts",
 
     // src/confiq
-    "src/config/lessonTypeConfig.ts",
+    "src/config/",
 
     // src/components
     "src/components/ui",
