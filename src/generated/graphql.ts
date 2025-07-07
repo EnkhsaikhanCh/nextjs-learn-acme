@@ -88,22 +88,6 @@ export type Course = {
   whoIsThisFor?: Maybe<Scalars['String']['output']>;
 };
 
-/**
- * Хэрэглэгч курсэд нэвтэрсэн байдал болон бусад төлөв:
- * GUEST         - Одоогоор нэвтрээгүй буюу бүртгэлгүй
- * NOT_ENROLLED  - Нэвтэрсэн боловч курсэд бүртгэлгүй (эсвэл хугацаа дууссан)
- * ENROLLED      - Курсэд бүрэн эрхтэй
- * EXPIRED       - Бүртгэл байсан ч хугацаа дууссан
- */
-export enum CourseAccessStatus {
-  AdminEnrolled = 'ADMIN_ENROLLED',
-  AdminNotEnrolled = 'ADMIN_NOT_ENROLLED',
-  Enrolled = 'ENROLLED',
-  Expired = 'EXPIRED',
-  Guest = 'GUEST',
-  NotEnrolled = 'NOT_ENROLLED'
-}
-
 export type CourseBasicInfoInput = {
   category?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
@@ -119,19 +103,6 @@ export type CourseForEnrollmentResponse = {
   fullContent?: Maybe<Course>;
   message?: Maybe<Scalars['String']['output']>;
   success: Scalars['Boolean']['output'];
-};
-
-/**
- * Нэг Query-д буцах нэгдсэн бүтэц
- *   - status: Хэрэглэгчийн төлөв
- *   - coursePreviewData: Хэрэв GUEST эсвэл NOT_ENROLLED бол үзүүлэх 'preview' талын мэдээлэл
- *   - fullContent: Хэрэв ENROLLED бол үзүүлэх курсийн бүрэн агуулга
- */
-export type CourseForUserPayload = {
-  __typename?: 'CourseForUserPayload';
-  coursePreviewData?: Maybe<Course>;
-  fullContent?: Maybe<Course>;
-  status: CourseAccessStatus;
 };
 
 export enum CourseStatus {
@@ -265,7 +236,7 @@ export type EnrollmentV2 = {
   __typename?: 'EnrollmentV2';
   _id: Scalars['ID']['output'];
   completedLessons?: Maybe<Array<Maybe<Scalars['ID']['output']>>>;
-  courseId: Scalars['ID']['output'];
+  courseId?: Maybe<Course>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   expiryDate?: Maybe<Scalars['DateTime']['output']>;
   history?: Maybe<Array<Maybe<EnrollmentV2History>>>;
@@ -273,17 +244,22 @@ export type EnrollmentV2 = {
   isDeleted?: Maybe<Scalars['Boolean']['output']>;
   lastAccessedAt?: Maybe<Scalars['DateTime']['output']>;
   progress?: Maybe<Scalars['Float']['output']>;
-  status: EnrollmentV2Status;
+  status?: Maybe<EnrollmentV2Status>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
-  userId: Scalars['ID']['output'];
+  userId?: Maybe<User>;
 };
 
 export type EnrollmentV2History = {
   __typename?: 'EnrollmentV2History';
   progress: Scalars['Float']['output'];
-  status: EnrollmentStatus;
+  status: EnrollmentV2HistoryStatus;
   updatedAt: Scalars['DateTime']['output'];
 };
+
+export enum EnrollmentV2HistoryStatus {
+  MarkedCompleted = 'MARKED_COMPLETED',
+  UnmarkedCompleted = 'UNMARKED_COMPLETED'
+}
 
 export type EnrollmentV2MutationResponse = {
   __typename?: 'EnrollmentV2MutationResponse';
@@ -331,6 +307,13 @@ export type GetCourseCheckoutDataResponse = {
 export type GetEmailFromTokenResponse = {
   __typename?: 'GetEmailFromTokenResponse';
   email: Scalars['String']['output'];
+};
+
+export type GetMuxTokenResponse = {
+  __typename?: 'GetMuxTokenResponse';
+  message?: Maybe<Scalars['String']['output']>;
+  success: Scalars['Boolean']['output'];
+  token?: Maybe<Scalars['String']['output']>;
 };
 
 export type GetUserEnrolledCoursesCountResponse = {
@@ -676,11 +659,30 @@ export type MutationVerifyOtpArgs = {
   otp: Scalars['String']['input'];
 };
 
+export type MuxSignedToken = {
+  __typename?: 'MuxSignedToken';
+  token: Scalars['String']['output'];
+};
+
 export type MuxUpload = {
   __typename?: 'MuxUpload';
   passthrough: Scalars['String']['output'];
   uploadId: Scalars['String']['output'];
   uploadUrl: Scalars['String']['output'];
+};
+
+export type MyEnrolledCoursesV2Response = {
+  __typename?: 'MyEnrolledCoursesV2Response';
+  enrollments?: Maybe<Array<Maybe<EnrollmentV2>>>;
+  message?: Maybe<Scalars['String']['output']>;
+  success: Scalars['Boolean']['output'];
+};
+
+export type MyEnrollmentV2ForCourseResponse = {
+  __typename?: 'MyEnrollmentV2ForCourseResponse';
+  enrollment?: Maybe<EnrollmentV2>;
+  message?: Maybe<Scalars['String']['output']>;
+  success: Scalars['Boolean']['output'];
 };
 
 export type Payment = {
@@ -768,7 +770,6 @@ export type Query = {
   checkEnrollment?: Maybe<Enrollment>;
   checkEnrollmentV2?: Maybe<CheckEnrollmentV2Response>;
   getAllCourse: Array<Course>;
-  getAllCourseWithEnrollment: Array<Course>;
   getAllCoursesByInstructurId?: Maybe<Array<Maybe<Course>>>;
   getAllNotEnrolledCourses?: Maybe<CoursesQueryResponse>;
   getAllPayments: PaymentPaginationResult;
@@ -779,7 +780,6 @@ export type Query = {
   getCourseCheckoutData?: Maybe<GetCourseCheckoutDataResponse>;
   getCourseDetailsForInstructor?: Maybe<GetCourseDetailsForInstructorResponse>;
   getCourseForEnrollment?: Maybe<CourseForEnrollmentResponse>;
-  getCourseForUser: CourseForUserPayload;
   getCoursePreviewData?: Maybe<GetCoursePreviewDataResponse>;
   getEmailFromToken: GetEmailFromTokenResponse;
   getEnrollmentByUserAndCourse?: Maybe<Enrollment>;
@@ -790,13 +790,15 @@ export type Query = {
   getLessonV2byIdForStudent: LessonV2;
   getLessonsBySection: Array<Lesson>;
   getLessonsV2BySection: Array<LessonV2>;
+  getMuxPlaybackToken: GetMuxTokenResponse;
   getPaymentById?: Maybe<Payment>;
   getPaymentByUserAndCourse?: Maybe<Payment>;
   getPaymentsByUser?: Maybe<Array<Maybe<Payment>>>;
   getUserById: User;
-  getUserEnrolledCourses?: Maybe<Array<Maybe<Enrollment>>>;
   getUserEnrolledCoursesCount: GetUserEnrolledCoursesCountResponse;
   getUserV2ById: UserV2;
+  myEnrolledCoursesV2?: Maybe<MyEnrolledCoursesV2Response>;
+  myEnrollmentV2ForCourse?: Maybe<MyEnrollmentV2ForCourseResponse>;
 };
 
 
@@ -862,11 +864,6 @@ export type QueryGetCourseForEnrollmentArgs = {
 };
 
 
-export type QueryGetCourseForUserArgs = {
-  slug: Scalars['String']['input'];
-};
-
-
 export type QueryGetCoursePreviewDataArgs = {
   slug: Scalars['String']['input'];
 };
@@ -918,6 +915,12 @@ export type QueryGetLessonsV2BySectionArgs = {
 };
 
 
+export type QueryGetMuxPlaybackTokenArgs = {
+  courseId: Scalars['ID']['input'];
+  playbackId: Scalars['String']['input'];
+};
+
+
 export type QueryGetPaymentByIdArgs = {
   _id: Scalars['ID']['input'];
 };
@@ -939,11 +942,6 @@ export type QueryGetUserByIdArgs = {
 };
 
 
-export type QueryGetUserEnrolledCoursesArgs = {
-  userId: Scalars['String']['input'];
-};
-
-
 export type QueryGetUserEnrolledCoursesCountArgs = {
   userId: Scalars['ID']['input'];
 };
@@ -951,6 +949,11 @@ export type QueryGetUserEnrolledCoursesCountArgs = {
 
 export type QueryGetUserV2ByIdArgs = {
   _id: Scalars['ID']['input'];
+};
+
+
+export type QueryMyEnrollmentV2ForCourseArgs = {
+  courseId: Scalars['ID']['input'];
 };
 
 export type QuizLesson = LessonV2 & {
@@ -1421,18 +1424,6 @@ export type GetAllCourseQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetAllCourseQuery = { __typename?: 'Query', getAllCourse: Array<{ __typename?: 'Course', _id: string, title: string, slug?: string | null, courseCode?: string | null, status?: CourseStatus | null }> };
 
-export type GetAllCourseWithEnrollmentQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetAllCourseWithEnrollmentQuery = { __typename?: 'Query', getAllCourseWithEnrollment: Array<{ __typename?: 'Course', _id: string, title: string, slug?: string | null, isEnrolled?: boolean | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null }> };
-
-export type GetCourseForUserQueryVariables = Exact<{
-  slug: Scalars['String']['input'];
-}>;
-
-
-export type GetCourseForUserQuery = { __typename?: 'Query', getCourseForUser: { __typename?: 'CourseForUserPayload', status: CourseAccessStatus, fullContent?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, status?: CourseStatus | null, sectionId?: Array<{ __typename?: 'Section', _id: string, title?: string | null, description?: string | null, order?: number | null, lessonId?: Array<{ __typename?: 'AssignmentLesson', _id: string, title: string, order: number, isPublished: boolean, type: LessonType } | { __typename?: 'FileLesson', _id: string, title: string, order: number, isPublished: boolean, type: LessonType } | { __typename?: 'QuizLesson', _id: string, title: string, order: number, isPublished: boolean, type: LessonType } | { __typename?: 'TextLesson', _id: string, title: string, order: number, isPublished: boolean, type: LessonType } | { __typename?: 'VideoLesson', _id: string, title: string, order: number, isPublished: boolean, type: LessonType } | null> | null } | null> | null } | null, coursePreviewData?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, description?: string | null, courseCode?: string | null, difficulty?: Difficulty | null, category?: string | null, status?: CourseStatus | null, whatYouWillLearn?: Array<string | null> | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: Array<string | null> | null, amount?: number | null, currency?: Currency | null } | null } | null } };
-
 export type GetUserEnrolledCoursesCountQueryVariables = Exact<{
   userId: Scalars['ID']['input'];
 }>;
@@ -1507,19 +1498,24 @@ export type CheckEnrollmentQueryVariables = Exact<{
 
 export type CheckEnrollmentQuery = { __typename?: 'Query', checkEnrollment?: { __typename?: 'Enrollment', _id: string, status?: EnrollmentStatus | null, expiryDate?: string | null, courseId?: { __typename?: 'Course', _id: string } | null, userId?: { __typename?: 'User', _id: string } | null } | null };
 
-export type GetUserEnrolledCoursesQueryVariables = Exact<{
-  userId: Scalars['String']['input'];
-}>;
-
-
-export type GetUserEnrolledCoursesQuery = { __typename?: 'Query', getUserEnrolledCourses?: Array<{ __typename?: 'Enrollment', _id: string, progress?: number | null, lastAccessedAt?: Date | null, courseId?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string, width?: number | null, height?: number | null, format?: string | null } | null } | null } | null> | null };
-
 export type UpdateLessonCompletionStatusMutationVariables = Exact<{
   input: UpdateLessonCompletionStatusInput;
 }>;
 
 
 export type UpdateLessonCompletionStatusMutation = { __typename?: 'Mutation', updateLessonCompletionStatus: { __typename?: 'EnrollmentV2MutationResponse', success: boolean, message?: string | null } };
+
+export type MyEnrolledCoursesV2QueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MyEnrolledCoursesV2Query = { __typename?: 'Query', myEnrolledCoursesV2?: { __typename?: 'MyEnrolledCoursesV2Response', success: boolean, message?: string | null, enrollments?: Array<{ __typename?: 'EnrollmentV2', _id: string, progress?: number | null, lastAccessedAt?: Date | null, courseId?: { __typename?: 'Course', title: string, subtitle?: string | null, slug?: string | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string, format?: string | null } | null } | null } | null> | null } | null };
+
+export type MyEnrollmentV2ForCourseQueryVariables = Exact<{
+  courseId: Scalars['ID']['input'];
+}>;
+
+
+export type MyEnrollmentV2ForCourseQuery = { __typename?: 'Query', myEnrollmentV2ForCourse?: { __typename?: 'MyEnrollmentV2ForCourseResponse', success: boolean, message?: string | null, enrollment?: { __typename?: 'EnrollmentV2', _id: string, progress?: number | null, status?: EnrollmentV2Status | null, completedLessons?: Array<string | null> | null } | null } | null };
 
 export type GetInstructorCourseContentQueryVariables = Exact<{
   slug: Scalars['String']['input'];
@@ -1605,6 +1601,14 @@ export type GetLessonV2byIdForStudentQueryVariables = Exact<{
 
 
 export type GetLessonV2byIdForStudentQuery = { __typename?: 'Query', getLessonV2byIdForStudent: { __typename?: 'AssignmentLesson', assignmentDetails?: string | null, _id: string, title: string, order: number, type: LessonType } | { __typename?: 'FileLesson', fileUrl?: string | null, _id: string, title: string, order: number, type: LessonType } | { __typename?: 'QuizLesson', _id: string, title: string, order: number, type: LessonType, quizQuestions: Array<{ __typename?: 'QuizQuestion', question: string, answers: Array<string>, correctAnswer: string }> } | { __typename?: 'TextLesson', content?: string | null, _id: string, title: string, order: number, type: LessonType } | { __typename?: 'VideoLesson', muxPlaybackId?: string | null, _id: string, title: string, order: number, type: LessonType } };
+
+export type GetMuxPlaybackTokenQueryVariables = Exact<{
+  courseId: Scalars['ID']['input'];
+  playbackId: Scalars['String']['input'];
+}>;
+
+
+export type GetMuxPlaybackTokenQuery = { __typename?: 'Query', getMuxPlaybackToken: { __typename?: 'GetMuxTokenResponse', success: boolean, message?: string | null, token?: string | null } };
 
 export type CreatePaymentCheckRequestMutationVariables = Exact<{
   input?: InputMaybe<CreatePaymentCheckRequest>;
@@ -2182,136 +2186,6 @@ export type GetAllCourseQueryHookResult = ReturnType<typeof useGetAllCourseQuery
 export type GetAllCourseLazyQueryHookResult = ReturnType<typeof useGetAllCourseLazyQuery>;
 export type GetAllCourseSuspenseQueryHookResult = ReturnType<typeof useGetAllCourseSuspenseQuery>;
 export type GetAllCourseQueryResult = Apollo.QueryResult<GetAllCourseQuery, GetAllCourseQueryVariables>;
-export const GetAllCourseWithEnrollmentDocument = gql`
-    query GetAllCourseWithEnrollment {
-  getAllCourseWithEnrollment {
-    _id
-    title
-    slug
-    thumbnail {
-      publicId
-      width
-      height
-      format
-    }
-    isEnrolled
-  }
-}
-    `;
-
-/**
- * __useGetAllCourseWithEnrollmentQuery__
- *
- * To run a query within a React component, call `useGetAllCourseWithEnrollmentQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetAllCourseWithEnrollmentQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetAllCourseWithEnrollmentQuery({
- *   variables: {
- *   },
- * });
- */
-export function useGetAllCourseWithEnrollmentQuery(baseOptions?: Apollo.QueryHookOptions<GetAllCourseWithEnrollmentQuery, GetAllCourseWithEnrollmentQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetAllCourseWithEnrollmentQuery, GetAllCourseWithEnrollmentQueryVariables>(GetAllCourseWithEnrollmentDocument, options);
-      }
-export function useGetAllCourseWithEnrollmentLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAllCourseWithEnrollmentQuery, GetAllCourseWithEnrollmentQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetAllCourseWithEnrollmentQuery, GetAllCourseWithEnrollmentQueryVariables>(GetAllCourseWithEnrollmentDocument, options);
-        }
-export function useGetAllCourseWithEnrollmentSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetAllCourseWithEnrollmentQuery, GetAllCourseWithEnrollmentQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetAllCourseWithEnrollmentQuery, GetAllCourseWithEnrollmentQueryVariables>(GetAllCourseWithEnrollmentDocument, options);
-        }
-export type GetAllCourseWithEnrollmentQueryHookResult = ReturnType<typeof useGetAllCourseWithEnrollmentQuery>;
-export type GetAllCourseWithEnrollmentLazyQueryHookResult = ReturnType<typeof useGetAllCourseWithEnrollmentLazyQuery>;
-export type GetAllCourseWithEnrollmentSuspenseQueryHookResult = ReturnType<typeof useGetAllCourseWithEnrollmentSuspenseQuery>;
-export type GetAllCourseWithEnrollmentQueryResult = Apollo.QueryResult<GetAllCourseWithEnrollmentQuery, GetAllCourseWithEnrollmentQueryVariables>;
-export const GetCourseForUserDocument = gql`
-    query GetCourseForUser($slug: String!) {
-  getCourseForUser(slug: $slug) {
-    status
-    fullContent {
-      _id
-      title
-      slug
-      sectionId {
-        _id
-        title
-        description
-        order
-        lessonId {
-          _id
-          title
-          order
-          isPublished
-          type
-        }
-      }
-      status
-    }
-    coursePreviewData {
-      _id
-      title
-      slug
-      description
-      courseCode
-      difficulty
-      thumbnail {
-        publicId
-        width
-        height
-        format
-      }
-      price {
-        planTitle
-        description
-        amount
-        currency
-      }
-      category
-      status
-      whatYouWillLearn
-    }
-  }
-}
-    `;
-
-/**
- * __useGetCourseForUserQuery__
- *
- * To run a query within a React component, call `useGetCourseForUserQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetCourseForUserQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetCourseForUserQuery({
- *   variables: {
- *      slug: // value for 'slug'
- *   },
- * });
- */
-export function useGetCourseForUserQuery(baseOptions: Apollo.QueryHookOptions<GetCourseForUserQuery, GetCourseForUserQueryVariables> & ({ variables: GetCourseForUserQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetCourseForUserQuery, GetCourseForUserQueryVariables>(GetCourseForUserDocument, options);
-      }
-export function useGetCourseForUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetCourseForUserQuery, GetCourseForUserQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetCourseForUserQuery, GetCourseForUserQueryVariables>(GetCourseForUserDocument, options);
-        }
-export function useGetCourseForUserSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetCourseForUserQuery, GetCourseForUserQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetCourseForUserQuery, GetCourseForUserQueryVariables>(GetCourseForUserDocument, options);
-        }
-export type GetCourseForUserQueryHookResult = ReturnType<typeof useGetCourseForUserQuery>;
-export type GetCourseForUserLazyQueryHookResult = ReturnType<typeof useGetCourseForUserLazyQuery>;
-export type GetCourseForUserSuspenseQueryHookResult = ReturnType<typeof useGetCourseForUserSuspenseQuery>;
-export type GetCourseForUserQueryResult = Apollo.QueryResult<GetCourseForUserQuery, GetCourseForUserQueryVariables>;
 export const GetUserEnrolledCoursesCountDocument = gql`
     query GetUserEnrolledCoursesCount($userId: ID!) {
   getUserEnrolledCoursesCount(userId: $userId) {
@@ -2902,59 +2776,6 @@ export type CheckEnrollmentQueryHookResult = ReturnType<typeof useCheckEnrollmen
 export type CheckEnrollmentLazyQueryHookResult = ReturnType<typeof useCheckEnrollmentLazyQuery>;
 export type CheckEnrollmentSuspenseQueryHookResult = ReturnType<typeof useCheckEnrollmentSuspenseQuery>;
 export type CheckEnrollmentQueryResult = Apollo.QueryResult<CheckEnrollmentQuery, CheckEnrollmentQueryVariables>;
-export const GetUserEnrolledCoursesDocument = gql`
-    query GetUserEnrolledCourses($userId: String!) {
-  getUserEnrolledCourses(userId: $userId) {
-    _id
-    courseId {
-      _id
-      title
-      slug
-      thumbnail {
-        publicId
-        width
-        height
-        format
-      }
-    }
-    progress
-    lastAccessedAt
-  }
-}
-    `;
-
-/**
- * __useGetUserEnrolledCoursesQuery__
- *
- * To run a query within a React component, call `useGetUserEnrolledCoursesQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetUserEnrolledCoursesQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetUserEnrolledCoursesQuery({
- *   variables: {
- *      userId: // value for 'userId'
- *   },
- * });
- */
-export function useGetUserEnrolledCoursesQuery(baseOptions: Apollo.QueryHookOptions<GetUserEnrolledCoursesQuery, GetUserEnrolledCoursesQueryVariables> & ({ variables: GetUserEnrolledCoursesQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetUserEnrolledCoursesQuery, GetUserEnrolledCoursesQueryVariables>(GetUserEnrolledCoursesDocument, options);
-      }
-export function useGetUserEnrolledCoursesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUserEnrolledCoursesQuery, GetUserEnrolledCoursesQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetUserEnrolledCoursesQuery, GetUserEnrolledCoursesQueryVariables>(GetUserEnrolledCoursesDocument, options);
-        }
-export function useGetUserEnrolledCoursesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetUserEnrolledCoursesQuery, GetUserEnrolledCoursesQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetUserEnrolledCoursesQuery, GetUserEnrolledCoursesQueryVariables>(GetUserEnrolledCoursesDocument, options);
-        }
-export type GetUserEnrolledCoursesQueryHookResult = ReturnType<typeof useGetUserEnrolledCoursesQuery>;
-export type GetUserEnrolledCoursesLazyQueryHookResult = ReturnType<typeof useGetUserEnrolledCoursesLazyQuery>;
-export type GetUserEnrolledCoursesSuspenseQueryHookResult = ReturnType<typeof useGetUserEnrolledCoursesSuspenseQuery>;
-export type GetUserEnrolledCoursesQueryResult = Apollo.QueryResult<GetUserEnrolledCoursesQuery, GetUserEnrolledCoursesQueryVariables>;
 export const UpdateLessonCompletionStatusDocument = gql`
     mutation UpdateLessonCompletionStatus($input: UpdateLessonCompletionStatusInput!) {
   updateLessonCompletionStatus(input: $input) {
@@ -2989,6 +2810,107 @@ export function useUpdateLessonCompletionStatusMutation(baseOptions?: Apollo.Mut
 export type UpdateLessonCompletionStatusMutationHookResult = ReturnType<typeof useUpdateLessonCompletionStatusMutation>;
 export type UpdateLessonCompletionStatusMutationResult = Apollo.MutationResult<UpdateLessonCompletionStatusMutation>;
 export type UpdateLessonCompletionStatusMutationOptions = Apollo.BaseMutationOptions<UpdateLessonCompletionStatusMutation, UpdateLessonCompletionStatusMutationVariables>;
+export const MyEnrolledCoursesV2Document = gql`
+    query MyEnrolledCoursesV2 {
+  myEnrolledCoursesV2 {
+    success
+    message
+    enrollments {
+      _id
+      courseId {
+        title
+        subtitle
+        slug
+        thumbnail {
+          publicId
+          format
+        }
+      }
+      progress
+      lastAccessedAt
+    }
+  }
+}
+    `;
+
+/**
+ * __useMyEnrolledCoursesV2Query__
+ *
+ * To run a query within a React component, call `useMyEnrolledCoursesV2Query` and pass it any options that fit your needs.
+ * When your component renders, `useMyEnrolledCoursesV2Query` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useMyEnrolledCoursesV2Query({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useMyEnrolledCoursesV2Query(baseOptions?: Apollo.QueryHookOptions<MyEnrolledCoursesV2Query, MyEnrolledCoursesV2QueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<MyEnrolledCoursesV2Query, MyEnrolledCoursesV2QueryVariables>(MyEnrolledCoursesV2Document, options);
+      }
+export function useMyEnrolledCoursesV2LazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MyEnrolledCoursesV2Query, MyEnrolledCoursesV2QueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<MyEnrolledCoursesV2Query, MyEnrolledCoursesV2QueryVariables>(MyEnrolledCoursesV2Document, options);
+        }
+export function useMyEnrolledCoursesV2SuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<MyEnrolledCoursesV2Query, MyEnrolledCoursesV2QueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<MyEnrolledCoursesV2Query, MyEnrolledCoursesV2QueryVariables>(MyEnrolledCoursesV2Document, options);
+        }
+export type MyEnrolledCoursesV2QueryHookResult = ReturnType<typeof useMyEnrolledCoursesV2Query>;
+export type MyEnrolledCoursesV2LazyQueryHookResult = ReturnType<typeof useMyEnrolledCoursesV2LazyQuery>;
+export type MyEnrolledCoursesV2SuspenseQueryHookResult = ReturnType<typeof useMyEnrolledCoursesV2SuspenseQuery>;
+export type MyEnrolledCoursesV2QueryResult = Apollo.QueryResult<MyEnrolledCoursesV2Query, MyEnrolledCoursesV2QueryVariables>;
+export const MyEnrollmentV2ForCourseDocument = gql`
+    query MyEnrollmentV2ForCourse($courseId: ID!) {
+  myEnrollmentV2ForCourse(courseId: $courseId) {
+    success
+    message
+    enrollment {
+      _id
+      progress
+      status
+      completedLessons
+    }
+  }
+}
+    `;
+
+/**
+ * __useMyEnrollmentV2ForCourseQuery__
+ *
+ * To run a query within a React component, call `useMyEnrollmentV2ForCourseQuery` and pass it any options that fit your needs.
+ * When your component renders, `useMyEnrollmentV2ForCourseQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useMyEnrollmentV2ForCourseQuery({
+ *   variables: {
+ *      courseId: // value for 'courseId'
+ *   },
+ * });
+ */
+export function useMyEnrollmentV2ForCourseQuery(baseOptions: Apollo.QueryHookOptions<MyEnrollmentV2ForCourseQuery, MyEnrollmentV2ForCourseQueryVariables> & ({ variables: MyEnrollmentV2ForCourseQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<MyEnrollmentV2ForCourseQuery, MyEnrollmentV2ForCourseQueryVariables>(MyEnrollmentV2ForCourseDocument, options);
+      }
+export function useMyEnrollmentV2ForCourseLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MyEnrollmentV2ForCourseQuery, MyEnrollmentV2ForCourseQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<MyEnrollmentV2ForCourseQuery, MyEnrollmentV2ForCourseQueryVariables>(MyEnrollmentV2ForCourseDocument, options);
+        }
+export function useMyEnrollmentV2ForCourseSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<MyEnrollmentV2ForCourseQuery, MyEnrollmentV2ForCourseQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<MyEnrollmentV2ForCourseQuery, MyEnrollmentV2ForCourseQueryVariables>(MyEnrollmentV2ForCourseDocument, options);
+        }
+export type MyEnrollmentV2ForCourseQueryHookResult = ReturnType<typeof useMyEnrollmentV2ForCourseQuery>;
+export type MyEnrollmentV2ForCourseLazyQueryHookResult = ReturnType<typeof useMyEnrollmentV2ForCourseLazyQuery>;
+export type MyEnrollmentV2ForCourseSuspenseQueryHookResult = ReturnType<typeof useMyEnrollmentV2ForCourseSuspenseQuery>;
+export type MyEnrollmentV2ForCourseQueryResult = Apollo.QueryResult<MyEnrollmentV2ForCourseQuery, MyEnrollmentV2ForCourseQueryVariables>;
 export const GetInstructorCourseContentDocument = gql`
     query GetInstructorCourseContent($slug: String!) {
   getInstructorCourseContent(slug: $slug) {
@@ -3527,6 +3449,49 @@ export type GetLessonV2byIdForStudentQueryHookResult = ReturnType<typeof useGetL
 export type GetLessonV2byIdForStudentLazyQueryHookResult = ReturnType<typeof useGetLessonV2byIdForStudentLazyQuery>;
 export type GetLessonV2byIdForStudentSuspenseQueryHookResult = ReturnType<typeof useGetLessonV2byIdForStudentSuspenseQuery>;
 export type GetLessonV2byIdForStudentQueryResult = Apollo.QueryResult<GetLessonV2byIdForStudentQuery, GetLessonV2byIdForStudentQueryVariables>;
+export const GetMuxPlaybackTokenDocument = gql`
+    query GetMuxPlaybackToken($courseId: ID!, $playbackId: String!) {
+  getMuxPlaybackToken(courseId: $courseId, playbackId: $playbackId) {
+    success
+    message
+    token
+  }
+}
+    `;
+
+/**
+ * __useGetMuxPlaybackTokenQuery__
+ *
+ * To run a query within a React component, call `useGetMuxPlaybackTokenQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetMuxPlaybackTokenQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetMuxPlaybackTokenQuery({
+ *   variables: {
+ *      courseId: // value for 'courseId'
+ *      playbackId: // value for 'playbackId'
+ *   },
+ * });
+ */
+export function useGetMuxPlaybackTokenQuery(baseOptions: Apollo.QueryHookOptions<GetMuxPlaybackTokenQuery, GetMuxPlaybackTokenQueryVariables> & ({ variables: GetMuxPlaybackTokenQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetMuxPlaybackTokenQuery, GetMuxPlaybackTokenQueryVariables>(GetMuxPlaybackTokenDocument, options);
+      }
+export function useGetMuxPlaybackTokenLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMuxPlaybackTokenQuery, GetMuxPlaybackTokenQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetMuxPlaybackTokenQuery, GetMuxPlaybackTokenQueryVariables>(GetMuxPlaybackTokenDocument, options);
+        }
+export function useGetMuxPlaybackTokenSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetMuxPlaybackTokenQuery, GetMuxPlaybackTokenQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetMuxPlaybackTokenQuery, GetMuxPlaybackTokenQueryVariables>(GetMuxPlaybackTokenDocument, options);
+        }
+export type GetMuxPlaybackTokenQueryHookResult = ReturnType<typeof useGetMuxPlaybackTokenQuery>;
+export type GetMuxPlaybackTokenLazyQueryHookResult = ReturnType<typeof useGetMuxPlaybackTokenLazyQuery>;
+export type GetMuxPlaybackTokenSuspenseQueryHookResult = ReturnType<typeof useGetMuxPlaybackTokenSuspenseQuery>;
+export type GetMuxPlaybackTokenQueryResult = Apollo.QueryResult<GetMuxPlaybackTokenQuery, GetMuxPlaybackTokenQueryVariables>;
 export const CreatePaymentCheckRequestDocument = gql`
     mutation CreatePaymentCheckRequest($input: CreatePaymentCheckRequest) {
   createPaymentCheckRequest(input: $input) {

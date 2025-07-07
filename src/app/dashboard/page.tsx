@@ -27,7 +27,7 @@ export default function Page() {
         </div>
       </section>
 
-      <MyCoursesSection userId={userId} />
+      <MyCoursesSection />
       <DiscoverCoursesSection />
     </main>
   );

@@ -14,6 +14,7 @@ import {
 import { NavUser } from "./NavUser";
 import { NavMain } from "./NavMain";
 import { NavSecondary } from "./NavSecondary";
+import { siteConfig } from "@/config/site";
 
 export function AppSidebar() {
   const { open } = useSidebar();
@@ -33,7 +34,9 @@ export function AppSidebar() {
                 <Globe className="size-4" />
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">BOXOD</span>
+                <span className="truncate font-semibold">
+                  {siteConfig.name}
+                </span>
                 <span className="truncate text-xs">User Dashboard</span>
               </div>
             </SidebarMenuButton>

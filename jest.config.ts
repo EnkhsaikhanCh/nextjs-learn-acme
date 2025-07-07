@@ -52,7 +52,7 @@ const config: Config = {
     "src/store/UserStoreState.ts",
 
     // src/confiq
-    "src/config/lessonTypeConfig.ts",
+    "src/config/",
 
     // src/components
     "src/components/ui",
@@ -66,6 +66,7 @@ const config: Config = {
     "src/components/SubscribeForm.tsx",
     "src/components/delete-confirmation.tsx",
     "src/components/rich-text-editor",
+    "src/components/CopyableField.tsx",
 
     // src/app
     "src/app/admin",
@@ -143,7 +144,6 @@ const config: Config = {
     "src/app/api/graphql/resolvers/mutations/lessonV2/update-lesson-v2-video-mutation.ts",
     "src/app/api/graphql/resolvers/mutations/payment",
     // Queries
-    "src/app/api/graphql/resolvers/queries/course/get-all-course-with-enrollment-query.ts",
     "src/app/api/graphql/resolvers/queries/course/get-course-details-for-instructor-query.ts",
     "src/app/api/graphql/resolvers/queries/course/get-all-course.ts",
     "src/app/api/graphql/resolvers/queries/course/get-course-by-id-query.ts",
@@ -158,7 +158,6 @@ const config: Config = {
     "src/app/api/graphql/resolvers/queries/payment",
 
     // api
-    "src/app/api/mux/token",
     "src/app/api/webhook/mux",
 
     // Sentry

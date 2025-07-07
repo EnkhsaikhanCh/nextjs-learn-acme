@@ -125,7 +125,6 @@ export const useHandleLogin = () => {
         // Show a success message.
         toast.success("Амжилттай нэвтэрлээ", {
           description: "Таныг системд нэвтрүүлж байна...",
-          duration: 3000,
         });
 
         // Redirect based on role.

@@ -66,69 +66,6 @@ query GetAllCourse {
   }
 }
 
-query GetAllCourseWithEnrollment {
-  getAllCourseWithEnrollment {
-    _id
-    title
-    slug
-    thumbnail {
-      publicId
-      width
-      height
-      format
-    }
-    isEnrolled
-  }
-}
-
-query GetCourseForUser($slug: String!) {
-  getCourseForUser(slug: $slug) {
-    status
-    fullContent {
-      _id
-      title
-      slug
-      sectionId {
-        _id
-        title
-        description
-        order
-        lessonId {
-          _id
-          title
-          order
-          isPublished
-          type
-        }
-      }
-      status
-    }
-    coursePreviewData {
-      _id
-      title
-      slug
-      description
-      courseCode
-      difficulty
-      thumbnail {
-        publicId
-        width
-        height
-        format
-      }
-      price {
-        planTitle
-        description
-        amount
-        currency
-      }
-      category
-      status
-      whatYouWillLearn
-    }
-  }
-}
-
 query GetUserEnrolledCoursesCount($userId: ID!) {
   getUserEnrolledCoursesCount(userId: $userId) {
     totalCourses

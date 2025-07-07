@@ -9,3 +9,5 @@ export * from "./auth";
 export * from "./instructor";
 export * from "./lessonV2";
 export * from "./userV2";
+export * from "./enrollmentV2";
+export * from "./mux";

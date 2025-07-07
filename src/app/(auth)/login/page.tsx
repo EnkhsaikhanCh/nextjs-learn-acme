@@ -51,6 +51,7 @@ export default function Login() {
                 error={errors.email}
                 autoComplete="email"
                 tabIndex={1}
+                disabled={isSubmitting}
               />
 
               <PasswordInput
@@ -64,6 +65,7 @@ export default function Login() {
                   href: "/forgot-password",
                   label: "Нууц үгээ мартсан уу?",
                 }}
+                disabled={isSubmitting}
               />
 
               <ActionButton

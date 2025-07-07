@@ -37,6 +37,7 @@ import {
 } from "@/generated/graphql";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import { BANK_TRANSFER_INFO } from "@/config/bankTransfer";
 
 export default function CheckoutPage() {
   const { slug } = useParams();
@@ -229,9 +230,15 @@ export default function CheckoutPage() {
               <div className="space-y-5">
                 <div className="bg-muted/30 border-muted grid grid-cols-1 gap-4 rounded-lg border p-4">
                   {[
-                    { label: "Банк", value: "ХААН БАНК" },
-                    { label: "Дансны дугаар", value: "5000-XXXX-XXXX" },
-                    { label: "Дансны нэр", value: "ABC" },
+                    { label: "Банк", value: BANK_TRANSFER_INFO.bankName },
+                    {
+                      label: "Дансны дугаар",
+                      value: BANK_TRANSFER_INFO.accountNumber,
+                    },
+                    {
+                      label: "Дансны нэр",
+                      value: BANK_TRANSFER_INFO.accountName,
+                    },
                     {
                       label: "Гүйлгээний утга",
                       value: `${user?.studentId}-${course?.courseCode}`,

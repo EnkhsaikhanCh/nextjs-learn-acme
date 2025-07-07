@@ -6,20 +6,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useGetUserEnrolledCoursesQuery } from "@/generated/graphql";
 import { CirclePlay, Clock } from "lucide-react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { mn } from "date-fns/locale";
 import { CldImage } from "next-cloudinary";
+import { useMyEnrolledCoursesV2Query } from "@/generated/graphql";
 
-export const MyCoursesSection = ({ userId }: { userId?: string }) => {
-  const { data, loading, error } = useGetUserEnrolledCoursesQuery({
-    variables: {
-      userId: userId as string,
-    },
+export const MyCoursesSection = () => {
+  const { data, loading, error } = useMyEnrolledCoursesV2Query({
     fetchPolicy: "cache-first",
-    skip: !userId,
   });
 
   if (loading) {
@@ -32,9 +28,13 @@ export const MyCoursesSection = ({ userId }: { userId?: string }) => {
     );
   }
 
-  if (!data?.getUserEnrolledCourses?.length) {
+  if (!data?.myEnrolledCoursesV2?.enrollments?.length) {
     return;
   }
+
+  const response = data?.myEnrolledCoursesV2;
+
+  const { enrollments } = response;
 
   return (
     <>
@@ -52,7 +52,7 @@ export const MyCoursesSection = ({ userId }: { userId?: string }) => {
               </p>
             </div>
           )}
-          {data?.getUserEnrolledCourses?.map((course) => (
+          {enrollments?.map((course) => (
             <Link
               href={`/dashboard/course/${course?.courseId?.slug}/learn`}
               key={course?._id}

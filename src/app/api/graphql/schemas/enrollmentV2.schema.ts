@@ -1,8 +1,14 @@
 import gql from "graphql-tag";
 
 export const typeDefs = gql`
+  # ----------------------
+  # Scalar
+  # ----------------------
   scalar Date
 
+  # ----------------------
+  # Enums
+  # ----------------------
   enum EnrollmentV2Status {
     ACTIVE
     COMPLETED
@@ -11,11 +17,19 @@ export const typeDefs = gql`
     EXPIRED
   }
 
+  enum EnrollmentV2HistoryStatus {
+    MARKED_COMPLETED
+    UNMARKED_COMPLETED
+  }
+
+  # ----------------------
+  # Types
+  # ----------------------
   type EnrollmentV2 {
     _id: ID!
-    userId: ID!
-    courseId: ID!
-    status: EnrollmentV2Status!
+    userId: User
+    courseId: Course
+    status: EnrollmentV2Status
     progress: Float
     isCompleted: Boolean
     completedLessons: [ID]
@@ -28,13 +42,20 @@ export const typeDefs = gql`
   }
 
   type EnrollmentV2History {
-    status: EnrollmentStatus!
+    status: EnrollmentV2HistoryStatus!
     progress: Float!
     updatedAt: Date!
   }
 
-  extend type Query {
-    checkEnrollmentV2(courseId: ID!): checkEnrollmentV2Response
+  type EnrollmentV2MutationResponse {
+    success: Boolean!
+    message: String
+  }
+
+  type MyEnrolledCoursesV2Response {
+    success: Boolean!
+    message: String
+    enrollments: [EnrollmentV2]
   }
 
   type checkEnrollmentV2Response {
@@ -42,6 +63,15 @@ export const typeDefs = gql`
     message: String
   }
 
+  type MyEnrollmentV2ForCourseResponse {
+    success: Boolean!
+    message: String
+    enrollment: EnrollmentV2
+  }
+
+  # ----------------------
+  # Input Types
+  # ----------------------
   input CreateEnrollmentV2Input {
     courseId: ID!
   }
@@ -52,6 +82,18 @@ export const typeDefs = gql`
     completed: Boolean
   }
 
+  # ----------------------
+  # Queries
+  # ----------------------
+  extend type Query {
+    checkEnrollmentV2(courseId: ID!): checkEnrollmentV2Response
+    myEnrolledCoursesV2: MyEnrolledCoursesV2Response
+    myEnrollmentV2ForCourse(courseId: ID!): MyEnrollmentV2ForCourseResponse
+  }
+
+  # ----------------------
+  # Mutations
+  # ----------------------
   extend type Mutation {
     createEnrollmentV2(
       input: CreateEnrollmentV2Input!
@@ -59,10 +101,5 @@ export const typeDefs = gql`
     updateLessonCompletionStatus(
       input: UpdateLessonCompletionStatusInput!
     ): EnrollmentV2MutationResponse!
-  }
-
-  type EnrollmentV2MutationResponse {
-    success: Boolean!
-    message: String
   }
 `;

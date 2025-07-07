@@ -19,6 +19,7 @@ import { BookOpenText, Globe, House, SquareUser } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { InstructorNavSecondary } from "./InstructorNavSecondary";
 import { InstructorNavUser } from "./InstructorNavUser";
+import { siteConfig } from "@/config/site";
 
 const items = [
   {
@@ -60,7 +61,9 @@ export function AppSidebar() {
                 <Globe className="size-4" />
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">BOXOD</span>
+                <span className="truncate font-semibold">
+                  {siteConfig.name}
+                </span>
                 <span className="truncate text-xs">Instructor Dashboard</span>
               </div>
             </SidebarMenuButton>

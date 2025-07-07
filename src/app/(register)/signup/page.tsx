@@ -7,6 +7,7 @@ import Link from "next/link";
 import { PasswordInput } from "@/components/PasswordInput";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useHandleRegisterV2 } from "../features/useHandleRegisterV2";
+import { siteConfig } from "@/config/site";
 
 export default function SignUp() {
   const {
@@ -29,10 +30,10 @@ export default function SignUp() {
         <div className="relative z-20 flex h-full flex-col items-center justify-between p-8 text-white">
           <Link href="/" className="flex items-center gap-3 text-lg font-bold">
             <Globe className="h-6 w-6" />
-            OXON
+            {siteConfig.name}
           </Link>
           <div className="text-center">
-            <h2 className="text-3xl font-bold">Welcome to Nomad Tech</h2>
+            <h2 className="text-3xl font-bold">Welcome to {siteConfig.name}</h2>
             <p className="mt-2 text-lg">Your journey starts here</p>
           </div>
           <p className="text-sm"></p>
@@ -47,7 +48,7 @@ export default function SignUp() {
           <div className="bg-primary text-primary-foreground flex h-6 w-6 items-center justify-center rounded-md">
             <Globe className="h-4 w-4" />
           </div>
-          OXON
+          {siteConfig.name}
         </Link>
 
         <Card className="w-full max-w-md shadow-none">
