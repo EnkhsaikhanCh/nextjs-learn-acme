@@ -26,7 +26,7 @@ export default function Home() {
             >
               <Button variant={"secondary"} className="w-full rounded-full">
                 <Facebook className="mr-2 h-4 w-4 text-blue-500" />
-                {siteConfig.links[0].name}
+                {siteConfig.links[0].username}
               </Button>
             </Link>
             <Link
@@ -37,7 +37,7 @@ export default function Home() {
             >
               <Button variant={"secondary"} className="w-full rounded-full">
                 <Instagram className="mr-2 h-4 w-4 text-[#E1306C]" />
-                {siteConfig.links[1].name}
+                {siteConfig.links[1].username}
               </Button>
             </Link>
           </div>
