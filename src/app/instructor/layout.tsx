@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { AppSidebar } from "./components/AppSidebar";
+import { AppSidebar } from "./components/InstructorSidebar/AppSidebar";
 import { SiteHeader } from "@/components/dashboard/sidebar/SiteHeader";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { ThemeProvider } from "@/providers/theme-provider";

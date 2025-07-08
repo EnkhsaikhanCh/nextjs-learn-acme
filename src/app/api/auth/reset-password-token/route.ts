@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { redis } from "@/lib/redis";
 import { sendEmail } from "../../../../lib/email";
 import { v4 as uuidv4 } from "uuid";
-import { UserModel } from "../../graphql/models";
+import { UserV2Model } from "../../graphql/models";
 import { connectToDatabase } from "@/lib/mongodb";
 
 const RATE_LIMIT_KEY = "rate_limit:reset-password-token:";
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
       await redis.incr(rateLimitKey); // Тоог нэмэх
     }
 
-    const existingUser = await UserModel.findOne({ email: email });
+    const existingUser = await UserV2Model.findOne({ email: email });
     if (!existingUser) {
       return NextResponse.json(
         {

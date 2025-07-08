@@ -1,25 +1,24 @@
 "use client";
 
+import { useForm, useFieldArray } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Currency,
   Course,
-  useUpdateCoursePricingMutation,
+  useUpdateCoursePricingV2Mutation,
 } from "@/generated/graphql";
-import { Loader } from "lucide-react";
+import { Trash2, Loader } from "lucide-react";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 interface CoursePricingCardProps {
@@ -28,58 +27,78 @@ interface CoursePricingCardProps {
   mainRefetch: () => void;
 }
 
+type CoursePricingFormData = {
+  planTitle: string;
+  description: { value: string }[];
+  amount: number;
+  currency: Currency;
+};
+
 export const CoursePricingCard = ({
   initialValues,
   refetch,
   mainRefetch,
 }: CoursePricingCardProps) => {
+  const cleanedDescription =
+    initialValues.price?.description?.filter(
+      (d): d is string => typeof d === "string" && d.trim() !== "",
+    ) ?? [];
+
   const {
     register,
     handleSubmit,
+    control,
     reset,
-    formState: { isSubmitting, isDirty },
-  } = useForm({
+    formState: { isDirty, isSubmitting },
+  } = useForm<CoursePricingFormData>({
     defaultValues: {
       planTitle: initialValues.price?.planTitle ?? "",
-      description: initialValues.price?.description ?? "",
+      description: cleanedDescription.map((d) => ({ value: d })) ?? [
+        { value: "" },
+      ],
       amount: initialValues.price?.amount ?? 0,
-      currency: initialValues.price?.currency ?? ("MNT" as Currency),
+      currency: initialValues.price?.currency ?? Currency.Mnt,
     },
   });
-  const [isUpdating, setIsUpdating] = useState(false);
-  const [updateCoursePricing] = useUpdateCoursePricingMutation();
 
-  const onSubmit = async (values: typeof initialValues.price) => {
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "description",
+  });
+
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [updateCoursePricingV2] = useUpdateCoursePricingV2Mutation();
+
+  const onSubmit = async (values: CoursePricingFormData) => {
+    const filtered = values.description
+      .map((item) => item.value.trim())
+      .filter((v) => v !== "");
+
+    if (filtered.length === 0) {
+      toast.error("Please add at least one description item.");
+      return;
+    }
+
     setIsUpdating(true);
     try {
-      await updateCoursePricing({
+      await updateCoursePricingV2({
         variables: {
           courseId: initialValues._id,
           input: {
-            planTitle: values?.planTitle,
-            description: values?.description,
-            amount: values?.amount,
-            currency: values?.currency,
+            planTitle: values.planTitle,
+            description: filtered,
+            amount: values.amount,
+            currency: values.currency,
           },
         },
       });
 
-      if (values) {
-        reset({
-          planTitle: values.planTitle ?? "",
-          description: values.description ?? "",
-          amount: values.amount ?? 0,
-          currency: values.currency ?? ("MNT" as Currency),
-        });
-      }
-
+      reset(values);
       await refetch();
       await mainRefetch();
-      toast.success("Course price updated successfully!");
-    } catch (error) {
-      toast.error("Failed to update course price", {
-        description: (error as Error).message,
-      });
+      toast.success("Course pricing updated!");
+    } catch (err) {
+      toast.error("Update failed", { description: (err as Error).message });
     } finally {
       setIsUpdating(false);
     }
@@ -87,77 +106,86 @@ export const CoursePricingCard = ({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Card className="border-purple-100 dark:border-purple-900">
-        <CardHeader className="rounded-t-md border-b border-purple-100 bg-purple-50/50 dark:border-purple-900 dark:bg-purple-900/30">
+      <Card className="border-purple-200 dark:border-purple-900">
+        <CardHeader className="bg-purple-50/50 dark:bg-purple-900/30">
           <CardTitle className="text-purple-800 dark:text-purple-200">
             Pricing
           </CardTitle>
           <CardDescription className="dark:text-purple-300">
-            Set your course pricing options
+            Add your plan’s title, features, and price.
           </CardDescription>
         </CardHeader>
 
         <CardContent className="space-y-6 pt-6">
-          {/* Plan Title */}
+          {/* Title */}
           <div className="space-y-2">
-            <Label
-              htmlFor="plan-title"
-              className="text-base font-medium dark:text-purple-100"
-            >
-              Plan Title
-            </Label>
-            <Input id="plan-title" {...register("planTitle")} />
+            <Label htmlFor="planTitle">Plan Title</Label>
+            <Input
+              id="planTitle"
+              {...register("planTitle", { required: true })}
+            />
           </div>
 
           {/* Description */}
-          <div className="space-y-4">
-            <Label
-              htmlFor="plan-description"
-              className="text-base font-medium dark:text-purple-100"
+          <div className="space-y-2">
+            <Label>This course includes:</Label>
+            {fields.map((field, index) => (
+              <div key={field.id} className="flex items-center gap-2">
+                <Input
+                  placeholder={`Item ${index + 1}`}
+                  {...register(`description.${index}.value`, {
+                    required: true,
+                  })}
+                  className="flex-1"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => remove(index)}
+                >
+                  <Trash2 className="h-4 w-4 text-red-500" />
+                </Button>
+              </div>
+            ))}
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                if (fields.length >= 10) {
+                  toast.error("You can only add up to 10 items.");
+                  return;
+                }
+                append({ value: "" });
+              }}
             >
-              Plan Description
-            </Label>
-            <Textarea
-              id="plan-description"
-              className="min-h-[150px] resize-y"
-              placeholder="Describe what students will learn..."
-              {...register("description")}
-            />
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              Set a compelling pricing plan description. Mention what's
-              included, who it's for, and any bonuses.
-            </p>
+              + Add Description
+            </Button>
           </div>
 
           {/* Price */}
           <div className="space-y-2">
-            <Label
-              htmlFor="course-price"
-              className="text-base font-medium dark:text-purple-100"
-            >
-              Plan Price
-            </Label>
+            <Label htmlFor="price">Plan Price (₮)</Label>
             <div className="relative">
               <span className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-500">
                 ₮
               </span>
               <Input
-                id="course-price"
+                id="price"
                 type="number"
                 className="pl-7"
-                {...register("amount", { valueAsNumber: true })}
+                {...register("amount", { valueAsNumber: true, min: 0 })}
               />
             </div>
           </div>
         </CardContent>
 
-        <CardFooter className="flex justify-end border-t bg-gray-50/50 px-6 py-4 dark:border-purple-900 dark:bg-purple-900/30">
+        <CardFooter className="flex justify-end border-t bg-gray-50 px-6 py-4 dark:bg-purple-900/30">
           <Button
             type="submit"
             disabled={isUpdating || isSubmitting || !isDirty}
           >
             {isUpdating ? (
-              <Loader className="animate-spin" />
+              <Loader className="h-4 w-4 animate-spin" />
             ) : (
               "Save Pricing Changes"
             )}

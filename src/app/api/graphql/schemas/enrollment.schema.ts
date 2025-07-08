@@ -39,11 +39,8 @@ export const typeDefs = gql`
   }
 
   extend type Query {
-    getEnrollmentsByUser(userId: ID!): [Enrollment!]!
-    getEnrollmentsByCourse(courseId: ID!): [Enrollment!]!
     getEnrollmentByUserAndCourse(userId: ID!, courseId: ID!): Enrollment
     checkEnrollment(courseId: ID!): Enrollment
-    getUserEnrolledCourses(userId: String!): [Enrollment]
   }
 
   input CreateEnrollmentInput {

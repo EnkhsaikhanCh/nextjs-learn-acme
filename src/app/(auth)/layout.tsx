@@ -3,6 +3,7 @@
 import { Globe } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { siteConfig } from "@/config/site";
 
 interface RootLayoutProps {
   children: React.ReactNode;
@@ -19,7 +20,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           <div className="bg-primary text-primary-foreground flex h-6 w-6 items-center justify-center rounded-md">
             <Globe className="h-4 w-4" />
           </div>
-          OXON
+          {siteConfig.name}
         </Link>
 
         <motion.div

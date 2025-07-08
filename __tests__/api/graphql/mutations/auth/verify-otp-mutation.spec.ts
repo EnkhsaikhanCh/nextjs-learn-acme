@@ -1,5 +1,5 @@
 import { redis } from "@/lib/redis";
-import { UserModel } from "@/app/api/graphql/models";
+import { UserV2Model } from "@/app/api/graphql/models";
 import { v4 as uuidv4 } from "uuid";
 import { normalizeEmail, validateEmail } from "@/utils/validation";
 import { verifyOTP } from "@/app/api/graphql/resolvers/mutations/auth/verify-otp-mutation";
@@ -23,7 +23,7 @@ jest.mock("../../../../../src/utils/validation", () => ({
 }));
 
 jest.mock("../../../../../src/app/api/graphql/models", () => ({
-  UserModel: {
+  UserV2Model: {
     updateOne: jest.fn(),
   },
 }));
@@ -121,7 +121,9 @@ describe("verifyOTP", () => {
       .mockResolvedValueOnce("123456"); // for otp key
     (redis.set as jest.Mock).mockResolvedValue("OK");
     // Simulate update failure: modifiedCount equals 0
-    (UserModel.updateOne as jest.Mock).mockResolvedValue({ modifiedCount: 0 });
+    (UserV2Model.updateOne as jest.Mock).mockResolvedValue({
+      modifiedCount: 0,
+    });
 
     await expect(verifyOTP(null, { email, otp: "123456" })).rejects.toThrow(
       "Хэрэглэгч олдсонгүй эсвэл аль хэдийн баталгаажсан байна.",
@@ -137,7 +139,9 @@ describe("verifyOTP", () => {
       .mockResolvedValueOnce(null) // for rateLimitKey
       .mockResolvedValueOnce("123456"); // for OTP key
     (redis.set as jest.Mock).mockResolvedValue("OK");
-    (UserModel.updateOne as jest.Mock).mockResolvedValue({ modifiedCount: 1 });
+    (UserV2Model.updateOne as jest.Mock).mockResolvedValue({
+      modifiedCount: 1,
+    });
     (redis.del as jest.Mock).mockResolvedValue("OK");
     (uuidv4 as jest.Mock).mockReturnValue("sign-token");
     // Simulate setting the sign-in token resolves OK
@@ -167,7 +171,9 @@ describe("verifyOTP", () => {
       .mockResolvedValueOnce("123456"); // for OTP key
     (redis.incr as jest.Mock).mockResolvedValue("3");
     (redis.set as jest.Mock).mockResolvedValue("OK");
-    (UserModel.updateOne as jest.Mock).mockResolvedValue({ modifiedCount: 1 });
+    (UserV2Model.updateOne as jest.Mock).mockResolvedValue({
+      modifiedCount: 1,
+    });
     (redis.del as jest.Mock).mockResolvedValue("OK");
     (uuidv4 as jest.Mock).mockReturnValue("sign-token");
     (redis.set as jest.Mock).mockResolvedValue("OK");

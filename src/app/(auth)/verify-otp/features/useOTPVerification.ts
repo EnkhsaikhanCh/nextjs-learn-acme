@@ -8,6 +8,7 @@ import {
   useSendOtpMutation,
   useVerifyOtpMutation,
 } from "@/generated/graphql";
+import { useUserStore } from "@/store/UserStoreState";
 
 export const useOTPVerification = () => {
   const [email, setEmail] = useState<string | null>(null);
@@ -19,12 +20,14 @@ export const useOTPVerification = () => {
   const [success, setSuccess] = useState<boolean>(false);
   const [resendTimer, setResendTimer] = useState<number>(0);
   const router = useRouter();
+  const { setUser, clearUser } = useUserStore.getState();
 
   const [sendOTP] = useSendOtpMutation();
   const [verifyOTP] = useVerifyOtpMutation();
 
   // Хэрэглэгчийг гаргах функц
   const handleSignOut = async () => {
+    clearUser();
     localStorage.removeItem("tempToken");
     localStorage.removeItem("resendExpiry");
     await signOut({ callbackUrl: "/login" });
@@ -131,6 +134,15 @@ export const useOTPVerification = () => {
           localStorage.removeItem("resendExpiry");
 
           const session = await getSession();
+          if (session?.user) {
+            setUser({
+              _id: session.user._id,
+              email: session.user.email,
+              role: session.user.role,
+              isVerified: session.user.isVerified,
+            });
+          }
+
           const userRole = session?.user.role.toUpperCase();
 
           // Define role types for clarity.

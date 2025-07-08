@@ -1,5 +1,6 @@
 import { SubscribeForm } from "@/components/SubscribeForm";
 import { Button } from "@/components/ui/button";
+import { siteConfig } from "@/config/site";
 import { Instagram, Facebook } from "lucide-react";
 import Link from "next/link";
 
@@ -18,25 +19,25 @@ export default function Home() {
           </div>
           <div className="grid w-full max-w-md justify-center gap-2 text-gray-700 sm:grid-cols-2">
             <Link
-              href={"https://www.facebook.com/nomadtech.tips/"}
+              href={siteConfig.links[0].url}
               className="w-full"
               target="_blank"
               rel="noopener noreferrer"
             >
               <Button variant={"secondary"} className="w-full rounded-full">
                 <Facebook className="mr-2 h-4 w-4 text-blue-500" />
-                @nomadtech.tips
+                {siteConfig.links[0].username}
               </Button>
             </Link>
             <Link
-              href={"https://www.instagram.com/nomadtech.tips"}
+              href={siteConfig.links[1].url}
               className="w-full"
               target="_blank"
               rel="noopener noreferrer"
             >
               <Button variant={"secondary"} className="w-full rounded-full">
                 <Instagram className="mr-2 h-4 w-4 text-[#E1306C]" />
-                @nomadtech.tips
+                {siteConfig.links[1].username}
               </Button>
             </Link>
           </div>
@@ -46,7 +47,8 @@ export default function Home() {
       <footer className="flex w-full flex-col items-center py-10">
         <div className="container flex flex-col items-center justify-center space-y-8 px-6">
           <p className="text-sm text-gray-500">
-            © {new Date().getFullYear()} Nomadtech
+            © {new Date().getFullYear()} {siteConfig.name}. All rights
+            reserved.
           </p>
         </div>
       </footer>

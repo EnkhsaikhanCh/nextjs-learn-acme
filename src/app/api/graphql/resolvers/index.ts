@@ -23,6 +23,22 @@ export const resolvers = {
     },
   },
 
+  // 🆕 Нэмэх хэрэгтэй зүйл
+  UserV2: {
+    __resolveType(user: { role: string }) {
+      switch (user.role) {
+        case "STUDENT":
+          return "StudentUserV2";
+        case "INSTRUCTOR":
+          return "InstructorUserV2";
+        case "ADMIN":
+          return "AdminUserV2";
+        default:
+          return null;
+      }
+    },
+  },
+
   Date: GraphQLDateTime,
   Query,
   Mutation,

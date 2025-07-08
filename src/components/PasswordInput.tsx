@@ -37,6 +37,8 @@ interface PasswordInputProps {
   inputClassName?: string;
   /** Label дээр нэмэлт CSS класс */
   labelClassName?: string;
+  /** Хэрэглэгчид disable хийх боломжтой болгох */
+  disabled?: boolean;
 }
 
 export const PasswordInput = ({
@@ -52,6 +54,7 @@ export const PasswordInput = ({
   className,
   inputClassName,
   labelClassName,
+  disabled = false, // Хэрэглэгчид disable хийх боломжтой болгох
 }: PasswordInputProps) => {
   const [isVisible, setIsVisible] = useState(false);
 
@@ -90,10 +93,11 @@ export const PasswordInput = ({
           autoComplete={autoComplete}
           aria-invalid={errorMessage ? "true" : "false"}
           aria-describedby={errorMessage ? `${id}-error` : undefined}
+          disabled={disabled}
         />
         {showToggleVisibility && (
           <button
-            className="absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-lg text-muted-foreground/80 outline-offset-2 transition-colors hover:text-foreground focus:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring/70 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
+            className="text-muted-foreground/80 hover:text-foreground focus-visible:outline-ring/70 absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-lg outline-offset-2 transition-colors focus:z-10 focus-visible:outline focus-visible:outline-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
             type="button"
             onClick={toggleVisibility}
             aria-label={isVisible ? "Hide password" : "Show password"}

@@ -6,21 +6,35 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useGetUserEnrolledCoursesQuery } from "@/generated/graphql";
-import { Clock, Play } from "lucide-react";
+import { CirclePlay, Clock } from "lucide-react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
-import { mn } from "date-fns/locale"; // <- make sure to install this if not already
+import { mn } from "date-fns/locale";
 import { CldImage } from "next-cloudinary";
+import { useMyEnrolledCoursesV2Query } from "@/generated/graphql";
 
-export const MyCoursesSection = ({ userId }: { userId?: string }) => {
-  const { data, loading } = useGetUserEnrolledCoursesQuery({
-    variables: {
-      userId: userId as string,
-    },
+export const MyCoursesSection = () => {
+  const { data, loading, error } = useMyEnrolledCoursesV2Query({
     fetchPolicy: "cache-first",
-    skip: !userId,
   });
+
+  if (loading) {
+    return (
+      <div className="grid auto-rows-min gap-4 md:grid-cols-3">
+        <div className="bg-muted aspect-video animate-pulse rounded-xl" />
+        <div className="bg-muted aspect-video animate-pulse rounded-xl" />
+        <div className="bg-muted aspect-video animate-pulse rounded-xl" />
+      </div>
+    );
+  }
+
+  if (!data?.myEnrolledCoursesV2?.enrollments?.length) {
+    return;
+  }
+
+  const response = data?.myEnrolledCoursesV2;
+
+  const { enrollments } = response;
 
   return (
     <>
@@ -28,10 +42,19 @@ export const MyCoursesSection = ({ userId }: { userId?: string }) => {
       <section>
         <h2 className="mb-4 text-xl font-bold md:text-2xl">Миний сургалтууд</h2>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {loading && <div>Loading...</div>}
-          {data?.getUserEnrolledCourses?.map((course) => (
+          {error && (
+            <div className="flex h-[calc(100vh-4rem)] flex-col items-center justify-center">
+              <h1 className="text-4xl font-bold text-gray-800">
+                Алдаа гарлаа!
+              </h1>
+              <p className="text-lg text-gray-600">
+                Та дахин оролдоно уу эсвэл админтай холбогдоно уу.
+              </p>
+            </div>
+          )}
+          {enrollments?.map((course) => (
             <Link
-              href={`/dashboard/courses/${course?.courseId?.slug}`}
+              href={`/dashboard/course/${course?.courseId?.slug}/learn`}
               key={course?._id}
               className="group"
             >
@@ -108,9 +131,9 @@ export const MyCoursesSection = ({ userId }: { userId?: string }) => {
                       : "N/A"}
                   </div>
                 </CardContent>
-                <CardFooter className="flex justify-end p-5 pt-0">
-                  <Button className="bg-violet-600 font-semibold text-white hover:bg-violet-700">
-                    <Play />
+                <CardFooter>
+                  <Button variant="outline" className="w-full">
+                    <CirclePlay />
                     Үргэлжлүүлэх
                   </Button>
                 </CardFooter>

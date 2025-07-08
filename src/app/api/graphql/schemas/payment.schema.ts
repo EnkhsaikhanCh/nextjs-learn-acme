@@ -10,6 +10,7 @@ export const typeDefs = gql`
     transactionNote: String!
     status: PaymentStatus!
     paymentMethod: PaymentMethod!
+    usedForEnrollment: Boolean!
     refundReason: String
     createdAt: Date!
     updatedAt: Date
@@ -45,6 +46,16 @@ export const typeDefs = gql`
     getPaymentById(_id: ID!): Payment
     getPaymentsByUser(userId: ID!): [Payment]
     getPaymentByUserAndCourse(userId: ID!, courseId: ID!): Payment
+    getCourseCheckoutData(slug: String!): GetCourseCheckoutDataResponse
+  }
+
+  type GetCourseCheckoutDataResponse {
+    success: Boolean!
+    message: String
+    course: Course
+    user: User
+    isPaid: Boolean
+    isEnrolled: Boolean
   }
 
   input PaymentFilterInput {
@@ -52,20 +63,29 @@ export const typeDefs = gql`
     status: PaymentStatus
   }
 
-  input CreatePaymentInput {
-    userId: ID!
+  input CreatePaymentCheckRequest {
     courseId: ID!
     amount: Float!
     transactionNote: String
-    paymentMethod: PaymentMethod!
+  }
+
+  input UpdatePaymentStatusV2Input {
+    paymentId: ID!
+    status: PaymentStatus!
+    refundReason: String
   }
 
   type Mutation {
-    createPayment(input: CreatePaymentInput!): Payment
-    updatePaymentStatus(
-      _id: ID!
-      status: PaymentStatus!
-      refundReason: String
-    ): Payment
+    createPaymentCheckRequest(
+      input: CreatePaymentCheckRequest
+    ): PaymentMutationResponse
+    updatePaymentStatusV2(
+      input: UpdatePaymentStatusV2Input
+    ): PaymentMutationResponse
+  }
+
+  type PaymentMutationResponse {
+    success: Boolean!
+    message: String
   }
 `;

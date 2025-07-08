@@ -2,6 +2,7 @@ import {
   useGenerateTempTokenMutation,
   useSendOtpMutation,
 } from "@/generated/graphql";
+import { useUserStore } from "@/store/UserStoreState";
 import { getSession, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -33,6 +34,7 @@ export const useHandleLogin = () => {
   const [password, setPassword] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [errors, setErrors] = useState<ErrorState>({});
+  const { setUser } = useUserStore.getState();
 
   const [generateTempToken] = useGenerateTempTokenMutation();
   const [sendOTP] = useSendOtpMutation();
@@ -66,6 +68,15 @@ export const useHandleLogin = () => {
         if (!session || !session.user?.role) {
           toast.error("Хэрэглэгчийн мэдээлэл олдсонгүй.");
           return;
+        }
+
+        if (session?.user) {
+          setUser({
+            _id: session.user._id,
+            email: session.user.email,
+            role: session.user.role,
+            isVerified: session.user.isVerified,
+          });
         }
 
         // Баталгаажаагүй эсэхийг шалгах
@@ -114,7 +125,6 @@ export const useHandleLogin = () => {
         // Show a success message.
         toast.success("Амжилттай нэвтэрлээ", {
           description: "Таныг системд нэвтрүүлж байна...",
-          duration: 3000,
         });
 
         // Redirect based on role.

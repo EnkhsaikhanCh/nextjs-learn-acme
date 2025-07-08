@@ -18,8 +18,9 @@ export function MyCourseSummary({ userId }: { userId?: string }) {
   });
 
   if (loading) {
-    return <div>Loading...</div>;
+    return;
   }
+
   if (error) {
     return <div>Error: {error.message}</div>;
   }

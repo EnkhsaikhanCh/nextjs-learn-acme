@@ -15,6 +15,7 @@ export default [
       ".next/**",
       ".eslintcache",
       "src/components/ui",
+      "src/components/ui/media-player.tsx", // ignore media player component
     ],
     files: ["**/*.ts", "**/*.tsx"],
     languageOptions: {

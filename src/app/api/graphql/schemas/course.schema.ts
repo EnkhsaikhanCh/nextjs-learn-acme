@@ -20,44 +20,9 @@ export const typeDefs = gql`
     ARCHIVED
   }
 
-  """
-  Хэрэглэгч курсэд нэвтэрсэн байдал болон бусад төлөв:
-  GUEST         - Одоогоор нэвтрээгүй буюу бүртгэлгүй
-  NOT_ENROLLED  - Нэвтэрсэн боловч курсэд бүртгэлгүй (эсвэл хугацаа дууссан)
-  ENROLLED      - Курсэд бүрэн эрхтэй
-  EXPIRED       - Бүртгэл байсан ч хугацаа дууссан
-  """
-  enum CourseAccessStatus {
-    ADMIN_ENROLLED
-    ADMIN_NOT_ENROLLED
-    GUEST
-    NOT_ENROLLED
-    ENROLLED
-    EXPIRED
-  }
-
-  """
-  Нэг Query-д буцах нэгдсэн бүтэц
-    - status: Хэрэглэгчийн төлөв
-    - coursePreviewData: Хэрэв GUEST эсвэл NOT_ENROLLED бол үзүүлэх 'preview' талын мэдээлэл
-    - fullContent: Хэрэв ENROLLED бол үзүүлэх курсийн бүрэн агуулга
-  """
-  type CourseForUserPayload {
-    status: CourseAccessStatus!
-    coursePreviewData: Course
-    fullContent: Course
-  }
-
-  type Thumbnail {
-    publicId: String!
-    width: Int
-    height: Int
-    format: String
-  }
-
   type Course {
     _id: ID!
-    createdBy: User
+    createdBy: InstructorUserV2
     title: String!
     subtitle: String
     slug: String
@@ -76,9 +41,16 @@ export const typeDefs = gql`
     updatedAt: Date
   }
 
+  type Thumbnail {
+    publicId: String!
+    width: Int
+    height: Int
+    format: String
+  }
+
   type PricingPlan {
     planTitle: String
-    description: String
+    description: [String]
     amount: Int
     currency: Currency
   }
@@ -103,14 +75,36 @@ export const typeDefs = gql`
       slug: String!
     ): getCourseDetailsForInstructorResponse
     getAllCourse: [Course!]!
-    getAllCourseWithEnrollment: [Course!]!
-    getCourseForUser(slug: String!): CourseForUserPayload!
     getUserEnrolledCoursesCount(
       userId: ID!
     ): GetUserEnrolledCoursesCountResponse!
-    getUserNotEnrolledCourses(userId: ID!): [Course]
-
+    getAllNotEnrolledCourses: CoursesQueryResponse
     getAllCoursesByInstructurId: [Course]
+    getCoursePreviewData(slug: String!): getCoursePreviewDataResponse
+    getCourseForEnrollment(slug: String!): CourseForEnrollmentResponse
+  }
+
+  type CoursesQueryResponse {
+    success: Boolean!
+    message: String
+    courses: [Course]
+  }
+
+  type CourseForEnrollmentResponse {
+    success: Boolean!
+    message: String
+    fullContent: Course
+  }
+
+  type getCoursePreviewDataResponse {
+    success: Boolean!
+    message: String
+    course: Course
+    totalSections: Int
+    totalLessons: Int
+    totalLessonDurationSeconds: Int
+    totalLessonDurationHours: Int
+    isEnrolled: Boolean
   }
 
   input CreateCourseInput {
@@ -119,7 +113,7 @@ export const typeDefs = gql`
 
   input PricingPlanInput {
     planTitle: String
-    description: String
+    description: [String]
     amount: Int
     currency: Currency
   }
@@ -136,7 +130,7 @@ export const typeDefs = gql`
 
   input UpdateCoursePricingInput {
     planTitle: String
-    description: String
+    description: [String]
     amount: Int
     currency: Currency
   }
@@ -173,5 +167,17 @@ export const typeDefs = gql`
     ): Course!
     createCourse(input: CreateCourseInput!): Course!
     deleteCourse(id: ID!): Boolean!
+
+    # V2
+    updateCoursePricingV2(
+      courseId: ID!
+      input: UpdateCoursePricingInput!
+    ): UpdateCourseResponse!
+  }
+
+  # --- Mutation Response ---
+  type UpdateCourseResponse {
+    success: Boolean!
+    message: String!
   }
 `;

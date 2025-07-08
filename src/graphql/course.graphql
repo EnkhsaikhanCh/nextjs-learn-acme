@@ -22,6 +22,16 @@ mutation UpdateCoursePricing(
   }
 }
 
+mutation UpdateCoursePricingV2(
+  $courseId: ID!
+  $input: UpdateCoursePricingInput!
+) {
+  updateCoursePricingV2(courseId: $courseId, input: $input) {
+    success
+    message
+  }
+}
+
 mutation UpdateCourseThumbnail($courseId: ID!, $input: ThumbnailInput!) {
   updateCourseThumbnail(courseId: $courseId, input: $input) {
     _id
@@ -56,95 +66,12 @@ query GetAllCourse {
   }
 }
 
-query GetAllCourseWithEnrollment {
-  getAllCourseWithEnrollment {
-    _id
-    title
-    slug
-    thumbnail {
-      publicId
-      width
-      height
-      format
-    }
-    isEnrolled
-  }
-}
-
-query GetCourseForUser($slug: String!) {
-  getCourseForUser(slug: $slug) {
-    status
-    fullContent {
-      _id
-      title
-      slug
-      sectionId {
-        _id
-        title
-        description
-        order
-        lessonId {
-          _id
-          title
-          order
-          isPublished
-          type
-        }
-      }
-      status
-    }
-    coursePreviewData {
-      _id
-      title
-      slug
-      description
-      courseCode
-      difficulty
-      thumbnail {
-        publicId
-        width
-        height
-        format
-      }
-      price {
-        planTitle
-        description
-        amount
-        currency
-      }
-      category
-      status
-      whatYouWillLearn
-    }
-  }
-}
-
 query GetUserEnrolledCoursesCount($userId: ID!) {
   getUserEnrolledCoursesCount(userId: $userId) {
     totalCourses
     completedCount
     inProgressCount
     courseCompletionPercentage
-  }
-}
-
-query GetUserNotEnrolledCourses($userId: ID!) {
-  getUserNotEnrolledCourses(userId: $userId) {
-    _id
-    title
-    slug
-    thumbnail {
-      publicId
-      width
-      height
-      format
-    }
-    price {
-      planTitle
-      description
-      amount
-      currency
-    }
   }
 }
 
@@ -201,5 +128,136 @@ query GetCourseBasicInfoForEdit($slug: String!) {
     updatedAt
     whoIsThisFor
     whatYouWillLearn
+  }
+}
+
+query GetCoursePreviewData($slug: String!) {
+  getCoursePreviewData(slug: $slug) {
+    success
+    message
+    course {
+      _id
+      createdBy {
+        email
+        role
+        fullName
+        bio
+        profilePicture {
+          publicId
+          width
+          height
+          format
+        }
+      }
+      title
+      subtitle
+      slug
+      description
+      requirements
+      courseCode
+      difficulty
+      price {
+        planTitle
+        description
+        amount
+        currency
+      }
+      category
+      whatYouWillLearn
+      whoIsThisFor
+      updatedAt
+      sectionId {
+        _id
+        title
+        description
+        order
+        lessonId {
+          _id
+          title
+          order
+          type
+        }
+      }
+    }
+    totalSections
+    totalLessons
+    totalLessonDurationSeconds
+    totalLessonDurationHours
+    isEnrolled
+  }
+}
+
+query GetCourseForEnrollment($slug: String!) {
+  getCourseForEnrollment(slug: $slug) {
+    success
+    message
+    fullContent {
+      _id
+      title
+      subtitle
+      slug
+      sectionId {
+        _id
+        title
+        description
+        order
+        lessonId {
+          _id
+          title
+          order
+          isPublished
+          type
+          ... on VideoLesson {
+            muxPlaybackId
+            duration
+          }
+          ... on TextLesson {
+            content
+          }
+          ... on FileLesson {
+            fileUrl
+          }
+          ... on QuizLesson {
+            quizQuestions {
+              question
+              answers
+              correctAnswer
+            }
+          }
+          ... on AssignmentLesson {
+            assignmentDetails
+          }
+        }
+      }
+    }
+  }
+}
+
+query GetAllNotEnrolledCourses {
+  getAllNotEnrolledCourses {
+    success
+    message
+    courses {
+      _id
+      title
+      subtitle
+      slug
+      createdBy {
+        fullName
+        profilePicture {
+          publicId
+          format
+        }
+      }
+      thumbnail {
+        publicId
+      }
+      price {
+        planTitle
+        description
+        amount
+        currency
+      }
+    }
   }
 }
