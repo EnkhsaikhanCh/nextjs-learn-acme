@@ -3,7 +3,7 @@ import { redis } from "@/lib/redis";
 import { sendEmail } from "@/lib/email";
 import { generateOTP } from "@/utils/generate-otp";
 import { normalizeEmail, validateEmail } from "@/utils/validation";
-import { v4 as uuidv4 } from "uuid";
+import { emailHash } from "@/utils/email-hash";
 
 jest.mock("../../../../../src/lib/redis", () => ({
   redis: {
@@ -33,11 +33,11 @@ jest.mock("uuid", () => ({
 describe("sendOTP", () => {
   const email = "test@example.com";
   const normalizedEmail = "test@example.com"; // assume normalization yields same value
+  const hashedEmail = emailHash(normalizedEmail);
   const RATE_LIMIT_KEY = "rate_limit:send_otp:";
   const MAX_REQUESTS = 5;
   const WINDOW = 3600;
   const rateLimitKey = `${RATE_LIMIT_KEY}${normalizedEmail}`;
-  const otpKeyPrefix = "otp:";
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -86,7 +86,7 @@ describe("sendOTP", () => {
     // Verify that the rate limit key is set to "1" with expiration WINDOW (3600 sec)
     expect(redis.set).toHaveBeenCalledWith(rateLimitKey, "1", { ex: WINDOW });
     // Verify that the OTP is stored with key "otp:test@example.com", value "123456", expiration 300 sec
-    expect(redis.set).toHaveBeenCalledWith(`otp:${normalizedEmail}`, "123456", {
+    expect(redis.set).toHaveBeenCalledWith(`otp:${hashedEmail}`, "123456", {
       ex: 300,
     });
     // Verify that sendEmail was called
@@ -108,7 +108,7 @@ describe("sendOTP", () => {
     const result = await sendOTP(null, { email });
 
     expect(redis.incr).toHaveBeenCalledWith(rateLimitKey);
-    expect(redis.set).toHaveBeenCalledWith(`otp:${normalizedEmail}`, "123456", {
+    expect(redis.set).toHaveBeenCalledWith(`otp:${hashedEmail}`, "123456", {
       ex: 300,
     });
     expect(sendEmail).toHaveBeenCalled();

@@ -3,6 +3,7 @@ import { redis } from "@/lib/redis";
 import { sendEmail } from "@/lib/email";
 import { generateOTP } from "@/utils/generate-otp";
 import { normalizeEmail, validateEmail } from "@/utils/validation";
+import { emailHash } from "@/utils/email-hash";
 
 const RATE_LIMIT_KEY = "rate_limit:send_otp:";
 const MAX_REQUESTS = 5;
@@ -40,8 +41,6 @@ export const sendOTP = async (_: unknown, { email }: { email: string }) => {
     }
 
     const otp = generateOTP();
-    const otpExpiry = 5 * 60;
-    await redis.set(`otp:${normalizedEmail}`, otp, { ex: otpExpiry });
 
     await sendEmail({
       to: normalizedEmail,
@@ -63,6 +62,11 @@ export const sendOTP = async (_: unknown, { email }: { email: string }) => {
             </p>
           </div>
         `,
+    });
+
+    const otpExpiry = 5 * 60;
+    await redis.set(`otp:${emailHash(normalizedEmail)}`, otp, {
+      ex: otpExpiry,
     });
 
     return {
