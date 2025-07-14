@@ -1,37 +1,23 @@
-import { GraphQLError } from "graphql";
 import { redis } from "@/lib/redis";
-import { sendEmail } from "@/lib/email";
 import { generateOTP } from "@/utils/generate-otp";
-import { normalizeEmail, validateEmail } from "@/utils/validation";
+import { sendEmail } from "@/lib/email";
 import { emailHash } from "@/utils/email-hash";
 
 const RATE_LIMIT_KEY = "rate_limit:send_otp:";
 const MAX_REQUESTS = 5;
-const WINDOW = 3600;
+const WINDOW = 3600; // 1 hour in seconds
 
-export const sendOTP = async (_: unknown, { email }: { email: string }) => {
+export const sendOtpService = async (email: string) => {
   if (!email) {
-    throw new GraphQLError("И-мэйл хаяг шаардлагатай", {
-      extensions: { code: "BAD_USER_INPUT" },
-    });
-  }
-
-  const normalizedEmail = normalizeEmail(email);
-  if (!normalizedEmail || !validateEmail(normalizedEmail)) {
-    throw new GraphQLError("Имэйл хаяг буруу байна", {
-      extensions: { code: "BAD_USER_INPUT" },
-    });
+    throw new Error("И-мэйл хаяг шаардлагатай");
   }
 
   try {
-    const rateLimitKey = `${RATE_LIMIT_KEY}${normalizedEmail}`;
+    const rateLimitKey = `${RATE_LIMIT_KEY}${emailHash(email)}`;
     const currentCount = await redis.get(rateLimitKey);
 
     if (currentCount && parseInt(currentCount as string, 10) >= MAX_REQUESTS) {
-      throw new GraphQLError(
-        "Хэт олон хүсэлт. 1 цагийн дараа дахин оролдоно уу.",
-        { extensions: { code: "TOO_MANY_REQUESTS" } },
-      );
+      throw new Error("Хэт олон хүсэлт. 1 цагийн дараа дахин оролдоно уу.");
     }
 
     if (!currentCount) {
@@ -43,7 +29,7 @@ export const sendOTP = async (_: unknown, { email }: { email: string }) => {
     const otp = generateOTP();
 
     await sendEmail({
-      to: normalizedEmail,
+      to: email,
       subject: "Таны OTP код",
       html: `
           <div style="font-family: Arial, sans-serif; max-width: 400px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 8px; background-color: #ffffff; color: #333;">
@@ -65,20 +51,14 @@ export const sendOTP = async (_: unknown, { email }: { email: string }) => {
     });
 
     const otpExpiry = 5 * 60;
-    await redis.set(`otp:${emailHash(normalizedEmail)}`, otp, {
-      ex: otpExpiry,
-    });
+    await redis.set(`otp:${emailHash(email)}`, otp, { ex: otpExpiry });
 
-    return {
-      success: true,
-      message: "OTP код амжилттай илгээгдлээ.",
-    };
+    return true;
   } catch (error) {
-    if (error instanceof GraphQLError) {
-      throw error;
-    }
-    throw new GraphQLError("Internal server error", {
-      extensions: { code: "INTERNAL_SERVER_ERROR" },
-    });
+    throw new Error(
+      error instanceof Error
+        ? `sendOtpService алдаа: ${error.message}`
+        : "sendOtpService: Серверийн алдаа гарлаа",
+    );
   }
 };

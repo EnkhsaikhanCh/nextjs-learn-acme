@@ -6,8 +6,8 @@ import { ActionButton } from "@/components/ActionButton";
 import Link from "next/link";
 import { PasswordInput } from "@/components/PasswordInput";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useHandleRegisterV2 } from "../features/useHandleRegisterV2";
 import { siteConfig } from "@/config/site";
+import { useHandleRegisterV3 } from "../features/useHandleRegisterV3";
 
 export default function SignUp() {
   const {
@@ -18,9 +18,9 @@ export default function SignUp() {
     isSubmitting,
     errors,
     setErrors,
+    passwordStrength,
     handleRegister,
-    strength,
-  } = useHandleRegisterV2();
+  } = useHandleRegisterV3();
 
   return (
     <main className="grid h-screen grid-cols-1 lg:grid-cols-2">
@@ -60,9 +60,6 @@ export default function SignUp() {
               </div>
               <p>Шинэ бүртгэл үүсгэх</p>
             </CardTitle>
-            <p className="text-muted-foreground text-sm">
-              Доорх мэдээллийг бөглөж бүртгэлээ үүсгэнэ үү
-            </p>
           </CardHeader>
 
           <CardContent>
@@ -97,7 +94,7 @@ export default function SignUp() {
                 />
 
                 <ul className="">
-                  {strength.map((req, index) => (
+                  {passwordStrength.map((req, index) => (
                     <li key={index} className="flex items-center gap-2 text-xs">
                       {req.valid ? (
                         <CheckIcon size={16} className="text-green-500" />
