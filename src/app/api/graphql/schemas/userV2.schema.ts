@@ -100,6 +100,11 @@ export const typeDefs = gql`
     password: String!
   }
 
+  input RegisterUserWithOtpInput {
+    email: String!
+    password: String!
+  }
+
   input UpdateInstructorUserV2Input {
     fullName: String
     bio: String
@@ -146,6 +151,11 @@ export const typeDefs = gql`
   # --- Mutations ---
   type Mutation {
     registerUserV2(input: RegisterUserV2Input!): RegisterUserV2Response!
+
+    registerUserWithOtp(
+      input: RegisterUserWithOtpInput!
+    ): RegisterUserWithOtpResponse!
+
     updateInstructorUserV2(
       _id: ID!
       input: UpdateInstructorUserV2Input!
@@ -165,6 +175,13 @@ export const typeDefs = gql`
     success: Boolean!
     message: String!
     userV2: UserV2
+  }
+
+  type RegisterUserWithOtpResponse {
+    success: Boolean!
+    message: String!
+    userV2: UserV2
+    tempToken: String
   }
 
   type UpdateUserV2Response {

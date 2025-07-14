@@ -3,6 +3,7 @@ import { redis } from "@/lib/redis";
 import { UserV2Model } from "@/app/api/graphql/models";
 import { v4 as uuidv4 } from "uuid";
 import { normalizeEmail, validateEmail } from "@/utils/validation";
+import { emailHash } from "@/utils/email-hash";
 
 const RATE_LIMIT_KEY = "rate_limit:verify-otp:";
 const MAX_REQUESTS = 4; // Maximum requests per minute
@@ -25,7 +26,7 @@ export const verifyOTP = async (
     });
   }
 
-  const rateLimitKeyForEmail = `${RATE_LIMIT_KEY}${normalizedEmail}`;
+  const rateLimitKeyForEmail = `${RATE_LIMIT_KEY}${emailHash(normalizedEmail)}`;
 
   try {
     // Check rate limit
@@ -44,7 +45,7 @@ export const verifyOTP = async (
     }
 
     // Retrieve the stored OTP from Redis
-    const storedOtp = await redis.get(`otp:${normalizedEmail}`);
+    const storedOtp = await redis.get(`otp:${emailHash(normalizedEmail)}`);
     if (!storedOtp) {
       throw new GraphQLError("OTP код олдсонгүй эсвэл хугацаа дууссан.", {
         extensions: { code: "BAD_REQUEST" },
@@ -72,7 +73,7 @@ export const verifyOTP = async (
     }
 
     // Delete the OTP from Redis now that it has been used
-    await redis.del(`otp:${normalizedEmail}`);
+    await redis.del(`otp:${emailHash(normalizedEmail)}`);
 
     // Generate a sign-in token
     const signInToken = uuidv4();

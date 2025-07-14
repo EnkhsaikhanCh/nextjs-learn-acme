@@ -400,6 +400,7 @@ export type Mutation = {
   generateTempToken: GenerateTempTokenResponse;
   markLessonAsCompleted?: Maybe<Enrollment>;
   registerUserV2: RegisterUserV2Response;
+  registerUserWithOtp: RegisterUserWithOtpResponse;
   sendOTP: SendOtpResponse;
   undoLessonCompletion?: Maybe<Enrollment>;
   updateAssignmentLessonV2: UpdateLessonV2Response;
@@ -520,6 +521,11 @@ export type MutationMarkLessonAsCompletedArgs = {
 
 export type MutationRegisterUserV2Args = {
   input: RegisterUserV2Input;
+};
+
+
+export type MutationRegisterUserWithOtpArgs = {
+  input: RegisterUserWithOtpInput;
 };
 
 
@@ -1003,6 +1009,19 @@ export type RegisterUserV2Response = {
   __typename?: 'RegisterUserV2Response';
   message: Scalars['String']['output'];
   success: Scalars['Boolean']['output'];
+  userV2?: Maybe<UserV2>;
+};
+
+export type RegisterUserWithOtpInput = {
+  email: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+};
+
+export type RegisterUserWithOtpResponse = {
+  __typename?: 'RegisterUserWithOtpResponse';
+  message: Scalars['String']['output'];
+  success: Scalars['Boolean']['output'];
+  tempToken?: Maybe<Scalars['String']['output']>;
   userV2?: Maybe<UserV2>;
 };
 
@@ -1717,6 +1736,13 @@ export type RegisterUserV2MutationVariables = Exact<{
 
 
 export type RegisterUserV2Mutation = { __typename?: 'Mutation', registerUserV2: { __typename?: 'RegisterUserV2Response', success: boolean, message: string, userV2?: { __typename?: 'AdminUserV2', _id: string, email: string, isVerified: boolean, role: UserV2Role } | { __typename?: 'InstructorUserV2', _id: string, email: string, isVerified: boolean, role: UserV2Role } | { __typename?: 'StudentUserV2', _id: string, email: string, isVerified: boolean, role: UserV2Role } | null } };
+
+export type RegisterUserWithOtpMutationVariables = Exact<{
+  input: RegisterUserWithOtpInput;
+}>;
+
+
+export type RegisterUserWithOtpMutation = { __typename?: 'Mutation', registerUserWithOtp: { __typename?: 'RegisterUserWithOtpResponse', success: boolean, message: string, tempToken?: string | null, userV2?: { __typename?: 'AdminUserV2', _id: string, email: string, isVerified: boolean, role: UserV2Role } | { __typename?: 'InstructorUserV2', _id: string, email: string, isVerified: boolean, role: UserV2Role } | { __typename?: 'StudentUserV2', _id: string, email: string, isVerified: boolean, role: UserV2Role } | null } };
 
 export type UpdateInstructorUserV2MutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -4106,6 +4132,47 @@ export function useRegisterUserV2Mutation(baseOptions?: Apollo.MutationHookOptio
 export type RegisterUserV2MutationHookResult = ReturnType<typeof useRegisterUserV2Mutation>;
 export type RegisterUserV2MutationResult = Apollo.MutationResult<RegisterUserV2Mutation>;
 export type RegisterUserV2MutationOptions = Apollo.BaseMutationOptions<RegisterUserV2Mutation, RegisterUserV2MutationVariables>;
+export const RegisterUserWithOtpDocument = gql`
+    mutation RegisterUserWithOtp($input: RegisterUserWithOtpInput!) {
+  registerUserWithOtp(input: $input) {
+    success
+    message
+    userV2 {
+      _id
+      email
+      isVerified
+      role
+    }
+    tempToken
+  }
+}
+    `;
+export type RegisterUserWithOtpMutationFn = Apollo.MutationFunction<RegisterUserWithOtpMutation, RegisterUserWithOtpMutationVariables>;
+
+/**
+ * __useRegisterUserWithOtpMutation__
+ *
+ * To run a mutation, you first call `useRegisterUserWithOtpMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRegisterUserWithOtpMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [registerUserWithOtpMutation, { data, loading, error }] = useRegisterUserWithOtpMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useRegisterUserWithOtpMutation(baseOptions?: Apollo.MutationHookOptions<RegisterUserWithOtpMutation, RegisterUserWithOtpMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RegisterUserWithOtpMutation, RegisterUserWithOtpMutationVariables>(RegisterUserWithOtpDocument, options);
+      }
+export type RegisterUserWithOtpMutationHookResult = ReturnType<typeof useRegisterUserWithOtpMutation>;
+export type RegisterUserWithOtpMutationResult = Apollo.MutationResult<RegisterUserWithOtpMutation>;
+export type RegisterUserWithOtpMutationOptions = Apollo.BaseMutationOptions<RegisterUserWithOtpMutation, RegisterUserWithOtpMutationVariables>;
 export const UpdateInstructorUserV2Document = gql`
     mutation UpdateInstructorUserV2($id: ID!, $input: UpdateInstructorUserV2Input!) {
   updateInstructorUserV2(_id: $id, input: $input) {
