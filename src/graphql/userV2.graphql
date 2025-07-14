@@ -12,6 +12,20 @@ mutation RegisterUserV2($input: RegisterUserV2Input!) {
   }
 }
 
+mutation RegisterUserWithOtp($input: RegisterUserWithOtpInput!) {
+  registerUserWithOtp(input: $input) {
+    success
+    message
+    userV2 {
+      _id
+      email
+      isVerified
+      role
+    }
+    tempToken
+  }
+}
+
 mutation UpdateInstructorUserV2(
   $id: ID!
   $input: UpdateInstructorUserV2Input!
