@@ -143,6 +143,7 @@ const config: Config = {
     "src/app/api/graphql/resolvers/mutations/lessonV2/update-lesson-v2-mutation.ts",
     "src/app/api/graphql/resolvers/mutations/lessonV2/update-lesson-v2-video-mutation.ts",
     "src/app/api/graphql/resolvers/mutations/payment",
+    "src/app/api/graphql/resolvers/mutations/userV2/register-user-with-otp-mutation.ts",
     // Queries
     "src/app/api/graphql/resolvers/queries/course/get-course-details-for-instructor-query.ts",
     "src/app/api/graphql/resolvers/queries/course/get-all-course.ts",

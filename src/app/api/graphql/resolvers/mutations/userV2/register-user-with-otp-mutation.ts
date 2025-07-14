@@ -76,10 +76,7 @@ export const registerUserWithOtp = async (
 
     return {
       success: false,
-      message:
-        error instanceof Error
-          ? `Бүртгэлийн явцад алдаа гарлаа: ${error.message}`
-          : "Бүртгэлийн явцад алдаа гарлаа. Та дараа дахин оролдоно уу.",
+      message: "Бүртгэлийн явцад алдаа гарлаа. Та дараа дахин оролдоно уу.",
       userV2: null,
     };
   } finally {
