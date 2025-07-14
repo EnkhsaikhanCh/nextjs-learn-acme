@@ -3,6 +3,7 @@ import { UserV2Model } from "@/app/api/graphql/models";
 import { v4 as uuidv4 } from "uuid";
 import { normalizeEmail, validateEmail } from "@/utils/validation";
 import { verifyOTP } from "@/app/api/graphql/resolvers/mutations/auth/verify-otp-mutation";
+import { emailHash } from "@/utils/email-hash";
 
 jest.mock("../../../../../src/lib/redis", () => ({
   redis: {
@@ -31,11 +32,10 @@ jest.mock("../../../../../src/app/api/graphql/models", () => ({
 describe("verifyOTP", () => {
   const email = "test@example.com";
   const normalizedEmail = "test@example.com";
+  const hashedEmail = emailHash(normalizedEmail);
   const RATE_LIMIT_KEY = "rate_limit:verify-otp:";
   const MAX_REQUESTS = 4;
-  const WINDOW = 60;
-  const rateLimitKeyForEmail = `${RATE_LIMIT_KEY}${normalizedEmail}`;
-  const otpKey = `otp:${normalizedEmail}`;
+  const rateLimitKeyForEmail = `${RATE_LIMIT_KEY}${hashedEmail}`;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -148,7 +148,7 @@ describe("verifyOTP", () => {
     (redis.set as jest.Mock).mockResolvedValue("OK");
 
     const result = await verifyOTP(null, { email, otp: "123456" });
-    expect(redis.del).toHaveBeenCalledWith(`otp:${normalizedEmail}`);
+    expect(redis.del).toHaveBeenCalledWith(`otp:${hashedEmail}`);
     expect(redis.set).toHaveBeenCalledWith(
       "signin-token:sign-token",
       normalizedEmail,
