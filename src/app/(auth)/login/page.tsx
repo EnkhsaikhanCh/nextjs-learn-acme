@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { LoaderCircle, LogIn } from "lucide-react";
 import Link from "next/link";
 import { PasswordInput } from "@/components/PasswordInput";
-import { useHandleLogin } from "./features/useHandleLogin";
+import { useHandleLoginV2 } from "./features/useHandleLoginV2";
 
 export default function Login() {
   const {
@@ -20,7 +20,7 @@ export default function Login() {
     setErrors,
     isSubmitting,
     handleLogin,
-  } = useHandleLogin();
+  } = useHandleLoginV2();
 
   return (
     <div className={cn("flex flex-col gap-3")}>
