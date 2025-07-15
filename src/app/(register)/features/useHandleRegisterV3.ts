@@ -1,5 +1,7 @@
 import { useRegisterUserWithOtpMutation } from "@/generated/graphql";
 import { registerSchema } from "@/lib/validation/userSchemas";
+import { useUserStore } from "@/store/UserStoreState";
+import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -11,8 +13,8 @@ export const useHandleRegisterV3 = () => {
     {},
   );
 
+  const setUser = useUserStore((state) => state.setUser);
   const router = useRouter();
-
   const [registerUserWithOtp] = useRegisterUserWithOtpMutation();
 
   const passwordRequirements = [
@@ -31,26 +33,15 @@ export const useHandleRegisterV3 = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    const input = {
-      email: email.trim(),
-      password,
-    };
-
+    const input = { email: email.trim(), password };
     const parsed = registerSchema.safeParse(input);
 
     if (!parsed.success) {
-      const newErrors: { email?: string; password?: string } = {};
-      const zodError = parsed.error.flatten().fieldErrors;
-
-      if (zodError.email) {
-        newErrors.email = zodError.email[0];
-      }
-
-      if (zodError.password) {
-        newErrors.password = zodError.password[0];
-      }
-
-      setErrors(newErrors);
+      const fieldErrors = parsed.error.flatten().fieldErrors;
+      setErrors({
+        email: fieldErrors.email?.[0],
+        password: fieldErrors.password?.[0],
+      });
       setIsSubmitting(false);
       return;
     }
@@ -68,21 +59,27 @@ export const useHandleRegisterV3 = () => {
         },
       });
 
-      if (data?.registerUserWithOtp?.success === true) {
-        const token = data.registerUserWithOtp.tempToken;
-        if (!token) {
-          throw new Error("Токен хүлээн авахад алдаа гарлаа.");
-        }
-
-        localStorage.setItem("tempToken", token);
-
-        // Бүртгэл амжилттай бол otp баталгаажуулах хуудсанд шилжих
-        router.push("/verify-otp");
-      } else {
-        setErrors({
-          email: data?.registerUserWithOtp?.message || "Алдаа гарлаа",
-        });
+      const result = data?.registerUserWithOtp;
+      if (!result || !result.success) {
+        setErrors({ email: "Бүртгэл амжилтгүй боллоо. Дахин оролдоно уу." });
+        return;
       }
+
+      const signInResult = await signIn("credentials", {
+        email: normalizedEmail,
+        password: validPassword,
+        redirect: false,
+      });
+      if (signInResult?.error) {
+        setErrors({ email: "Бүртгэл амжилтгүй боллоо. Дахин оролдоно уу." });
+        return;
+      }
+
+      if (result.userV2) {
+        setUser(result.userV2);
+      }
+
+      router.push("/verify-otp");
     } catch {
       setErrors({ email: "Бүртгэхэд алдаа гарлаа. Дахин оролдоно уу." });
     } finally {
