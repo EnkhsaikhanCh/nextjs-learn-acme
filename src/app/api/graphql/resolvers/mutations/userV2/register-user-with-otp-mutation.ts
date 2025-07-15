@@ -6,7 +6,6 @@ import {
 } from "@/generated/graphql";
 import { UserV2Model } from "../../../models/userV2.model";
 import { sendOtpService } from "@/lib/services/sendOtpService";
-import { generateTempTokenService } from "@/lib/services/generateTempTokenService";
 import { createUserService } from "@/lib/services/createUserService";
 import { registerSchema } from "@/lib/validation/userSchemas";
 import mongoose from "mongoose";
@@ -28,7 +27,6 @@ export const registerUserWithOtp = async (
   const { email, password } = parsed.data;
 
   const session = await mongoose.startSession();
-  let tempToken: string | null = null;
   let user: UserV2 | null = null;
 
   try {
@@ -59,13 +57,11 @@ export const registerUserWithOtp = async (
     });
 
     await sendOtpService(email);
-    tempToken = await generateTempTokenService(email);
 
     return {
       success: true,
       message: "Бүртгэл амжилттай. Баталгаажуулах код илгээгдлээ.",
       userV2: user,
-      tempToken,
     };
   } catch (error) {
     if (error instanceof GraphQLError) {
