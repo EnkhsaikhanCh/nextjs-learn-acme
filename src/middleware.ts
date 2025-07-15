@@ -40,10 +40,16 @@ export async function middleware(request: NextRequest) {
 
   // 🔐 If unauthenticated, redirect protected routes to login
   if (!token) {
-    if (isProtectedRoute) {
+    if (pathname === "/verify-otp" || isProtectedRoute) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
     return NextResponse.next();
+  }
+
+  // if user is already verified, redirect to the appropriate dashboard
+  if (isVerified && pathname === "/verify-otp") {
+    const target = roleRedirectMap[role] || fallbackRedirect;
+    return NextResponse.redirect(new URL(target, request.url));
   }
 
   // 🧪 OTP not verified → force /verify-otp
