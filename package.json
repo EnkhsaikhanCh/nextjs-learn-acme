@@ -78,7 +78,7 @@
     "@vercel/speed-insights": "^1.2.0",
     "argon2": "^0.41.1",
     "axios": "^1.8.4",
-    "bcrypt": "^5.1.1",
+    "bcrypt": "^6.0.0",
     "body-parser": "^1.20.3",
     "class-variance-authority": "^0.7.1",
     "cloudinary": "^2.6.0",
