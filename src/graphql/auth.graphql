@@ -17,6 +17,12 @@ mutation VerifyOTP($email: String!, $otp: String!) {
     success
     message
     signInToken
+    user {
+      _id
+      email
+      isVerified
+      role
+    }
   }
 }
 
