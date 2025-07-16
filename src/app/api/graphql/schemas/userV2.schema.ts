@@ -181,7 +181,6 @@ export const typeDefs = gql`
     success: Boolean!
     message: String!
     userV2: UserV2
-    tempToken: String
   }
 
   type UpdateUserV2Response {
