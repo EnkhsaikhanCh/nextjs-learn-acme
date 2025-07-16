@@ -81,10 +81,23 @@ export const verifyOTP = async (
       ex: 300,
     }); // 5 minutes expiry
 
+    const user = await UserV2Model.findOne({ email: normalizedEmail });
+    if (!user) {
+      throw new GraphQLError("Хэрэглэгч олдсонгүй.", {
+        extensions: { code: "BAD_REQUEST" },
+      });
+    }
+
     return {
       success: true,
       message: "И-мэйл амжилттай баталгаажлаа.",
       signInToken,
+      user: {
+        _id: user._id,
+        email: user.email,
+        isVerified: user.isVerified,
+        role: user.role,
+      },
     };
   } catch (error) {
     if (error instanceof GraphQLError) {

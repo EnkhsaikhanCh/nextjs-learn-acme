@@ -4,35 +4,26 @@
 import { Loader, MailCheck } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { OTPInput } from "@/components/OTPInput";
-import { useOTPVerification } from "./features/useOTPVerification";
 import { SuccessMessage } from "@/components/SuccessMessage";
-import { LoadingUI } from "@/components/LoadingUI";
-import { ErrorUI } from "@/components/ErrorUI";
 import { Button } from "@/components/ui/button";
+import { useUserStore } from "@/store/UserStoreState";
+import { useOTPVerificationV2 } from "./features/useOTPVerificationV2";
 
 export default function VerifyOTP() {
+  const { user } = useUserStore();
+
   const {
-    email,
     otp,
     setOtp,
     error,
     setError,
-    isLoading,
     isVerifying,
     isResending,
     success,
     resendTimer,
     handleSubmit,
     handleResendOTP,
-  } = useOTPVerification();
-
-  if (isLoading) {
-    return <LoadingUI />;
-  }
-
-  if (!email) {
-    return <ErrorUI />;
-  }
+  } = useOTPVerificationV2();
 
   return (
     <>
@@ -41,7 +32,7 @@ export default function VerifyOTP() {
           <CardTitle className="text-foreground/80 flex items-center gap-3 text-2xl font-bold">
             <div className="flex h-10 w-10 items-center justify-center rounded-md border-2 border-teal-500 bg-teal-200">
               <MailCheck className="h-6 w-6 stroke-[2.5] text-teal-600" />
-              <span className="sr-only">Sign up</span>
+              <span className="sr-only">Verify email</span>
             </div>
             <p>Имэйл баталгаажуулалт</p>
           </CardTitle>
@@ -52,7 +43,13 @@ export default function VerifyOTP() {
             <SuccessMessage description="Таны баталгаажуулалт амжилттай боллоо. Тун удахгүй таныг удирдлагын самбар руу шилжүүлнэ..." />
           ) : (
             <>
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSubmit();
+                }}
+                className="space-y-6"
+              >
                 <div className="flex flex-col items-center text-center">
                   {!isVerifying ? (
                     <OTPInput
@@ -74,11 +71,16 @@ export default function VerifyOTP() {
                       <Loader className="h-8 w-8 animate-spin text-teal-600" />
                     </div>
                   )}
+                  {error && (
+                    <p className="mt-2 text-center text-sm text-red-500">
+                      {error}
+                    </p>
+                  )}
                 </div>
               </form>
               <p className="text-foreground/60 mt-4 text-center text-sm">
-                6 оронтой код таны <strong>{email}</strong> хаяг руу илгээгдсэн.
-                Код 5 минутын дотор хүчинтэй.
+                6 оронтой код таны <strong>{user?.email}</strong> хаяг руу
+                илгээгдсэн. Код 5 минутын дотор хүчинтэй.
               </p>
             </>
           )}

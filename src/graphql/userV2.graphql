@@ -22,7 +22,6 @@ mutation RegisterUserWithOtp($input: RegisterUserWithOtpInput!) {
       isVerified
       role
     }
-    tempToken
   }
 }
 

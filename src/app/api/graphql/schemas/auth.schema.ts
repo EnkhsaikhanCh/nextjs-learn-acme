@@ -24,6 +24,7 @@ export const typeDefs = gql`
   type VerifyOTPResponse {
     success: Boolean!
     message: String!
+    user: UserV2
     signInToken: String
   }
 

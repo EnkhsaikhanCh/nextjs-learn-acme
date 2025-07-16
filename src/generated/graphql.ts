@@ -1021,7 +1021,6 @@ export type RegisterUserWithOtpResponse = {
   __typename?: 'RegisterUserWithOtpResponse';
   message: Scalars['String']['output'];
   success: Scalars['Boolean']['output'];
-  tempToken?: Maybe<Scalars['String']['output']>;
   userV2?: Maybe<UserV2>;
 };
 
@@ -1291,6 +1290,7 @@ export type VerifyOtpResponse = {
   message: Scalars['String']['output'];
   signInToken?: Maybe<Scalars['String']['output']>;
   success: Scalars['Boolean']['output'];
+  user?: Maybe<UserV2>;
 };
 
 export type VideoLesson = LessonV2 & {
@@ -1375,7 +1375,7 @@ export type VerifyOtpMutationVariables = Exact<{
 }>;
 
 
-export type VerifyOtpMutation = { __typename?: 'Mutation', verifyOTP: { __typename?: 'VerifyOTPResponse', success: boolean, message: string, signInToken?: string | null } };
+export type VerifyOtpMutation = { __typename?: 'Mutation', verifyOTP: { __typename?: 'VerifyOTPResponse', success: boolean, message: string, signInToken?: string | null, user?: { __typename?: 'AdminUserV2', _id: string, email: string, isVerified: boolean, role: UserV2Role } | { __typename?: 'InstructorUserV2', _id: string, email: string, isVerified: boolean, role: UserV2Role } | { __typename?: 'StudentUserV2', _id: string, email: string, isVerified: boolean, role: UserV2Role } | null } };
 
 export type GetEmailFromTokenQueryVariables = Exact<{
   token: Scalars['String']['input'];
@@ -1742,7 +1742,7 @@ export type RegisterUserWithOtpMutationVariables = Exact<{
 }>;
 
 
-export type RegisterUserWithOtpMutation = { __typename?: 'Mutation', registerUserWithOtp: { __typename?: 'RegisterUserWithOtpResponse', success: boolean, message: string, tempToken?: string | null, userV2?: { __typename?: 'AdminUserV2', _id: string, email: string, isVerified: boolean, role: UserV2Role } | { __typename?: 'InstructorUserV2', _id: string, email: string, isVerified: boolean, role: UserV2Role } | { __typename?: 'StudentUserV2', _id: string, email: string, isVerified: boolean, role: UserV2Role } | null } };
+export type RegisterUserWithOtpMutation = { __typename?: 'Mutation', registerUserWithOtp: { __typename?: 'RegisterUserWithOtpResponse', success: boolean, message: string, userV2?: { __typename?: 'AdminUserV2', _id: string, email: string, isVerified: boolean, role: UserV2Role } | { __typename?: 'InstructorUserV2', _id: string, email: string, isVerified: boolean, role: UserV2Role } | { __typename?: 'StudentUserV2', _id: string, email: string, isVerified: boolean, role: UserV2Role } | null } };
 
 export type UpdateInstructorUserV2MutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -1862,6 +1862,12 @@ export const VerifyOtpDocument = gql`
     success
     message
     signInToken
+    user {
+      _id
+      email
+      isVerified
+      role
+    }
   }
 }
     `;
@@ -4143,7 +4149,6 @@ export const RegisterUserWithOtpDocument = gql`
       isVerified
       role
     }
-    tempToken
   }
 }
     `;
