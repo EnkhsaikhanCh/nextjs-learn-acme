@@ -1,5 +1,6 @@
 import { fallbackRedirect, roleRedirectMap } from "@/config/roleRedirectMap";
 import { useSendOtpMutation } from "@/generated/graphql";
+import { loginSchema } from "@/lib/validation/userSchemas";
 import { useUserStore } from "@/store/UserStoreState";
 import { getSession, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -10,19 +11,6 @@ interface ErrorState {
   email?: string;
   password?: string;
 }
-
-const validateForm = (email: string, password: string): ErrorState => {
-  const errors: ErrorState = {};
-  if (!email.trim()) {
-    errors.email = "Имэйл хаяг шаардлагатай.";
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    errors.email = "Имэйл хаяг буруу байна.";
-  }
-  if (!password.trim()) {
-    errors.password = "Нууц үг шаардлагатай.";
-  }
-  return errors;
-};
 
 export const useHandleLoginV2 = () => {
   const [email, setEmail] = useState<string>("");
@@ -38,17 +26,25 @@ export const useHandleLoginV2 = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    const validationErrors = validateForm(email, password);
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
+    const input = { email: email.trim(), password };
+    const parsed = loginSchema.safeParse(input);
+
+    if (!parsed.success) {
+      const fieldErrors = parsed.error.flatten().fieldErrors;
+      setErrors({
+        email: fieldErrors.email?.[0],
+        password: fieldErrors.password?.[0],
+      });
       setIsSubmitting(false);
       return;
     }
 
     try {
+      const { email: normalizedEmail, password: validPassword } = parsed.data;
+
       const result = await signIn("credentials", {
-        email: email.trim(),
-        password,
+        email: normalizedEmail,
+        password: validPassword,
         redirect: false,
       });
 
