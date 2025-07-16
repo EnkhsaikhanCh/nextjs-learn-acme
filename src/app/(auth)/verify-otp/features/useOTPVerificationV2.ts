@@ -53,7 +53,9 @@ export const useOTPVerificationV2 = () => {
       return;
     }
 
-    if (!/^\d{${OTP_LENGTH}}$/.test(otp)) {
+    // Validate OTP format
+    const isValidOTP = new RegExp(`^\\d{${OTP_LENGTH}}$`).test(otp);
+    if (!isValidOTP) {
       setError(`И-мэйл баталгаажуулах ${OTP_LENGTH} оронтой тоо байх ёстой.`);
       setIsVerifying(false);
       return;
