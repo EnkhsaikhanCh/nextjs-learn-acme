@@ -88,8 +88,7 @@ export const useHandleLoginV2 = () => {
         description: "Таныг системд нэвтрүүлж байна...",
       });
       router.push(redirectTo);
-    } catch (error) {
-      console.error("Login error:", error);
+    } catch {
       toast.error("Нэвтрэхэд алдаа гарлаа. Дахин оролдоно уу.");
     } finally {
       setIsSubmitting(false);

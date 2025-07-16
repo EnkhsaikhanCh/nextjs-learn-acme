@@ -129,8 +129,7 @@ export const useOTPVerificationV2 = () => {
       toast.success(
         "И-мэйл баталгаажуулах код таны имэйл рүү дахин илгээгдлээ.",
       );
-    } catch (err) {
-      console.error("Resend OTP error:", err);
+    } catch {
       toast.error("И-мэйл дахин илгээхэд алдаа гарлаа.");
     } finally {
       setIsResending(false);
