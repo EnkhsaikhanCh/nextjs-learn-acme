@@ -85,6 +85,14 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL(target, request.url));
   }
 
+  // ❌ Block authenticated users from accessing /forgot-password or /reset-password
+  if (
+    ["/forgot-password", "/reset-password"].some((p) => pathname.startsWith(p))
+  ) {
+    const target = roleRedirectMap[role] || fallbackRedirect;
+    return NextResponse.redirect(new URL(target, request.url));
+  }
+
   return NextResponse.next(); // ✅ Allow access if no conditions match
 }
 
@@ -96,6 +104,8 @@ export const config = {
     "/login",
     "/signup",
     "/verify-otp",
+    "/forgot-password",
+    "/reset-password",
     "/", // Home — for SITE_LAUNCHED check
   ],
 };
