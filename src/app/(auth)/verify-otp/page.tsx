@@ -43,7 +43,13 @@ export default function VerifyOTP() {
             <SuccessMessage description="Таны баталгаажуулалт амжилттай боллоо. Тун удахгүй таныг удирдлагын самбар руу шилжүүлнэ..." />
           ) : (
             <>
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSubmit();
+                }}
+                className="space-y-6"
+              >
                 <div className="flex flex-col items-center text-center">
                   {!isVerifying ? (
                     <OTPInput
@@ -64,6 +70,11 @@ export default function VerifyOTP() {
                     <div className="flex h-14 items-center justify-center">
                       <Loader className="h-8 w-8 animate-spin text-teal-600" />
                     </div>
+                  )}
+                  {error && (
+                    <p className="mt-2 text-center text-sm text-red-500">
+                      {error}
+                    </p>
                   )}
                 </div>
               </form>
