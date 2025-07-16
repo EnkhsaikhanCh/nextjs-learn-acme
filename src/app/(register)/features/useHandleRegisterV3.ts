@@ -5,13 +5,16 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+interface ErrorState {
+  email?: string;
+  password?: string;
+}
+
 export const useHandleRegisterV3 = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>(
-    {},
-  );
+  const [errors, setErrors] = useState<ErrorState>({});
 
   const setUser = useUserStore((state) => state.setUser);
   const router = useRouter();
