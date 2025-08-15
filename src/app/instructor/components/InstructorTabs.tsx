@@ -12,10 +12,7 @@ import { useEffect, useState } from "react";
 import { CourseOverview } from "./CourseOverview";
 import { CourseSettings } from "./CourseSettings";
 import { CourseContent } from "./CourseContent";
-import {
-  Course,
-  useGetCourseDetailsForInstructorQuery,
-} from "@/generated/graphql";
+import { Course, useInstructorCourseOverviewQuery } from "@/generated/graphql";
 import { Loader } from "lucide-react";
 // import { CourseContent } from "@/components/course-content";
 // import { CourseStudents } from "@/components/course-students";
@@ -33,11 +30,10 @@ export function InstructorDashboard() {
 
   const { slug } = useParams();
 
-  const { data, loading, error, refetch } =
-    useGetCourseDetailsForInstructorQuery({
-      variables: { slug: slug as string },
-      fetchPolicy: "cache-first",
-    });
+  const { data, loading, error, refetch } = useInstructorCourseOverviewQuery({
+    variables: { slug: slug as string },
+    fetchPolicy: "cache-and-network",
+  });
 
   useEffect(() => {
     setTab(tabParam);
@@ -50,13 +46,12 @@ export function InstructorDashboard() {
     setTab(value);
   };
 
-  const course = data?.getCourseDetailsForInstructor?.course;
-  const totalSections = data?.getCourseDetailsForInstructor
-    ?.totalSections as number;
-  const totalLessons = data?.getCourseDetailsForInstructor
-    ?.totalLessons as number;
-  const totalEnrollment = data?.getCourseDetailsForInstructor
-    ?.totalEnrollment as number;
+  const course = data?.instructorCourseOverview?.course;
+  const totalSections = data?.instructorCourseOverview?.totalSections ?? 0;
+  const totalLessons = data?.instructorCourseOverview?.totalLessons ?? 0;
+  const totalEnrollment = data?.instructorCourseOverview?.totalEnrollment ?? 0;
+  const completionPercent =
+    data?.instructorCourseOverview?.completionPercent ?? 0;
   const mainRefetch = () => {
     refetch();
   };
@@ -101,6 +96,7 @@ export function InstructorDashboard() {
                   totalSections={totalSections}
                   totalLessons={totalLessons}
                   totalEnrollment={totalEnrollment}
+                  completionPercent={completionPercent}
                   refetch={mainRefetch}
                 />
               </TabsContent>
