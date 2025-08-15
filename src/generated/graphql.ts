@@ -803,6 +803,7 @@ export type Query = {
   getUserById: User;
   getUserEnrolledCoursesCount: GetUserEnrolledCoursesCountResponse;
   getUserV2ById: UserV2;
+  instructorCourseOverview: InstructorCourseOverview;
   myEnrolledCoursesV2?: Maybe<MyEnrolledCoursesV2Response>;
   myEnrollmentV2ForCourse?: Maybe<MyEnrollmentV2ForCourseResponse>;
 };
@@ -955,6 +956,11 @@ export type QueryGetUserEnrolledCoursesCountArgs = {
 
 export type QueryGetUserV2ByIdArgs = {
   _id: Scalars['ID']['input'];
+};
+
+
+export type QueryInstructorCourseOverviewArgs = {
+  slug: Scalars['String']['input'];
 };
 
 
@@ -1338,6 +1344,15 @@ export type GetCoursePreviewDataResponse = {
   totalSections?: Maybe<Scalars['Int']['output']>;
 };
 
+export type InstructorCourseOverview = {
+  __typename?: 'instructorCourseOverview';
+  completionPercent?: Maybe<Scalars['Int']['output']>;
+  course?: Maybe<Course>;
+  totalEnrollment?: Maybe<Scalars['Int']['output']>;
+  totalLessons?: Maybe<Scalars['Int']['output']>;
+  totalSections?: Maybe<Scalars['Int']['output']>;
+};
+
 export type MarkLessonAsCompletedInput = {
   enrollmentId: Scalars['ID']['input'];
   lessonId: Scalars['ID']['input'];
@@ -1487,6 +1502,13 @@ export type GetAllNotEnrolledCoursesQueryVariables = Exact<{ [key: string]: neve
 
 
 export type GetAllNotEnrolledCoursesQuery = { __typename?: 'Query', getAllNotEnrolledCourses?: { __typename?: 'CoursesQueryResponse', success: boolean, message?: string | null, courses?: Array<{ __typename?: 'Course', _id: string, title: string, subtitle?: string | null, slug?: string | null, createdBy?: { __typename?: 'InstructorUserV2', fullName?: string | null, profilePicture?: { __typename?: 'ProfilePicture', publicId: string, format?: string | null } | null } | null, thumbnail?: { __typename?: 'Thumbnail', publicId: string } | null, price?: { __typename?: 'PricingPlan', planTitle?: string | null, description?: Array<string | null> | null, amount?: number | null, currency?: Currency | null } | null } | null> | null } | null };
+
+export type InstructorCourseOverviewQueryVariables = Exact<{
+  slug: Scalars['String']['input'];
+}>;
+
+
+export type InstructorCourseOverviewQuery = { __typename?: 'Query', instructorCourseOverview: { __typename?: 'instructorCourseOverview', totalSections?: number | null, totalLessons?: number | null, totalEnrollment?: number | null, completionPercent?: number | null, course?: { __typename?: 'Course', _id: string, title: string, slug?: string | null, courseCode?: string | null, status?: CourseStatus | null, updatedAt?: Date | null } | null } };
 
 export type MarkLessonAsCompletedMutationVariables = Exact<{
   input?: InputMaybe<MarkLessonAsCompletedInput>;
@@ -2650,6 +2672,57 @@ export type GetAllNotEnrolledCoursesQueryHookResult = ReturnType<typeof useGetAl
 export type GetAllNotEnrolledCoursesLazyQueryHookResult = ReturnType<typeof useGetAllNotEnrolledCoursesLazyQuery>;
 export type GetAllNotEnrolledCoursesSuspenseQueryHookResult = ReturnType<typeof useGetAllNotEnrolledCoursesSuspenseQuery>;
 export type GetAllNotEnrolledCoursesQueryResult = Apollo.QueryResult<GetAllNotEnrolledCoursesQuery, GetAllNotEnrolledCoursesQueryVariables>;
+export const InstructorCourseOverviewDocument = gql`
+    query InstructorCourseOverview($slug: String!) {
+  instructorCourseOverview(slug: $slug) {
+    course {
+      _id
+      title
+      slug
+      courseCode
+      status
+      updatedAt
+    }
+    totalSections
+    totalLessons
+    totalEnrollment
+    completionPercent
+  }
+}
+    `;
+
+/**
+ * __useInstructorCourseOverviewQuery__
+ *
+ * To run a query within a React component, call `useInstructorCourseOverviewQuery` and pass it any options that fit your needs.
+ * When your component renders, `useInstructorCourseOverviewQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useInstructorCourseOverviewQuery({
+ *   variables: {
+ *      slug: // value for 'slug'
+ *   },
+ * });
+ */
+export function useInstructorCourseOverviewQuery(baseOptions: Apollo.QueryHookOptions<InstructorCourseOverviewQuery, InstructorCourseOverviewQueryVariables> & ({ variables: InstructorCourseOverviewQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<InstructorCourseOverviewQuery, InstructorCourseOverviewQueryVariables>(InstructorCourseOverviewDocument, options);
+      }
+export function useInstructorCourseOverviewLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<InstructorCourseOverviewQuery, InstructorCourseOverviewQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<InstructorCourseOverviewQuery, InstructorCourseOverviewQueryVariables>(InstructorCourseOverviewDocument, options);
+        }
+export function useInstructorCourseOverviewSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<InstructorCourseOverviewQuery, InstructorCourseOverviewQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<InstructorCourseOverviewQuery, InstructorCourseOverviewQueryVariables>(InstructorCourseOverviewDocument, options);
+        }
+export type InstructorCourseOverviewQueryHookResult = ReturnType<typeof useInstructorCourseOverviewQuery>;
+export type InstructorCourseOverviewLazyQueryHookResult = ReturnType<typeof useInstructorCourseOverviewLazyQuery>;
+export type InstructorCourseOverviewSuspenseQueryHookResult = ReturnType<typeof useInstructorCourseOverviewSuspenseQuery>;
+export type InstructorCourseOverviewQueryResult = Apollo.QueryResult<InstructorCourseOverviewQuery, InstructorCourseOverviewQueryVariables>;
 export const MarkLessonAsCompletedDocument = gql`
     mutation MarkLessonAsCompleted($input: markLessonAsCompletedInput) {
   markLessonAsCompleted(input: $input) {
