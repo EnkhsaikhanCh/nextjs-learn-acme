@@ -6,3 +6,4 @@ export * from "./get-course-basic-info-for-edit-query";
 export * from "./get-course-preview-data-query";
 export * from "./get-course-for-enrollment-query";
 export * from "./get-all-not-enrolled-courses-query";
+export * from "./instructor-course-overview-query";
