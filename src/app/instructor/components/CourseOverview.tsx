@@ -11,6 +11,7 @@ interface CourseOverviewProps {
   totalSections: number;
   totalLessons: number;
   totalEnrollment: number;
+  completionPercent: number;
   refetch: () => void;
 }
 
@@ -19,6 +20,7 @@ export function CourseOverview({
   totalSections,
   totalLessons,
   totalEnrollment,
+  completionPercent,
   // refetch,
 }: CourseOverviewProps) {
   return (
@@ -27,6 +29,7 @@ export function CourseOverview({
         course={course}
         totalSections={totalSections}
         totalLessons={totalLessons}
+        completionPercent={completionPercent}
       />
 
       {/* Summary Cards */}

@@ -82,6 +82,17 @@ export const typeDefs = gql`
     getAllCoursesByInstructurId: [Course]
     getCoursePreviewData(slug: String!): getCoursePreviewDataResponse
     getCourseForEnrollment(slug: String!): CourseForEnrollmentResponse
+
+    # Instructor queries
+    instructorCourseOverview(slug: String!): instructorCourseOverview!
+  }
+
+  type instructorCourseOverview {
+    course: Course
+    totalSections: Int
+    totalLessons: Int
+    totalEnrollment: Int
+    completionPercent: Int
   }
 
   type CoursesQueryResponse {

@@ -261,3 +261,21 @@ query GetAllNotEnrolledCourses {
     }
   }
 }
+
+# Instructor Queries
+query InstructorCourseOverview($slug: String!) {
+  instructorCourseOverview(slug: $slug) {
+    course {
+      _id
+      title
+      slug
+      courseCode
+      status
+      updatedAt
+    }
+    totalSections
+    totalLessons
+    totalEnrollment
+    completionPercent
+  }
+}

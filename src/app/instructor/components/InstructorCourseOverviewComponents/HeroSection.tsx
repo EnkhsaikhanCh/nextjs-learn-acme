@@ -7,12 +7,14 @@ interface HeroSectionProps {
   course?: Course;
   totalSections: number;
   totalLessons: number;
+  completionPercent: number;
 }
 
 export const HeroSection = ({
   course,
   totalSections,
   totalLessons,
+  completionPercent,
 }: HeroSectionProps) => {
   return (
     <>
@@ -51,9 +53,23 @@ export const HeroSection = ({
                   new Date(course.updatedAt).toLocaleDateString("en-CA")}
               </span>
               <span>•</span>
-              <span>
-                {totalSections} modules • {totalLessons} lessons
+              <span>{totalSections} sections</span>
+              <span>•</span>
+              {totalLessons} lessons
+              <span>•</span>
+              <span className="relative top-0.5 h-2 w-20 overflow-hidden rounded-full bg-gray-200">
+                <span
+                  className={`absolute top-0 left-0 h-full rounded-full ${
+                    completionPercent >= 80
+                      ? "bg-green-500"
+                      : completionPercent >= 50
+                        ? "bg-yellow-500"
+                        : "bg-red-500"
+                  }`}
+                  style={{ width: `${completionPercent}%` }}
+                ></span>
               </span>
+              <span>{completionPercent}%</span>
             </div>
           </div>
         </div>

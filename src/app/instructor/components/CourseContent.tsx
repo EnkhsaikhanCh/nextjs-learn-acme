@@ -70,7 +70,7 @@ export const CourseContent = ({ mainRefetch }: CourseContentProps) => {
             Course Structure
           </h1>
           <p className="mt-1 text-sm text-gray-500">
-            Organize your course content by modules and lessons
+            Organize your course content by sections and lessons
           </p>
         </div>
 
